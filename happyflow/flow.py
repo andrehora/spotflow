@@ -1,5 +1,6 @@
 import ast
 import trace
+from happyflow import trace2
 import unittest
 import os
 from happyflow import trace_inspect
@@ -100,7 +101,7 @@ class TestRunner:
         func = testing_framework.run_test(test)
         test_name = testing_framework.get_test_name(test)
 
-        tracer = trace.Trace(count=1, trace=1, countfuncs=0, countcallers=0, test_name=test_name)
+        tracer = trace2.Trace2(count=1, trace=1, countfuncs=0, countcallers=0, test_name=test_name)
 
         # try:
         tracer.runfunc(func)
