@@ -1,4 +1,4 @@
-class StubBasicFlow:
+class StubSimpleFlow:
 
     def simple_if(self, enter=True):
         if enter:
@@ -76,19 +76,29 @@ class StubState:
         a = 1
         b = 10
 
-        a += 1
-        b += 10
+        a += 1    # a=2
+        b += 100  # b=110
 
     def change_list_state(self):
         a = []
         a.append(1)
         a.append(2)
         a.append(3)
+        a.remove(3)
+        a.remove(2)
+        a.remove(1)
 
     def change_var_state_with_loop(self):
         a = 0
         for i in range(1, 5):
             a = i
+
+    def __init__(self):
+        self.inst_var = 'default'
+
+    def change_instance_var(self):
+        self.inst_var = 'foo'
+        self.inst_var = 'new foo'
 
 
 def function_with_3_lines():

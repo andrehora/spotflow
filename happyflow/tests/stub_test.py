@@ -8,10 +8,10 @@ class TestFoo(unittest.TestCase):
         pass
 
 
-class TestStubBasicFlow(unittest.TestCase):
+class TestStubSimpleFlow(unittest.TestCase):
 
     def setUp(self):
-        self.bs = StubBasicFlow()
+        self.bs = StubSimpleFlow()
 
     def test_simple_if_true(self):
         self.bs.simple_if(True)
@@ -86,3 +86,19 @@ class TestStubState(unittest.TestCase):
 
     def test_change_var_state_with_conditional_false(self):
         self.states.change_var_state_with_conditional(False)
+
+    def test_change_multiple_vars_states(self):
+        self.states.change_multiple_vars_states()
+
+    def test_change_list_state(self):
+        self.states.change_list_state()
+
+    def test_change_var_state_with_loop(self):
+        self.states.change_var_state_with_loop()
+
+    def test_change_instance_var(self):
+        self.states.change_instance_var()
+
+    def test_init(self):
+        pass
+        # self.states.change_instance_var()

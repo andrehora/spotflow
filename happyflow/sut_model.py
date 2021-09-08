@@ -180,33 +180,32 @@ class SUTVarStateHistory:
         state = SUTVarState(name, value, line)
         self.states.append(state)
 
-
     def first_last(self):
-        if len(self.values) == 1:
-            return self.values[0], self.values[0]
-        return self.values[0], self.values[-1]
+        if len(self.states) == 1:
+            return self.states[0], self.states[0]
+        return self.states[0], self.states[-1]
 
     def distinct_values_str(self):
         str_values = {}
-        for value in self.values:
-            if str(value) not in str_values:
-                str_values[str(value)] = None
+        for state in self.states:
+            if str(state.value) not in str_values:
+                str_values[str(state.value)] = None
         return str_values.keys()
 
     def distinct_sequential_values(self):
         distinct = []
         b = None
-        for a in self.values:
-            if a != b:
-                distinct.append(a)
-            b = a
+        for state in self.states:
+            if state.value != b:
+                distinct.append(state.value)
+            b = state.value
         return distinct
 
     def distinct_values(self):
         str_values = {}
-        for value in self.values:
-            if value not in str_values:
-                str_values[value] = None
+        for state in self.states:
+            if state.value not in str_values:
+                str_values[state.value] = None
         return str_values.keys()
 
     def __str__(self):

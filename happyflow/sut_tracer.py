@@ -97,11 +97,6 @@ def collect_flow_and_state(frame, data_type, test_name, why):
 
                 argvalues = inspect.getargvalues(frame)
 
-                if 'self' in argvalues.locals:
-                    self = argvalues.locals['self']
-                    value = copy.copy(self)
-                    last_state_result.add(name='self', value=value, line=lineno)
-
                 for argvalue in argvalues.locals:
                     value = copy.copy(argvalues.locals[argvalue])
                     last_state_result.add(name=argvalue, value=value, line=lineno)
