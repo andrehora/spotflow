@@ -1,5 +1,7 @@
-from happyflow import trace_inspect
 import trace
+import copy
+from happyflow.utils import *
+from happyflow.sut_model import SUTStateResult
 
 
 class Trace2(trace.Trace):
@@ -11,15 +13,11 @@ class Trace2(trace.Trace):
         self.test_name = test_name
 
     def globaltrace_lt(self, frame, why, arg):
-        """Handler for call events.
 
-        If the code block being entered is to be ignored, returns `None',
-        else returns self.localtrace.
-        """
         if why == 'call':
             code = frame.f_code
 
-            trace_inspect.collect_flow_and_state(frame, 'global', self.test_name, why)
+            collect_flow_and_state(frame, 'global', self.test_name, why)
 
             filename = frame.f_globals.get('__file__', None)
             if filename:
@@ -41,7 +39,7 @@ class Trace2(trace.Trace):
         if why == "line" or why == 'return':
 
             # CHANGE
-            trace_inspect.collect_flow_and_state(frame, 'local', self.test_name, why)
+            collect_flow_and_state(frame, 'local', self.test_name, why)
 
             # record the file name and line number of every trace
             filename = frame.f_code.co_filename
@@ -55,3 +53,55 @@ class Trace2(trace.Trace):
             # print("%s(%d): %s" % (bname, lineno,
             #                       linecache.getline(filename, lineno)), end='')
         return self.localtrace
+
+
+SUT_NAME = ''
+all_sut_flows = {}
+all_sut_states = {}
+COLLECT_STATE = False
+
+
+def clean_inspection():
+    global all_sut_flows, all_sut_states
+    all_sut_flows = {}
+    all_sut_states = {}
+
+
+def collect_flow_and_state(frame, data_type, test_name, why):
+
+    entity_name = find_full_func_name(frame)
+
+    if entity_name.startswith(SUT_NAME):
+        if entity_name not in all_sut_flows:
+            all_sut_flows[entity_name] = []
+
+        if data_type == 'global':
+            sut_flows = all_sut_flows[entity_name]
+
+            state = None
+            if COLLECT_STATE:
+                state = SUTStateResult(entity_name)
+
+            sut_flows.append((test_name, [], state))
+
+        if data_type == 'local':
+            sut_flows = all_sut_flows[entity_name]
+            # get the last flow and update it
+            test_name, last_flow, last_state_result = sut_flows[-1]
+
+            lineno = frame.f_lineno
+            if why == 'line':
+                last_flow.append(lineno)
+
+            if last_state_result:
+
+                argvalues = inspect.getargvalues(frame)
+
+                if 'self' in argvalues.locals:
+                    self = argvalues.locals['self']
+                    value = copy.copy(self)
+                    last_state_result.add(name='self', value=value, line=lineno)
+
+                for argvalue in argvalues.locals:
+                    value = copy.copy(argvalues.locals[argvalue])
+                    last_state_result.add(name=argvalue, value=value, line=lineno)

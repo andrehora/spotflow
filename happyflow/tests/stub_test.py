@@ -1,5 +1,5 @@
 import unittest
-from stub_sut import *
+from happyflow.tests.stub_sut import *
 
 
 class TestFoo(unittest.TestCase):
@@ -8,10 +8,10 @@ class TestFoo(unittest.TestCase):
         pass
 
 
-class TestBasicStatements(unittest.TestCase):
+class TestStubBasicFlow(unittest.TestCase):
 
     def setUp(self):
-        self.bs = BasicStatements()
+        self.bs = StubBasicFlow()
 
     def test_simple_if_true(self):
         self.bs.simple_if(True)
@@ -39,10 +39,10 @@ class TestBasicStatements(unittest.TestCase):
         self.bs.try_fail()
 
 
-class TestComplexStatements(unittest.TestCase):
+class TestStubComplexFlow(unittest.TestCase):
 
     def setUp(self):
-        self.cs = ComplexStatements()
+        self.cs = StubComplexFlow()
 
     def test_single_call_to_sut_bom_dia(self):
         hello = self.cs.hello(10)
@@ -70,10 +70,10 @@ class TestComplexStatements(unittest.TestCase):
         self.cs.func()
 
 
-class TestChangeStates(unittest.TestCase):
+class TestStubState(unittest.TestCase):
 
     def setUp(self):
-        self.states = ChangeStates()
+        self.states = StubState()
 
     def test_change_var_state(self):
         self.states.change_var_state()

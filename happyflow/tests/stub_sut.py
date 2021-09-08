@@ -1,4 +1,4 @@
-class BasicStatements:
+class StubBasicFlow:
 
     def simple_if(self, enter=True):
         if enter:
@@ -28,7 +28,7 @@ class BasicStatements:
             a = 123
 
 
-class ComplexStatements:
+class StubComplexFlow:
 
     def hello(self, hour):
         #intentional nested ifs
@@ -53,7 +53,7 @@ class ComplexStatements:
         a = 3
 
 
-class ChangeStates:
+class StubState:
 
     def change_var_state(self):
         a = 1
