@@ -42,3 +42,7 @@ def find_full_func_name(frame):
     if class_name:
         return f'{module_name}.{class_name}.{function_name}'
     return f'{module_name}.{function_name}'
+
+
+def line_intersection(lines, other_lines):
+    return sorted(list(set(lines).intersection(other_lines)))

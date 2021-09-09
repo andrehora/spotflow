@@ -1,4 +1,5 @@
 import trace
+from happyflow.utils import line_intersection
 
 
 class SUT:
@@ -9,16 +10,17 @@ class SUT:
     def composite_flows(self, trace_result):
         return trace_result.composite_sut_flows(self)
 
-    def base_flows(self, trace_result):
-        return trace_result.base_sut_flows(self)
+    def atomic_flows(self, trace_result):
+        return trace_result.atomic_sut_flows(self)
 
     def executable_lines(self):
         executable_lines = trace._find_executable_linenos(self.filename)
+        # remove the SUT definition, eg, def, class
         return self.intersection(executable_lines)[1:]
 
     def intersection(self, other_lines):
         my_lines = range(self.start_line, self.end_line + 1)
-        return sorted(list(set(my_lines).intersection(other_lines)))
+        return line_intersection(my_lines, other_lines)
 
     def loc(self):
         return self.end_line - self.start_line
@@ -44,9 +46,19 @@ class SUTClass(SUT):
     def add_method(self, method):
         self.methods.append(method)
 
-    def run(self, result):
-        for method in self.methods:
-            method.run(result)
+    # def composite_flows(self, trace_result):
+    #     flows = []
+    #     for method in self.methods:
+    #         flow = method.composite_flows(trace_result)
+    #         flows.append(flow)
+    #     return flows
+    #
+    # def atomic_flows(self, trace_result):
+    #     flows = []
+    #     for method in self.methods:
+    #         flow = method.atomic_flows(trace_result)
+    #         flows.append(flow)
+    #     return flows
 
     def full_name(self):
         return f'{self.module_name}.{self.name}'
@@ -60,9 +72,6 @@ class SUTMethod(SUT):
         self.clazz = clazz
         self.filename = filename
 
-    def run(self, result):
-        pass
-
     def full_name(self):
         return f'{self.module_name}.{self.clazz.name}.{self.name}'
 
@@ -73,9 +82,6 @@ class SUTFunction(SUT):
         self.module_name = module_name
         self.name = name
         self.filename = filename
-
-    def run(self, result):
-        pass
 
     def full_name(self):
         return f'{self.module_name}.{self.name}'

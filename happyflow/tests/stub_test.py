@@ -8,10 +8,10 @@ class TestFoo(unittest.TestCase):
         pass
 
 
-class TestStubSimpleFlow(unittest.TestCase):
+class TestSimpleFlow(unittest.TestCase):
 
     def setUp(self):
-        self.bs = StubSimpleFlow()
+        self.bs = SimpleFlow()
 
     def test_simple_if_true(self):
         self.bs.simple_if(True)
@@ -39,41 +39,33 @@ class TestStubSimpleFlow(unittest.TestCase):
         self.bs.try_fail()
 
 
-class TestStubComplexFlow(unittest.TestCase):
+class TestComplexFlow(unittest.TestCase):
 
     def setUp(self):
-        self.cs = StubComplexFlow()
+        self.cs = ComplexFlow()
 
     def test_single_call_to_sut_bom_dia(self):
-        hello = self.cs.hello(10)
-        self.assertEqual(hello, 'bom dia')
+        self.cs.hello(10)
 
     def test_single_call_to_sut_boa_tarde(self):
-        hello = self.cs.hello(14)
-        self.assertEqual(hello, 'boa tarde')
+        self.cs.hello(14)
 
     def test_single_call_to_sut_boa_noite(self):
-        hello = self.cs.hello(20)
-        self.assertEqual(hello, 'boa noite')
+        self.cs.hello(20)
 
     def test_multiple_call_to_sut(self):
-        hello = self.cs.hello(10)
-        self.assertEqual(hello, 'bom dia')
-
-        hello = self.cs.hello(14)
-        self.assertEqual(hello, 'boa tarde')
-
-        hello = self.cs.hello(20)
-        self.assertEqual(hello, 'boa noite')
+        self.cs.hello(10)
+        self.cs.hello(14)
+        self.cs.hello(20)
 
     def test_sut_call_sut(self):
         self.cs.func()
 
 
-class TestStubState(unittest.TestCase):
+class TestChangeState(unittest.TestCase):
 
     def setUp(self):
-        self.states = StubState()
+        self.states = ChangeState()
 
     def test_change_var_state(self):
         self.states.change_var_state()
@@ -101,4 +93,3 @@ class TestStubState(unittest.TestCase):
 
     def test_init(self):
         pass
-        # self.states.change_instance_var()

@@ -4,16 +4,16 @@ from happyflow.runner import TestRunner
 from happyflow import sut_tracer
 
 
-class TestState(unittest.TestCase):
+class TestChangeState(unittest.TestCase):
 
     def test_change_var_state(self):
         sut_tracer.COLLECT_STATE = True
-        sut_tracer.SUT_NAME = 'stub_sut.StubState.change_var_state'
+        sut_tracer.SUT_NAME = 'stub_sut.ChangeState.change_var_state'
 
-        trace_result = TestRunner.trace('stub_test.TestStubState.test_change_var_state')
+        trace_result = TestRunner.trace('stub_test.TestChangeState.test_change_var_state')
         sut = SUTLoader.find_sut(sut_tracer.SUT_NAME)
 
-        flow_result = sut.base_flows(trace_result)
+        flow_result = sut.atomic_flows(trace_result)
         self.assertEqual(flow_result.number_of_tests(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [59, 60, 61])
         self.assertEqual(flow_result.sut_name, 'change_var_state')
@@ -30,12 +30,12 @@ class TestState(unittest.TestCase):
 
     def test_change_arg_state(self):
         sut_tracer.COLLECT_STATE = True
-        sut_tracer.SUT_NAME = 'stub_sut.StubState.change_arg_state'
+        sut_tracer.SUT_NAME = 'stub_sut.ChangeState.change_arg_state'
 
-        trace_result = TestRunner.trace('stub_test.TestStubState.test_change_arg_state')
+        trace_result = TestRunner.trace('stub_test.TestChangeState.test_change_arg_state')
         sut = SUTLoader.find_sut(sut_tracer.SUT_NAME)
 
-        flow_result = sut.base_flows(trace_result)
+        flow_result = sut.atomic_flows(trace_result)
         self.assertEqual(flow_result.number_of_tests(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [64, 65, 66])
         self.assertEqual(flow_result.sut_name, 'change_arg_state')
@@ -50,12 +50,12 @@ class TestState(unittest.TestCase):
 
     def test_change_var_state_with_conditional_true(self):
         sut_tracer.COLLECT_STATE = True
-        sut_tracer.SUT_NAME = 'stub_sut.StubState.change_var_state_with_conditional'
+        sut_tracer.SUT_NAME = 'stub_sut.ChangeState.change_var_state_with_conditional'
 
-        trace_result = TestRunner.trace('stub_test.TestStubState.test_change_var_state_with_conditional_true')
+        trace_result = TestRunner.trace('stub_test.TestChangeState.test_change_var_state_with_conditional_true')
         sut = SUTLoader.find_sut(sut_tracer.SUT_NAME)
 
-        flow_result = sut.base_flows(trace_result)
+        flow_result = sut.atomic_flows(trace_result)
         self.assertEqual(flow_result.number_of_tests(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [69, 70, 71])
         self.assertEqual(flow_result.sut_name, 'change_var_state_with_conditional')
@@ -72,12 +72,12 @@ class TestState(unittest.TestCase):
 
     def test_change_var_state_with_conditional_false(self):
         sut_tracer.COLLECT_STATE = True
-        sut_tracer.SUT_NAME = 'stub_sut.StubState.change_var_state_with_conditional'
+        sut_tracer.SUT_NAME = 'stub_sut.ChangeState.change_var_state_with_conditional'
 
-        trace_result = TestRunner.trace('stub_test.TestStubState.test_change_var_state_with_conditional_false')
+        trace_result = TestRunner.trace('stub_test.TestChangeState.test_change_var_state_with_conditional_false')
         sut = SUTLoader.find_sut(sut_tracer.SUT_NAME)
 
-        flow_result = sut.base_flows(trace_result)
+        flow_result = sut.atomic_flows(trace_result)
         self.assertEqual(flow_result.number_of_tests(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [69, 70, 73])
         self.assertEqual(flow_result.sut_name, 'change_var_state_with_conditional')
@@ -94,12 +94,12 @@ class TestState(unittest.TestCase):
 
     def test_change_multiple_vars_states(self):
         sut_tracer.COLLECT_STATE = True
-        sut_tracer.SUT_NAME = 'stub_sut.StubState.change_multiple_vars_states'
+        sut_tracer.SUT_NAME = 'stub_sut.ChangeState.change_multiple_vars_states'
 
-        trace_result = TestRunner.trace('stub_test.TestStubState.test_change_multiple_vars_states')
+        trace_result = TestRunner.trace('stub_test.TestChangeState.test_change_multiple_vars_states')
         sut = SUTLoader.find_sut(sut_tracer.SUT_NAME)
 
-        flow_result = sut.base_flows(trace_result)
+        flow_result = sut.atomic_flows(trace_result)
         self.assertEqual(flow_result.number_of_tests(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [76, 77, 79, 80])
         self.assertEqual(flow_result.sut_name, 'change_multiple_vars_states')
@@ -117,12 +117,12 @@ class TestState(unittest.TestCase):
 
     def test_change_list_state(self):
         sut_tracer.COLLECT_STATE = True
-        sut_tracer.SUT_NAME = 'stub_sut.StubState.change_list_state'
+        sut_tracer.SUT_NAME = 'stub_sut.ChangeState.change_list_state'
 
-        trace_result = TestRunner.trace('stub_test.TestStubState.test_change_list_state')
+        trace_result = TestRunner.trace('stub_test.TestChangeState.test_change_list_state')
         sut = SUTLoader.find_sut(sut_tracer.SUT_NAME)
 
-        flow_result = sut.base_flows(trace_result)
+        flow_result = sut.atomic_flows(trace_result)
         self.assertEqual(flow_result.number_of_tests(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [83, 84, 85, 86, 87, 88, 89])
         self.assertEqual(flow_result.sut_name, 'change_list_state')
@@ -140,12 +140,12 @@ class TestState(unittest.TestCase):
 
     def test_change_var_state_with_loop(self):
         sut_tracer.COLLECT_STATE = True
-        sut_tracer.SUT_NAME = 'stub_sut.StubState.change_var_state_with_loop'
+        sut_tracer.SUT_NAME = 'stub_sut.ChangeState.change_var_state_with_loop'
 
-        trace_result = TestRunner.trace('stub_test.TestStubState.test_change_var_state_with_loop')
+        trace_result = TestRunner.trace('stub_test.TestChangeState.test_change_var_state_with_loop')
         sut = SUTLoader.find_sut(sut_tracer.SUT_NAME)
 
-        flow_result = sut.base_flows(trace_result)
+        flow_result = sut.atomic_flows(trace_result)
         self.assertEqual(flow_result.number_of_tests(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [92, 93, 94, 93, 94, 93, 94, 93, 94, 93])
         self.assertEqual(flow_result.flows[0].distinct_lines(), [92, 93, 94])
@@ -173,12 +173,12 @@ class TestState(unittest.TestCase):
 
     def test_change_instance_var(self):
         sut_tracer.COLLECT_STATE = True
-        sut_tracer.SUT_NAME = 'stub_sut.StubState.change_instance_var'
+        sut_tracer.SUT_NAME = 'stub_sut.ChangeState.change_instance_var'
 
-        trace_result = TestRunner.trace('stub_test.TestStubState.test_change_instance_var')
+        trace_result = TestRunner.trace('stub_test.TestChangeState.test_change_instance_var')
         sut = SUTLoader.find_sut(sut_tracer.SUT_NAME)
 
-        flow_result = sut.base_flows(trace_result)
+        flow_result = sut.atomic_flows(trace_result)
         self.assertEqual(flow_result.number_of_tests(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [100, 101])
         self.assertEqual(flow_result.sut_name, 'change_instance_var')
@@ -199,12 +199,12 @@ class TestState(unittest.TestCase):
 
     def test_init_with_instance_var(self):
         sut_tracer.COLLECT_STATE = True
-        sut_tracer.SUT_NAME = 'stub_sut.StubState.__init__'
+        sut_tracer.SUT_NAME = 'stub_sut.ChangeState.__init__'
 
-        trace_result = TestRunner.trace('stub_test.TestStubState.test_init')
+        trace_result = TestRunner.trace('stub_test.TestChangeState.test_init')
         sut = SUTLoader.find_sut(sut_tracer.SUT_NAME)
 
-        flow_result = sut.base_flows(trace_result)
+        flow_result = sut.atomic_flows(trace_result)
         self.assertEqual(flow_result.number_of_tests(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [97])
         self.assertEqual(flow_result.sut_name, '__init__')

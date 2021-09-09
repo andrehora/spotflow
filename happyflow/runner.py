@@ -74,7 +74,7 @@ class TestResult:
                     result.add(trace.test_name, sut_flow)
         return result
 
-    def base_sut_flows(self, sut):
+    def atomic_sut_flows(self, sut):
         if not sut:
             return None
 
