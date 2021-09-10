@@ -3,6 +3,10 @@ from happyflow.utils import line_intersection
 
 
 class SUT:
+    pass
+
+
+class SUTSourced:
     start_line = 0
     end_line = 0
     filename = ''
@@ -35,7 +39,11 @@ class SUT:
         return self.full_name()
 
 
-class SUTClass(SUT):
+class SUTModule(SUT):
+    pass
+
+
+class SUTClass(SUTSourced):
 
     def __init__(self, module_name, name, filename=''):
         self.module_name = module_name
@@ -64,7 +72,7 @@ class SUTClass(SUT):
         return f'{self.module_name}.{self.name}'
 
 
-class SUTMethod(SUT):
+class SUTMethod(SUTSourced):
 
     def __init__(self, module_name, name, clazz, filename=''):
         self.module_name = module_name
@@ -76,7 +84,7 @@ class SUTMethod(SUT):
         return f'{self.module_name}.{self.clazz.name}.{self.name}'
 
 
-class SUTFunction(SUT):
+class SUTFunction(SUTSourced):
 
     def __init__(self, module_name, name, filename=''):
         self.module_name = module_name

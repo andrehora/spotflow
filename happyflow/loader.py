@@ -105,4 +105,9 @@ class UnittestFramework:
 
 
 class PyTestFramework:
-    pass
+
+    def find_tests(self):
+        pass
+
+    def run_test(self):
+        pass

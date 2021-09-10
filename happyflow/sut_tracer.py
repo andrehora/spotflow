@@ -70,7 +70,7 @@ def collect_flow_and_state(frame, data_type, test_name, sut_full_name, why):
 
     entity_name = find_full_func_name(frame)
 
-    if entity_name.startswith(sut_full_name):
+    if entity_name and sut_full_name and entity_name.startswith(sut_full_name):
         if entity_name not in all_sut_flows:
             all_sut_flows[entity_name] = []
 

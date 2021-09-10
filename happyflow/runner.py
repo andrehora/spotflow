@@ -26,11 +26,11 @@ class TestRunner:
         tracer = sut_tracer.Trace2(count=1, trace=1, countfuncs=0, countcallers=0,
                                    test_name=test_name, sut_full_name=self.sut_full_name)
 
-        try:
-            tracer.runfunc(func)
-            print('ok', test)
-        except:
-            print('fail', test)
+        # try:
+        tracer.runfunc(func)
+            # print('ok', test)
+        # except:
+            # print('fail', test)
 
         result = tracer.results()
         return TestTrace(test_name, result.counts, self.project_folder)
