@@ -7,11 +7,11 @@ class SUT:
     end_line = 0
     filename = ''
 
-    def composite_flows(self, trace_result):
-        return trace_result.composite_sut_flows(self)
+    def global_flows(self, trace_result):
+        return trace_result.global_sut_flows(self)
 
-    def atomic_flows(self, trace_result):
-        return trace_result.atomic_sut_flows(self)
+    def local_flows(self, trace_result):
+        return trace_result.local_sut_flows(self)
 
     def executable_lines(self):
         executable_lines = trace._find_executable_linenos(self.filename)

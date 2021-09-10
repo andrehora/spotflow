@@ -7,17 +7,18 @@ from happyflow.sut_model import SUTStateResult
 class Trace2(trace.Trace):
     def __init__(self, count=1, trace=1, countfuncs=0, countcallers=0,
                  ignoremods=(), ignoredirs=(), infile=None, outfile=None,
-                 timing=False, test_name=None):
+                 timing=False, test_name=None, sut_full_name=None):
 
         super().__init__(count, trace, countfuncs, countcallers, ignoremods, ignoredirs, infile, outfile, timing)
         self.test_name = test_name
+        self.sut_full_name = sut_full_name
 
     def globaltrace_lt(self, frame, why, arg):
 
         if why == 'call':
             code = frame.f_code
 
-            collect_flow_and_state(frame, 'global', self.test_name, why)
+            collect_flow_and_state(frame, 'global', self.test_name, self.sut_full_name, why)
 
             filename = frame.f_globals.get('__file__', None)
             if filename:
@@ -39,7 +40,7 @@ class Trace2(trace.Trace):
         if why == "line" or why == 'return':
 
             # CHANGE
-            collect_flow_and_state(frame, 'local', self.test_name, why)
+            collect_flow_and_state(frame, 'local', self.test_name, self.sut_full_name, why)
 
             # record the file name and line number of every trace
             filename = frame.f_code.co_filename
@@ -55,10 +56,8 @@ class Trace2(trace.Trace):
         return self.localtrace
 
 
-SUT_NAME = ''
 all_sut_flows = {}
 all_sut_states = {}
-COLLECT_STATE = False
 
 
 def clean_inspection():
@@ -67,21 +66,17 @@ def clean_inspection():
     all_sut_states = {}
 
 
-def collect_flow_and_state(frame, data_type, test_name, why):
+def collect_flow_and_state(frame, data_type, test_name, sut_full_name, why):
 
     entity_name = find_full_func_name(frame)
 
-    if entity_name.startswith(SUT_NAME):
+    if entity_name.startswith(sut_full_name):
         if entity_name not in all_sut_flows:
             all_sut_flows[entity_name] = []
 
         if data_type == 'global':
             sut_flows = all_sut_flows[entity_name]
-
-            state = None
-            if COLLECT_STATE:
-                state = SUTStateResult(entity_name)
-
+            state = SUTStateResult(entity_name)
             sut_flows.append((test_name, [], state))
 
         if data_type == 'local':
@@ -94,9 +89,9 @@ def collect_flow_and_state(frame, data_type, test_name, why):
                 last_flow.append(lineno)
 
             if last_state_result:
-
                 argvalues = inspect.getargvalues(frame)
-
                 for argvalue in argvalues.locals:
                     value = copy.copy(argvalues.locals[argvalue])
                     last_state_result.add(name=argvalue, value=value, line=lineno)
+
+

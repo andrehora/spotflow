@@ -10,6 +10,7 @@ class TestRunner:
         self.testing_framework_class = testing_framework_class
         self.project_folder = project_folder
         self.result = TestResult()
+        self.sut_full_name = None
 
     def run(self, tests):
         for test in tests:
@@ -22,7 +23,8 @@ class TestRunner:
         func = testing_framework.run_test(test)
         test_name = testing_framework.get_test_name(test)
 
-        tracer = sut_tracer.Trace2(count=1, trace=1, countfuncs=0, countcallers=0, test_name=test_name)
+        tracer = sut_tracer.Trace2(count=1, trace=1, countfuncs=0, countcallers=0,
+                                   test_name=test_name, sut_full_name=self.sut_full_name)
 
         try:
             tracer.runfunc(func)
@@ -35,9 +37,10 @@ class TestRunner:
 
 
     @staticmethod
-    def trace(pattern='test*.py'):
+    def trace(pattern='test*.py', sut_full_name=None):
         tests = TestLoader().find_tests(pattern)
         runner = TestRunner()
+        runner.sut_full_name = sut_full_name
         runner.run(tests)
         return runner.result
 
@@ -60,7 +63,7 @@ class TestResult:
                 self.sut_and_tests[sut] = self.sut_and_tests.get(sut, [])
                 self.sut_and_tests[sut].append(trace.test_name)
 
-    def composite_sut_flows(self, sut):
+    def global_sut_flows(self, sut):
         if not sut:
             return None
 
@@ -74,18 +77,18 @@ class TestResult:
                     result.add(trace.test_name, sut_flow)
         return result
 
-    def atomic_sut_flows(self, sut):
+    def local_sut_flows(self, sut):
         if not sut:
             return None
-
         result = SUTFlowResult(sut)
-        sut_fullname = sut.full_name()
+        target_sut_full_name = sut.full_name()
 
-        if sut_fullname in self.all_sut_flows:
-            target_flows = self.all_sut_flows[sut_fullname]
-            for test_name, sut_flow, state_result in target_flows:
-                if len(sut_flow) > 0:
-                    result.add(test_name, sut_flow, state_result)
+        for candidate_sut_full_name in self.all_sut_flows:
+            if candidate_sut_full_name.startswith(target_sut_full_name):
+                target_flows = self.all_sut_flows[candidate_sut_full_name]
+                for test_name, sut_flow, state_result in target_flows:
+                    if len(sut_flow) > 0:
+                        result.add(test_name, sut_flow, state_result)
         return result
 
 
