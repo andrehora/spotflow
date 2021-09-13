@@ -3,13 +3,15 @@ from happyflow.utils import line_intersection
 
 
 class SUT:
-    pass
+
+    def __init__(self, name, filename):
+        self.name = name
+        self.filename = filename
 
 
-class SUTSourced:
+class SUTSourced(SUT):
     start_line = 0
     end_line = 0
-    filename = ''
 
     def global_flows(self, trace_result):
         return trace_result.global_sut_flows(self)
@@ -46,9 +48,10 @@ class SUTModule(SUT):
 class SUTClass(SUTSourced):
 
     def __init__(self, module_name, name, filename=''):
+        super().__init__(name, filename)
         self.module_name = module_name
-        self.name = name
-        self.filename = filename
+        # self.name = name
+        # self.filename = filename
         self.methods = []
 
     def add_method(self, method):
@@ -75,10 +78,11 @@ class SUTClass(SUTSourced):
 class SUTMethod(SUTSourced):
 
     def __init__(self, module_name, name, clazz, filename=''):
+        super().__init__(name, filename)
         self.module_name = module_name
-        self.name = name
+        # self.name = name
         self.clazz = clazz
-        self.filename = filename
+        # self.filename = filename
 
     def full_name(self):
         return f'{self.module_name}.{self.clazz.name}.{self.name}'
@@ -87,9 +91,10 @@ class SUTMethod(SUTSourced):
 class SUTFunction(SUTSourced):
 
     def __init__(self, module_name, name, filename=''):
+        super().__init__(name, filename)
         self.module_name = module_name
-        self.name = name
-        self.filename = filename
+        # self.name = name
+        # self.filename = filename
 
     def full_name(self):
         return f'{self.module_name}.{self.name}'

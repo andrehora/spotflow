@@ -22,26 +22,26 @@ class TestTestRunner(unittest.TestCase):
 
         runner = TestRunner()
         runner.run(tests)
-        result = runner.result
+        result = runner.test_result
 
-        self.assertEqual(len(result.traces), 1)
+        self.assertEqual(len(result.global_traces), 1)
 
     def test_run_test_suite(self):
         tests = TestLoader().find_tests('stub_test.TestSimpleFlow')
 
         runner = TestRunner()
         runner.run(tests)
-        result = runner.result
+        result = runner.test_result
 
-        self.assertEqual(len(result.traces), 8)
+        self.assertEqual(len(result.global_traces), 8)
 
     def test_run_test_case_shortcut(self):
         result = TestRunner.trace('stub_test.TestSimpleFlow.test_simple_if_true')
-        self.assertEqual(len(result.traces), 1)
+        self.assertEqual(len(result.global_traces), 1)
 
     def test_run_test_suite_shortcut(self):
         result = TestRunner.trace('stub_test.TestSimpleFlow')
-        self.assertEqual(len(result.traces), 8)
+        self.assertEqual(len(result.global_traces), 8)
 
 
 class TestSUTLoader(unittest.TestCase):
@@ -125,7 +125,7 @@ class TestSUT(unittest.TestCase):
         self.assertEqual(m2.full_name(), 'm.c.m1')
 
     def test_loc(self):
-        sut = SUTSourced()
+        sut = SUTSourced('','')
         sut.start_line = 10
         sut.end_line = 20
 
