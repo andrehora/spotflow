@@ -11,7 +11,7 @@ class TraceRunner:
         self.func_finder_and_runner = func_finder_and_runner
         self.trace_result = TraceResult()
         self.local_trace_collector = TraceCollector()
-        self.sut_full_name = None
+        self.sut = None
 
     def run(self, funcs):
 
@@ -29,24 +29,24 @@ class TraceRunner:
         func = self.func_finder_and_runner.run_func(func_to_run)
 
         self.local_trace_collector.func_name = func_name
-        self.local_trace_collector.sut_full_name = self.sut_full_name
+        self.local_trace_collector.sut = self.sut
 
         tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.local_trace_collector)
 
-        try:
-            tracer.runfunc(func)
-            print('ok', func)
-        except:
-            print('fail', func)
+        # try:
+        tracer.runfunc(func)
+            # print('ok', func_name)
+        # except:
+        #     print('fail', func_name)
 
         coverage_results = tracer.results()
         return BasicTrace(func_name, coverage_results.counts)
 
     @staticmethod
-    def trace(pattern='test*.py', sut_full_name=None):
+    def trace(pattern='test*.py', sut=None):
         tests = TestLoader().find_tests(pattern)
         runner = TraceRunner()
-        runner.sut_full_name = sut_full_name
+        runner.sut = sut
         runner.run(tests)
         return runner.trace_result
 
@@ -73,13 +73,14 @@ class TraceResult:
 
         result = SUTFlowResult(sut)
 
-        for global_trace in self.global_traces:
-            run_files_and_lines = global_trace.run_files_and_lines
-            if sut.filename in run_files_and_lines:
-                lines = run_files_and_lines[sut.filename]
-                sut_flow = sut.intersection(lines)
-                if len(sut_flow) > 0:
-                    result.add(global_trace.test_name, sut_flow)
+        for base_sut in sut:
+            for global_trace in self.global_traces:
+                run_files_and_lines = global_trace.run_files_and_lines
+                if base_sut.filename in run_files_and_lines:
+                    lines = run_files_and_lines[base_sut.filename]
+                    sut_flow = base_sut.intersection(lines)
+                    if len(sut_flow) > 0:
+                        result.add(global_trace.test_name, sut_flow)
         return result
 
     def local_sut_flows(self, sut):
@@ -87,14 +88,15 @@ class TraceResult:
             return None
 
         result = SUTFlowResult(sut)
-        target_sut_full_name = sut.full_name()
 
-        for candidate_sut_full_name in self.local_traces:
-            if candidate_sut_full_name.startswith(target_sut_full_name):
-                target_flows = self.local_traces[candidate_sut_full_name]
-                for test_name, sut_flow, state_result in target_flows:
-                    if len(sut_flow) > 0:
-                        result.add(test_name, sut_flow, state_result)
+        for base_sut in sut:
+            target_sut_full_name = base_sut.full_name()
+            for candidate_sut_full_name in self.local_traces:
+                if candidate_sut_full_name == target_sut_full_name:
+                    target_flows = self.local_traces[candidate_sut_full_name]
+                    for test_name, sut_flow, state_result in target_flows:
+                        if len(sut_flow) > 0:
+                            result.add(test_name, sut_flow, state_result)
         return result
 
 
@@ -193,34 +195,39 @@ class TraceCollector:
 
     def __init__(self):
         self.func_name = None
-        self.sut_full_name = None
+        self.sut = None
         self.local_traces = {}
         # self.all_sut_states = {}
 
     def collect_flow_and_state(self, frame, data_type, why):
 
+        if not self.sut:
+            return
+
         entity_name = find_full_func_name(frame)
 
-        if entity_name and self.sut_full_name and entity_name.startswith(self.sut_full_name):
-            if entity_name not in self.local_traces:
-                self.local_traces[entity_name] = []
+        for base_sut in self.sut:
 
-            if data_type == 'global':
-                sut_flows = self.local_traces[entity_name]
-                state = SUTStateResult(entity_name)
-                sut_flows.append((self.func_name, [], state))
+            if entity_name and base_sut.full_name() and entity_name == base_sut.full_name():
+                if entity_name not in self.local_traces:
+                    self.local_traces[entity_name] = []
 
-            if data_type == 'local':
-                sut_flows = self.local_traces[entity_name]
-                # get the last flow and update it
-                test_name, last_flow, last_state_result = sut_flows[-1]
+                if data_type == 'global':
+                    sut_flows = self.local_traces[entity_name]
+                    state = SUTStateResult(entity_name)
+                    sut_flows.append((self.func_name, [], state))
 
-                lineno = frame.f_lineno
-                if why == 'line':
-                    last_flow.append(lineno)
+                if data_type == 'local':
+                    sut_flows = self.local_traces[entity_name]
+                    # get the last flow and update it
+                    test_name, last_flow, last_state_result = sut_flows[-1]
 
-                if last_state_result:
-                    argvalues = inspect.getargvalues(frame)
-                    for argvalue in argvalues.locals:
-                        value = copy.copy(argvalues.locals[argvalue])
-                        last_state_result.add(name=argvalue, value=value, line=lineno)
+                    lineno = frame.f_lineno
+                    if why == 'line':
+                        last_flow.append(lineno)
+
+                    if last_state_result:
+                        argvalues = inspect.getargvalues(frame)
+                        for argvalue in argvalues.locals:
+                            value = copy.copy(argvalues.locals[argvalue])
+                            last_state_result.add(name=argvalue, value=value, line=lineno)

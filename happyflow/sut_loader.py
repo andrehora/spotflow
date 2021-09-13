@@ -1,13 +1,13 @@
 import ast
 from happyflow.utils import *
-from happyflow.sut_model import SUTContainer
+from happyflow.sut_model import SUTResult
 
 
 class SUTLoader:
 
     def __init__(self, dir='.'):
         self.dir = dir
-        self.sut_container = SUTContainer()
+        self.sut_container = SUTResult()
 
     def load_sut(self):
         python_files = find_python_files(self.dir)

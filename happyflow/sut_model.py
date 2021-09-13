@@ -11,16 +11,53 @@ class SUT:
     def __str__(self):
         return self.full_name()
 
-
-class SUTSourceEntity(SUT):
-    start_line = 0
-    end_line = 0
-
     def global_flows(self, trace_result):
         return trace_result.global_sut_flows(self)
 
     def local_flows(self, trace_result):
         return trace_result.local_sut_flows(self)
+
+    def loc(self):
+        pass
+
+    def executable_lines(self):
+        pass
+
+
+class SUTContainerEntity(SUT):
+
+    def __init__(self, name, filename):
+        super().__init__(name, filename)
+        self.suts = []
+
+    def __iter__(self):
+        return iter(self.suts)
+
+    def add_sut(self, func_or_method):
+        self.suts.append(func_or_method)
+
+    def loc(self):
+        total_loc = 0
+        for sut in self.suts:
+            total_loc += sut.loc()
+        return total_loc
+
+    def executable_lines(self):
+        all_executable_lines = []
+        for sut in self.suts:
+            all_executable_lines.append(sut.executable_lines())
+        return all_executable_lines
+
+    def summary(self):
+        return f'{self.full_name()} (suts: {len(self.suts)})'
+
+
+class SUTSourceEntity(SUT):
+    start_line = 0
+    end_line = 0
+
+    def __iter__(self):
+        return iter([self])
 
     def executable_lines(self):
         executable_lines = trace._find_executable_linenos(self.filename)
@@ -34,35 +71,24 @@ class SUTSourceEntity(SUT):
     def loc(self):
         return self.end_line - self.start_line
 
-    def full_name(self):
-        pass
-
     def summary(self):
         return f'{self.full_name()} (lines: {self.start_line}-{self.end_line})'
 
 
-class SUTModule(SUT):
+class SUTModule(SUTContainerEntity):
 
     def __init__(self, name, filename=''):
         super().__init__(name, filename)
-        self.suts = []
-
-    def add_sut(self, func_or_method):
-        self.suts.append(func_or_method)
 
     def full_name(self):
         return f'{self.name}'
 
 
-class SUTClass(SUTSourceEntity):
+class SUTClass(SUTContainerEntity):
 
     def __init__(self, module_name, name, filename=''):
         super().__init__(name, filename)
         self.module_name = module_name
-        self.suts = []
-
-    def add_sut(self, method):
-        self.suts.append(method)
 
     def full_name(self):
         return f'{self.module_name}.{self.name}'
@@ -89,7 +115,7 @@ class SUTFunction(SUTSourceEntity):
         return f'{self.module_name}.{self.name}'
 
 
-class SUTContainer:
+class SUTResult:
 
     def __init__(self):
         self.suts = []
