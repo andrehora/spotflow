@@ -327,8 +327,8 @@ class TestGlobalFlowSUTClass(unittest.TestCase):
         trace_result = TraceRunner.trace('stub_test.TestComplexFlow', sut)
         flow_result = sut.global_flows(trace_result)
 
-        # self.assertEqual(flow_result.number_of_tests(), 5)
-        # self.assertEqual(len(flow_result.flows), 5)
+        self.assertEqual(flow_result.number_of_tests(), 8)
+        self.assertEqual(len(flow_result.flows), 8)
         self.assertEqual(flow_result.sut_name, 'ComplexFlow')
         self.assertIn('test_single_call_to_sut_bom_dia', flow_result.test_names)
         self.assertIn('test_single_call_to_sut_boa_tarde', flow_result.test_names)
@@ -337,7 +337,6 @@ class TestGlobalFlowSUTClass(unittest.TestCase):
         self.assertIn('test_sut_call_sut', flow_result.test_names)
 
 
-@unittest.skip
 class TestGlobalFlowSUTModule(unittest.TestCase):
 
     def test_sut_class_SimpleFlow(self):
@@ -348,7 +347,7 @@ class TestGlobalFlowSUTModule(unittest.TestCase):
 
         self.assertEqual(flow_result.number_of_tests(), 8)
         self.assertEqual(len(flow_result.flows), 8)
-        self.assertEqual(flow_result.sut_name, 'SimpleFlow')
+        self.assertEqual(flow_result.sut_name, 'stub_sut')
         self.assertIn('test_simple_if_true', flow_result.test_names)
         self.assertIn('test_simple_if_false', flow_result.test_names)
         self.assertIn('test_simple_if_else_true', flow_result.test_names)
@@ -364,8 +363,8 @@ class TestGlobalFlowSUTModule(unittest.TestCase):
         trace_result = TraceRunner.trace('stub_test.TestComplexFlow', sut)
         flow_result = sut.global_flows(trace_result)
 
-        self.assertEqual(flow_result.number_of_tests(), 5)
-        self.assertEqual(len(flow_result.flows), 5)
+        self.assertEqual(flow_result.number_of_tests(), 8)
+        self.assertEqual(len(flow_result.flows), 8)
         self.assertEqual(flow_result.sut_name, 'ComplexFlow')
         self.assertIn('test_single_call_to_sut_bom_dia', flow_result.test_names)
         self.assertIn('test_single_call_to_sut_boa_tarde', flow_result.test_names)
@@ -408,3 +407,40 @@ class TestLocalFlowSUTClass(unittest.TestCase):
         self.assertIn('test_single_call_to_sut_boa_noite', flow_result.test_names)
         self.assertIn('test_multiple_call_to_sut', flow_result.test_names)
         self.assertIn('test_sut_call_sut', flow_result.test_names)
+
+
+class TestLocalFlowSUTModule(unittest.TestCase):
+
+    def test_sut_class_SimpleFlow(self):
+        sut = SUTLoader.find_sut('stub_sut')
+
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow', sut)
+        flow_result = sut.local_flows(trace_result)
+
+        self.assertEqual(flow_result.number_of_tests(), 9)
+        self.assertEqual(len(flow_result.flows), 9)
+        self.assertEqual(flow_result.sut_name, 'stub_sut')
+        self.assertIn('test_simple_if_true', flow_result.test_names)
+        self.assertIn('test_simple_if_false', flow_result.test_names)
+        self.assertIn('test_simple_if_else_true', flow_result.test_names)
+        self.assertIn('test_simple_if_else_false', flow_result.test_names)
+        self.assertIn('test_simple_if_else_true_and_false', flow_result.test_names)
+        self.assertIn('test_loop', flow_result.test_names)
+        self.assertIn('test_try_success', flow_result.test_names)
+        self.assertIn('test_try_fail', flow_result.test_names)
+
+    def test_sut_class_ComplexFlow(self):
+        sut = SUTLoader.find_sut('stub_sut')
+
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow', sut)
+        flow_result = sut.local_flows(trace_result)
+
+        self.assertEqual(flow_result.number_of_tests(), 10)
+        self.assertEqual(len(flow_result.flows), 10)
+        self.assertEqual(flow_result.sut_name, 'stub_sut')
+        self.assertIn('test_single_call_to_sut_bom_dia', flow_result.test_names)
+        self.assertIn('test_single_call_to_sut_boa_tarde', flow_result.test_names)
+        self.assertIn('test_single_call_to_sut_boa_noite', flow_result.test_names)
+        self.assertIn('test_multiple_call_to_sut', flow_result.test_names)
+        self.assertIn('test_sut_call_sut', flow_result.test_names)
+
