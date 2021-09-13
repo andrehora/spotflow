@@ -64,10 +64,6 @@ class TraceCollector:
         self.local_traces = {}
         # self.all_sut_states = {}
 
-    # def clean_inspection(self):
-    #     self.all_sut_flows = {}
-    #     self.all_sut_states = {}
-
     def collect_flow_and_state(self, frame, data_type, why):
 
         entity_name = find_full_func_name(frame)

@@ -16,7 +16,7 @@ class TestRunner:
 
         for test in tests:
             test_trace = self.run_test(test)
-            self.test_result.add(test_trace)
+            self.test_result.add_trace(test_trace)
 
         self.test_result.local_traces = self.local_trace_collector.local_traces
 
@@ -32,24 +32,21 @@ class TestRunner:
 
         tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.local_trace_collector)
 
-        # try:
-        tracer.runfunc(func)
-            # print('ok', test)
-        # except:
-            # print('fail', test)
+        try:
+            tracer.runfunc(func)
+            print('ok', test)
+        except:
+            print('fail', test)
 
         coverage_results = tracer.results()
-
         return TestTrace(test_name, coverage_results.counts)
 
     @staticmethod
     def trace(pattern='test*.py', sut_full_name=None):
         tests = TestLoader().find_tests(pattern)
-
         runner = TestRunner()
         runner.sut_full_name = sut_full_name
         runner.run(tests)
-
         return runner.test_result
 
 
@@ -59,9 +56,8 @@ class TestResult:
         self.global_traces = []
         # self.sut_and_tests = {}
         self.local_traces = []
-        # self.local_traces = sut_tracer.all_sut_flows
 
-    def add(self, trace):
+    def add_trace(self, trace):
         self.global_traces.append(trace)
 
     # def compute_sut_and_tests(self):
@@ -75,18 +71,20 @@ class TestResult:
             return None
 
         result = SUTFlowResult(sut)
-        for trace in self.global_traces:
-            run_files_and_lines = trace.run_files_and_lines
+
+        for global_trace in self.global_traces:
+            run_files_and_lines = global_trace.run_files_and_lines
             if sut.filename in run_files_and_lines:
                 lines = run_files_and_lines[sut.filename]
                 sut_flow = sut.intersection(lines)
                 if len(sut_flow) > 0:
-                    result.add(trace.test_name, sut_flow)
+                    result.add(global_trace.test_name, sut_flow)
         return result
 
     def local_sut_flows(self, sut):
         if not sut:
             return None
+
         result = SUTFlowResult(sut)
         target_sut_full_name = sut.full_name()
 
