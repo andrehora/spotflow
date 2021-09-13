@@ -1,6 +1,6 @@
 import unittest
-from happyflow.loader import SUTLoader
-from happyflow.runner import TestRunner
+from happyflow.sut_loader import SUTLoader
+from happyflow.tracer import TraceRunner
 
 
 class TestGlobalFlowSUTMethod(unittest.TestCase):
@@ -8,7 +8,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_run_simple_if(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow.simple_if')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_simple_if_true', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_simple_if_true', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -16,7 +16,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'simple_if')
         self.assertIn('test_simple_if_true', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_simple_if_false', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_simple_if_false', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -27,7 +27,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_run_simple_if_else(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow.simple_if_else')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_true_and_false', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_true_and_false', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -35,7 +35,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_true_and_false', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_true', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_true', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -43,7 +43,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_true', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_false', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_false', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -51,7 +51,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_false', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 3)
@@ -63,7 +63,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_run_loop(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow.loop')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_loop', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_loop', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -74,7 +74,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_run_try(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow.try_success')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_try_success', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_try_success', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -85,7 +85,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_run_try_fail(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow.try_fail')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_try_fail', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_try_fail', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -96,7 +96,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_single_call_to_sut(self):
         sut = SUTLoader.find_sut('stub_sut.ComplexFlow.hello')
 
-        trace_result = TestRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_bom_dia', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_bom_dia', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -104,7 +104,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'hello')
         self.assertIn('test_single_call_to_sut_bom_dia', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_boa_tarde', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_boa_tarde', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -112,7 +112,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'hello')
         self.assertIn('test_single_call_to_sut_boa_tarde', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_boa_noite', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_boa_noite', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -123,7 +123,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_multiple_call_to_sut(self):
         sut = SUTLoader.find_sut('stub_sut.ComplexFlow.hello')
 
-        trace_result = TestRunner.trace('stub_test.TestComplexFlow.test_multiple_call_to_sut', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow.test_multiple_call_to_sut', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -137,7 +137,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_run_simple_if(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow.simple_if')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_simple_if_true', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_simple_if_true', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -145,7 +145,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'simple_if')
         self.assertIn('test_simple_if_true', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_simple_if_false', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_simple_if_false', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -156,7 +156,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_run_simple_if_else(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow.simple_if_else')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_true_and_false', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_true_and_false', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 2)
@@ -165,7 +165,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_true_and_false', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_true', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_true', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -173,7 +173,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_true', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_false', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_simple_if_else_false', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -181,7 +181,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_false', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 4)
@@ -195,7 +195,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_run_loop(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow.loop')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_loop', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_loop', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -207,7 +207,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_run_try(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow.try_success')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_try_success', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_try_success', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -218,7 +218,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_run_try_fail(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow.try_fail')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow.test_try_fail', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow.test_try_fail', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -229,7 +229,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_single_call_to_sut(self):
         sut = SUTLoader.find_sut('stub_sut.ComplexFlow.hello')
 
-        trace_result = TestRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_bom_dia', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_bom_dia', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -237,7 +237,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'hello')
         self.assertIn('test_single_call_to_sut_bom_dia', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_boa_tarde', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_boa_tarde', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -245,7 +245,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.sut_name, 'hello')
         self.assertIn('test_single_call_to_sut_boa_tarde', flow_result.test_names)
 
-        trace_result = TestRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_boa_noite', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow.test_single_call_to_sut_boa_noite', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 1)
@@ -256,7 +256,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_multiple_call_to_sut(self):
         sut = SUTLoader.find_sut('stub_sut.ComplexFlow.hello')
 
-        trace_result = TestRunner.trace('stub_test.TestComplexFlow.test_multiple_call_to_sut', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow.test_multiple_call_to_sut', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 3)
@@ -268,7 +268,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
 
     def test_sut_call_sut(self):
         sut_monitor = 'stub_sut'
-        trace_result = TestRunner.trace('stub_test.TestComplexFlow.test_sut_call_sut', sut_monitor)
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow.test_sut_call_sut', sut_monitor)
 
         sut = SUTLoader.find_sut('stub_sut.ComplexFlow.func')
         flow_result = sut.local_flows(trace_result)
@@ -306,7 +306,7 @@ class TestGlobalFlowSUTClass(unittest.TestCase):
     def test_sut_class_SimpleFlow(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 8)
@@ -324,7 +324,7 @@ class TestGlobalFlowSUTClass(unittest.TestCase):
     def test_sut_class_ComplexFlow(self):
         sut = SUTLoader.find_sut('stub_sut.ComplexFlow')
 
-        trace_result = TestRunner.trace('stub_test.TestComplexFlow', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow', sut.full_name())
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 5)
@@ -342,7 +342,7 @@ class TestLocalFlowSUTClass(unittest.TestCase):
     def test_sut_class_SimpleFlow(self):
         sut = SUTLoader.find_sut('stub_sut.SimpleFlow')
 
-        trace_result = TestRunner.trace('stub_test.TestSimpleFlow', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestSimpleFlow', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 9)
@@ -360,7 +360,7 @@ class TestLocalFlowSUTClass(unittest.TestCase):
     def test_sut_class_ComplexFlow(self):
         sut = SUTLoader.find_sut('stub_sut.ComplexFlow')
 
-        trace_result = TestRunner.trace('stub_test.TestComplexFlow', sut.full_name())
+        trace_result = TraceRunner.trace('stub_test.TestComplexFlow', sut.full_name())
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_tests(), 10)

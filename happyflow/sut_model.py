@@ -8,8 +8,11 @@ class SUT:
         self.name = name
         self.filename = filename
 
+    def __str__(self):
+        return self.full_name()
 
-class SUTSourced(SUT):
+
+class SUTSourceEntity(SUT):
     start_line = 0
     end_line = 0
 
@@ -37,64 +40,50 @@ class SUTSourced(SUT):
     def summary(self):
         return f'{self.full_name()} (lines: {self.start_line}-{self.end_line})'
 
-    def __str__(self):
-        return self.full_name()
-
 
 class SUTModule(SUT):
-    pass
+
+    def __init__(self, name, filename=''):
+        super().__init__(name, filename)
+        self.suts = []
+
+    def add_sut(self, func_or_method):
+        self.suts.append(func_or_method)
+
+    def full_name(self):
+        return f'{self.name}'
 
 
-class SUTClass(SUTSourced):
+class SUTClass(SUTSourceEntity):
 
     def __init__(self, module_name, name, filename=''):
         super().__init__(name, filename)
         self.module_name = module_name
-        # self.name = name
-        # self.filename = filename
-        self.methods = []
+        self.suts = []
 
-    def add_method(self, method):
-        self.methods.append(method)
-
-    # def composite_flows(self, trace_result):
-    #     flows = []
-    #     for method in self.methods:
-    #         flow = method.composite_flows(trace_result)
-    #         flows.append(flow)
-    #     return flows
-    #
-    # def atomic_flows(self, trace_result):
-    #     flows = []
-    #     for method in self.methods:
-    #         flow = method.atomic_flows(trace_result)
-    #         flows.append(flow)
-    #     return flows
+    def add_sut(self, method):
+        self.suts.append(method)
 
     def full_name(self):
         return f'{self.module_name}.{self.name}'
 
 
-class SUTMethod(SUTSourced):
+class SUTMethod(SUTSourceEntity):
 
-    def __init__(self, module_name, name, clazz, filename=''):
+    def __init__(self, module_name, class_name, name, filename=''):
         super().__init__(name, filename)
         self.module_name = module_name
-        # self.name = name
-        self.clazz = clazz
-        # self.filename = filename
+        self.class_name = class_name
 
     def full_name(self):
-        return f'{self.module_name}.{self.clazz.name}.{self.name}'
+        return f'{self.module_name}.{self.class_name}.{self.name}'
 
 
-class SUTFunction(SUTSourced):
+class SUTFunction(SUTSourceEntity):
 
     def __init__(self, module_name, name, filename=''):
         super().__init__(name, filename)
         self.module_name = module_name
-        # self.name = name
-        # self.filename = filename
 
     def full_name(self):
         return f'{self.module_name}.{self.name}'
@@ -115,29 +104,42 @@ class SUTContainer:
     def get(self, sut_name):
         return self.suts_map[sut_name]
 
+    def add_module(self, module_name, filename):
+        m = SUTModule(module_name)
+        m.filename = filename
+        self.suts.append(m)
+        self.suts_map[str(m)] = m
+        return m
+
     def add_class(self, module_name, class_name, start_line, end_line, filename):
         c = SUTClass(module_name, class_name)
         c.start_line = start_line
         c.end_line = end_line
         c.filename = filename
-        self.suts.append(c)
         self.suts_map[str(c)] = c
         return c
 
-    def add_method(self, module_name, method_name, start_line, end_line, clazz, filename):
-        m = SUTMethod(module_name, method_name, clazz)
+    def add_method(self, module_name, method_name, start_line, end_line, clazz, module, filename):
+        m = SUTMethod(module_name, clazz.name, method_name)
         m.start_line = start_line
         m.end_line = end_line
         m.filename = filename
-        clazz.add_method(m)
+
+        clazz.add_sut(m)
+        module.add_sut(m)
+
+        self.suts.append(m)
         self.suts_map[str(m)] = m
         return m
 
-    def add_function(self, module_name, function_name, start_line, end_line, filename):
+    def add_function(self, module_name, function_name, start_line, end_line, module, filename):
         f = SUTFunction(module_name, function_name)
         f.start_line = start_line
         f.end_line = end_line
         f.filename = filename
+
+        module.add_sut(f)
+
         self.suts.append(f)
         self.suts_map[str(f)] = f
         return f
@@ -146,96 +148,5 @@ class SUTContainer:
         for sut in self.suts:
             sut.run(result)
 
-
-class SUTFlowResult:
-
-    def __init__(self, sut):
-        self.sut = sut
-        self.sut_name = sut.name
-        self.test_names = []
-        self.flows = []
-
-    def add(self, test_name, flow, state_result=None):
-        self.test_names.append(test_name)
-        flow = SUTFlow(test_name, flow, state_result)
-        self.flows.append(flow)
-
-    def number_of_tests(self):
-        return len(self.test_names)
-
-
-class SUTFlow:
-
-    def __init__(self, test_name, run_lines, state_result=None):
-        self.test_name = test_name
-        self.run_lines = run_lines
-        self.state_result = state_result
-
-    def __eq__(self, other):
-        return other == self.run_lines
-
-    def distinct_lines(self):
-        return sorted(list(set(self.run_lines)))
-
-
-class SUTStateResult:
-
-    def __init__(self, name):
-        self.sut_name = name
-        self.vars = {}
-
-    def add(self, name, value, line):
-        self.vars[name] = self.vars.get(name, SUTVarStateHistory(name, []))
-        self.vars[name].add(name, value, line)
-
-
-class SUTVarStateHistory:
-
-    def __init__(self, name, states):
-        self.name = name
-        self.states = states
-
-    def add(self, name, value, line):
-        state = SUTVarState(name, value, line)
-        self.states.append(state)
-
-    def first_last(self):
-        if len(self.states) == 1:
-            return self.states[0], self.states[0]
-        return self.states[0], self.states[-1]
-
-    def distinct_values_str(self):
-        str_values = {}
-        for state in self.states:
-            if str(state.value) not in str_values:
-                str_values[str(state.value)] = None
-        return str_values.keys()
-
-    def distinct_sequential_values(self):
-        distinct = []
-        b = None
-        for state in self.states:
-            if state.value != b:
-                distinct.append(state.value)
-            b = state.value
-        return distinct
-
-    def distinct_values(self):
-        str_values = {}
-        for state in self.states:
-            if state.value not in str_values:
-                str_values[state.value] = None
-        return str_values.keys()
-
-    def __str__(self):
-        return f'name: {self.name}, values: {len(self.states)}'
-
-
-class SUTVarState:
-
-    def __init__(self, name, value, line):
-        self.name = name
-        self.value = value
-        self.line = line
 
 

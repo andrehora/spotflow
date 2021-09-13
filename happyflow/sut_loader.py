@@ -1,5 +1,4 @@
 import ast
-import unittest
 from happyflow.utils import *
 from happyflow.sut_model import SUTContainer
 
@@ -34,6 +33,7 @@ class SUTVisitor(ast.NodeVisitor):
         self.sut = sut
         self.module_name = module_name
         self.filename = filename
+        self.module = self.sut.add_module(self.module_name, self.filename)
 
     def visit_Module(self, node):
         for element in node.body:
@@ -49,65 +49,8 @@ class SUTVisitor(ast.NodeVisitor):
         ast.NodeVisitor.generic_visit(self, node)
 
     def visit_function(self, node):
-        self.sut.add_function(self.module_name, node.name, node.lineno, node.end_lineno, self.filename)
+        self.sut.add_function(self.module_name, node.name, node.lineno, node.end_lineno, self.module, self.filename)
 
     def visit_method(self, node, clazz):
-        self.sut.add_method(self.module_name, node.name, node.lineno, node.end_lineno, clazz, self.filename)
+        self.sut.add_method(self.module_name, node.name, node.lineno, node.end_lineno, clazz, self.module, self.filename)
 
-
-class TestLoader:
-
-    def __init__(self, testing_framework='unittest'):
-        self.tests = []
-        self.testing_framework_class = UnittestFramework
-
-        if testing_framework == 'pytest':
-            self.testing_framework_class = PyTestFramework
-
-    def find_tests(self, pattern='test*.py'):
-        self.tests = self.testing_framework_class().find_tests(pattern)
-        return self.tests
-
-
-class UnittestFramework:
-
-    def find_tests(self, pattern):
-
-        loader = unittest.TestLoader()
-        # suite = loader.discover('.', pattern)
-        suite = loader.loadTestsFromName(pattern)
-
-        return self._find_test_methods(suite)
-
-    def _find_test_methods(self, suite):
-
-        def find(suite, test_methods):
-            if issubclass(suite.__class__, unittest.TestCase):
-                test_methods.append(suite)
-                return
-            for test in suite._tests:
-                find(test, test_methods)
-
-        test_methods = []
-        find(suite, test_methods)
-        return test_methods
-
-    def run_test(self, test):
-        runner = unittest.TextTestRunner()
-
-        def run():
-            runner.run(test)
-
-        return run
-
-    def get_test_name(self, test):
-        return test._testMethodName
-
-
-class PyTestFramework:
-
-    def find_tests(self):
-        pass
-
-    def run_test(self):
-        pass
