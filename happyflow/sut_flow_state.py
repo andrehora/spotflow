@@ -39,6 +39,16 @@ class SUTStateResult:
         self.vars[name] = self.vars.get(name, SUTVarStateHistory(name, []))
         self.vars[name].add(name, value, line)
 
+    def states_for_line(self, line_number):
+        states = []
+        for var in self.vars:
+            if var != 'self':
+                state_history = self.vars[var]
+                for state in state_history.states:
+                    if state.line == line_number:
+                        states.append(f'{state.name}={state.value}')
+        return states
+
 
 class SUTVarStateHistory:
 
@@ -88,3 +98,6 @@ class SUTVarState:
         self.name = name
         self.value = value
         self.line = line
+
+    def __str__(self):
+        return f'name: {self.name}, value: {self.value}, line: {self.line}'

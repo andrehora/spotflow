@@ -39,8 +39,8 @@ class TraceRunner:
         # except:
         #     print('fail', func_name)
 
-        coverage_results = tracer.results()
-        return BasicTrace(func_name, coverage_results.counts)
+        result = tracer.results()
+        return TraceCount(func_name, result.counts)
 
     @staticmethod
     def trace(pattern='test*.py', sut=None):
@@ -100,14 +100,13 @@ class TraceResult:
         return result
 
 
-class BasicTrace:
+class TraceCount:
 
     def __init__(self, test_name, counts):
         self.test_name = test_name
         self.counts = counts
-
         self.run_files_and_lines = self.find_run_files_and_lines()
-        self.run_funcs = []
+        # self.run_funcs = []
         # self.update_counts_with_executable_line()
 
     def find_run_files_and_lines(self):
@@ -119,24 +118,24 @@ class BasicTrace:
             result[filename].append(line_number)
         return result
 
-    def update_counts_with_executable_line(self):
-        for filename in self.run_files_and_lines:
-            executable_lines = trace._find_executable_linenos(filename)
-            for exec_line in executable_lines:
-                key = (filename, exec_line)
-                self.counts[key] = self.counts.get(key, 0)
-
-    def get_counts(self, filename, line_number):
-        return self.counts.get((filename, line_number), -1)
-
-    def annotate_file(self, filename):
-        with open(filename) as f:
-            content = f.readlines()
-            line_number = 0
-            for line_code in content:
-                line_number += 1
-                exec_count = self.get_counts(filename, line_number)
-                print(line_number, exec_count, line_code.rstrip())
+    # def update_counts_with_executable_line(self):
+    #     for filename in self.run_files_and_lines:
+    #         executable_lines = trace._find_executable_linenos(filename)
+    #         for exec_line in executable_lines:
+    #             key = (filename, exec_line)
+    #             self.counts[key] = self.counts.get(key, 0)
+    #
+    # def get_counts(self, filename, line_number):
+    #     return self.counts.get((filename, line_number), -1)
+    #
+    # def annotate_file(self, filename):
+    #     with open(filename) as f:
+    #         content = f.readlines()
+    #         line_number = 0
+    #         for line_code in content:
+    #             line_number += 1
+    #             exec_count = self.get_counts(filename, line_number)
+    #             print(line_number, exec_count, line_code.rstrip())
 
 
 class Trace2(trace.Trace):
@@ -176,6 +175,8 @@ class Trace2(trace.Trace):
 
             # CHANGE
             self.trace_collector.collect_flow_and_state(frame, 'local', why)
+
+        if why == "line":
 
             # record the file name and line number of every trace
             filename = frame.f_code.co_filename

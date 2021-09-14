@@ -14,11 +14,14 @@ class SUTLoader:
         for filename in python_files:
             module_code = open_file(filename)
             if module_code:
-                module_node = ast.parse(module_code)
-                module_name = find_module_name(filename)
+                try:
+                    module_node = ast.parse(module_code)
+                    module_name = find_module_name(filename)
 
-                visitor = SUTVisitor(self.sut_container, module_name, filename)
-                visitor.visit(module_node)
+                    visitor = SUTVisitor(self.sut_container, module_name, filename)
+                    visitor.visit(module_node)
+                except:
+                    pass
 
     @staticmethod
     def find_sut(sut_name, dir='.'):
