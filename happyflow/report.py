@@ -41,31 +41,36 @@ class Report:
 
     def sut_code_state(self):
 
-        flow = self.flow_result.flows[1]
+        flow = self.flow_result.flows[0]
 
         state_result = flow.state_result
         flow_lines = flow.run_lines
 
         with open(self.sut.filename) as f:
             content = f.readlines()
-            line_number = 0
+            current_line = 0
             print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
             for line_code in content:
-                line_number += 1
-                if self.sut.has_line(line_number):
+                past_line = current_line
+                current_line += 1
+                if self.sut.has_line(current_line):
 
-                    states = state_result.states_for_line(line_number)
+                    states = state_result.states_for_line(current_line)
+                    # states = state_result.state_diff_between_two_lines(current_line, past_line)
 
-                    if line_number in flow_lines:
-                        main_str = f'{line_number} {1} {line_code.rstrip()}'
-                    if line_number not in flow_lines:
-                        main_str = f'{line_number} {0} {line_code.rstrip()}'
-                    if not self.sut.line_is_executable(line_number):
-                        main_str = f'{line_number} {line_code.rstrip()}'
+                    if current_line in flow_lines:
+                        flag = '✅'
+                    if current_line not in flow_lines:
+                        flag = '❌'
+                    if not self.sut.line_is_executable(current_line):
+                        flag = ' '
 
-                    if self.sut.line_is_executable(line_number) and states:
+                    line_str = str(current_line).ljust(2)
+                    main_str = f'{line_str} {flag} {line_code.rstrip()}'
+
+                    if states:
                         main_str = main_str.ljust(50)
-                        print(main_str, '|=>', states)
+                        print(main_str, states)
                     else:
                         print(main_str)
 

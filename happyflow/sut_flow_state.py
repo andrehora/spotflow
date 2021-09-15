@@ -40,14 +40,28 @@ class SUTStateResult:
         self.vars[name].add(name, value, line)
 
     def states_for_line(self, line_number):
-        states = []
+        states = ''
         for var in self.vars:
             if var != 'self':
+                var_states = ''
                 state_history = self.vars[var]
                 for state in state_history.states:
                     if state.line == line_number:
-                        states.append(f'{state.name}={state.value}')
+                        if str(state) not in var_states:
+                            var_states += str(state) + ' '
+            if var_states:
+                var_states = f'➡️ {var_states}'
+                states += var_states
         return states
+
+    def state_diff_between_two_lines(self, line_number1, line_number2):
+        list1 = self.states_for_line(line_number1)
+        list2 = self.states_for_line(line_number2)
+        return self.diff(list1, list2)
+
+    def diff(self, list1, list2):
+        second = set(list2)
+        return [item for item in list1 if item not in second]
 
 
 class SUTVarStateHistory:
@@ -100,4 +114,4 @@ class SUTVarState:
         self.line = line
 
     def __str__(self):
-        return f'name: {self.name}, value: {self.value}, line: {self.line}'
+        return f'{self.name}={self.value}'
