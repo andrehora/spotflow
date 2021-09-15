@@ -41,7 +41,10 @@ class Report:
 
     def sut_code_state(self):
 
-        state_result = self.flow_result.flows[0].state_result
+        flow = self.flow_result.flows[1]
+
+        state_result = flow.state_result
+        flow_lines = flow.run_lines
 
         with open(self.sut.filename) as f:
             content = f.readlines()
@@ -53,10 +56,18 @@ class Report:
 
                     states = state_result.states_for_line(line_number)
 
-                    line_run_count = self._run_count_for_line(line_number)
-                    main_str = f'{line_number} {line_run_count} {line_code.rstrip()}'
-                    main_str = main_str.ljust(50)
-                    print(main_str, '|=>', states)
+                    if line_number in flow_lines:
+                        main_str = f'{line_number} {1} {line_code.rstrip()}'
+                    if line_number not in flow_lines:
+                        main_str = f'{line_number} {0} {line_code.rstrip()}'
+                    if not self.sut.line_is_executable(line_number):
+                        main_str = f'{line_number} {line_code.rstrip()}'
+
+                    if self.sut.line_is_executable(line_number) and states:
+                        main_str = main_str.ljust(50)
+                        print(main_str, '|=>', states)
+                    else:
+                        print(main_str)
 
     def _sut_common_flow(self, flow, msg):
 
@@ -89,6 +100,10 @@ class Report:
         return Counter(run_lines).most_common()[-1]
 
     def _run_count_for_line(self, line_number):
+
+        if not self.sut.line_is_executable(line_number):
+            return ''
+
         run_count = 0
         for flow in self.flow_result.flows:
             if line_number in flow.distinct_lines():

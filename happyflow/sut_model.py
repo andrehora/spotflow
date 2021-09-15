@@ -71,8 +71,11 @@ class SUTSourceEntity(SUT):
     def loc(self):
         return self.end_line - self.start_line
 
+    def line_is_executable(self, line):
+        return line in self.executable_lines()
+
     def has_line(self, line):
-        return line >= self.start_line and line <= self.end_line
+        return line in range(self.start_line, self.end_line + 1)
 
     def summary(self):
         return f'{self.full_name()} (lines: {self.start_line}-{self.end_line})'
