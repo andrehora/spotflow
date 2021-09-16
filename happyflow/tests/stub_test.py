@@ -93,3 +93,52 @@ class TestChangeState(unittest.TestCase):
 
     def test_init(self):
         pass
+
+
+class TestReturnValue(unittest.TestCase):
+
+    def setUp(self):
+        self.ret = ReturnValue()
+
+    def test_simple_return_local(self):
+        return_value = ReturnValue()
+        return_value.simple_return()
+
+    def test_simple_return_global(self):
+        self.ret.simple_return()
+
+    def test_change_return_1(self):
+        self.ret.change_return_1()
+
+    def test_change_return_2(self):
+        self.ret.change_return_2()
+
+    def test_change_return_3(self):
+        self.ret.change_return_3()
+
+    def test_change_return_4(self):
+        self.ret.change_return_4()
+
+    def test_change_return_5(self):
+        self.ret.change_return_5()
+
+    def test_multiple_return_true(self):
+        self.ret.multiple_return(True)
+
+    def test_multiple_return_false(self):
+        self.ret.multiple_return(False)
+
+    def test_change_attribute_1(self):
+        self.ret.change_attribute_1()
+
+    def test_change_attribute_2(self):
+        self.ret.change_attribute_2()
+
+    def test_change_attribute_3(self):
+        self.ret.change_attribute_3()
+
+    def test_change_obj_1(self):
+        self.ret.change_obj_1()
+
+    def test_change_obj_2(self):
+        self.ret.change_obj_2()

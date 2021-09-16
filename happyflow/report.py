@@ -38,8 +38,7 @@ class Report:
         flow = self.least_common_flow()
         self._sut_common_flow(flow, 'Least')
 
-
-    def sut_code_state(self):
+    def sut_code_state(self, state_summary = False):
 
         flow = self.flow_result.flows[0]
 
@@ -47,32 +46,47 @@ class Report:
         flow_lines = flow.run_lines
 
         with open(self.sut.filename) as f:
+
+            if state_summary:
+                self.show_state_summary(state_result)
+            print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+
             content = f.readlines()
             current_line = 0
-            print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
             for line_code in content:
                 past_line = current_line
                 current_line += 1
                 if self.sut.has_line(current_line):
 
-                    states = state_result.states_for_line(current_line)
-                    # states = state_result.state_diff_between_two_lines(current_line, past_line)
+                    # states = state_result.states_for_line(current_line)
+                    states = state_result.state_diff_between_two_lines(current_line, past_line)
 
                     if current_line in flow_lines:
-                        flag = '✅'
+                        is_run = '✅'
                     if current_line not in flow_lines:
-                        flag = '❌'
+                        is_run = '❌'
                     if not self.sut.line_is_executable(current_line):
-                        flag = ' '
+                        is_run = ''
 
-                    line_str = str(current_line).ljust(2)
-                    main_str = f'{line_str} {flag} {line_code.rstrip()}'
+                    line_number_str = str(current_line).ljust(2)
+                    code_str = f'{line_number_str} {is_run} {line_code.rstrip()}'
 
                     if states:
-                        main_str = main_str.ljust(50)
-                        print(main_str, states)
+                        code_str = code_str.ljust(50)
+                        separator = '🔸 '
+                        states_str = f'{separator}{separator.join(states)}'
+                        print(code_str, states_str)
                     else:
-                        print(main_str)
+                        print(code_str)
+
+    def show_state_summary(self, state_result):
+        print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+        for var in state_result.vars:
+            if var != 'self':
+                state_history = state_result.vars[var]
+                values = ' -> '.join(state_history.distinct_sequential_values())
+                var_summary = f'🔸 {var}: {values}'
+                print(var_summary)
 
     def _sut_common_flow(self, flow, msg):
 

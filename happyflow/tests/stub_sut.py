@@ -105,3 +105,89 @@ def function_with_3_lines():
     a = 123
     a = 123
     a = 123
+
+
+class Calculator:
+
+    def __init__(self, n=0):
+        self.total = n
+
+    def add(self, n):
+        self.total += n
+
+    def subtract(self, n):
+        self.total -= n
+
+    def __hash__(self):
+        return self.total
+
+
+class ReturnValue:
+
+    def __init__(self):
+        self.n = 0
+        self.str = ''
+        self.list = []
+
+    def simple_return(self):
+        return 100
+
+    def change_return_1(self):
+        a = 1
+        b = 2
+        return a + b
+
+    def change_return_2(self):
+        a = 1
+        b = 2
+        return a + b + 1
+
+    def change_return_3(self):
+        a = 'a'
+        l = 'l'
+        return f'{a} and {l}'
+
+    def change_return_4(self):
+        a = []
+        a.append(1)
+        a.append(2)
+        a.append(3)
+        return sum(a)
+
+    def change_return_5(self):
+        result = 0
+        for each in range(1,5):
+            result += each
+        return result
+
+    def multiple_return(self, enter=True):
+        if enter:
+            return 'enter is true'
+        return 'enter is false'
+
+    def change_attribute_1(self):
+        self.n = 100
+        return self.n + 1
+
+    def change_attribute_2(self):
+        self.str = 'FOO'
+        return self.str.lower()
+
+    def change_attribute_2(self):
+        self.list = [1, 2, 3, 4, 5]
+        return len(self.list)
+
+    def change_obj_1(self):
+        calc = Calculator()
+        calc.add(5)
+        calc.add(5)
+        calc.subtract(1)
+        return calc.total
+
+    def change_obj_2(self):
+        calc = Calculator()
+        calc.add(5)
+        calc.add(5)
+        calc.subtract(1)
+        return calc
+

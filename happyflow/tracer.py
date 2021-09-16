@@ -207,6 +207,16 @@ class TraceCollector:
 
         entity_name = find_full_func_name(frame)
 
+        # print(entity_name)
+
+        if why == 'return' and entity_name == 'stub_sut.ReturnValue.simple_return':
+            # print(frame.f_back.f_locals['self'].ret.simple_return())
+            print(frame.f_code)
+            print(frame.f_lineno)
+
+            print(frame.f_back.f_locals)
+            print(frame.f_back.f_lineno)
+
         for base_sut in self.sut:
 
             if entity_name and base_sut.full_name() and entity_name == base_sut.full_name():
