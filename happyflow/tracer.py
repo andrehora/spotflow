@@ -214,6 +214,7 @@ class TraceCollector:
             print(frame.f_code)
             print(frame.f_lineno)
 
+
             print(frame.f_back.f_locals)
             print(frame.f_back.f_lineno)
 
