@@ -118,8 +118,13 @@ class Calculator:
     def subtract(self, n):
         self.total -= n
 
-    def __hash__(self):
-        return self.total
+    def __str__(self):
+        return f'Calc:{self.total}'
+
+    def __eq__(self, other):
+        if not other:
+            return False
+        return self.total == other.total
 
 
 class ReturnValue:
@@ -131,6 +136,12 @@ class ReturnValue:
 
     def simple_return(self):
         return 100
+
+    def simple_return_with_arg(self, msg, name):
+        return msg + ' ' + name
+
+    def change_return_0(self, a, b):
+        return a + b
 
     def change_return_1(self):
         a = 1
@@ -152,11 +163,11 @@ class ReturnValue:
         a.append(1)
         a.append(2)
         a.append(3)
-        return sum(a)
+        return a
 
     def change_return_5(self):
         result = 0
-        for each in range(1,5):
+        for each in range(1, 5):
             result += each
         return result
 
@@ -164,6 +175,10 @@ class ReturnValue:
         if enter:
             return 'enter is true'
         return 'enter is false'
+
+    def change_attribute_0(self, new_n):
+        self.n = new_n
+        return self.n
 
     def change_attribute_1(self):
         self.n = 100
@@ -173,7 +188,7 @@ class ReturnValue:
         self.str = 'FOO'
         return self.str.lower()
 
-    def change_attribute_2(self):
+    def change_attribute_3(self):
         self.list = [1, 2, 3, 4, 5]
         return len(self.list)
 
@@ -184,7 +199,14 @@ class ReturnValue:
         calc.subtract(1)
         return calc.total
 
-    def change_obj_2(self):
+    def change_obj_2(self, add1, add2, sub):
+        calc = Calculator()
+        calc.add(add1)
+        calc.add(add2)
+        calc.subtract(sub)
+        return calc.total
+
+    def change_obj_3(self):
         calc = Calculator()
         calc.add(5)
         calc.add(5)

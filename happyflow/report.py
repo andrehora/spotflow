@@ -38,9 +38,9 @@ class Report:
         flow = self.least_common_flow()
         self._sut_common_flow(flow, 'Least')
 
-    def sut_code_state(self, state_summary = False):
+    def sut_code_state(self, state_summary=False):
 
-        flow = self.flow_result.flows[0]
+        flow = self.flow_result.flows[1]
 
         state_result = flow.state_result
         flow_lines = flow.run_lines
@@ -81,11 +81,21 @@ class Report:
 
     def show_state_summary(self, state_result):
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+        for arg in state_result.args:
+            if arg.name != 'self':
+                arg_summary = f'➡️ {arg.name}: {str(arg.value)}'
+                print(arg_summary)
+
+        if state_result.return_value:
+            return_summary = f'⬅️ {state_result.return_value}'
+            print(return_summary)
+
         for var in state_result.vars:
             if var != 'self':
                 state_history = state_result.vars[var]
-                values = ' -> '.join(state_history.distinct_sequential_values())
-                var_summary = f'🔸 {var}: {values}'
+                values = state_history.distinct_sequential_values()
+                values_str = ' -> '.join(map(str, values))
+                var_summary = f'🔸 {var}: {values_str}'
                 print(var_summary)
 
     def _sut_common_flow(self, flow, msg):

@@ -1,7 +1,7 @@
 import copy
 import trace
 from happyflow.utils import *
-from happyflow.sut_flow_state import SUTStateResult, SUTFlowResult
+from happyflow.sut_flow_state import SUTStateResult, SUTFlowResult, SUTVarState
 from happyflow.test_loader import UnittestFramework, TestLoader
 
 
@@ -150,21 +150,15 @@ class Trace2(trace.Trace):
     def globaltrace_lt(self, frame, why, arg):
 
         if why == 'call':
-            code = frame.f_code
 
-            self.trace_collector.collect_flow_and_state(frame, 'global', why)
+            self.trace_collector.collect_flow_and_state(frame, why)
 
             filename = frame.f_globals.get('__file__', None)
             if filename:
-                # XXX _modname() doesn't work right for packages, so
-                # the ignore support won't work right for packages
                 modulename = trace._modname(filename)
                 if modulename is not None:
                     ignore_it = self.ignore.names(filename, modulename)
                     if not ignore_it:
-                        # if self.trace:
-                        #     print((" --- modulename: %s, funcname: %s"
-                        #            % (modulename, code.co_name)))
                         return self.localtrace
             else:
                 return None
@@ -172,23 +166,14 @@ class Trace2(trace.Trace):
     def localtrace_trace_and_count(self, frame, why, arg):
 
         if why == "line" or why == 'return':
-
-            # CHANGE
-            self.trace_collector.collect_flow_and_state(frame, 'local', why)
+            self.trace_collector.collect_flow_and_state(frame, why)
 
         if why == "line":
-
-            # record the file name and line number of every trace
             filename = frame.f_code.co_filename
             lineno = frame.f_lineno
             key = filename, lineno
             self.counts[key] = self.counts.get(key, 0) + 1
 
-            # if self.start_time:
-            #     print('%.2f' % (_time() - self.start_time), end=' ')
-            # bname = os.path.basename(filename)
-            # print("%s(%d): %s" % (bname, lineno,
-            #                       linecache.getline(filename, lineno)), end='')
         return self.localtrace
 
 
@@ -200,23 +185,55 @@ class TraceCollector:
         self.local_traces = {}
         # self.all_sut_states = {}
 
-    def collect_flow_and_state(self, frame, data_type, why):
+    def _run_func(self, frame):
+
+        def wrap_func(*args, **kwargs): pass
+        wrap_func.__code__ = frame.f_code
+        wrap_func.__globals__.update(frame.f_globals)
+        # print(wrap_func.__dict__)
+
+        args = self._func_arg_values(frame)
+        return wrap_func(*args)
+
+    def _func_arg_values(self, frame):
+        args = []
+
+        argvalues = inspect.getargvalues(frame)
+        for arg in argvalues.args:
+            args.append(copy.deepcopy(argvalues.locals[arg]))
+
+        if argvalues.varargs:
+            args.append(copy.deepcopy(argvalues.locals['varargs']))
+
+        if argvalues.keywords:
+            args.append(copy.deepcopy(argvalues.locals['keywords']))
+
+        return tuple(args)
+
+    def _func_arg_names_and_values(self, frame):
+        states = []
+
+        argvalues = inspect.getargvalues(frame)
+        for arg in argvalues.args:
+            arg_state = SUTVarState(arg, argvalues.locals[arg], frame.f_lineno)
+            states.append(arg_state)
+
+        if argvalues.varargs:
+            arg_state = SUTVarState('varargs', argvalues.locals['varargs'], frame.f_lineno)
+            states.append(arg_state)
+
+        if argvalues.keywords:
+            arg_state = SUTVarState('keywords', argvalues.locals['keywords'], frame.f_lineno)
+            states.append(arg_state)
+
+        return states
+
+    def collect_flow_and_state(self, frame, why):
 
         if not self.sut:
             return
 
         entity_name = find_full_func_name(frame)
-
-        # print(entity_name)
-
-        if why == 'return' and entity_name == 'stub_sut.ReturnValue.simple_return':
-            # print(frame.f_back.f_locals['self'].ret.simple_return())
-            print(frame.f_code)
-            print(frame.f_lineno)
-
-
-            print(frame.f_back.f_locals)
-            print(frame.f_back.f_lineno)
 
         for base_sut in self.sut:
 
@@ -224,12 +241,18 @@ class TraceCollector:
                 if entity_name not in self.local_traces:
                     self.local_traces[entity_name] = []
 
-                if data_type == 'global':
+                if why == 'call':
                     sut_flows = self.local_traces[entity_name]
                     state = SUTStateResult(entity_name)
                     sut_flows.append((self.func_name, [], state))
 
-                if data_type == 'local':
+                    # collect args and return value
+                    args = self._func_arg_names_and_values(frame)
+                    return_value = self._run_func(frame)
+                    state.args = args
+                    state.return_value = return_value
+
+                if why == 'line' or why == 'return':
                     sut_flows = self.local_traces[entity_name]
                     # get the last flow and update it
                     test_name, last_flow, last_state_result = sut_flows[-1]

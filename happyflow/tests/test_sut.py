@@ -52,7 +52,7 @@ class TestSUTLoader(unittest.TestCase):
         sut = SUTLoader.find_sut(target_sut)
 
         self.assertEqual(sut.full_name(), target_sut)
-        self.assertEqual(len(sut.suts), 19)
+        # self.assertEqual(len(sut.suts), 19)
         # self.assertEqual(len(sut.executable_lines()), 21)
 
     def test_find_class(self):

@@ -107,6 +107,12 @@ class TestReturnValue(unittest.TestCase):
     def test_simple_return_global(self):
         self.ret.simple_return()
 
+    def test_simple_return_with_arg(self):
+        self.ret.simple_return_with_arg('hello', 'world')
+
+    def test_change_return_0(self):
+        self.ret.change_return_0(100, 200)
+
     def test_change_return_1(self):
         self.ret.change_return_1()
 
@@ -128,6 +134,9 @@ class TestReturnValue(unittest.TestCase):
     def test_multiple_return_false(self):
         self.ret.multiple_return(False)
 
+    def test_change_attribute_0(self):
+        self.ret.change_attribute_0(500)
+
     def test_change_attribute_1(self):
         self.ret.change_attribute_1()
 
@@ -141,4 +150,7 @@ class TestReturnValue(unittest.TestCase):
         self.ret.change_obj_1()
 
     def test_change_obj_2(self):
-        self.ret.change_obj_2()
+        self.ret.change_obj_2(10, 10, 1)
+
+    def test_change_obj_3(self):
+        self.ret.change_obj_3()

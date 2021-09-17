@@ -35,6 +35,9 @@ class SUTStateResult:
         self.sut_name = name
         self.vars = {}
 
+        self.args = None
+        self.return_value = None
+
     def add(self, name, value, line):
         self.vars[name] = self.vars.get(name, SUTVarStateHistory(name, []))
         self.vars[name].add(name, value, line)
