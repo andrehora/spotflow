@@ -1,6 +1,6 @@
 import unittest
-from happyflow.sut_model import SUTSourceEntity, SUTFunction, SUTMethod, SUTClass, SUTModule
-from happyflow.sut_loader import SUTLoader
+from happyflow.target_model import TargetEntity, TargetFunction, TargetMethod, TargetClass, TargetModule
+from happyflow.target_loader import TargetEntityLoader
 from happyflow.test_loader import TestLoader
 from happyflow.tracer import TraceRunner
 
@@ -49,7 +49,7 @@ class TestSUTLoader(unittest.TestCase):
 
     def test_find_module(self):
         target_sut = 'stub_sut'
-        sut = SUTLoader.find_sut(target_sut)
+        sut = TargetEntityLoader.find_sut(target_sut)
 
         self.assertEqual(sut.full_name(), target_sut)
         # self.assertEqual(len(sut.suts), 19)
@@ -57,7 +57,7 @@ class TestSUTLoader(unittest.TestCase):
 
     def test_find_class(self):
         target_sut = 'stub_sut.SimpleFlow'
-        sut = SUTLoader.find_sut(target_sut)
+        sut = TargetEntityLoader.find_sut(target_sut)
 
         self.assertEqual(sut.full_name(), target_sut)
         # self.assertEqual(sut.loc(), 27)
@@ -65,28 +65,28 @@ class TestSUTLoader(unittest.TestCase):
 
     def test_find_method(self):
         target_sut = 'stub_sut.SimpleFlow.simple_if'
-        sut = SUTLoader.find_sut(target_sut)
+        sut = TargetEntityLoader.find_sut(target_sut)
 
         self.assertEqual(sut.full_name(), target_sut)
         self.assertEqual(sut.loc(), 2)
         self.assertEqual(len(sut.executable_lines()), 2)
 
         target_sut = 'stub_sut.SimpleFlow.simple_if_else'
-        sut = SUTLoader.find_sut(target_sut)
+        sut = TargetEntityLoader.find_sut(target_sut)
 
         self.assertEqual(sut.full_name(), target_sut)
         self.assertEqual(sut.loc(), 4)
         self.assertEqual(len(sut.executable_lines()), 3)
 
         target_sut = 'stub_sut.SimpleFlow.loop'
-        sut = SUTLoader.find_sut(target_sut)
+        sut = TargetEntityLoader.find_sut(target_sut)
 
         self.assertEqual(sut.full_name(), target_sut)
         self.assertEqual(sut.loc(), 3)
         self.assertEqual(len(sut.executable_lines()), 3)
 
         target_sut = 'stub_sut.SimpleFlow.try_success'
-        sut = SUTLoader.find_sut(target_sut)
+        sut = TargetEntityLoader.find_sut(target_sut)
 
         self.assertEqual(sut.full_name(), target_sut)
         self.assertEqual(sut.loc(), 4)
@@ -94,7 +94,7 @@ class TestSUTLoader(unittest.TestCase):
 
     def test_find_function(self):
         target_sut = 'stub_sut.function_with_3_lines'
-        sut = SUTLoader.find_sut(target_sut)
+        sut = TargetEntityLoader.find_sut(target_sut)
 
         self.assertEqual(sut.full_name(), target_sut)
         self.assertEqual(sut.loc(), 3)
@@ -104,33 +104,33 @@ class TestSUTLoader(unittest.TestCase):
 class TestSUT(unittest.TestCase):
 
     def test_module_full_name(self):
-        c = SUTModule('m')
+        c = TargetModule('m')
         self.assertEqual(c.full_name(), 'm')
         self.assertEqual(str(c), 'm')
 
     def test_class_full_name(self):
-        c = SUTClass('m', 'c')
+        c = TargetClass('m', 'c')
         self.assertEqual(c.full_name(), 'm.c')
         self.assertEqual(str(c), 'm.c')
 
     def test_function_full_name(self):
-        f = SUTFunction('m', 'f')
+        f = TargetFunction('m', 'f')
         self.assertEqual(f.full_name(), 'm.f')
         self.assertEqual(str(f), 'm.f')
 
     def test_method_full_name(self):
-        c = SUTClass('m', 'c')
-        foo = SUTMethod('m', 'c', 'foo')
+        c = TargetClass('m', 'c')
+        foo = TargetMethod('m', 'c', 'foo')
 
         self.assertEqual(c.full_name(), 'm.c')
         self.assertEqual(foo.full_name(), 'm.c.foo')
 
     def test_add_sut(self):
-        module = SUTModule('m')
-        c = SUTClass('m', 'c')
-        m1 = SUTMethod('m', 'c', 'm1')
-        m2 = SUTMethod('m', 'c', 'm2')
-        f = SUTMethod('m', 'c', 'f')
+        module = TargetModule('m')
+        c = TargetClass('m', 'c')
+        m1 = TargetMethod('m', 'c', 'm1')
+        m2 = TargetMethod('m', 'c', 'm2')
+        f = TargetMethod('m', 'c', 'f')
 
         module.add_sut(m1)
         module.add_sut(m2)
@@ -146,7 +146,7 @@ class TestSUT(unittest.TestCase):
         self.assertEqual(m2.full_name(), 'm.c.m2')
 
     def test_loc(self):
-        sut = SUTSourceEntity('', '')
+        sut = TargetEntity('', '')
         sut.start_line = 10
         sut.end_line = 20
 

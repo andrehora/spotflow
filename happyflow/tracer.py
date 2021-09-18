@@ -1,7 +1,7 @@
 import copy
 import trace
 from happyflow.utils import *
-from happyflow.sut_flow_state import SUTStateResult, SUTFlowResult, SUTVarState
+from happyflow.flow_state import StateResult, FlowResult, VarState
 from happyflow.test_loader import UnittestFramework, TestLoader
 
 
@@ -10,12 +10,14 @@ class TraceRunner:
     def __init__(self, func_finder_and_runner=UnittestFramework()):
         self.func_finder_and_runner = func_finder_and_runner
         self.trace_result = TraceResult()
-        self.local_trace_collector = TraceCollector()
-        self.sut = None
+        self.local_trace_collector = TraceDataCollector()
+        self.target_entity = None
 
-    def run(self, funcs):
+    def run(self, func_or_funcs):
+        if type(func_or_funcs) is not list:
+            func_or_funcs = [func_or_funcs]
 
-        for f in funcs:
+        for f in func_or_funcs:
             basic_trace = self.run_func(f)
             self.trace_result.add_trace(basic_trace)
 
@@ -29,7 +31,7 @@ class TraceRunner:
         func = self.func_finder_and_runner.run_func(func_to_run)
 
         self.local_trace_collector.func_name = func_name
-        self.local_trace_collector.sut = self.sut
+        self.local_trace_collector.sut = self.target_entity
 
         tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.local_trace_collector)
 
@@ -46,7 +48,7 @@ class TraceRunner:
     def trace(pattern='test*.py', sut=None):
         tests = TestLoader().find_tests(pattern)
         runner = TraceRunner()
-        runner.sut = sut
+        runner.target_entity = sut
         runner.run(tests)
         return runner.trace_result
 
@@ -71,7 +73,7 @@ class TraceResult:
         if not sut:
             return None
 
-        result = SUTFlowResult(sut)
+        result = FlowResult(sut)
 
         for base_sut in sut:
             for global_trace in self.global_traces:
@@ -87,7 +89,7 @@ class TraceResult:
         if not sut:
             return None
 
-        result = SUTFlowResult(sut)
+        result = FlowResult(sut)
 
         for base_sut in sut:
             target_sut_full_name = base_sut.full_name()
@@ -177,7 +179,7 @@ class Trace2(trace.Trace):
         return self.localtrace
 
 
-class TraceCollector:
+class TraceDataCollector:
 
     def __init__(self):
         self.func_name = None
@@ -215,15 +217,15 @@ class TraceCollector:
 
         argvalues = inspect.getargvalues(frame)
         for arg in argvalues.args:
-            arg_state = SUTVarState(arg, argvalues.locals[arg], frame.f_lineno)
+            arg_state = VarState(arg, argvalues.locals[arg], frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.varargs:
-            arg_state = SUTVarState('varargs', argvalues.locals['varargs'], frame.f_lineno)
+            arg_state = VarState('varargs', argvalues.locals['varargs'], frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.keywords:
-            arg_state = SUTVarState('keywords', argvalues.locals['keywords'], frame.f_lineno)
+            arg_state = VarState('keywords', argvalues.locals['keywords'], frame.f_lineno)
             states.append(arg_state)
 
         return states
@@ -243,7 +245,7 @@ class TraceCollector:
 
                 if why == 'call':
                     sut_flows = self.local_traces[entity_name]
-                    state = SUTStateResult(entity_name)
+                    state = StateResult(entity_name)
                     sut_flows.append((self.func_name, [], state))
 
                     # collect args and return value

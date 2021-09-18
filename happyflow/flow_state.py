@@ -1,4 +1,4 @@
-class SUTFlowResult:
+class FlowResult:
 
     def __init__(self, sut):
         self.sut = sut
@@ -8,14 +8,14 @@ class SUTFlowResult:
 
     def add(self, test_name, flow, state_result=None):
         self.test_names.append(test_name)
-        flow = SUTFlow(test_name, flow, state_result)
+        flow = Flow(test_name, flow, state_result)
         self.flows.append(flow)
 
     def number_of_tests(self):
         return len(self.test_names)
 
 
-class SUTFlow:
+class Flow:
 
     def __init__(self, test_name, run_lines, state_result=None):
         self.test_name = test_name
@@ -29,7 +29,7 @@ class SUTFlow:
         return sorted(list(set(self.run_lines)))
 
 
-class SUTStateResult:
+class StateResult:
 
     def __init__(self, name):
         self.sut_name = name
@@ -39,7 +39,7 @@ class SUTStateResult:
         self.return_value = None
 
     def add(self, name, value, line):
-        self.vars[name] = self.vars.get(name, SUTVarStateHistory(name, []))
+        self.vars[name] = self.vars.get(name, VarStateHistory(name, []))
         self.vars[name].add(name, value, line)
 
     def states_for_line(self, line_number):
@@ -66,14 +66,14 @@ class SUTStateResult:
         return [item for item in list1 if item not in second]
 
 
-class SUTVarStateHistory:
+class VarStateHistory:
 
     def __init__(self, name, states):
         self.name = name
         self.states = states
 
     def add(self, name, value, line):
-        state = SUTVarState(name, value, line)
+        state = VarState(name, value, line)
         self.states.append(state)
 
     def first_last(self):
@@ -108,7 +108,7 @@ class SUTVarStateHistory:
         return f'name: {self.name}, values: {len(self.states)}'
 
 
-class SUTVarState:
+class VarState:
 
     def __init__(self, name, value, line):
         self.name = name

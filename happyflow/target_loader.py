@@ -1,9 +1,9 @@
 import ast
 from happyflow.utils import *
-from happyflow.sut_model import SUTResult
+from happyflow.target_model import SUTResult
 
 
-class SUTLoader:
+class TargetEntityLoader:
 
     def __init__(self, dir='.'):
         self.dir = dir
@@ -18,19 +18,19 @@ class SUTLoader:
                     module_node = ast.parse(module_code)
                     module_name = find_module_name(filename)
 
-                    visitor = SUTVisitor(self.sut_container, module_name, filename)
+                    visitor = TargetEntityVisitor(self.sut_container, module_name, filename)
                     visitor.visit(module_node)
                 except:
                     pass
 
     @staticmethod
     def find_sut(sut_name, dir='.'):
-        loader = SUTLoader(dir)
+        loader = TargetEntityLoader(dir)
         loader.load_sut()
         return loader.sut_container.get(sut_name)
 
 
-class SUTVisitor(ast.NodeVisitor):
+class TargetEntityVisitor(ast.NodeVisitor):
 
     def __init__(self, sut, module_name, filename):
         self.sut = sut

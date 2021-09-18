@@ -2,7 +2,7 @@ import trace
 from happyflow.utils import line_intersection
 
 
-class SUT:
+class TargetBaseEntity:
 
     def __init__(self, name, filename):
         self.name = name
@@ -23,8 +23,11 @@ class SUT:
     def executable_lines(self):
         pass
 
+    def full_name(self):
+        pass
 
-class SUTContainerEntity(SUT):
+
+class TargetContainerEntity(TargetBaseEntity):
 
     def __init__(self, name, filename):
         super().__init__(name, filename)
@@ -52,7 +55,7 @@ class SUTContainerEntity(SUT):
         return f'{self.full_name()} (suts: {len(self.suts)})'
 
 
-class SUTSourceEntity(SUT):
+class TargetEntity(TargetBaseEntity):
     start_line = 0
     end_line = 0
 
@@ -81,7 +84,7 @@ class SUTSourceEntity(SUT):
         return f'{self.full_name()} (lines: {self.start_line}-{self.end_line})'
 
 
-class SUTModule(SUTContainerEntity):
+class TargetModule(TargetContainerEntity):
 
     def __init__(self, name, filename=''):
         super().__init__(name, filename)
@@ -90,7 +93,7 @@ class SUTModule(SUTContainerEntity):
         return f'{self.name}'
 
 
-class SUTClass(SUTContainerEntity):
+class TargetClass(TargetContainerEntity):
 
     def __init__(self, module_name, name, filename=''):
         super().__init__(name, filename)
@@ -100,7 +103,7 @@ class SUTClass(SUTContainerEntity):
         return f'{self.module_name}.{self.name}'
 
 
-class SUTMethod(SUTSourceEntity):
+class TargetMethod(TargetEntity):
 
     def __init__(self, module_name, class_name, name, filename=''):
         super().__init__(name, filename)
@@ -111,7 +114,7 @@ class SUTMethod(SUTSourceEntity):
         return f'{self.module_name}.{self.class_name}.{self.name}'
 
 
-class SUTFunction(SUTSourceEntity):
+class TargetFunction(TargetEntity):
 
     def __init__(self, module_name, name, filename=''):
         super().__init__(name, filename)
@@ -137,14 +140,14 @@ class SUTResult:
         return self.suts_map[sut_name]
 
     def add_module(self, module_name, filename):
-        m = SUTModule(module_name)
+        m = TargetModule(module_name)
         m.filename = filename
         self.suts.append(m)
         self.suts_map[str(m)] = m
         return m
 
     def add_class(self, module_name, class_name, start_line, end_line, filename):
-        c = SUTClass(module_name, class_name)
+        c = TargetClass(module_name, class_name)
         c.start_line = start_line
         c.end_line = end_line
         c.filename = filename
@@ -152,7 +155,7 @@ class SUTResult:
         return c
 
     def add_method(self, module_name, method_name, start_line, end_line, clazz, module, filename):
-        m = SUTMethod(module_name, clazz.name, method_name)
+        m = TargetMethod(module_name, clazz.name, method_name)
         m.start_line = start_line
         m.end_line = end_line
         m.filename = filename
@@ -165,7 +168,7 @@ class SUTResult:
         return m
 
     def add_function(self, module_name, function_name, start_line, end_line, module, filename):
-        f = SUTFunction(module_name, function_name)
+        f = TargetFunction(module_name, function_name)
         f.start_line = start_line
         f.end_line = end_line
         f.filename = filename
