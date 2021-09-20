@@ -40,7 +40,7 @@ class Report:
 
     def sut_code_state(self, state_summary=False):
 
-        flow = self.flow_result.flows[1]
+        flow = self.flow_result.flows[0]
 
         state_result = flow.state_result
         flow_lines = flow.run_lines

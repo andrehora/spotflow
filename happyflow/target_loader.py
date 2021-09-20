@@ -1,41 +1,44 @@
 import ast
 from happyflow.utils import *
-from happyflow.target_model import SUTResult
+from happyflow.target_model import TargetEntityResult, TargetEntity
 
 
 class TargetEntityLoader:
 
     def __init__(self, dir='.'):
         self.dir = dir
-        self.sut_container = SUTResult()
+        self.target_container = TargetEntityResult()
 
-    def load_sut(self):
+    def load(self):
         python_files = find_python_files(self.dir)
         for filename in python_files:
             module_code = open_file(filename)
             if module_code:
                 try:
                     module_node = ast.parse(module_code)
-                    module_name = find_module_name(filename)
 
-                    visitor = TargetEntityVisitor(self.sut_container, module_name, filename)
+                    visitor = TargetEntityVisitor(self.target_container, filename)
                     visitor.visit(module_node)
                 except:
                     pass
 
     @staticmethod
-    def find_sut(sut_name, dir='.'):
+    def find(target_entity_name, dir='.'):
         loader = TargetEntityLoader(dir)
-        loader.load_sut()
-        return loader.sut_container.get(sut_name)
+        loader.load()
+        return loader.target_container.get(target_entity_name)
+
+    @staticmethod
+    def load_func(func_or_method):
+        return TargetEntity.build_from_func(func_or_method)
 
 
 class TargetEntityVisitor(ast.NodeVisitor):
 
-    def __init__(self, sut, module_name, filename):
+    def __init__(self, sut, filename):
         self.sut = sut
-        self.module_name = module_name
         self.filename = filename
+        self.module_name = find_module_name(filename)
         self.module = self.sut.add_module(self.module_name, self.filename)
 
     def visit_Module(self, node):

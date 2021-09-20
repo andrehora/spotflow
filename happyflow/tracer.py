@@ -2,38 +2,43 @@ import copy
 import trace
 from happyflow.utils import *
 from happyflow.flow_state import StateResult, FlowResult, VarState
-from happyflow.test_loader import UnittestFramework, TestLoader
+from happyflow.test_loader import UnittestLoader
 
 
 class TraceRunner:
 
-    def __init__(self, func_finder_and_runner=UnittestFramework()):
-        self.func_finder_and_runner = func_finder_and_runner
+    def __init__(self):
         self.trace_result = TraceResult()
-        self.local_trace_collector = TraceDataCollector()
-        self.target_entity = None
+        self.trace_collector = TraceCollector()
 
-    def run(self, func_or_funcs):
-        if type(func_or_funcs) is not list:
-            func_or_funcs = [func_or_funcs]
+        self.target_entities = None
+        self.get_source_entity_name_wrapper = None
+        self.run_source_entity_wrapper = None
 
-        for f in func_or_funcs:
-            basic_trace = self.run_func(f)
+    def run(self, source_entities):
+        if type(source_entities) is not list:
+            source_entities = [source_entities]
+
+        for source_entity in source_entities:
+            basic_trace = self._run_func(source_entity)
             self.trace_result.add_trace(basic_trace)
 
-        self.trace_result.local_traces = self.local_trace_collector.local_traces
+        self.trace_result.local_traces = self.trace_collector.local_traces
 
-        # self.test_result.compute_sut_and_tests()
+    def _run_func(self, func):
 
-    def run_func(self, func_to_run):
+        if self.get_source_entity_name_wrapper:
+            source_entity_name = self.get_source_entity_name_wrapper(func)
+        else:
+            source_entity_name = func.__name__
 
-        func_name = self.func_finder_and_runner.get_func_name(func_to_run)
-        func = self.func_finder_and_runner.run_func(func_to_run)
+        if self.run_source_entity_wrapper:
+            func = self.run_source_entity_wrapper(func)
 
-        self.local_trace_collector.func_name = func_name
-        self.local_trace_collector.sut = self.target_entity
+        self.trace_collector.source_entity_name = source_entity_name
+        self.trace_collector.target_entities = self.target_entities
 
-        tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.local_trace_collector)
+        tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.trace_collector)
 
         # try:
         tracer.runfunc(func)
@@ -42,14 +47,28 @@ class TraceRunner:
         #     print('fail', func_name)
 
         result = tracer.results()
-        return TraceCount(func_name, result.counts)
+        return TraceCount(source_entity_name, result.counts)
 
     @staticmethod
-    def trace(pattern='test*.py', sut=None):
-        tests = TestLoader().find_tests(pattern)
+    def trace_tests(source_pattern='test*.py', target_entities=None):
+
         runner = TraceRunner()
-        runner.target_entity = sut
+        runner.target_entities = target_entities
+        runner.get_source_entity_name_wrapper = UnittestLoader.get_test_name
+        runner.run_source_entity_wrapper = UnittestLoader.run_test
+
+        tests = UnittestLoader().find_tests(source_pattern)
         runner.run(tests)
+
+        return runner.trace_result
+
+    @staticmethod
+    def trace_funcs(source_funcs, target_entities=None):
+
+        runner = TraceRunner()
+        runner.target_entities = target_entities
+        runner.run(source_funcs)
+
         return runner.trace_result
 
 
@@ -60,8 +79,8 @@ class TraceResult:
         # self.sut_and_tests = {}
         self.local_traces = []
 
-    def add_trace(self, trace):
-        self.global_traces.append(trace)
+    def add_trace(self, t):
+        self.global_traces.append(t)
 
     # def compute_sut_and_tests(self):
     #     for trace in self.traces:
@@ -179,11 +198,11 @@ class Trace2(trace.Trace):
         return self.localtrace
 
 
-class TraceDataCollector:
+class TraceCollector:
 
     def __init__(self):
-        self.func_name = None
-        self.sut = None
+        self.source_entity_name = None
+        self.target_entities = None
         self.local_traces = {}
         # self.all_sut_states = {}
 
@@ -232,21 +251,21 @@ class TraceDataCollector:
 
     def collect_flow_and_state(self, frame, why):
 
-        if not self.sut:
+        if not self.target_entities:
             return
 
-        entity_name = find_full_func_name(frame)
+        entity_name = find_full_entity_name(frame)
 
-        for base_sut in self.sut:
+        for target_entity in self.target_entities:
 
-            if entity_name and base_sut.full_name() and entity_name == base_sut.full_name():
+            if entity_name and target_entity.full_name() and entity_name == target_entity.full_name():
                 if entity_name not in self.local_traces:
                     self.local_traces[entity_name] = []
 
                 if why == 'call':
                     sut_flows = self.local_traces[entity_name]
                     state = StateResult(entity_name)
-                    sut_flows.append((self.func_name, [], state))
+                    sut_flows.append((self.source_entity_name, [], state))
 
                     # collect args and return value
                     args = self._func_arg_names_and_values(frame)

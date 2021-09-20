@@ -1,5 +1,7 @@
 import trace
+import types
 from happyflow.utils import line_intersection
+from happyflow.utils import function_metadata, method_metadata
 
 
 class TargetBaseEntity:
@@ -31,28 +33,28 @@ class TargetContainerEntity(TargetBaseEntity):
 
     def __init__(self, name, filename):
         super().__init__(name, filename)
-        self.suts = []
+        self.target_entities = []
 
     def __iter__(self):
-        return iter(self.suts)
+        return iter(self.target_entities)
 
-    def add_sut(self, func_or_method):
-        self.suts.append(func_or_method)
+    def add_entity(self, func_or_method):
+        self.target_entities.append(func_or_method)
 
     def loc(self):
         total_loc = 0
-        for sut in self.suts:
-            total_loc += sut.loc()
+        for target_entity in self.target_entities:
+            total_loc += target_entity.loc()
         return total_loc
 
     def executable_lines(self):
         all_executable_lines = []
-        for sut in self.suts:
-            all_executable_lines.append(sut.executable_lines())
+        for target_entity in self.target_entities:
+            all_executable_lines.append(target_entity.executable_lines())
         return all_executable_lines
 
     def summary(self):
-        return f'{self.full_name()} (suts: {len(self.suts)})'
+        return f'{self.full_name()} (target entities: {len(self.target_entities)})'
 
 
 class TargetEntity(TargetBaseEntity):
@@ -64,7 +66,7 @@ class TargetEntity(TargetBaseEntity):
 
     def executable_lines(self):
         executable_lines = trace._find_executable_linenos(self.filename)
-        # remove the SUT definition, eg, def, class
+        # remove the target_entity definition, eg, def, class
         return self.intersection(executable_lines)[1:]
 
     def intersection(self, other_lines):
@@ -82,6 +84,28 @@ class TargetEntity(TargetBaseEntity):
 
     def summary(self):
         return f'{self.full_name()} (lines: {self.start_line}-{self.end_line})'
+
+    @classmethod
+    def build_from_func(cls, func_or_method):
+
+        target_entity = None
+
+        if isinstance(func_or_method, types.MethodType):
+            module_name, class_name, name, filename, start_line, end_line = method_metadata(func_or_method)
+            target_entity = TargetMethod(module_name, class_name, name, filename)
+
+        if isinstance(func_or_method, types.FunctionType):
+            module_name, name, filename, start_line, end_line = function_metadata(func_or_method)
+            target_entity = TargetFunction(module_name, name, filename)
+
+        target_entity.start_line = start_line
+        target_entity.end_line = end_line
+
+        return target_entity
+
+    @classmethod
+    def name(cls):
+        return cls.__name__
 
 
 class TargetModule(TargetContainerEntity):
@@ -124,26 +148,26 @@ class TargetFunction(TargetEntity):
         return f'{self.module_name}.{self.name}'
 
 
-class SUTResult:
+class TargetEntityResult:
 
     def __init__(self):
-        self.suts = []
-        self.suts_map = {}
+        self.target_entities = []
+        self.target_entities_map = {}
 
     def full_name(self):
-        return 'SUTContainer'
+        return 'TargetEntityResult'
 
     def __str__(self):
-        return f'suts: {len(self.suts)}'
+        return f'target entities: {len(self.target_entities)}'
 
-    def get(self, sut_name):
-        return self.suts_map[sut_name]
+    def get(self, entity_name):
+        return self.target_entities_map[entity_name]
 
     def add_module(self, module_name, filename):
         m = TargetModule(module_name)
         m.filename = filename
-        self.suts.append(m)
-        self.suts_map[str(m)] = m
+        self.target_entities.append(m)
+        self.target_entities_map[str(m)] = m
         return m
 
     def add_class(self, module_name, class_name, start_line, end_line, filename):
@@ -151,7 +175,7 @@ class SUTResult:
         c.start_line = start_line
         c.end_line = end_line
         c.filename = filename
-        self.suts_map[str(c)] = c
+        self.target_entities_map[str(c)] = c
         return c
 
     def add_method(self, module_name, method_name, start_line, end_line, clazz, module, filename):
@@ -160,11 +184,11 @@ class SUTResult:
         m.end_line = end_line
         m.filename = filename
 
-        clazz.add_sut(m)
-        module.add_sut(m)
+        clazz.add_entity(m)
+        module.add_entity(m)
 
-        self.suts.append(m)
-        self.suts_map[str(m)] = m
+        self.target_entities.append(m)
+        self.target_entities_map[str(m)] = m
         return m
 
     def add_function(self, module_name, function_name, start_line, end_line, module, filename):
@@ -173,15 +197,15 @@ class SUTResult:
         f.end_line = end_line
         f.filename = filename
 
-        module.add_sut(f)
+        module.add_entity(f)
 
-        self.suts.append(f)
-        self.suts_map[str(f)] = f
+        self.target_entities.append(f)
+        self.target_entities_map[str(f)] = f
         return f
 
     def run(self, result):
-        for sut in self.suts:
-            sut.run(result)
+        for target_entity in self.target_entities:
+            target_entity.run(result)
 
 
 

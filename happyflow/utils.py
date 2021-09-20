@@ -34,7 +34,7 @@ def find_class_name(frame):
     return None
 
 
-def find_full_func_name(frame):
+def find_full_entity_name(frame):
     code = frame.f_code
     module_name = find_module_name(code.co_filename)
     class_name = find_class_name(frame)
@@ -46,3 +46,28 @@ def find_full_func_name(frame):
 
 def line_intersection(lines, other_lines):
     return sorted(list(set(lines).intersection(other_lines)))
+
+
+def function_metadata(func):
+    module_name = find_module_name(func.__code__.co_filename)
+    name = func.__name__
+    filename = func.__code__.co_filename
+
+    source = inspect.getsource(func)
+
+    start_line = func.__code__.co_firstlineno
+    end_line = get_end_line(start_line, source)
+    return module_name, name, filename, start_line, end_line
+
+
+def method_metadata(method):
+    func = method.__func__
+    class_name = (method.__self__.__class__.__name__)
+    module_name, name, filename, start_line, end_line = function_metadata(func)
+
+    return module_name, class_name, name, filename, start_line, end_line
+
+
+def get_end_line(start_line, source):
+    loc = source.count('\n')
+    return start_line + loc - 1

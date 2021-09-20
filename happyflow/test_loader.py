@@ -1,12 +1,26 @@
 import unittest
 
 
-class UnittestFramework:
+class PytestLoader:
 
-    def find_funcs(self, pattern):
+    def find_tests(self):
+        pass
+
+    def run_test(self):
+        pass
+
+    def get_test_name(self):
+        pass
+
+
+class UnittestLoader:
+
+    def __init__(self):
+        self.tests = []
+
+    def find_tests(self, pattern='test*.py'):
 
         loader = unittest.TestLoader()
-        # suite = loader.discover('.', pattern)
         suite = loader.loadTestsFromName(pattern)
 
         return self._find_test_methods(suite)
@@ -24,36 +38,15 @@ class UnittestFramework:
         find(suite, test_methods)
         return test_methods
 
-    def run_func(self, func):
+    @staticmethod
+    def run_test(test):
         runner = unittest.TextTestRunner()
 
         def run():
-            runner.run(func)
+            runner.run(test)
 
         return run
 
-    def get_func_name(self, test):
+    @staticmethod
+    def get_test_name(test):
         return test._testMethodName
-
-
-class PyTestFramework:
-
-    def find_funcs(self):
-        pass
-
-    def run_func(self):
-        pass
-
-    def get_func_name(self):
-        pass
-
-
-class TestLoader:
-
-    def __init__(self, testing_framework=UnittestFramework()):
-        self.tests = []
-        self.testing_framework = testing_framework
-
-    def find_tests(self, pattern='test*.py'):
-        self.tests = self.testing_framework.find_funcs(pattern)
-        return self.tests
