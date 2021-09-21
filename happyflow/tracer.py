@@ -276,14 +276,14 @@ class TraceCollector:
                 if why == 'line' or why == 'return':
                     sut_flows = self.local_traces[entity_name]
                     # get the last flow and update it
-                    test_name, last_flow, last_state_result = sut_flows[-1]
+                    test_name, current_flow, current_state_result = sut_flows[-1]
 
                     lineno = frame.f_lineno
                     if why == 'line':
-                        last_flow.append(lineno)
+                        current_flow.append(lineno)
 
-                    if last_state_result:
+                    if current_state_result:
                         argvalues = inspect.getargvalues(frame)
                         for argvalue in argvalues.locals:
                             value = copy.copy(argvalues.locals[argvalue])
-                            last_state_result.add(name=argvalue, value=value, line=lineno)
+                            current_state_result.add(name=argvalue, value=value, line=lineno)

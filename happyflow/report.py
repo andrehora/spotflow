@@ -40,7 +40,7 @@ class Report:
 
     def sut_code_state(self, state_summary=False):
 
-        flow = self.flow_result.flows[0]
+        flow = self.flow_result.flows[1]
 
         state_result = flow.state_result
         flow_lines = flow.run_lines
@@ -58,8 +58,8 @@ class Report:
                 current_line += 1
                 if self.sut.has_line(current_line):
 
-                    # states = state_result.states_for_line(current_line)
-                    states = state_result.state_diff_between_two_lines(current_line, past_line)
+                    states = state_result.states_for_line(current_line)
+                    # states = state_result.state_diff_between_two_lines(current_line, past_line)
 
                     if current_line in flow_lines:
                         is_run = '✅'

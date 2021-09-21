@@ -50,7 +50,7 @@ class StateResult:
                 state_history = self.vars[var]
                 for state in state_history.states:
                     if state.line == line_number:
-                        if str(state) not in var_states:
+                        if str(state) not in var_states and state.value_has_changed:
                             var_states += str(state) + ' '
             if var_states:
                 states.append(var_states)
@@ -73,8 +73,19 @@ class VarStateHistory:
         self.states = states
 
     def add(self, name, value, line):
-        state = VarState(name, value, line)
-        self.states.append(state)
+        value_has_changed = False
+        if len(self.states) == 0:
+            value_has_changed = True
+        else:
+            last_state = self.get_last()
+            if last_state.value != value:
+                value_has_changed = True
+
+        new_state = VarState(name, value, line, value_has_changed)
+        self.states.append(new_state)
+
+    def get_last(self):
+        return self.states[-1]
 
     def first_last(self):
         if len(self.states) == 1:
@@ -110,10 +121,11 @@ class VarStateHistory:
 
 class VarState:
 
-    def __init__(self, name, value, line):
+    def __init__(self, name, value, line, value_has_changed=False):
         self.name = name
         self.value = value
         self.line = line
+        self.value_has_changed = value_has_changed
 
     def __str__(self):
         return f'{self.name}={self.value}'
