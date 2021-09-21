@@ -86,7 +86,7 @@ class Report:
                 arg_summary = f'➡️ {arg.name}: {str(arg.value)}'
                 print(arg_summary)
 
-        if state_result.return_value:
+        if state_result.return_value is not None:
             return_summary = f'⬅️ {state_result.return_value}'
             print(return_summary)
 
