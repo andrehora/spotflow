@@ -1,7 +1,7 @@
 import copy
 import trace
 from happyflow.utils import *
-from happyflow.flow_state import StateResult, FlowResult, VarState
+from happyflow.flow_state import StateResult, FlowResult, ArgState, ReturnState
 from happyflow.test_loader import UnittestLoader
 
 
@@ -206,12 +206,16 @@ class TraceCollector:
         self.local_traces = {}
         # self.all_sut_states = {}
 
+    def func_return_state(self, frame):
+        value = self._run_func(frame)
+        # Still need to set the return line; this is done when why = return, not now
+        return ReturnState(value)
+
     def _run_func(self, frame):
 
         def wrap_func(*args, **kwargs): pass
         wrap_func.__code__ = frame.f_code
         wrap_func.__globals__.update(frame.f_globals)
-        # print(wrap_func.__dict__)
 
         args = self._func_arg_values(frame)
         return wrap_func(*args)
@@ -231,20 +235,20 @@ class TraceCollector:
 
         return tuple(args)
 
-    def _func_arg_names_and_values(self, frame):
+    def func_arg_states(self, frame):
         states = []
 
         argvalues = inspect.getargvalues(frame)
         for arg in argvalues.args:
-            arg_state = VarState(arg, argvalues.locals[arg], frame.f_lineno)
+            arg_state = ArgState(arg, argvalues.locals[arg], frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.varargs:
-            arg_state = VarState('varargs', argvalues.locals['varargs'], frame.f_lineno)
+            arg_state = ArgState('varargs', argvalues.locals['varargs'], frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.keywords:
-            arg_state = VarState('keywords', argvalues.locals['keywords'], frame.f_lineno)
+            arg_state = ArgState('keywords', argvalues.locals['keywords'], frame.f_lineno)
             states.append(arg_state)
 
         return states
@@ -268,22 +272,25 @@ class TraceCollector:
                     sut_flows.append((self.source_entity_name, [], state))
 
                     # collect args and return value
-                    args = self._func_arg_names_and_values(frame)
-                    return_value = self._run_func(frame)
-                    state.args = args
-                    state.return_value = return_value
+                    arg_states = self.func_arg_states(frame)
+                    return_state = self.func_return_state(frame)
+                    state.args = arg_states
+                    state.return_value = return_state
 
                 if why == 'line' or why == 'return':
                     sut_flows = self.local_traces[entity_name]
                     # get the last flow and update it
-                    test_name, current_flow, current_state_result = sut_flows[-1]
+                    test_name, current_flow, current_state = sut_flows[-1]
 
                     lineno = frame.f_lineno
                     if why == 'line':
                         current_flow.append(lineno)
+                    if why == 'return':
+                        current_state.return_value.line = lineno
+                        # print(current_state.return_value.line)
 
-                    if current_state_result:
+                    if current_state:
                         argvalues = inspect.getargvalues(frame)
                         for argvalue in argvalues.locals:
                             value = copy.copy(argvalues.locals[argvalue])
-                            current_state_result.add(name=argvalue, value=value, line=lineno)
+                            current_state.add(name=argvalue, value=value, line=lineno)
