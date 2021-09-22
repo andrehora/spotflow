@@ -44,14 +44,16 @@ class StateResult:
 
     def states_for_line(self, line_number):
         states = []
+        prior_state = None
         for var in self.vars:
             var_states = ''
             if var != 'self':
                 state_history = self.vars[var]
                 for state in state_history.states:
                     if state.line == line_number:
-                        if str(state) not in var_states and state.value_has_changed:
+                        if str(prior_state) not in var_states and state.value_has_changed:
                             var_states += str(state) + ' '
+                    # prior_state = state
             if var_states:
                 states.append(var_states)
         return states

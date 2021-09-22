@@ -79,6 +79,12 @@ class TargetEntity(TargetBaseEntity):
     def line_is_executable(self, line):
         return line in self.executable_lines()
 
+    def line_is_definition(self, line):
+        return line == self.start_line
+
+    # def line_is_definition(self, line):
+    #     return line == self.start_line
+
     def has_line(self, line):
         return line in range(self.start_line, self.end_line + 1)
 

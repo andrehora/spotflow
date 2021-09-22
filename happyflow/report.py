@@ -40,7 +40,7 @@ class Report:
 
     def sut_code_state(self, state_summary=False):
 
-        flow = self.flow_result.flows[1]
+        flow = self.flow_result.flows[0]
 
         state_result = flow.state_result
         flow_lines = flow.run_lines
@@ -54,12 +54,9 @@ class Report:
             content = f.readlines()
             current_line = 0
             for line_code in content:
-                past_line = current_line
                 current_line += 1
                 if self.sut.has_line(current_line):
-
                     states = state_result.states_for_line(current_line)
-                    # states = state_result.state_diff_between_two_lines(current_line, past_line)
 
                     if current_line in flow_lines:
                         is_run = '✅'
@@ -70,10 +67,21 @@ class Report:
 
                     line_number_str = str(current_line).ljust(2)
                     code_str = f'{line_number_str} {is_run} {line_code.rstrip()}'
+                    code_str = code_str.ljust(50)
+
+                    if self.sut.line_is_definition(current_line):
+                        arg_summary = ''
+                        for arg in state_result.args:
+                            if arg.name != 'self':
+                                separator = ' 🔴 '
+                                arg_summary += f'{separator}{str(arg.value)}'
+                        if arg_summary:
+                            # code_str = code_str.ljust(50)
+                            print(code_str, arg_summary)
 
                     if states:
-                        code_str = code_str.ljust(50)
-                        separator = '🔸 '
+                        # code_str = code_str.ljust(50)
+                        separator = '🟡 '
                         states_str = f'{separator}{separator.join(states)}'
                         print(code_str, states_str)
                     else:
@@ -83,20 +91,21 @@ class Report:
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
         for arg in state_result.args:
             if arg.name != 'self':
-                arg_summary = f'➡️ {arg.name}: {str(arg.value)}'
+                arg_summary = f'🔴 {arg.name}: {str(arg.value)}'
                 print(arg_summary)
 
-        if state_result.return_value is not None:
-            return_summary = f'⬅️ {state_result.return_value}'
-            print(return_summary)
 
         for var in state_result.vars:
             if var != 'self':
                 state_history = state_result.vars[var]
                 values = state_history.distinct_sequential_values()
                 values_str = ' -> '.join(map(str, values))
-                var_summary = f'🔸 {var}: {values_str}'
+                var_summary = f'🟡 {var}: {values_str}'
                 print(var_summary)
+
+        if state_result.return_value is not None:
+            return_summary = f'🟢 {state_result.return_value}'
+            print(return_summary)
 
     def _sut_common_flow(self, flow, msg):
 
