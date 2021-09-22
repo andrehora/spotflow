@@ -94,6 +94,9 @@ class TestChangeState(unittest.TestCase):
     def test_init(self):
         pass
 
+    def test_keep_var_state(self):
+        self.states.keep_var_state()
+
 
 class TestReturnValue(unittest.TestCase):
 

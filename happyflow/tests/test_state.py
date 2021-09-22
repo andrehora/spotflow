@@ -22,6 +22,10 @@ class TestChangeState(unittest.TestCase):
         self.assertEqual(a[1].value, 2)
         self.assertEqual(a[2].value, 3)
 
+        self.assertTrue(a[0].value_has_changed)
+        self.assertTrue(a[1].value_has_changed)
+        self.assertTrue(a[2].value_has_changed)
+
         seq_values = state_result.vars['a'].distinct_sequential_values()
         self.assertEqual(seq_values, [1, 2, 3])
 
@@ -200,3 +204,27 @@ class TestChangeState(unittest.TestCase):
 
         self.assertEqual(obj[1].line, 97)
         self.assertEqual(obj[1].value.inst_var, 'default')
+
+    def test_keep_var_state(self):
+        sut = TargetEntityLoader.find('stub_sut.ChangeState.keep_var_state')
+
+        trace_result = TraceRunner.trace_tests('stub_test.TestChangeState.test_keep_var_state', sut)
+        flow_result = sut.local_flows(trace_result)
+
+        self.assertEqual(flow_result.number_of_tests(), 1)
+        self.assertEqual(flow_result.flows[0].run_lines, [104, 105, 106])
+        self.assertEqual(flow_result.sut_name, 'keep_var_state')
+        self.assertIn('test_keep_var_state', flow_result.test_names)
+
+        state_result = flow_result.flows[0].state_result
+        a = state_result.vars['a'].states
+        self.assertEqual(a[0].value, 1)
+        self.assertEqual(a[1].value, 1)
+        self.assertEqual(a[2].value, 1)
+
+        self.assertTrue(a[0].value_has_changed)
+        self.assertFalse(a[1].value_has_changed)
+        self.assertFalse(a[2].value_has_changed)
+
+        seq_values = state_result.vars['a'].distinct_sequential_values()
+        self.assertEqual(seq_values, [1])

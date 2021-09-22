@@ -100,6 +100,11 @@ class ChangeState:
         self.inst_var = 'foo'
         self.inst_var = 'new foo'
 
+    def keep_var_state(self):
+        a = 1
+        a = 1
+        a = 1
+
 
 def function_with_3_lines():
     a = 123
