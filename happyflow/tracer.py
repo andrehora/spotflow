@@ -294,8 +294,8 @@ class TraceCollector:
                     if current_state:
                         argvalues = inspect.getargvalues(frame)
                         for argvalue in argvalues.locals:
-                            # value = copy.copy(argvalues.locals[argvalue])
-                            current_state.add(name=argvalue, value=argvalues.locals[argvalue],
+                            value = copy.copy(argvalues.locals[argvalue])
+                            current_state.add(name=argvalue, value=value,
                                               line=lineno, inline=self.last_entity_line[entity_name])
                     self.last_entity_line[entity_name] = lineno
 
