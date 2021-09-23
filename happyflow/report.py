@@ -5,28 +5,28 @@ from happyflow.utils import *
 
 class Report:
 
-    def __init__(self, sut, flow_result):
-        self.sut = sut
+    def __init__(self, target_entity, flow_result):
+        self.target_entity = target_entity
         self.flow_result = flow_result
 
     def sut_code(self):
-        with open(self.sut.filename) as f:
+        with open(self.target_entity.filename) as f:
             content = f.readlines()
             line_number = 0
             print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
             for line_code in content:
                 line_number += 1
-                if self.sut.has_line(line_number):
+                if self.target_entity.has_line(line_number):
                     print(line_number, line_code.rstrip())
 
     def sut_run_code(self):
-        with open(self.sut.filename) as f:
+        with open(self.target_entity.filename) as f:
             content = f.readlines()
             line_number = 0
             print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
             for line_code in content:
                 line_number += 1
-                if self.sut.has_line(line_number):
+                if self.target_entity.has_line(line_number):
                     line_run_count = self._run_count_for_line(line_number)
                     print(line_number, line_run_count, line_code.rstrip())
 
@@ -45,7 +45,7 @@ class Report:
         state_result = flow.state_result
         flow_lines = flow.run_lines
 
-        with open(self.sut.filename) as f:
+        with open(self.target_entity.filename) as f:
 
             if state_summary:
                 self.show_state_summary(state_result)
@@ -55,32 +55,34 @@ class Report:
             current_line = 0
             for line_code in content:
                 current_line += 1
-                if self.sut.has_line(current_line):
+                if self.target_entity.has_line(current_line):
                     states = state_result.states_for_line(current_line)
 
                     if current_line in flow_lines:
                         is_run = '✅'
                     if current_line not in flow_lines:
                         is_run = '❌'
-                    if not self.sut.line_is_executable(current_line):
-                        is_run = ''
+                    if not self.target_entity.line_is_executable(current_line):
+                        is_run = ''.ljust(2)
 
                     line_number_str = str(current_line).ljust(2)
                     code_str = f'{line_number_str} {is_run} {line_code.rstrip()}'
                     code_str = code_str.ljust(50)
 
-                    if self.sut.line_is_definition(current_line):
+                    if self.target_entity.line_is_definition(current_line):
                         arg_summary = ''
+                        separator = ' 🔴 '
                         for arg in state_result.args:
                             if arg.name != 'self':
-                                separator = ' 🔴 '
-                                arg_summary += f'{separator}{str(arg.value)}'
+                                arg_summary += f'{separator}{arg}'
                         if arg_summary:
-                            # code_str = code_str.ljust(50)
                             print(code_str, arg_summary)
-
-                    if states:
-                        # code_str = code_str.ljust(50)
+                    elif state_result.is_line_return_value(current_line):
+                        separator = '🟢 '
+                        return_value = state_result.return_value
+                        return_str = f'{separator}{return_value}'
+                        print(code_str, return_str)
+                    elif states:
                         separator = '🟡 '
                         states_str = f'{separator}{separator.join(states)}'
                         print(code_str, states_str)
@@ -112,7 +114,7 @@ class Report:
         flow_lines = flow[0]
         flow_count = flow[1]
 
-        with open(self.sut.filename) as f:
+        with open(self.target_entity.filename) as f:
             content = f.readlines()
             line_number = 0
             print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
@@ -120,7 +122,7 @@ class Report:
             print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
             for line_code in content:
                 line_number += 1
-                if self.sut.has_line(line_number):
+                if self.target_entity.has_line(line_number):
 
                     if line_number in flow_lines:
                         flag = 1
@@ -139,7 +141,7 @@ class Report:
 
     def _run_count_for_line(self, line_number):
 
-        if not self.sut.line_is_executable(line_number):
+        if not self.target_entity.line_is_executable(line_number):
             return ''
 
         run_count = 0

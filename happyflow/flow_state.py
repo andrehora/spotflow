@@ -42,18 +42,19 @@ class StateResult:
         self.vars[name] = self.vars.get(name, VarStateHistory(name, []))
         self.vars[name].add(name, value, line)
 
+    def is_line_return_value(self, line_number):
+        return line_number == self.return_value.line
+
     def states_for_line(self, line_number):
         states = []
-        prior_state = None
         for var in self.vars:
             var_states = ''
             if var != 'self':
                 state_history = self.vars[var]
                 for state in state_history.states:
-                    if state.line == line_number:
-                        if str(prior_state) not in var_states and state.value_has_changed:
+                    if state.inline == line_number:
+                        if str(state) not in var_states and state.value_has_changed:
                             var_states += str(state) + ' '
-                    # prior_state = state
             if var_states:
                 states.append(var_states)
         return states
@@ -78,12 +79,14 @@ class VarStateHistory:
         value_has_changed = False
         if len(self.states) == 0:
             value_has_changed = True
+            inline = line-1
         else:
             last_state = self.get_last()
+            inline = last_state.line
             if last_state.value != value:
                 value_has_changed = True
 
-        new_state = VarState(name, value, line, value_has_changed)
+        new_state = VarState(name, value, line, inline, value_has_changed)
         self.states.append(new_state)
 
     def get_last(self):
@@ -123,11 +126,36 @@ class VarStateHistory:
 
 class VarState:
 
-    def __init__(self, name, value, line, value_has_changed=False):
+    def __init__(self, name, value, line, inline, value_has_changed=False):
         self.name = name
         self.value = value
         self.line = line
+        self.inline = inline
         self.value_has_changed = value_has_changed
 
     def __str__(self):
         return f'{self.name}={self.value}'
+
+
+class ArgState:
+
+    def __init__(self, name, value, line):
+        self.name = name
+        self.value = value
+        self.line = line
+
+    def __str__(self):
+        return f'{self.name}={self.value}'
+
+
+class ReturnState:
+
+    def __init__(self, value, line=0):
+        self.value = value
+        self.line = line
+
+    def __str__(self):
+        return f'{self.value}'
+
+    def __eq__(self, other):
+        return self.value == other
