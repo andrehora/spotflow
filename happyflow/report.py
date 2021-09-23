@@ -71,7 +71,6 @@ class Report:
 
                     code_str = f'{line_number_str} {is_run} {line_code.rstrip()}'
                     code_str = code_str.ljust(50)
-
                     if self.target_entity.line_is_definition(current_line):
                         arg_summary = ''
                         separator = '🔴 '
