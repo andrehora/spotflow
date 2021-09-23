@@ -38,9 +38,9 @@ class StateResult:
         self.args = None
         self.return_value = None
 
-    def add(self, name, value, line):
+    def add(self, name, value, line, inline):
         self.vars[name] = self.vars.get(name, VarStateHistory(name, []))
-        self.vars[name].add(name, value, line)
+        self.vars[name].add(name, value, line, inline)
 
     def is_line_return_value(self, line_number):
         return line_number == self.return_value.line
@@ -75,14 +75,14 @@ class VarStateHistory:
         self.name = name
         self.states = states
 
-    def add(self, name, value, line):
+    def add(self, name, value, line, inline):
         value_has_changed = False
         if len(self.states) == 0:
             value_has_changed = True
-            inline = line-1
+            # inline = line
         else:
             last_state = self.get_last()
-            inline = last_state.line
+            # inline = last_state.line
             if last_state.value != value:
                 value_has_changed = True
 

@@ -56,6 +56,7 @@ class Report:
             for line_code in content:
                 current_line += 1
                 if self.target_entity.has_line(current_line):
+
                     states = state_result.states_for_line(current_line)
 
                     if current_line in flow_lines:
@@ -63,29 +64,33 @@ class Report:
                     if current_line not in flow_lines:
                         is_run = '❌'
                     if not self.target_entity.line_is_executable(current_line):
-                        is_run = ''.ljust(2)
+                        is_run = '🚫'
 
                     line_number_str = str(current_line).ljust(2)
+                    is_run = is_run.ljust(3)
+
                     code_str = f'{line_number_str} {is_run} {line_code.rstrip()}'
                     code_str = code_str.ljust(50)
 
                     if self.target_entity.line_is_definition(current_line):
                         arg_summary = ''
-                        separator = ' 🔴 '
+                        separator = '🔴 '
                         for arg in state_result.args:
                             if arg.name != 'self':
-                                arg_summary += f'{separator}{arg}'
+                                arg_summary += f'{separator}{arg} '
                         if arg_summary:
                             print(code_str, arg_summary)
+                        else:
+                            print(code_str)
+                    elif states:
+                        separator = '🟡 '
+                        states_str = f'{separator}{separator.join(states)}'
+                        print(code_str, states_str)
                     elif state_result.is_line_return_value(current_line):
                         separator = '🟢 '
                         return_value = state_result.return_value
                         return_str = f'{separator}{return_value}'
                         print(code_str, return_str)
-                    elif states:
-                        separator = '🟡 '
-                        states_str = f'{separator}{separator.join(states)}'
-                        print(code_str, states_str)
                     else:
                         print(code_str)
 

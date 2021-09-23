@@ -204,6 +204,8 @@ class TraceCollector:
         self.source_entity_name = None
         self.target_entities = None
         self.local_traces = {}
+        self.last_line = -1
+
         # self.all_sut_states = {}
 
     def func_return_state(self, frame):
@@ -293,4 +295,5 @@ class TraceCollector:
                         argvalues = inspect.getargvalues(frame)
                         for argvalue in argvalues.locals:
                             value = copy.copy(argvalues.locals[argvalue])
-                            current_state.add(name=argvalue, value=value, line=lineno)
+                            current_state.add(name=argvalue, value=value, line=lineno, inline=self.last_line)
+        self.last_line = frame.f_lineno
