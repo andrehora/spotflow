@@ -204,9 +204,7 @@ class TraceCollector:
         self.source_entity_name = None
         self.target_entities = None
         self.local_traces = {}
-        self.last_line = -1
-
-        # self.all_sut_states = {}
+        self.last_entity_line = {}
 
     def func_return_state(self, frame):
         value = self._run_func(frame)
@@ -268,6 +266,9 @@ class TraceCollector:
                 if entity_name not in self.local_traces:
                     self.local_traces[entity_name] = []
 
+                if entity_name not in self.last_entity_line:
+                    self.last_entity_line[entity_name] = -1
+
                 if why == 'call':
                     sut_flows = self.local_traces[entity_name]
                     state = StateResult(entity_name)
@@ -289,11 +290,12 @@ class TraceCollector:
                         current_flow.append(lineno)
                     if why == 'return':
                         current_state.return_value.line = lineno
-                        # print(current_state.return_value.line)
 
                     if current_state:
                         argvalues = inspect.getargvalues(frame)
                         for argvalue in argvalues.locals:
-                            value = copy.copy(argvalues.locals[argvalue])
-                            current_state.add(name=argvalue, value=value, line=lineno, inline=self.last_line)
-        self.last_line = frame.f_lineno
+                            # value = copy.copy(argvalues.locals[argvalue])
+                            current_state.add(name=argvalue, value=argvalues.locals[argvalue],
+                                              line=lineno, inline=self.last_entity_line[entity_name])
+                    self.last_entity_line[entity_name] = lineno
+

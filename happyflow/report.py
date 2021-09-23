@@ -64,7 +64,7 @@ class Report:
                     if current_line not in flow_lines:
                         is_run = '❌'
                     if not self.target_entity.line_is_executable(current_line):
-                        is_run = '🚫'
+                        is_run = '⬜'
 
                     line_number_str = str(current_line).ljust(2)
                     is_run = is_run.ljust(3)

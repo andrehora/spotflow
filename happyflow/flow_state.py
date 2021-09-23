@@ -47,6 +47,7 @@ class StateResult:
 
     def states_for_line(self, line_number):
         states = []
+
         for var in self.vars:
             var_states = ''
             if var != 'self':
