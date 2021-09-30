@@ -1,15 +1,14 @@
-import trace
-from collections import Counter
-from happyflow.utils import *
+from happyflow.analysis import Analysis
 
 
-class Report:
+class TextReport:
 
     def __init__(self, target_entity, flow_result):
         self.target_entity = target_entity
         self.flow_result = flow_result
+        self.analysis = Analysis(self.target_entity, self.flow_result)
 
-    def sut_code(self):
+    def show_code(self):
         with open(self.target_entity.filename) as f:
             content = f.readlines()
             line_number = 0
@@ -19,7 +18,7 @@ class Report:
                 if self.target_entity.has_line(line_number):
                     print(line_number, line_code.rstrip())
 
-    def sut_run_code(self):
+    def show_run_code(self):
         with open(self.target_entity.filename) as f:
             content = f.readlines()
             line_number = 0
@@ -30,17 +29,18 @@ class Report:
                     line_run_count = self._run_count_for_line(line_number)
                     print(line_number, line_run_count, line_code.rstrip())
 
-    def sut_most_common_flow(self):
-        flow = self.most_common_flow()
-        self._sut_common_flow(flow, 'Most')
+    def show_most_common_flow(self):
 
-    def sut_least_common_flow(self):
-        flow = self.least_common_flow()
-        self._sut_common_flow(flow, 'Least')
+        flow = self.analysis.most_common_flow()
+        self._common_flow(flow, 'Most')
 
-    def sut_code_state(self, state_summary=False):
+    def show_least_common_flow(self):
+        flow = self.analysis.least_common_flow()
+        self._common_flow(flow, 'Least')
 
-        flow = self.flow_result.flows[0]
+    def show_code_state(self, state_summary=False, flow_number=0):
+
+        flow = self.flow_result.flows[flow_number]
 
         state_result = flow.state_result
         flow_lines = flow.run_lines
@@ -81,15 +81,15 @@ class Report:
                             print(code_str, arg_summary)
                         else:
                             print(code_str)
-                    elif states:
-                        separator = '🟡 '
-                        states_str = f'{separator}{separator.join(states)}'
-                        print(code_str, states_str)
                     elif state_result.is_line_return_value(current_line):
                         separator = '🟢 '
                         return_value = state_result.return_value
                         return_str = f'{separator}{return_value}'
                         print(code_str, return_str)
+                    elif states:
+                        separator = '🟡 '
+                        states_str = f'{separator}{separator.join(states)}'
+                        print(code_str, states_str)
                     else:
                         print(code_str)
 
@@ -97,9 +97,12 @@ class Report:
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
         for arg in state_result.args:
             if arg.name != 'self':
-                arg_summary = f'🔴 {arg.name}: {str(arg.value)}'
+                arg_summary = f'🔴 IN  {arg.name}: {str(arg.value)}'
                 print(arg_summary)
 
+        if state_result.has_return():
+            return_summary = f'🟢 OUT {state_result.return_value}'
+            print(return_summary)
 
         for var in state_result.vars:
             if var != 'self':
@@ -109,11 +112,7 @@ class Report:
                 var_summary = f'🟡 {var}: {values_str}'
                 print(var_summary)
 
-        if state_result.return_value is not None:
-            return_summary = f'🟢 {state_result.return_value}'
-            print(return_summary)
-
-    def _sut_common_flow(self, flow, msg):
+    def _common_flow(self, flow, msg):
 
         flow_lines = flow[0]
         flow_count = flow[1]
@@ -135,14 +134,6 @@ class Report:
 
                     print(line_number, flag, line_code.rstrip())
 
-    def most_common_flow(self):
-        run_lines = self._run_lines_as_tuple()
-        return Counter(run_lines).most_common(1)[0]
-
-    def least_common_flow(self):
-        run_lines = self._run_lines_as_tuple()
-        return Counter(run_lines).most_common()[-1]
-
     def _run_count_for_line(self, line_number):
 
         if not self.target_entity.line_is_executable(line_number):
@@ -154,41 +145,3 @@ class Report:
                 run_count += 1
         return run_count
 
-    def _run_lines_as_tuple(self):
-        result = []
-        for flow in self.flow_result.flows:
-            result.append(tuple(flow.distinct_lines()))
-        return result
-
-    # def update_counts_with_executable_line(self):
-    #     for filename in self.run_files_and_lines:
-    #         executable_lines = trace._find_executable_linenos(filename)
-    #         for exec_line in executable_lines:
-    #             key = (filename, exec_line)
-    #             self.counts[key] = self.counts.get(key, 0)
-    #
-    # def get_counts(self, filename, line_number):
-    #     return self.counts.get((filename, line_number), -1)
-    #
-    # def annotate_file(self, filename):
-    #     with open(filename) as f:
-    #         content = f.readlines()
-    #         line_number = 0
-    #         for line_code in content:
-    #             line_number += 1
-    #             exec_count = self.get_counts(filename, line_number)
-    #             print(line_number, exec_count, line_code.rstrip())
-
-
-# from happyflow.sut_loader import SUTLoader
-# from happyflow.tracer import TraceRunner
-#
-# sut = SUTLoader.find_sut('message._parseparam')
-# trace_result = TraceRunner.trace('tests.stub_test.TestComplexFlow', sut)
-# flow_result = sut.local_flows(trace_result)
-#
-# report = Report(sut, flow_result)
-# report.sut_least_common_flow()
-#
-# for flow in flow_result.flows:
-#     print(flow.run_lines)

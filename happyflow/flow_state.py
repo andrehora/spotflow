@@ -38,16 +38,20 @@ class StateResult:
         self.args = None
         self.return_value = None
 
+    def has_return(self):
+        return self.return_value and self.return_value.has_return
+
     def add(self, name, value, line, inline):
         self.vars[name] = self.vars.get(name, VarStateHistory(name, []))
         self.vars[name].add(name, value, line, inline)
 
     def is_line_return_value(self, line_number):
-        return line_number == self.return_value.line
+        if self.has_return():
+            return line_number == self.return_value.line
+        return False
 
     def states_for_line(self, line_number):
         states = []
-
         for var in self.vars:
             var_states = ''
             if var != 'self':
@@ -59,15 +63,6 @@ class StateResult:
             if var_states:
                 states.append(var_states)
         return states
-
-    def state_diff_between_two_lines(self, line_number1, line_number2):
-        list1 = self.states_for_line(line_number1)
-        list2 = self.states_for_line(line_number2)
-        return self.diff(list1, list2)
-
-    def diff(self, list1, list2):
-        second = set(list2)
-        return [item for item in list1 if item not in second]
 
 
 class VarStateHistory:
@@ -151,9 +146,10 @@ class ArgState:
 
 class ReturnState:
 
-    def __init__(self, value, line=0):
+    def __init__(self, value, line=0, has_return=False):
         self.value = value
         self.line = line
+        self.has_return = has_return
 
     def __str__(self):
         return f'{self.value}'

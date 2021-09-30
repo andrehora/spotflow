@@ -71,3 +71,16 @@ def method_metadata(method):
 def get_end_line(start_line, source):
     loc = source.count('\n')
     return start_line + loc - 1
+
+
+def line_has_explicit_return(frame):
+    traceback = inspect.getframeinfo(frame)
+    if len(traceback.code_context) >= 1:
+        code_line = traceback.code_context[0].strip()
+        return code_line.startswith('return')
+    return False
+
+
+def diff(list1, list2):
+    second = set(list2)
+    return [item for item in list1 if item not in second]

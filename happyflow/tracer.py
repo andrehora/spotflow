@@ -289,12 +289,17 @@ class TraceCollector:
                     if why == 'line':
                         current_flow.append(lineno)
                     if why == 'return':
+                        has_return = line_has_explicit_return(frame)
                         current_state.return_value.line = lineno
+                        current_state.return_value.has_return = has_return
 
                     if current_state:
                         argvalues = inspect.getargvalues(frame)
                         for argvalue in argvalues.locals:
-                            value = copy.copy(argvalues.locals[argvalue])
+                            try:
+                                value = copy.copy(argvalues.locals[argvalue])
+                            except:
+                                value = argvalues.locals[argvalue]
                             current_state.add(name=argvalue, value=value,
                                               line=lineno, inline=self.last_entity_line[entity_name])
                     self.last_entity_line[entity_name] = lineno
