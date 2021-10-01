@@ -340,5 +340,50 @@ class TestArgAndReturnValue(unittest.TestCase):
         from happyflow.tests.stub_sut import Calculator
         self.assertEqual(return_value, Calculator(9))
 
+    def test_explicit_return_value(self):
+        sut = TargetEntityLoader.find('stub_sut.ReturnValue.explicit_return_value')
+        trace_result = TraceRunner.trace_tests('stub_test.TestReturnValue.test_explicit_return_value', sut)
+        flow_result = sut.local_flows(trace_result)
+
+        flows = flow_result.flows
+        return_value = flows[0].state_result.return_value
+
+        self.assertTrue(return_value.has_return)
+        self.assertEqual(return_value.value, 123)
+
+    def test_explicit_return_none(self):
+        sut = TargetEntityLoader.find('stub_sut.ReturnValue.explicit_return_none')
+        trace_result = TraceRunner.trace_tests('stub_test.TestReturnValue.test_explicit_return_none', sut)
+        flow_result = sut.local_flows(trace_result)
+
+        flows = flow_result.flows
+        return_value = flows[0].state_result.return_value
+
+        self.assertTrue(return_value.has_return)
+        self.assertEqual(return_value.value, None)
+
+    def test_explicit_return(self):
+        sut = TargetEntityLoader.find('stub_sut.ReturnValue.explicit_return')
+        trace_result = TraceRunner.trace_tests('stub_test.TestReturnValue.test_explicit_return', sut)
+        flow_result = sut.local_flows(trace_result)
+
+        flows = flow_result.flows
+        return_value = flows[0].state_result.return_value
+
+        self.assertTrue(return_value.has_return)
+        self.assertEqual(return_value.value, None)
+
+    def test_implicit_return(self):
+        sut = TargetEntityLoader.find('stub_sut.ReturnValue.implicit_return')
+        trace_result = TraceRunner.trace_tests('stub_test.TestReturnValue.test_implicit_return', sut)
+        flow_result = sut.local_flows(trace_result)
+
+        flows = flow_result.flows
+        return_value = flows[0].state_result.return_value
+
+        self.assertFalse(return_value.has_return)
+        self.assertEqual(return_value.value, None)
+
+
 
 

@@ -218,3 +218,15 @@ class ReturnValue:
         calc.subtract(1)
         return calc
 
+    def explicit_return_value(self):
+        return 123
+
+    def explicit_return_none(self):
+        return None
+
+    def explicit_return(self):
+        return
+
+    def implicit_return(self):
+        a = 123
+
