@@ -5,26 +5,34 @@ from happyflow.target_model import TargetEntityResult, TargetEntity
 
 class TargetEntityLoader:
 
-    def __init__(self, dir='.'):
+    def __init__(self, dir='.', module_name=None):
         self.dir = dir
+        self.module_name = module_name
         self.target_container = TargetEntityResult()
 
     def load(self):
         python_files = find_python_files(self.dir)
         for filename in python_files:
-            module_code = open_file(filename)
-            if module_code:
-                try:
-                    module_node = ast.parse(module_code)
+            if self.module_name:
+                target_module_name = find_module_name(filename)
+                if self.module_name == target_module_name:
+                    self.parse_file(filename)
+            else:
+                self.parse_file(filename)
 
-                    visitor = TargetEntityVisitor(self.target_container, filename)
-                    visitor.visit(module_node)
-                except:
-                    pass
+    def parse_file(self, filename):
+        module_code = open_file(filename)
+        if module_code:
+            try:
+                module_node = ast.parse(module_code)
+                visitor = TargetEntityVisitor(self.target_container, filename)
+                visitor.visit(module_node)
+            except:
+                pass
 
     @staticmethod
-    def find(target_entity_name, dir='.'):
-        loader = TargetEntityLoader(dir)
+    def find(target_entity_name, dir='.', module_name=None):
+        loader = TargetEntityLoader(dir, module_name)
         loader.load()
         return loader.target_container.get(target_entity_name)
 

@@ -4,7 +4,6 @@ import inspect
 
 def open_file(filename):
     try:
-        # print(filename)
         with open(filename, 'r', encoding="utf-8") as f:
             return f.read()
     except:
@@ -84,3 +83,36 @@ def line_has_explicit_return(frame):
 def diff(list1, list2):
     second = set(list2)
     return [item for item in list1 if item not in second]
+
+
+def clear_element(element):
+
+    if is_hashable(element):
+        return element
+
+    if is_list_or_set(element):
+        t = []
+        for each in element:
+            t.append(element_or_class(each))
+        return tuple(t)
+
+    return element_or_class(element)
+
+
+def element_or_class(element):
+    if is_hashable(element):
+        return element
+    return f'{element.__class__.__name__} object'
+
+
+def is_hashable(element):
+    try:
+        hash(element)
+        return True
+    except TypeError:
+        return False
+
+
+def is_list_or_set(element):
+    return type(element) == list or type(element) == set
+

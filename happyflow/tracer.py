@@ -240,15 +240,18 @@ class TraceCollector:
 
         argvalues = inspect.getargvalues(frame)
         for arg in argvalues.args:
-            arg_state = ArgState(arg, argvalues.locals[arg], frame.f_lineno)
+            value = copy.copy(argvalues.locals[arg])
+            arg_state = ArgState(arg, value, frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.varargs:
-            arg_state = ArgState('varargs', argvalues.locals['varargs'], frame.f_lineno)
+            value = copy.copy(argvalues.locals['varargs'])
+            arg_state = ArgState('varargs', value, frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.keywords:
-            arg_state = ArgState('keywords', argvalues.locals['keywords'], frame.f_lineno)
+            value = copy.copy(argvalues.locals['keywords'])
+            arg_state = ArgState('keywords', value, frame.f_lineno)
             states.append(arg_state)
 
         return states

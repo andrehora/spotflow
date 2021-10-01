@@ -8,6 +8,22 @@ class TextReport:
         self.flow_result = flow_result
         self.analysis = Analysis(self.target_entity, self.flow_result)
 
+    def show_most_common_args_and_return_values(self, n=None):
+        print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+        print('Total distinct flows:', self.analysis.number_of_distinct_flows())
+        count = 0
+        for flow in self.analysis.most_common_flow(n):
+            count += 1
+            target_flow_lines = flow[0]
+            flow_result = self.flow_result.flow_result_by_lines(target_flow_lines)
+            analysis = Analysis(self.target_entity, flow_result)
+
+            print(f'=-=-=-=-=-=-=-= Flow {count} =-=-=-=-=-=-=-=')
+            print('Total:', analysis.number_of_flows())
+            print('Distinct lines: ', target_flow_lines)
+            print('Args:', analysis.most_common_args())
+            print('Return values:', analysis.most_common_return_values())
+
     def show_code(self):
         with open(self.target_entity.filename) as f:
             content = f.readlines()
@@ -73,7 +89,7 @@ class TextReport:
                     code_str = code_str.ljust(50)
                     if self.target_entity.line_is_definition(current_line):
                         arg_summary = ''
-                        separator = '🔴 '
+                        separator = '🟢 '
                         for arg in state_result.args:
                             if arg.name != 'self':
                                 arg_summary += f'{separator}{arg} '
@@ -82,7 +98,7 @@ class TextReport:
                         else:
                             print(code_str)
                     elif state_result.is_line_return_value(current_line):
-                        separator = '🟢 '
+                        separator = '🔴 '
                         return_value = state_result.return_value
                         return_str = f'{separator}{return_value}'
                         print(code_str, return_str)
@@ -97,11 +113,11 @@ class TextReport:
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
         for arg in state_result.args:
             if arg.name != 'self':
-                arg_summary = f'🔴 IN  {arg.name}: {str(arg.value)}'
+                arg_summary = f'🟢 IN  {arg.name}: {str(arg.value)}'
                 print(arg_summary)
 
         if state_result.has_return():
-            return_summary = f'🟢 OUT {state_result.return_value}'
+            return_summary = f'🔴 OUT {state_result.return_value}'
             print(return_summary)
 
         for var in state_result.vars:

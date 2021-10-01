@@ -7,17 +7,17 @@ class Analysis:
         self.target_entity = target_entity
         self.flow_result = flow_result
 
-    def number_of_sources(self):
-        return len(self.flow_result.source_names)
+    def number_of_distinct_sources(self):
+        return len(set(self.flow_result.source_entity_names))
+
+    def number_of_distinct_flows(self):
+        return len(set(self.flow_result.distinct_lines()))
 
     def number_of_flows(self):
         return len(self.flow_result.flows)
 
-    def number_of_distinct_flows(self):
-        return len(set(self.flow_result.distinct_flows()))
-
     def most_common_flow(self, n=None):
-        lines = self.flow_result.distinct_flows()
+        lines = self.flow_result.distinct_lines()
         if n == -1:
             return self._least_common(lines)
         return self._most_common(lines, n)
@@ -41,12 +41,19 @@ class Analysis:
         return self._most_common(values, n)
 
     def _most_common(self, elements, n=None):
+        # try:
         return Counter(elements).most_common(n)
+        # except TypeError:
+        #     return []
 
     def _least_common(self, elements):
-        return [Counter(elements).most_common()[-1]]
-
-
+        try:
+            counter = Counter(elements).most_common()
+            if len(counter) == 0:
+                return []
+            return [Counter(elements).most_common()[-1]]
+        except:
+            return []
 
 
 

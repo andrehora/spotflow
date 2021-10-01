@@ -1,20 +1,32 @@
+from happyflow.utils import *
+
+
 class FlowResult:
 
-    def __init__(self, sut):
-        self.sut = sut
-        self.sut_name = sut.name
-        self.source_names = []
+    def __init__(self, target_entity):
+        self.target_entity = target_entity
+        self.target_entity_name = target_entity.name
+        self.source_entity_names = []
         self.flows = []
 
-    def add(self, test_name, flow, state_result=None):
-        self.source_names.append(test_name)
-        flow = Flow(test_name, flow, state_result)
+    def flow_result_by_lines(self, lines):
+        target_flows = []
+        for flow in self.flows:
+            if tuple(flow.distinct_lines()) == tuple(lines):
+                target_flows.append(flow)
+        flow_result = FlowResult(self.target_entity)
+        flow_result.flows = target_flows
+        return flow_result
+
+    def add(self, source_entity_name, flow, state_result=None):
+        self.source_entity_names.append(source_entity_name)
+        flow = Flow(source_entity_name, flow, state_result)
         self.flows.append(flow)
 
     def number_of_sources(self):
-        return len(self.source_names)
+        return len(self.source_entity_names)
 
-    def distinct_flows(self):
+    def distinct_lines(self):
         lines = []
         for flow in self.flows:
             lines.append(tuple(flow.distinct_lines()))
@@ -23,26 +35,30 @@ class FlowResult:
     def args(self):
         args_and_values = {}
         for flow in self.flows:
-            for arg in flow.state_result.args:
-                if arg.name in args_and_values:
-                    args_and_values[arg.name].append(arg.value)
-                else:
-                    args_and_values[arg.name] = [arg.value]
+            if flow.state_result and flow.state_result.args:
+                for arg in flow.state_result.args:
+                    if arg.name != 'self':
+                        value = clear_element(arg.value)
+                        if arg.name in args_and_values:
+                            args_and_values[arg.name].append(value)
+                        else:
+                            args_and_values[arg.name] = [value]
         return args_and_values
 
     def return_values(self):
         values = []
         for flow in self.flows:
-            if flow.state_result.has_return():
+            if flow.state_result and flow.state_result.has_return():
                 value = flow.state_result.return_value.value
+                value = clear_element(value)
                 values.append(value)
         return values
 
 
 class Flow:
 
-    def __init__(self, test_name, run_lines, state_result=None):
-        self.test_name = test_name
+    def __init__(self, source_entity_name, run_lines, state_result=None):
+        self.source_entity_name = source_entity_name
         self.run_lines = run_lines
         self.state_result = state_result
 
