@@ -7,24 +7,23 @@ class Analysis:
         self.target_entity = target_entity
         self.flow_result = flow_result
 
-    def distinct_flows(self):
-        return len(self.most_common_flow())
+    def number_of_sources(self):
+        return len(self.flow_result.source_names)
+
+    def number_of_flows(self):
+        return len(self.flow_result.flows)
+
+    def number_of_distinct_flows(self):
+        return len(set(self.flow_result.distinct_flows()))
 
     def most_common_flow(self, n=None):
-        run_lines = self._run_lines_as_tuple()
+        lines = self.flow_result.distinct_flows()
         if n == -1:
-            return self._least_common(run_lines)
-        return self._most_common(run_lines, n)
+            return self._least_common(lines)
+        return self._most_common(lines, n)
 
     def most_common_args(self, n=None):
-        args = {}
-        for flow in self.flow_result.flows:
-            for arg in flow.state_result.args:
-                if arg.name in args:
-                    args[arg.name].append(arg.value)
-                else:
-                    args[arg.name] = [arg.value]
-
+        args = self.flow_result.args()
         args_count = {}
         if n == -1:
             for arg in args:
@@ -36,12 +35,7 @@ class Analysis:
         return args_count
 
     def most_common_return_values(self, n=None):
-        values = []
-        for flow in self.flow_result.flows:
-            if flow.state_result.has_return():
-                value = flow.state_result.return_value.value
-                values.append(tuple(value))
-
+        values = self.flow_result.return_values()
         if n == -1:
             return self._least_common(values)
         return self._most_common(values, n)
@@ -51,12 +45,6 @@ class Analysis:
 
     def _least_common(self, elements):
         return [Counter(elements).most_common()[-1]]
-
-    def _run_lines_as_tuple(self):
-        result = []
-        for flow in self.flow_result.flows:
-            result.append(tuple(flow.distinct_lines()))
-        return result
 
 
 

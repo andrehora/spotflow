@@ -3,16 +3,37 @@ class FlowResult:
     def __init__(self, sut):
         self.sut = sut
         self.sut_name = sut.name
-        self.test_names = []
+        self.source_names = []
         self.flows = []
 
     def add(self, test_name, flow, state_result=None):
-        self.test_names.append(test_name)
+        self.source_names.append(test_name)
         flow = Flow(test_name, flow, state_result)
         self.flows.append(flow)
 
-    def number_of_tests(self):
-        return len(self.test_names)
+    def distinct_flows(self):
+        lines = []
+        for flow in self.flows:
+            lines.append(tuple(flow.distinct_lines()))
+        return lines
+
+    def args(self):
+        args_and_values = {}
+        for flow in self.flows:
+            for arg in flow.state_result.args:
+                if arg.name in args_and_values:
+                    args_and_values[arg.name].append(arg.value)
+                else:
+                    args_and_values[arg.name] = [arg.value]
+        return args_and_values
+
+    def return_values(self):
+        values = []
+        for flow in self.flows:
+            if flow.state_result.has_return():
+                value = flow.state_result.return_value.value
+                values.append(value)
+        return values
 
 
 class Flow:
