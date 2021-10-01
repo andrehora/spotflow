@@ -11,10 +11,10 @@ class TestChangeState(unittest.TestCase):
         trace_result = TraceRunner.trace_tests('stub_test.TestChangeState.test_change_var_state', sut)
         flow_result = sut.local_flows(trace_result)
 
-        self.assertEqual(flow_result.number_of_tests(), 1)
+        self.assertEqual(flow_result.number_of_sources(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [59, 60, 61])
         self.assertEqual(flow_result.sut_name, 'change_var_state')
-        self.assertIn('test_change_var_state', flow_result.test_names)
+        self.assertIn('test_change_var_state', flow_result.source_names)
 
         state_result = flow_result.flows[0].state_result
         a = state_result.vars['a'].states
@@ -35,10 +35,10 @@ class TestChangeState(unittest.TestCase):
         trace_result = TraceRunner.trace_tests('stub_test.TestChangeState.test_change_arg_state', sut)
         flow_result = sut.local_flows(trace_result)
 
-        self.assertEqual(flow_result.number_of_tests(), 1)
+        self.assertEqual(flow_result.number_of_sources(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [64, 65, 66])
         self.assertEqual(flow_result.sut_name, 'change_arg_state')
-        self.assertIn('test_change_arg_state', flow_result.test_names)
+        self.assertIn('test_change_arg_state', flow_result.source_names)
 
         state_result = flow_result.flows[0].state_result
         a = state_result.vars['a'].states
@@ -53,10 +53,10 @@ class TestChangeState(unittest.TestCase):
         trace_result = TraceRunner.trace_tests('stub_test.TestChangeState.test_change_var_state_with_conditional_true', sut)
         flow_result = sut.local_flows(trace_result)
 
-        self.assertEqual(flow_result.number_of_tests(), 1)
+        self.assertEqual(flow_result.number_of_sources(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [69, 70, 71])
         self.assertEqual(flow_result.sut_name, 'change_var_state_with_conditional')
-        self.assertIn('test_change_var_state_with_conditional_true', flow_result.test_names)
+        self.assertIn('test_change_var_state_with_conditional_true', flow_result.source_names)
 
         state_result = flow_result.flows[0].state_result
         a = state_result.vars['a'].states
@@ -73,10 +73,10 @@ class TestChangeState(unittest.TestCase):
         trace_result = TraceRunner.trace_tests('stub_test.TestChangeState.test_change_var_state_with_conditional_false', sut)
         flow_result = sut.local_flows(trace_result)
 
-        self.assertEqual(flow_result.number_of_tests(), 1)
+        self.assertEqual(flow_result.number_of_sources(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [69, 70, 73])
         self.assertEqual(flow_result.sut_name, 'change_var_state_with_conditional')
-        self.assertIn('test_change_var_state_with_conditional_false', flow_result.test_names)
+        self.assertIn('test_change_var_state_with_conditional_false', flow_result.source_names)
 
         state_result = flow_result.flows[0].state_result
         a = state_result.vars['a'].states
@@ -93,10 +93,10 @@ class TestChangeState(unittest.TestCase):
         trace_result = TraceRunner.trace_tests('stub_test.TestChangeState.test_change_multiple_vars_states', sut)
         flow_result = sut.local_flows(trace_result)
 
-        self.assertEqual(flow_result.number_of_tests(), 1)
+        self.assertEqual(flow_result.number_of_sources(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [76, 77, 79, 80])
         self.assertEqual(flow_result.sut_name, 'change_multiple_vars_states')
-        self.assertIn('test_change_multiple_vars_states', flow_result.test_names)
+        self.assertIn('test_change_multiple_vars_states', flow_result.source_names)
 
         state_result = flow_result.flows[0].state_result
 
@@ -114,10 +114,10 @@ class TestChangeState(unittest.TestCase):
         trace_result = TraceRunner.trace_tests('stub_test.TestChangeState.test_change_list_state', sut)
         flow_result = sut.local_flows(trace_result)
 
-        self.assertEqual(flow_result.number_of_tests(), 1)
+        self.assertEqual(flow_result.number_of_sources(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [83, 84, 85, 86, 87, 88, 89])
         self.assertEqual(flow_result.sut_name, 'change_list_state')
-        self.assertIn('test_change_list_state', flow_result.test_names)
+        self.assertIn('test_change_list_state', flow_result.source_names)
 
         state_result = flow_result.flows[0].state_result
         a_list = state_result.vars['a'].states
@@ -135,11 +135,11 @@ class TestChangeState(unittest.TestCase):
         trace_result = TraceRunner.trace_tests('stub_test.TestChangeState.test_change_var_state_with_loop', sut)
         flow_result = sut.local_flows(trace_result)
 
-        self.assertEqual(flow_result.number_of_tests(), 1)
+        self.assertEqual(flow_result.number_of_sources(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [92, 93, 94, 93, 94, 93, 94, 93, 94, 93])
         self.assertEqual(flow_result.flows[0].distinct_lines(), [92, 93, 94])
         self.assertEqual(flow_result.sut_name, 'change_var_state_with_loop')
-        self.assertIn('test_change_var_state_with_loop', flow_result.test_names)
+        self.assertIn('test_change_var_state_with_loop', flow_result.source_names)
 
         state_result = flow_result.flows[0].state_result
         a = state_result.vars['a'].states
@@ -166,10 +166,10 @@ class TestChangeState(unittest.TestCase):
         trace_result = TraceRunner.trace_tests('stub_test.TestChangeState.test_change_instance_var', sut)
         flow_result = sut.local_flows(trace_result)
 
-        self.assertEqual(flow_result.number_of_tests(), 1)
+        self.assertEqual(flow_result.number_of_sources(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [100, 101])
         self.assertEqual(flow_result.sut_name, 'change_instance_var')
-        self.assertIn('test_change_instance_var', flow_result.test_names)
+        self.assertIn('test_change_instance_var', flow_result.source_names)
 
         state_result = flow_result.flows[0].state_result
         obj = state_result.vars['self'].states
@@ -190,10 +190,10 @@ class TestChangeState(unittest.TestCase):
         trace_result = TraceRunner.trace_tests('stub_test.TestChangeState.test_init', sut)
         flow_result = sut.local_flows(trace_result)
 
-        self.assertEqual(flow_result.number_of_tests(), 1)
+        self.assertEqual(flow_result.number_of_sources(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [97])
         self.assertEqual(flow_result.sut_name, '__init__')
-        self.assertIn('test_init', flow_result.test_names)
+        self.assertIn('test_init', flow_result.source_names)
 
         state_result = flow_result.flows[0].state_result
         obj = state_result.vars['self'].states
@@ -211,10 +211,10 @@ class TestChangeState(unittest.TestCase):
         trace_result = TraceRunner.trace_tests('stub_test.TestChangeState.test_keep_var_state', sut)
         flow_result = sut.local_flows(trace_result)
 
-        self.assertEqual(flow_result.number_of_tests(), 1)
+        self.assertEqual(flow_result.number_of_sources(), 1)
         self.assertEqual(flow_result.flows[0].run_lines, [104, 105, 106])
         self.assertEqual(flow_result.sut_name, 'keep_var_state')
-        self.assertIn('test_keep_var_state', flow_result.test_names)
+        self.assertIn('test_keep_var_state', flow_result.source_names)
 
         state_result = flow_result.flows[0].state_result
         a = state_result.vars['a'].states

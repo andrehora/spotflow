@@ -11,6 +11,9 @@ class FlowResult:
         flow = Flow(test_name, flow, state_result)
         self.flows.append(flow)
 
+    def number_of_sources(self):
+        return len(self.source_names)
+
     def distinct_flows(self):
         lines = []
         for flow in self.flows:
