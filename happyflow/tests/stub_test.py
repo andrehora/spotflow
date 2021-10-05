@@ -158,8 +158,8 @@ class TestReturnValue(unittest.TestCase):
     def test_change_obj_3(self):
         self.ret.change_obj_3()
 
-    def test_explicit_return_value(self):
-        self.ret.explicit_return_value()
+    def test_explicit_return_state(self):
+        self.ret.explicit_return_state()
 
     def test_explicit_return_none(self):
         self.ret.explicit_return_none()

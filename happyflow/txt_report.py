@@ -26,8 +26,8 @@ class TextReport:
             print(f'=-=-=-=-=-=-=-= Flow {count} =-=-=-=-=-=-=-=')
             print('Total:', analysis.number_of_flows())
             print(f'Flow ({len(target_flow_lines)}): {target_flow_lines}')
-            # print('Args:', analysis.most_common_args())
-            # print('Return values:', analysis.most_common_return_values())
+            print('Args:', analysis.most_common_args())
+            print('Return values:', analysis.most_common_return_values())
 
     def show_code(self):
         with open(self.target_entity.filename) as f:

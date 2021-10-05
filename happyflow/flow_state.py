@@ -1,7 +1,7 @@
 from happyflow.utils import *
 
 
-class FlowResult:
+class RunResult:
 
     def __init__(self, target_entity):
         self.target_entity = target_entity
@@ -14,7 +14,7 @@ class FlowResult:
         for flow in self.flows:
             if tuple(flow.distinct_lines()) == tuple(lines):
                 target_flows.append(flow)
-        flow_result = FlowResult(self.target_entity)
+        flow_result = RunResult(self.target_entity)
         flow_result.flows = target_flows
         return flow_result
 
@@ -45,11 +45,11 @@ class FlowResult:
                             args_and_values[arg.name] = [value]
         return args_and_values
 
-    def return_values(self):
+    def return_states(self):
         values = []
         for flow in self.flows:
             if flow.state_result and flow.state_result.has_return():
-                value = flow.state_result.return_value.value
+                value = flow.state_result.return_state.value
                 value = clear_element(value)
                 values.append(value)
         return values
@@ -76,10 +76,10 @@ class StateResult:
         self.vars = {}
 
         self.args = None
-        self.return_value = None
+        self.return_state = None
 
     def has_return(self):
-        return self.return_value and self.return_value.has_return
+        return self.return_state and self.return_state.has_return
 
     def add(self, name, value, line, inline):
         self.vars[name] = self.vars.get(name, VarStateHistory(name, []))
@@ -87,7 +87,7 @@ class StateResult:
 
     def is_line_return_value(self, line_number):
         if self.has_return():
-            return line_number == self.return_value.line
+            return line_number == self.return_state.line
         return False
 
     def states_for_line(self, line_number):
@@ -184,12 +184,13 @@ class ArgState:
         return f'{self.name}={self.value}'
 
 
-class ValidReturnState:
+class ReturnState:
 
-    def __init__(self, value, line=0, has_return=False):
+    def __init__(self, value=None, line=0, has_return=False):
         self.value = value
         self.line = line
         self.has_return = has_return
+        self.valid = True
 
     def __str__(self):
         return f'{self.value}'
@@ -198,5 +199,3 @@ class ValidReturnState:
         return self.value == other
 
 
-class ErrorReturnState:
-    pass

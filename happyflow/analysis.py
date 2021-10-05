@@ -35,7 +35,7 @@ class Analysis:
         return args_count
 
     def most_common_return_values(self, n=None):
-        values = self.flow_result.return_values()
+        values = self.flow_result.return_states()
         if n == -1:
             return self._least_common(values)
         return self._most_common(values, n)

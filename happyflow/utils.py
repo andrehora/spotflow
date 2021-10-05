@@ -99,13 +99,13 @@ def clear_element(element):
     if is_list_or_set(element):
         t = []
         for each in element:
-            t.append(element_or_class(each))
+            t.append(element_or_type(each))
         return tuple(t)
 
-    return element_or_class(element)
+    return element_or_type(element)
 
 
-def element_or_class(element):
+def element_or_type(element):
     if is_hashable(element):
         return element
     return element.__class__.__name__

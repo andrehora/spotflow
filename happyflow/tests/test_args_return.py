@@ -20,8 +20,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 100)
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 100)
 
     def test_simple_return_global(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.simple_return')
@@ -38,8 +38,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 100)
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 100)
 
     def test_simple_return_with_arg(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.simple_return_with_arg')
@@ -58,8 +58,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(args[1].name, 'msg')
         self.assertEqual(args[2].name, 'name')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 'hello world')
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 'hello world')
 
     def test_change_return_0(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_return_0')
@@ -78,8 +78,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(args[1].name, 'a')
         self.assertEqual(args[2].name, 'b')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 300)
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 300)
 
     def test_change_return_1(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_return_1')
@@ -96,8 +96,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 3)
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 3)
 
     def test_change_return_2(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_return_2')
@@ -114,8 +114,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 4)
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 4)
 
     def test_change_return_3(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_return_3')
@@ -132,8 +132,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 'a and l')
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 'a and l')
 
     def test_change_return_4(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_return_4')
@@ -150,8 +150,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, [1, 2, 3])
+        return_state = state_result.return_state
+        self.assertEqual(return_state, [1, 2, 3])
 
     def test_change_return_5(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_return_5')
@@ -168,8 +168,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 10)
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 10)
 
     def test_multiple_return_true(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.multiple_return')
@@ -187,8 +187,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'enter')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 'enter is true')
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 'enter is true')
 
     def test_multiple_return_false(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.multiple_return')
@@ -206,8 +206,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'enter')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 'enter is false')
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 'enter is false')
 
     def test_change_attribute_0(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_attribute_0')
@@ -225,8 +225,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'new_n')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 500)
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 500)
 
     def test_change_attribute_1(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_attribute_1')
@@ -243,8 +243,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 101)
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 101)
 
     def test_change_attribute_2(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_attribute_2')
@@ -261,8 +261,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 'foo')
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 'foo')
 
     def test_change_attribute_3(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_attribute_3')
@@ -279,8 +279,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 5)
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 5)
 
     def test_change_obj_1(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_obj_1')
@@ -297,8 +297,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 9)
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 9)
 
     def test_change_obj_2(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_obj_2')
@@ -318,8 +318,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(args[2].name, 'add2')
         self.assertEqual(args[3].name, 'sub')
 
-        return_value = state_result.return_value
-        self.assertEqual(return_value, 19)
+        return_state = state_result.return_state
+        self.assertEqual(return_state, 19)
 
     def test_change_obj_3(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.change_obj_3')
@@ -336,20 +336,20 @@ class TestArgAndReturnValue(unittest.TestCase):
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
-        return_value = state_result.return_value
+        return_state = state_result.return_state
         from happyflow.tests.stub_sut import Calculator
-        self.assertEqual(return_value, Calculator(9))
+        self.assertEqual(return_state, Calculator(9))
 
-    def test_explicit_return_value(self):
-        sut = TargetEntityLoader.find('stub_sut.ReturnValue.explicit_return_value')
-        trace_result = TraceRunner.trace_tests('stub_test.TestReturnValue.test_explicit_return_value', sut)
+    def test_explicit_return_state(self):
+        sut = TargetEntityLoader.find('stub_sut.ReturnValue.explicit_return_state')
+        trace_result = TraceRunner.trace_tests('stub_test.TestReturnValue.test_explicit_return_state', sut)
         flow_result = sut.local_flows(trace_result)
 
         flows = flow_result.flows
-        return_value = flows[0].state_result.return_value
+        return_state = flows[0].state_result.return_state
 
-        self.assertTrue(return_value.has_return)
-        self.assertEqual(return_value.value, 123)
+        self.assertTrue(return_state.has_return)
+        self.assertEqual(return_state.value, 123)
 
     def test_explicit_return_none(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.explicit_return_none')
@@ -357,10 +357,10 @@ class TestArgAndReturnValue(unittest.TestCase):
         flow_result = sut.local_flows(trace_result)
 
         flows = flow_result.flows
-        return_value = flows[0].state_result.return_value
+        return_state = flows[0].state_result.return_state
 
-        self.assertTrue(return_value.has_return)
-        self.assertEqual(return_value.value, None)
+        self.assertTrue(return_state.has_return)
+        self.assertEqual(return_state.value, None)
 
     def test_explicit_return(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.explicit_return')
@@ -368,10 +368,10 @@ class TestArgAndReturnValue(unittest.TestCase):
         flow_result = sut.local_flows(trace_result)
 
         flows = flow_result.flows
-        return_value = flows[0].state_result.return_value
+        return_state = flows[0].state_result.return_state
 
-        self.assertTrue(return_value.has_return)
-        self.assertEqual(return_value.value, None)
+        self.assertTrue(return_state.has_return)
+        self.assertEqual(return_state.value, None)
 
     def test_implicit_return(self):
         sut = TargetEntityLoader.find('stub_sut.ReturnValue.implicit_return')
@@ -379,10 +379,10 @@ class TestArgAndReturnValue(unittest.TestCase):
         flow_result = sut.local_flows(trace_result)
 
         flows = flow_result.flows
-        return_value = flows[0].state_result.return_value
+        return_state = flows[0].state_result.return_state
 
-        self.assertFalse(return_value.has_return)
-        self.assertEqual(return_value.value, None)
+        self.assertFalse(return_state.has_return)
+        self.assertEqual(return_state.value, None)
 
 
 
