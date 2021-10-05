@@ -1,4 +1,5 @@
 from happyflow.analysis import Analysis
+from happyflow.utils import read_file
 
 
 class TextReport:
@@ -9,8 +10,12 @@ class TextReport:
         self.analysis = Analysis(self.target_entity, self.flow_result)
 
     def show_most_common_args_and_return_values(self, n=None):
-        print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
-        print('Total distinct flows:', self.analysis.number_of_distinct_flows())
+        print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+        print('Source entity:', self.target_entity)
+        print('Executable lines:', len(self.target_entity.executable_lines()))
+        print('Total flows:', self.analysis.number_of_flows(),  'Distinct:', self.analysis.number_of_distinct_flows())
+        # exec_lines = self.target_entity.executable_lines()
+        # print(f'Executable lines ({len(exec_lines)}): {exec_lines}')
         count = 0
         for flow in self.analysis.most_common_flow(n):
             count += 1
@@ -20,9 +25,9 @@ class TextReport:
 
             print(f'=-=-=-=-=-=-=-= Flow {count} =-=-=-=-=-=-=-=')
             print('Total:', analysis.number_of_flows())
-            print('Distinct lines: ', target_flow_lines)
-            print('Args:', analysis.most_common_args())
-            print('Return values:', analysis.most_common_return_values())
+            print(f'Flow ({len(target_flow_lines)}): {target_flow_lines}')
+            # print('Args:', analysis.most_common_args())
+            # print('Return values:', analysis.most_common_return_values())
 
     def show_code(self):
         with open(self.target_entity.filename) as f:
@@ -61,53 +66,50 @@ class TextReport:
         state_result = flow.state_result
         flow_lines = flow.run_lines
 
-        with open(self.target_entity.filename) as f:
+        if state_summary:
+            self.show_state_summary(state_result)
+        print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+        content = read_file(self.target_entity.filename)
+        current_line = 0
+        for line_code in content:
+            current_line += 1
+            if self.target_entity.has_line(current_line):
 
-            if state_summary:
-                self.show_state_summary(state_result)
-            print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+                states = state_result.states_for_line(current_line)
 
-            content = f.readlines()
-            current_line = 0
-            for line_code in content:
-                current_line += 1
-                if self.target_entity.has_line(current_line):
+                if current_line in flow_lines:
+                    is_run = '✅'
+                if current_line not in flow_lines:
+                    is_run = '❌'
+                if not self.target_entity.line_is_executable(current_line):
+                    is_run = '⬜'
 
-                    states = state_result.states_for_line(current_line)
+                line_number_str = str(current_line).ljust(2)
+                is_run = is_run.ljust(3)
 
-                    if current_line in flow_lines:
-                        is_run = '✅'
-                    if current_line not in flow_lines:
-                        is_run = '❌'
-                    if not self.target_entity.line_is_executable(current_line):
-                        is_run = '⬜'
-
-                    line_number_str = str(current_line).ljust(2)
-                    is_run = is_run.ljust(3)
-
-                    code_str = f'{line_number_str} {is_run} {line_code.rstrip()}'
-                    code_str = code_str.ljust(50)
-                    if self.target_entity.line_is_definition(current_line):
-                        arg_summary = ''
-                        separator = '🟢 '
-                        for arg in state_result.args:
-                            if arg.name != 'self':
-                                arg_summary += f'{separator}{arg} '
-                        if arg_summary:
-                            print(code_str, arg_summary)
-                        else:
-                            print(code_str)
-                    elif state_result.is_line_return_value(current_line):
-                        separator = '🔴 '
-                        return_value = state_result.return_value
-                        return_str = f'{separator}{return_value}'
-                        print(code_str, return_str)
-                    elif states:
-                        separator = '🟡 '
-                        states_str = f'{separator}{separator.join(states)}'
-                        print(code_str, states_str)
+                code_str = f'{line_number_str} {is_run} {line_code.rstrip()}'
+                code_str = code_str.ljust(50)
+                if self.target_entity.line_is_definition(current_line):
+                    arg_summary = ''
+                    separator = '🟢 '
+                    for arg in state_result.args:
+                        if arg.name != 'self':
+                            arg_summary += f'{separator}{arg} '
+                    if arg_summary:
+                        print(code_str, arg_summary)
                     else:
                         print(code_str)
+                elif state_result.is_line_return_value(current_line):
+                    separator = '🔴 '
+                    return_value = state_result.return_value
+                    return_str = f'{separator}{return_value}'
+                    print(code_str, return_str)
+                elif states:
+                    separator = '🟡 '
+                    states_str = f'{separator}{separator.join(states)}'
+                    print(code_str, states_str)
+                else:
+                    print(code_str)
 
     def show_state_summary(self, state_result):
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')

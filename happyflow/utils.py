@@ -1,5 +1,11 @@
 import os
+import re
 import inspect
+import logging
+import copy
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import get_formatter_by_name
 
 
 def open_file(filename):
@@ -29,7 +35,7 @@ def find_class_name(frame):
     args = inspect.getargvalues(frame)
     if 'self' in args.locals:
         obj = args.locals['self']
-        return str(obj.__class__.__name__)
+        return obj.__class__.__name__
     return None
 
 
@@ -102,7 +108,7 @@ def clear_element(element):
 def element_or_class(element):
     if is_hashable(element):
         return element
-    return f'{element.__class__.__name__} object'
+    return element.__class__.__name__
 
 
 def is_hashable(element):
@@ -115,4 +121,52 @@ def is_hashable(element):
 
 def is_list_or_set(element):
     return type(element) == list or type(element) == set
+
+
+def read_file(filename):
+    with open(filename) as f:
+        return f.read()
+
+
+def read_file_lines(filename):
+    with open(filename) as f:
+        return f.readlines()
+
+
+def html_for_code(code):
+    lexer = get_lexer_by_name("python", stripall=True)
+    formatter = get_formatter_by_name("html", style="friendly")
+    return highlight(code, lexer, formatter)
+
+
+def html_lines_for_code(code):
+    html = html_for_code(code)
+    lines = []
+    for line in html.splitlines():
+        line = line.replace('<div class="highlight"><pre><span></span>', '')
+        line = line.replace('</pre></div>', '')
+        lines.append(line)
+    return lines
+
+
+def write_html(fname, html):
+    html = re.sub(r"(\A\s+)|(\s+$)", "", html, flags=re.MULTILINE) + "\n"
+    with open(fname, "wb") as fout:
+        fout.write(html.encode('ascii', 'xmlcharrefreplace'))
+
+
+def copy_or_type(obj):
+    try:
+        return copy.deepcopy(obj)
+    except Exception:
+        return obj.__class__.__name__
+
+
+def try_copy(obj, name):
+    try:
+        return copy.deepcopy(obj)
+    except Exception:
+        logging.warning(f'Copy error: {name} {str(obj)}')
+        raise
+
 

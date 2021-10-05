@@ -1,7 +1,8 @@
-import copy
 import trace
-from happyflow.utils import *
-from happyflow.flow_state import StateResult, FlowResult, ArgState, ReturnState
+import logging
+import inspect
+from happyflow.utils import copy_or_type, try_copy, find_full_entity_name, line_has_explicit_return
+from happyflow.flow_state import StateResult, FlowResult, ArgState, ValidReturnState, ErrorReturnState
 from happyflow.test_loader import UnittestLoader
 
 
@@ -40,11 +41,10 @@ class TraceRunner:
 
         tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.trace_collector)
 
-        # try:
-        tracer.runfunc(func)
-            # print('ok', func_name)
-        # except:
-        #     print('fail', func_name)
+        try:
+            tracer.runfunc(func)
+        except Exception:
+            logging.warning('Error run')
 
         result = tracer.results()
         return TraceCount(source_entity_name, result.counts)
@@ -76,17 +76,10 @@ class TraceResult:
 
     def __init__(self):
         self.global_traces = []
-        # self.sut_and_tests = {}
         self.local_traces = []
 
     def add_trace(self, t):
         self.global_traces.append(t)
-
-    # def compute_sut_and_tests(self):
-    #     for trace in self.traces:
-    #         for sut in trace.run_funcs:
-    #             self.sut_and_tests[sut] = self.sut_and_tests.get(sut, [])
-    #             self.sut_and_tests[sut].append(trace.test_name)
 
     def global_sut_flows(self, sut):
         if not sut:
@@ -108,9 +101,9 @@ class TraceResult:
         if not sut:
             return None
 
-        result = FlowResult(sut)
-
+        results = []
         for base_sut in sut:
+            result = FlowResult(base_sut)
             target_sut_full_name = base_sut.full_name()
             for candidate_sut_full_name in self.local_traces:
                 if candidate_sut_full_name == target_sut_full_name:
@@ -118,7 +111,10 @@ class TraceResult:
                     for test_name, sut_flow, state_result in target_flows:
                         if len(sut_flow) > 0:
                             result.add(test_name, sut_flow, state_result)
-        return result
+            results.append(result)
+        if len(results) == 1:
+            return results[0]
+        return results
 
 
 class TraceCount:
@@ -138,25 +134,6 @@ class TraceCount:
             result[filename] = result.get(filename, [])
             result[filename].append(line_number)
         return result
-
-    # def update_counts_with_executable_line(self):
-    #     for filename in self.run_files_and_lines:
-    #         executable_lines = trace._find_executable_linenos(filename)
-    #         for exec_line in executable_lines:
-    #             key = (filename, exec_line)
-    #             self.counts[key] = self.counts.get(key, 0)
-    #
-    # def get_counts(self, filename, line_number):
-    #     return self.counts.get((filename, line_number), -1)
-    #
-    # def annotate_file(self, filename):
-    #     with open(filename) as f:
-    #         content = f.readlines()
-    #         line_number = 0
-    #         for line_code in content:
-    #             line_number += 1
-    #             exec_count = self.get_counts(filename, line_number)
-    #             print(line_number, exec_count, line_code.rstrip())
 
 
 class Trace2(trace.Trace):
@@ -207,9 +184,12 @@ class TraceCollector:
         self.last_entity_line = {}
 
     def func_return_state(self, frame):
-        value = self._run_func(frame)
-        # Still need to set the return line; this is done when why = return, not now
-        return ReturnState(value)
+        try:
+            # pass
+            value = self._run_func(frame)
+            return ValidReturnState(value)
+        except Exception:
+            return ErrorReturnState()
 
     def _run_func(self, frame):
 
@@ -217,41 +197,46 @@ class TraceCollector:
         wrap_func.__code__ = frame.f_code
         wrap_func.__globals__.update(frame.f_globals)
 
-        args = self._func_arg_values(frame)
-        return wrap_func(*args)
+        try:
+            args = self._func_arg_values(frame)
+            return wrap_func(*args)
+        except Exception:
+            raise
 
     def _func_arg_values(self, frame):
         args = []
-
         argvalues = inspect.getargvalues(frame)
-        for arg in argvalues.args:
-            args.append(copy.deepcopy(argvalues.locals[arg]))
-
-        if argvalues.varargs:
-            args.append(copy.deepcopy(argvalues.locals['varargs']))
-
-        if argvalues.keywords:
-            args.append(copy.deepcopy(argvalues.locals['keywords']))
-
-        return tuple(args)
+        try:
+            for arg in argvalues.args:
+                value = try_copy(argvalues.locals[arg], arg)
+                args.append(value)
+            if argvalues.varargs:
+                value = try_copy(argvalues.locals[argvalues.varargs], argvalues.varargs)
+                args.append(value)
+            if argvalues.keywords:
+                value = try_copy(argvalues.locals[argvalues.keywords], argvalues.keywords)
+                args.append(value)
+            return tuple(args)
+        except Exception:
+            raise
 
     def func_arg_states(self, frame):
         states = []
 
         argvalues = inspect.getargvalues(frame)
         for arg in argvalues.args:
-            value = copy.copy(argvalues.locals[arg])
+            value = copy_or_type(argvalues.locals[arg])
             arg_state = ArgState(arg, value, frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.varargs:
-            value = copy.copy(argvalues.locals['varargs'])
-            arg_state = ArgState('varargs', value, frame.f_lineno)
+            value = copy_or_type(argvalues.locals[argvalues.varargs])
+            arg_state = ArgState(argvalues.varargs, value, frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.keywords:
-            value = copy.copy(argvalues.locals['keywords'])
-            arg_state = ArgState('keywords', value, frame.f_lineno)
+            value = copy_or_type(argvalues.locals[argvalues.keywords])
+            arg_state = ArgState(argvalues.keywords, value, frame.f_lineno)
             states.append(arg_state)
 
         return states
@@ -298,12 +283,9 @@ class TraceCollector:
 
                     if current_state:
                         argvalues = inspect.getargvalues(frame)
-                        for argvalue in argvalues.locals:
-                            try:
-                                value = copy.copy(argvalues.locals[argvalue])
-                            except:
-                                value = argvalues.locals[argvalue]
-                            current_state.add(name=argvalue, value=value,
-                                              line=lineno, inline=self.last_entity_line[entity_name])
+                        for arg in argvalues.locals:
+                            value = copy_or_type(argvalues.locals[arg])
+                            current_state.add(name=arg, value=value, line=lineno,
+                                              inline=self.last_entity_line[entity_name])
                     self.last_entity_line[entity_name] = lineno
 

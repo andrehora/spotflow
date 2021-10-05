@@ -184,7 +184,7 @@ class ArgState:
         return f'{self.name}={self.value}'
 
 
-class ReturnState:
+class ValidReturnState:
 
     def __init__(self, value, line=0, has_return=False):
         self.value = value
@@ -196,3 +196,7 @@ class ReturnState:
 
     def __eq__(self, other):
         return self.value == other
+
+
+class ErrorReturnState:
+    pass

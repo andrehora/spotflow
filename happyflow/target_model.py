@@ -51,7 +51,7 @@ class TargetContainerEntity(TargetBaseEntity):
         all_executable_lines = []
         for target_entity in self.target_entities:
             all_executable_lines.append(target_entity.executable_lines())
-        return all_executable_lines
+        return tuple(all_executable_lines)
 
     def summary(self):
         return f'{self.full_name()} (target entities: {len(self.target_entities)})'
@@ -67,7 +67,7 @@ class TargetEntity(TargetBaseEntity):
     def executable_lines(self):
         executable_lines = trace._find_executable_linenos(self.filename)
         # remove the target_entity definition, eg, def, class
-        return self.intersection(executable_lines)[1:]
+        return tuple(self.intersection(executable_lines)[1:])
 
     def intersection(self, other_lines):
         my_lines = range(self.start_line, self.end_line + 1)
