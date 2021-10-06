@@ -82,6 +82,8 @@ def line_has_explicit_return(frame):
     traceback = inspect.getframeinfo(frame)
     if len(traceback.code_context) >= 1:
         code_line = traceback.code_context[0].strip()
+        # __return__ = eval(code_line.split()[1], frame.f_globals, frame.f_locals)
+        # print(__return__)
         return code_line.startswith('return')
     return False
 
@@ -155,9 +157,12 @@ def write_html(fname, html):
         fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 
 
-def copy_or_type(obj):
+def str_or_type(obj):
     try:
-        return copy.deepcopy(obj)
+        obj_string = str(obj)
+        if obj_string.startswith('<') and obj_string.endswith('>') and 'object at' in obj_string:
+            return obj.__class__.__name__
+        return obj_string
     except Exception:
         return obj.__class__.__name__
 

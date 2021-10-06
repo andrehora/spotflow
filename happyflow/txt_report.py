@@ -1,5 +1,5 @@
 from happyflow.analysis import Analysis
-from happyflow.utils import read_file
+from happyflow.utils import read_file_lines
 
 
 class TextReport:
@@ -69,7 +69,7 @@ class TextReport:
         if state_summary:
             self.show_state_summary(state_result)
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
-        content = read_file(self.target_entity.filename)
+        content = read_file_lines(self.target_entity.filename)
         current_line = 0
         for line_code in content:
             current_line += 1
@@ -89,6 +89,7 @@ class TextReport:
 
                 code_str = f'{line_number_str} {is_run} {line_code.rstrip()}'
                 code_str = code_str.ljust(50)
+
                 if self.target_entity.line_is_definition(current_line):
                     arg_summary = ''
                     separator = '🟢 '
@@ -101,8 +102,8 @@ class TextReport:
                         print(code_str)
                 elif state_result.is_line_return_value(current_line):
                     separator = '🔴 '
-                    return_value = state_result.return_value
-                    return_str = f'{separator}{return_value}'
+                    return_state = state_result.return_state
+                    return_str = f'{separator}{return_state}'
                     print(code_str, return_str)
                 elif states:
                     separator = '🟡 '
@@ -115,11 +116,11 @@ class TextReport:
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
         for arg in state_result.args:
             if arg.name != 'self':
-                arg_summary = f'🟢 IN  {arg.name}: {str(arg.value)}'
+                arg_summary = f'🟢 IN {arg.name}: {str(arg.value)}'
                 print(arg_summary)
 
         if state_result.has_return():
-            return_summary = f'🔴 OUT {state_result.return_value}'
+            return_summary = f'🔴 OUT {state_result.return_state}'
             print(return_summary)
 
         for var in state_result.vars:

@@ -186,7 +186,7 @@ class ArgState:
 
 class ReturnState:
 
-    def __init__(self, value=None, line=0, has_return=False):
+    def __init__(self, value, line=0, has_return=False):
         self.value = value
         self.line = line
         self.has_return = has_return
