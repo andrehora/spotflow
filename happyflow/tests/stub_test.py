@@ -169,3 +169,27 @@ class TestReturnValue(unittest.TestCase):
 
     def test_implicit_return(self):
         self.ret.implicit_return()
+
+
+class TestExceptions(unittest.TestCase):
+
+    def setUp(self):
+        self.ex = Exceptions()
+
+    def test_zero_division(self):
+        try:
+            self.ex.zero_division()
+        except:
+            pass
+
+    def test_raise_generic_exception(self):
+        try:
+            self.ex.raise_generic_exception()
+        except:
+            pass
+
+    def test_raise_specific_exception(self):
+        try:
+            self.ex.raise_specific_exception()
+        except Exception:
+            pass

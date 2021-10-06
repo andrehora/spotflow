@@ -72,11 +72,12 @@ class Flow:
 class StateResult:
 
     def __init__(self, name):
-        self.sut_name = name
+        self.target_entity_name = name
         self.vars = {}
 
         self.args = None
         self.return_state = None
+        self.exception_state = None
 
     def has_return(self):
         return self.return_state and self.return_state.has_return
@@ -190,7 +191,19 @@ class ReturnState:
         self.value = value
         self.line = line
         self.has_return = has_return
-        self.valid = True
+
+    def __str__(self):
+        return f'{self.value}'
+
+    def __eq__(self, other):
+        return self.value == other
+
+
+class ExceptionState:
+
+    def __init__(self, value, line=0):
+        self.value = value
+        self.line = line
 
     def __str__(self):
         return f'{self.value}'

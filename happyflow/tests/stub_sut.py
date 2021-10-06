@@ -230,3 +230,14 @@ class ReturnValue:
     def implicit_return(self):
         a = 123
 
+
+class Exceptions:
+
+    def zero_division(self):
+        10 / 0
+
+    def raise_generic_exception(self):
+        raise Exception
+
+    def raise_specific_exception(self):
+        raise TypeError

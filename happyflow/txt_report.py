@@ -9,7 +9,7 @@ class TextReport:
         self.flow_result = flow_result
         self.analysis = Analysis(self.target_entity, self.flow_result)
 
-    def show_most_common_args_and_return_values(self, n=None):
+    def show_most_common_args_and_return_values(self, n=None, show_code=False):
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
         print('Source entity:', self.target_entity)
         print('Executable lines:', len(self.target_entity.executable_lines()))
@@ -28,6 +28,10 @@ class TextReport:
             print(f'Flow ({len(target_flow_lines)}): {target_flow_lines}')
             print('Args:', analysis.most_common_args())
             print('Return values:', analysis.most_common_return_values())
+
+            if show_code:
+                report = TextReport(self.target_entity, flow_result)
+                report.show_code_state(state_summary=True, flow_number=0)
 
     def show_code(self):
         with open(self.target_entity.filename) as f:

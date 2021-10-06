@@ -35,7 +35,10 @@ def find_class_name(frame):
     args = inspect.getargvalues(frame)
     if 'self' in args.locals:
         obj = args.locals['self']
-        return obj.__class__.__name__
+        try:
+            return obj.__class__.__name__
+        except Exception:
+            return None
     return None
 
 
@@ -157,14 +160,23 @@ def write_html(fname, html):
         fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 
 
-def str_or_type(obj):
+def copy_or_type(obj):
+    try:
+        return copy.deepcopy(obj)
+    except Exception:
+        return guess_name(obj)
+
+
+def guess_name(obj):
     try:
         obj_string = str(obj)
-        if obj_string.startswith('<') and obj_string.endswith('>') and 'object at' in obj_string:
-            return obj.__class__.__name__
+        if obj_string.startswith('<') and obj_string.endswith('>'):
+            if inspect.ismodule(obj) or inspect.isclass(obj) or inspect.ismethod(obj) or inspect.isfunction(obj):
+                return f'{obj.__name__} class'
+            return f'{obj.__class__.__name__} object'
         return obj_string
     except Exception:
-        return obj.__class__.__name__
+        return obj_string
 
 
 def try_copy(obj, name):

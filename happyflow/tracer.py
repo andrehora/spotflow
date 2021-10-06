@@ -1,8 +1,8 @@
 import trace
 import inspect
 import logging
-from happyflow.utils import str_or_type, find_full_entity_name, line_has_explicit_return, try_copy
-from happyflow.flow_state import StateResult, RunResult, ArgState, ReturnState
+from happyflow.utils import copy_or_type, find_full_entity_name, line_has_explicit_return
+from happyflow.flow_state import StateResult, RunResult, ArgState, ReturnState, ExceptionState
 from happyflow.test_loader import UnittestLoader
 
 
@@ -117,8 +117,8 @@ class TraceResult:
                         if len(sut_flow) > 0:
                             result.add(test_name, sut_flow, state_result)
             results.append(result)
-        # if len(results) == 1:
-        #     return results[0]
+        if len(results) == 1:
+            return results[0]
         return results
 
 
@@ -166,7 +166,7 @@ class Trace2(trace.Trace):
 
     def localtrace_trace_and_count(self, frame, why, arg):
 
-        if why == "line" or why == 'return':
+        if why == "line" or why == 'return' or why == 'exception':
             self.trace_collector.collect_flow_and_state(frame, why, arg)
 
         if why == "line":
@@ -191,23 +191,23 @@ class TraceCollector:
 
         argvalues = inspect.getargvalues(frame)
         for arg in argvalues.args:
-            value = str_or_type(argvalues.locals[arg])
+            value = copy_or_type(argvalues.locals[arg])
             arg_state = ArgState(arg, value, frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.varargs:
-            value = str_or_type(argvalues.locals[argvalues.varargs])
+            value = copy_or_type(argvalues.locals[argvalues.varargs])
             arg_state = ArgState(argvalues.varargs, value, frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.keywords:
-            value = str_or_type(argvalues.locals[argvalues.keywords])
+            value = copy_or_type(argvalues.locals[argvalues.keywords])
             arg_state = ArgState(argvalues.keywords, value, frame.f_lineno)
             states.append(arg_state)
 
         return states
 
-    def collect_flow_and_state(self, frame, why, return_value):
+    def collect_flow_and_state(self, frame, why, arg):
 
         if not self.target_entities:
             return
@@ -231,7 +231,7 @@ class TraceCollector:
                     # save arg states
                     state.args = self.func_arg_states(frame)
 
-                if why == 'line' or why == 'return':
+                if why == 'line' or why == 'return' or why == 'exception':
                     target_entity_flow = self.local_traces[entity_name]
                     # get the last flow and update it
                     source_entity_name, current_flow, current_state = target_entity_flow[-1]
@@ -240,14 +240,15 @@ class TraceCollector:
                     if why == 'line':
                         current_flow.append(lineno)
                     if why == 'return':
-                        # save return states
                         has_return = line_has_explicit_return(frame)
-                        current_state.return_state = ReturnState(str_or_type(return_value), lineno, has_return)
+                        current_state.return_state = ReturnState(copy_or_type(arg), lineno, has_return)
+                    if why == 'exception':
+                        current_state.exception_state = ExceptionState(arg, lineno)
 
                     if current_state:
                         argvalues = inspect.getargvalues(frame)
                         for arg in argvalues.locals:
-                            value = str_or_type(argvalues.locals[arg])
+                            value = copy_or_type(argvalues.locals[arg])
                             current_state.add(name=arg, value=value, line=lineno,
                                               inline=self.last_entity_line[entity_name])
                     self.last_entity_line[entity_name] = lineno
