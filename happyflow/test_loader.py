@@ -25,6 +25,13 @@ class UnittestLoader:
 
         return self._find_test_methods(suite)
 
+    def find_suite(self, pattern='test*.py'):
+
+        loader = unittest.TestLoader()
+        suite = loader.loadTestsFromName(pattern)
+
+        return suite
+
     def _find_test_methods(self, suite):
 
         def find(suite, test_methods):
@@ -50,3 +57,7 @@ class UnittestLoader:
     @staticmethod
     def get_test_name(test):
         return test._testMethodName
+
+    @staticmethod
+    def get_suite_name(test):
+        return 'TestSuite'

@@ -80,6 +80,22 @@ class TraceRunner:
         return runner.trace_result
 
     @staticmethod
+    def trace_suite(source_pattern='test*.py', target_entities=None):
+
+        runner = TraceRunner()
+        runner.target_entities = target_entities
+        runner.get_source_entity_name_wrapper = UnittestLoader.get_suite_name
+        runner.run_source_entity_wrapper = UnittestLoader.run_test
+
+        suite = UnittestLoader().find_suite(source_pattern)
+        runner.run(suite)
+
+        if runner.has_target_entities():
+            return runner.trace_result, runner.get_target_entities()
+
+        return runner.trace_result
+
+    @staticmethod
     def trace_funcs(source_funcs, target_entities=None):
 
         runner = TraceRunner()
@@ -235,7 +251,7 @@ class TraceCollector:
             return
 
         entity_name = find_full_entity_name(frame)
-        # print(entity_name)
+        # print(entity_name, frame.f_code.co_filename)
 
         for target_entity in self.target_entities:
 
