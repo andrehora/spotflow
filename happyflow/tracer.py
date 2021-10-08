@@ -1,9 +1,10 @@
 import trace
 import inspect
-import logging
 from happyflow.utils import copy_or_type, find_full_entity_name, line_has_explicit_return
 from happyflow.flow_state import StateResult, RunResult, ArgState, ReturnState, ExceptionState
 from happyflow.test_loader import UnittestLoader
+from happyflow.target_loader import TargetEntityLoader
+from happyflow.target_model import TargetContainerEntity
 
 
 class TraceRunner:
@@ -15,6 +16,15 @@ class TraceRunner:
         self.target_entities = None
         self.get_source_entity_name_wrapper = None
         self.run_source_entity_wrapper = None
+
+    def get_target_entities(self):
+        container = TargetContainerEntity()
+        for entity in self.trace_collector.target_entities_cache:
+            container.add_entity(self.trace_collector.target_entities_cache[entity])
+        return container
+
+    def has_target_entities(self):
+        return len(self.trace_collector.target_entities_cache) >= 1
 
     def run(self, source_entities):
         if type(source_entities) is not list:
@@ -40,18 +50,17 @@ class TraceRunner:
         self.trace_collector.source_entity_name = source_entity_name
         self.trace_collector.target_entities = self.target_entities
 
+        # try:
+        tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.trace_collector)
 
-        try:
-            tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.trace_collector)
+        self.trace_collector.call_id = 0
+        self.trace_collector.collect_return_state = False
+        tracer.runfunc(func)
 
-            self.trace_collector.call_id = 0
-            self.trace_collector.collect_return_state = False
-            tracer.runfunc(func)
-
-            result = tracer.results()
-            return TraceCount(source_entity_name, result.counts)
-        except Exception:
-            logging.warning('Error run')
+        result = tracer.results()
+        return TraceCount(source_entity_name, result.counts)
+        # except Exception as e:
+        #     logging.warning(f'Error run: {e}')
 
 
     @staticmethod
@@ -64,6 +73,9 @@ class TraceRunner:
 
         tests = UnittestLoader().find_tests(source_pattern)
         runner.run(tests)
+
+        if runner.has_target_entities():
+            return runner.trace_result, runner.get_target_entities()
 
         return runner.trace_result
 
@@ -117,8 +129,8 @@ class TraceResult:
                         if len(sut_flow) > 0:
                             result.add(test_name, sut_flow, state_result)
             results.append(result)
-        if len(results) == 1:
-            return results[0]
+        # if len(results) == 1:
+        #     return results[0]
         return results
 
 
@@ -185,8 +197,9 @@ class TraceCollector:
         self.target_entities = None
         self.local_traces = {}
         self.last_entity_line = {}
+        self.target_entities_cache = {}
 
-    def func_arg_states(self, frame):
+    def find_args_states(self, frame):
         states = []
 
         argvalues = inspect.getargvalues(frame)
@@ -207,15 +220,29 @@ class TraceCollector:
 
         return states
 
+    def ensure_target_entity(self, entity_name, target_entity, frame):
+        if entity_name.startswith(target_entity):
+            if entity_name in self.target_entities_cache:
+                return self.target_entities_cache[entity_name]
+            entity = TargetEntityLoader.find(entity_name, frame.f_code.co_filename)
+            self.target_entities_cache[entity_name] = entity
+            return entity
+        return None
+
     def collect_flow_and_state(self, frame, why, arg):
 
         if not self.target_entities:
             return
+
         entity_name = find_full_entity_name(frame)
+        # print(entity_name)
 
         for target_entity in self.target_entities:
 
-            if entity_name and target_entity.full_name() and entity_name == target_entity.full_name():
+            if type(target_entity) is str:
+                target_entity = self.ensure_target_entity(entity_name, target_entity, frame)
+
+            if entity_name and target_entity and entity_name == target_entity.full_name():
 
                 if entity_name not in self.local_traces:
                     self.local_traces[entity_name] = []
@@ -229,7 +256,7 @@ class TraceCollector:
                     target_entity_flow.append((self.source_entity_name, [], state))
 
                     # save arg states
-                    state.args = self.func_arg_states(frame)
+                    state.args = self.find_args_states(frame)
 
                 if why == 'line' or why == 'return' or why == 'exception':
                     target_entity_flow = self.local_traces[entity_name]

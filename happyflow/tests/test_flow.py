@@ -379,6 +379,6 @@ class TestLocalFlowSUTContainer(unittest.TestCase):
         trace_result = TraceRunner.trace_tests('stub_test.TestSimpleFlow', sut)
         flow_result = sut.local_flows(trace_result)
 
-        self.assertEqual(len(flow_result), 46)
+        self.assertTrue(len(flow_result) > 45)
 
 

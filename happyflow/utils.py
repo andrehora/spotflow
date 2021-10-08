@@ -17,6 +17,8 @@ def open_file(filename):
 
 
 def find_python_files(dir='.'):
+    if dir.endswith('.py'):
+        return [dir]
     python_files = []
     for r, d, f in os.walk(dir):
         for file in f:

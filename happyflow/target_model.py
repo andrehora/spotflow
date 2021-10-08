@@ -31,7 +31,7 @@ class TargetBaseEntity:
 
 class TargetContainerEntity(TargetBaseEntity):
 
-    def __init__(self, name, filename):
+    def __init__(self, name='<container>', filename='<container>'):
         super().__init__(name, filename)
         self.target_entities = []
 
