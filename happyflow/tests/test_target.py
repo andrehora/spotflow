@@ -8,22 +8,22 @@ from happyflow.tracer import TraceRunner
 class TestTestLoader(unittest.TestCase):
 
     def test_count_test_case(self):
-        tests = UnittestLoader().find_tests('stub_test.TestSimpleFlow')
+        tests = UnittestLoader().find_tests('happyflow.tests.stub_test.TestSimpleFlow')
         self.assertEqual(len(tests), 8)
 
     def test_count_test_method(self):
-        tests = UnittestLoader().find_tests('stub_test.TestFoo.test_foo')
+        tests = UnittestLoader().find_tests('happyflow.tests.stub_test.TestFoo.test_foo')
         self.assertEqual(len(tests), 1)
 
 
 class TestTestRunner(unittest.TestCase):
 
     def test_run_test_case_shortcut(self):
-        result = TraceRunner.trace_tests('stub_test.TestSimpleFlow.test_simple_if_true')
+        result = TraceRunner.trace_tests('happyflow.tests.stub_test.TestSimpleFlow.test_simple_if_true')
         self.assertEqual(len(result.global_traces), 1)
 
     def test_run_test_suite_shortcut(self):
-        result = TraceRunner.trace_tests('stub_test.TestSimpleFlow')
+        result = TraceRunner.trace_tests('happyflow.tests.stub_test.TestSimpleFlow')
         self.assertEqual(len(result.global_traces), 8)
 
     def test_run_test_case(self):
@@ -31,7 +31,7 @@ class TestTestRunner(unittest.TestCase):
         runner.get_source_entity_name_wrapper = UnittestLoader.get_test_name
         runner.run_source_entity_wrapper = UnittestLoader.run_test
 
-        tests = UnittestLoader().find_tests('stub_test.TestSimpleFlow.test_simple_if_true')
+        tests = UnittestLoader().find_tests('happyflow.tests.stub_test.TestSimpleFlow.test_simple_if_true')
         runner.run(tests)
         result = runner.trace_result
 
@@ -42,7 +42,7 @@ class TestTestRunner(unittest.TestCase):
         runner.get_source_entity_name_wrapper = UnittestLoader.get_test_name
         runner.run_source_entity_wrapper = UnittestLoader.run_test
 
-        tests = UnittestLoader().find_tests('stub_test.TestSimpleFlow')
+        tests = UnittestLoader().find_tests('happyflow.tests.stub_test.TestSimpleFlow')
         runner.run(tests)
         result = runner.trace_result
 
@@ -53,7 +53,7 @@ class TestSUTLoader(unittest.TestCase):
 
     def test_find_module(self):
         target_sut = 'stub_sut'
-        sut = TargetEntityLoader.find(target_sut)
+        sut = TargetEntityLoader.find(target_sut, '.', 'stub_sut')
 
         self.assertEqual(sut.full_name(), target_sut)
         # self.assertEqual(len(sut.suts), 19)
@@ -61,7 +61,7 @@ class TestSUTLoader(unittest.TestCase):
 
     def test_find_class(self):
         target_sut = 'stub_sut.SimpleFlow'
-        sut = TargetEntityLoader.find(target_sut)
+        sut = TargetEntityLoader.find(target_sut, '.', 'stub_sut')
 
         self.assertEqual(sut.full_name(), target_sut)
         # self.assertEqual(sut.loc(), 27)
@@ -69,28 +69,28 @@ class TestSUTLoader(unittest.TestCase):
 
     def test_find_method(self):
         target_sut = 'stub_sut.SimpleFlow.simple_if'
-        sut = TargetEntityLoader.find(target_sut)
+        sut = TargetEntityLoader.find(target_sut, '.', 'stub_sut')
 
         self.assertEqual(sut.full_name(), target_sut)
         self.assertEqual(sut.loc(), 2)
         self.assertEqual(len(sut.executable_lines()), 2)
 
         target_sut = 'stub_sut.SimpleFlow.simple_if_else'
-        sut = TargetEntityLoader.find(target_sut)
+        sut = TargetEntityLoader.find(target_sut, '.', 'stub_sut')
 
         self.assertEqual(sut.full_name(), target_sut)
         self.assertEqual(sut.loc(), 4)
         self.assertEqual(len(sut.executable_lines()), 3)
 
         target_sut = 'stub_sut.SimpleFlow.loop'
-        sut = TargetEntityLoader.find(target_sut)
+        sut = TargetEntityLoader.find(target_sut, '.', 'stub_sut')
 
         self.assertEqual(sut.full_name(), target_sut)
         self.assertEqual(sut.loc(), 3)
         self.assertEqual(len(sut.executable_lines()), 3)
 
         target_sut = 'stub_sut.SimpleFlow.try_success'
-        sut = TargetEntityLoader.find(target_sut)
+        sut = TargetEntityLoader.find(target_sut, '.', 'stub_sut')
 
         self.assertEqual(sut.full_name(), target_sut)
         self.assertEqual(sut.loc(), 4)
@@ -98,7 +98,7 @@ class TestSUTLoader(unittest.TestCase):
 
     def test_find_function(self):
         target_sut = 'stub_sut.function_with_3_lines'
-        sut = TargetEntityLoader.find(target_sut)
+        sut = TargetEntityLoader.find(target_sut, '.', 'stub_sut')
 
         self.assertEqual(sut.full_name(), target_sut)
         self.assertEqual(sut.loc(), 3)
@@ -155,3 +155,7 @@ class TestSUT(unittest.TestCase):
         sut.end_line = 20
 
         self.assertEqual(sut.loc(), 10)
+
+
+if __name__ == '__main__':
+    unittest.main()

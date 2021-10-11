@@ -23,3 +23,7 @@ class TestUtils(unittest.TestCase):
     def test_find_module_name(self):
         self.assertEqual(find_module_name('module.py'), 'module')
         self.assertEqual(find_module_name('a/b/module.py'), 'module')
+
+
+if __name__ == '__main__':
+    unittest.main()

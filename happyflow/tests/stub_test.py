@@ -193,3 +193,7 @@ class TestExceptions(unittest.TestCase):
             self.ex.raise_specific_exception()
         except Exception:
             pass
+
+
+if __name__ == '__main__':
+    unittest.main()

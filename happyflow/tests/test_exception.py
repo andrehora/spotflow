@@ -6,9 +6,9 @@ from happyflow.tracer import TraceRunner
 class TestException(unittest.TestCase):
 
     def test_zero_division(self):
-        sut = TargetEntityLoader.find('stub_sut.Exceptions.zero_division')
+        sut = TargetEntityLoader.find('stub_sut.Exceptions.zero_division', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('stub_test.TestExceptions.test_zero_division', sut)
+        trace_result = TraceRunner.trace_tests('happyflow.tests.stub_test.TestExceptions.test_zero_division', sut)
         flow_result = sut.local_flows(trace_result)
 
         flows = flow_result.flows
@@ -20,9 +20,9 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value[0], ZeroDivisionError)
 
     def test_raise_generic_exception(self):
-        sut = TargetEntityLoader.find('stub_sut.Exceptions.raise_generic_exception')
+        sut = TargetEntityLoader.find('stub_sut.Exceptions.raise_generic_exception', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('stub_test.TestExceptions.test_raise_generic_exception', sut)
+        trace_result = TraceRunner.trace_tests('happyflow.tests.stub_test.TestExceptions.test_raise_generic_exception', sut)
         flow_result = sut.local_flows(trace_result)
 
         flows = flow_result.flows
@@ -34,9 +34,9 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value[0], Exception)
 
     def test_raise_specific_exception(self):
-        sut = TargetEntityLoader.find('stub_sut.Exceptions.raise_specific_exception')
+        sut = TargetEntityLoader.find('stub_sut.Exceptions.raise_specific_exception', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('stub_test.TestExceptions.test_raise_specific_exception', sut)
+        trace_result = TraceRunner.trace_tests('happyflow.tests.stub_test.TestExceptions.test_raise_specific_exception', sut)
         flow_result = sut.local_flows(trace_result)
 
         flows = flow_result.flows
@@ -48,4 +48,5 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value[0], TypeError)
 
 
-
+if __name__ == '__main__':
+    unittest.main()
