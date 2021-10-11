@@ -153,7 +153,7 @@ def html_lines_for_code(code):
         line = line.replace('<div class="highlight"><pre><span></span>', '')
         line = line.replace('</pre></div>', '')
         lines.append(line)
-    return lines
+    return lines[1:]
 
 
 def write_html(fname, html):

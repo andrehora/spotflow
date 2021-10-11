@@ -13,10 +13,14 @@ class HTMLReport:
         self.pyfile_html_source = read_file("./happyflow/html/pyfile2.html")
         self.source_tmpl = Templite(self.pyfile_html_source)
 
-    def report(self, flow_number=0):
+    def show_most_common_flows(self, n):
+        for flow in self.analysis.most_common_flow(n):
+            pass
+
+    def show_code(self, flow_number=0, filename='example.html'):
 
         flow = self.flow_result.flows[flow_number]
-        state_result = flow.state_result
+        # state_result = flow.state_result
         flow_lines = flow.run_lines
 
         content = read_file(self.target_entity.filename)
@@ -31,6 +35,7 @@ class HTMLReport:
                     line = f'<span class="happy">{line}</span>'
                 if current_line not in flow_lines:
                     line = f'<span class="alter">{line}</span>'
+                line = f'<span>{str(current_line)}</span>{line}'
                 lines.append(line)
 
         html = self.source_tmpl.render({'lines': lines})
