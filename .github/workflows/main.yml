@@ -1,11 +1,12 @@
-name: Testing
+name: Tests
 
 on: [push]
 
 jobs:
-  build:
 
-    runs-on: [ubuntu-latest, macos-latest]
+  test_ubuntu:
+    name: 'Test Ubuntu'
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.8, 3.9, 3.10.0]
@@ -17,5 +18,20 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Test with unittest
-        run: |
-          python -m unittest
+        run: python -m unittest
+
+  test_macos:
+    name: 'Test macOS'
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10.0]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Test with unittest
+        run: python -m unittest
