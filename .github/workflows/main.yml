@@ -1,11 +1,11 @@
-name: Python test
+name: Testing
 
 on: [push]
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-2022
     strategy:
       matrix:
         python-version: [3.8, 3.9, 3.10.0]
