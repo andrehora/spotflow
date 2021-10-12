@@ -13,6 +13,9 @@ class TargetBaseEntity:
     def __str__(self):
         return self.full_name()
 
+    def is_target(self):
+        return False
+
     def global_flows(self, trace_result):
         return trace_result.global_sut_flows(self)
 
@@ -63,6 +66,9 @@ class TargetEntity(TargetBaseEntity):
 
     def __iter__(self):
         return iter([self])
+
+    def is_target(self):
+        return True
 
     def executable_lines(self):
         executable_lines = trace._find_executable_linenos(self.filename)

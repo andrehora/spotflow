@@ -102,6 +102,7 @@ class TraceRunner:
         runner.run(pytests)
 
         if runner.has_target_entities():
+
             return runner.trace_result, runner.get_target_entities()
 
         return runner.trace_result
@@ -248,13 +249,18 @@ class TraceCollector:
         return states
 
     def ensure_target_entity(self, entity_name, target_entity, frame):
-        if entity_name.startswith(target_entity):
-            if entity_name in self.target_entities_cache:
-                return self.target_entities_cache[entity_name]
-            entity = TargetEntityLoader.find(entity_name, frame.f_code.co_filename)
-            self.target_entities_cache[entity_name] = entity
-            return entity
-        return None
+        if not entity_name.startswith(target_entity):
+            return None
+
+        if entity_name in self.target_entities_cache:
+            return self.target_entities_cache[entity_name]
+
+        entity = TargetEntityLoader.find(entity_name, frame.f_code.co_filename)
+        if not entity.is_target():
+            return None
+
+        self.target_entities_cache[entity_name] = entity
+        return entity
 
     def collect_flow_and_state(self, frame, why, arg):
 

@@ -11,7 +11,7 @@ class TextReport:
 
     def show_most_common_args_and_return_values(self, n=None, show_code=False):
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
-        print('Source entity:', self.target_entity)
+        print('Target entity:', self.target_entity)
         print('Executable lines:', len(self.target_entity.executable_lines()))
         print('Total flows:', self.analysis.number_of_flows(),  'Distinct:', self.analysis.number_of_distinct_flows())
         # exec_lines = self.target_entity.executable_lines()
