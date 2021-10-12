@@ -1,4 +1,5 @@
 import unittest
+import pytest
 
 
 class PytestLoader:
@@ -6,11 +7,15 @@ class PytestLoader:
     def find_tests(self):
         pass
 
-    def run_test(self):
-        pass
+    @staticmethod
+    def run_test(test):
+        def run():
+            pytest.main(["-x", test])
+        return run
 
-    def get_test_name(self):
-        pass
+    @staticmethod
+    def get_suite_name(test):
+        return 'TestSuite'
 
 
 class UnittestLoader:
