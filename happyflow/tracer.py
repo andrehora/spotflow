@@ -1,8 +1,9 @@
 import trace
 import inspect
+import logging
 from happyflow.utils import copy_or_type, find_full_entity_name, line_has_explicit_return
 from happyflow.flow_state import StateResult, RunResult, ArgState, ReturnState, ExceptionState
-from happyflow.test_loader import UnittestLoader
+from happyflow.test_loader import UnittestLoader, PytestLoader
 from happyflow.target_loader import TargetEntityLoader
 from happyflow.target_model import TargetContainerEntity
 
@@ -46,21 +47,16 @@ class TraceRunner:
         if self.run_source_entity_wrapper:
             func = self.run_source_entity_wrapper(func)
 
-        self.trace_collector.return_states = []
         self.trace_collector.source_entity_name = source_entity_name
         self.trace_collector.target_entities = self.target_entities
 
-        # try:
-        tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.trace_collector)
-
-        self.trace_collector.call_id = 0
-        self.trace_collector.collect_return_state = False
-        tracer.runfunc(func)
-
-        result = tracer.results()
-        return TraceCount(source_entity_name, result.counts)
-        # except Exception as e:
-        #     logging.warning(f'Error run: {e}')
+        try:
+            tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.trace_collector)
+            tracer.runfunc(func)
+            result = tracer.results()
+            return TraceCount(source_entity_name, result.counts)
+        except Exception as e:
+            logging.warning(f'Error run: {e}')
 
 
     @staticmethod
@@ -89,6 +85,21 @@ class TraceRunner:
 
         suite = UnittestLoader().find_suite(source_pattern)
         runner.run(suite)
+
+        if runner.has_target_entities():
+            return runner.trace_result, runner.get_target_entities()
+
+        return runner.trace_result
+
+    @staticmethod
+    def trace_pytests(pytests='.', target_entities=None):
+
+        runner = TraceRunner()
+        runner.target_entities = target_entities
+        runner.get_source_entity_name_wrapper = PytestLoader.get_suite_name
+        runner.run_source_entity_wrapper = PytestLoader.run_test
+
+        runner.run(pytests)
 
         if runner.has_target_entities():
             return runner.trace_result, runner.get_target_entities()
@@ -254,7 +265,6 @@ class TraceCollector:
         # print(entity_name, frame.f_code.co_filename)
 
         for target_entity in self.target_entities:
-
             if type(target_entity) is str:
                 target_entity = self.ensure_target_entity(entity_name, target_entity, frame)
 
