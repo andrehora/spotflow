@@ -8,7 +8,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_run_simple_if(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow.simple_if', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_simple_if_true', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_simple_if_true', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -16,7 +16,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'simple_if')
         self.assertIn('test_simple_if_true', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_simple_if_false', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_simple_if_false', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -27,7 +27,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_run_simple_if_else(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow.simple_if_else', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_true_and_false', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_true_and_false', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -35,7 +35,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_true_and_false', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_true', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_true', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -43,7 +43,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_true', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_false', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_false', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -51,7 +51,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_false', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 3)
@@ -63,7 +63,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_run_loop(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow.loop', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_loop', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_loop', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -74,7 +74,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_run_try(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow.try_success', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_try_success', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_try_success', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -85,7 +85,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_run_try_fail(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow.try_fail', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_try_fail', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_try_fail', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -96,7 +96,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_single_call_to_sut(self):
         sut = TargetEntityLoader.find('stub_sut.ComplexFlow.hello', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_bom_dia', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_bom_dia', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -104,7 +104,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'hello')
         self.assertIn('test_single_call_to_sut_bom_dia', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_boa_tarde', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_boa_tarde', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -112,7 +112,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'hello')
         self.assertIn('test_single_call_to_sut_boa_tarde', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_boa_noite', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_boa_noite', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -123,7 +123,7 @@ class TestGlobalFlowSUTMethod(unittest.TestCase):
     def test_multiple_call_to_sut(self):
         sut = TargetEntityLoader.find('stub_sut.ComplexFlow.hello', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestComplexFlow.test_multiple_call_to_sut', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow.test_multiple_call_to_sut', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -137,7 +137,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_run_simple_if(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow.simple_if', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_simple_if_true', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_simple_if_true', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -145,7 +145,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'simple_if')
         self.assertIn('test_simple_if_true', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_simple_if_false', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_simple_if_false', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -156,7 +156,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_run_simple_if_else(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow.simple_if_else', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_true_and_false', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_true_and_false', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 2)
@@ -165,7 +165,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_true_and_false', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_true', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_true', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -173,7 +173,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_true', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_false', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_simple_if_else_false', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -181,7 +181,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'simple_if_else')
         self.assertIn('test_simple_if_else_false', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 4)
@@ -195,7 +195,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_run_loop(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow.loop', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_loop', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_loop', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -207,7 +207,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_run_try(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow.try_success', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_try_success', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_try_success', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -218,7 +218,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_run_try_fail(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow.try_fail', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_try_fail', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow.test_try_fail', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -229,7 +229,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_single_call_to_sut(self):
         sut = TargetEntityLoader.find('stub_sut.ComplexFlow.hello', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_bom_dia', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_bom_dia', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -237,7 +237,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'hello')
         self.assertIn('test_single_call_to_sut_bom_dia', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_boa_tarde', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_boa_tarde', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -245,7 +245,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
         self.assertEqual(flow_result.target_entity_name, 'hello')
         self.assertIn('test_single_call_to_sut_boa_tarde', flow_result.source_entity_names)
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_boa_noite', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow.test_single_call_to_sut_boa_noite', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -256,7 +256,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
     def test_multiple_call_to_sut(self):
         sut = TargetEntityLoader.find('stub_sut.ComplexFlow.hello', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestComplexFlow.test_multiple_call_to_sut', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow.test_multiple_call_to_sut', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 3)
@@ -268,7 +268,7 @@ class TestLocalFlowSUTMethod(unittest.TestCase):
 
     def test_sut_call_sut(self):
         sut = TargetEntityLoader.find('stub_sut', '.', 'stub_sut')
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestComplexFlow.test_sut_call_sut', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow.test_sut_call_sut', sut)
 
         sut = TargetEntityLoader.find('stub_sut.ComplexFlow.func', '.', 'stub_sut')
         flow_result = sut.local_flows(trace_result)[0]
@@ -306,7 +306,7 @@ class TestGlobalFlowSUTContainer(unittest.TestCase):
     def test_sut_class1(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 8)
@@ -324,7 +324,7 @@ class TestGlobalFlowSUTContainer(unittest.TestCase):
     def test_sut_class2(self):
         sut = TargetEntityLoader.find('stub_sut.ComplexFlow', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestComplexFlow', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 8)
@@ -339,7 +339,7 @@ class TestGlobalFlowSUTContainer(unittest.TestCase):
     def test_sut_module(self):
         sut = TargetEntityLoader.find('stub_sut', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow', sut)
         flow_result = sut.global_flows(trace_result)
 
         self.assertEqual(flow_result.number_of_sources(), 8)
@@ -360,7 +360,7 @@ class TestLocalFlowSUTContainer(unittest.TestCase):
     def test_sut_class1(self):
         sut = TargetEntityLoader.find('stub_sut.SimpleFlow', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow', sut)
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(len(flow_result), 5)
@@ -368,7 +368,7 @@ class TestLocalFlowSUTContainer(unittest.TestCase):
     def test_sut_class2(self):
         sut = TargetEntityLoader.find('stub_sut.ComplexFlow', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestComplexFlow', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow', sut)
         flow_result = sut.local_flows(trace_result)
 
         self.assertEqual(len(flow_result), 5)
@@ -376,7 +376,7 @@ class TestLocalFlowSUTContainer(unittest.TestCase):
     def test_sut_module(self):
         sut = TargetEntityLoader.find('stub_sut', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestSimpleFlow', sut)
         flow_result = sut.local_flows(trace_result)
 
         self.assertTrue(len(flow_result) > 45)

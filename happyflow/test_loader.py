@@ -22,20 +22,20 @@ class UnittestLoader:
 
     def __init__(self):
         self.tests = []
+        self.loader = unittest.TestLoader()
 
-    def find_tests(self, pattern='test*.py'):
-
-        loader = unittest.TestLoader()
-        suite = loader.loadTestsFromName(pattern)
-
-        return self._find_test_methods(suite)
-
-    def find_suite(self, pattern='test*.py'):
-
-        loader = unittest.TestLoader()
-        suite = loader.loadTestsFromName(pattern)
-
+    def loadTestsFromTestCase(self, test_class):
+        suite = self.loader.loadTestsFromTestCase(test_class)
         return suite
+
+    def loadTestsFromModule(self, module):
+        suite = self.loader.loadTestsFromModule(module)
+        return suite
+
+    def loadTestsFromName(self, pattern='test*.py'):
+
+        suite = self.loader.loadTestsFromName(pattern)
+        return self._find_test_methods(suite)
 
     def _find_test_methods(self, suite):
 

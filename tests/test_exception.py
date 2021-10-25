@@ -8,7 +8,7 @@ class TestException(unittest.TestCase):
     def test_zero_division(self):
         sut = TargetEntityLoader.find('stub_sut.Exceptions.zero_division', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestExceptions.test_zero_division', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_zero_division', sut)
         flow_result = sut.local_flows(trace_result)
 
         flows = flow_result[0].flows
@@ -22,7 +22,7 @@ class TestException(unittest.TestCase):
     def test_raise_generic_exception(self):
         sut = TargetEntityLoader.find('stub_sut.Exceptions.raise_generic_exception', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestExceptions.test_raise_generic_exception', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_generic_exception', sut)
         flow_result = sut.local_flows(trace_result)
 
         flows = flow_result[0].flows
@@ -36,7 +36,7 @@ class TestException(unittest.TestCase):
     def test_raise_specific_exception(self):
         sut = TargetEntityLoader.find('stub_sut.Exceptions.raise_specific_exception', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestExceptions.test_raise_specific_exception', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_specific_exception', sut)
         flow_result = sut.local_flows(trace_result)
 
         flows = flow_result[0].flows

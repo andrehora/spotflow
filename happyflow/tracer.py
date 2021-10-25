@@ -42,7 +42,10 @@ class TraceRunner:
         if self.get_source_entity_name_wrapper:
             source_entity_name = self.get_source_entity_name_wrapper(func)
         else:
-            source_entity_name = func.__name__
+            try:
+                source_entity_name = func.__name__
+            except Exception:
+                source_entity_name = ''
 
         if self.run_source_entity_wrapper:
             func = self.run_source_entity_wrapper(func)
@@ -60,14 +63,14 @@ class TraceRunner:
 
 
     @staticmethod
-    def trace_tests(source_pattern='test*.py', target_entities=None):
+    def trace_from_tests(source_pattern='test*.py', target_entities=None):
 
         runner = TraceRunner()
         runner.target_entities = target_entities
         runner.get_source_entity_name_wrapper = UnittestLoader.get_test_name
         runner.run_source_entity_wrapper = UnittestLoader.run_test
 
-        tests = UnittestLoader().find_tests(source_pattern)
+        tests = UnittestLoader().loadTestsFromName(source_pattern)
         runner.run(tests)
 
         if runner.has_target_entities():
@@ -75,24 +78,41 @@ class TraceRunner:
 
         return runner.trace_result
 
+
     @staticmethod
-    def trace_suite(source_pattern='test*.py', target_entities=None):
+    def trace_from_test_class(test_class, target_entities=None):
 
         runner = TraceRunner()
         runner.target_entities = target_entities
-        runner.get_source_entity_name_wrapper = UnittestLoader.get_suite_name
         runner.run_source_entity_wrapper = UnittestLoader.run_test
 
-        suite = UnittestLoader().find_suite(source_pattern)
-        runner.run(suite)
+        tests = UnittestLoader().loadTestsFromTestCase(test_class)
+        runner.run(tests)
 
         if runner.has_target_entities():
             return runner.trace_result, runner.get_target_entities()
 
         return runner.trace_result
 
+
     @staticmethod
-    def trace_pytests(pytests='.', target_entities=None):
+    def trace_from_test_module(module, target_entities=None):
+
+        runner = TraceRunner()
+        runner.target_entities = target_entities
+        runner.run_source_entity_wrapper = UnittestLoader.run_test
+
+        tests = UnittestLoader().loadTestsFromModule(module)
+        runner.run(tests)
+
+        if runner.has_target_entities():
+            return runner.trace_result, runner.get_target_entities()
+
+        return runner.trace_result
+
+
+    @staticmethod
+    def trace_from_pytest(pytests='.', target_entities=None):
 
         runner = TraceRunner()
         runner.target_entities = target_entities
@@ -102,13 +122,12 @@ class TraceRunner:
         runner.run(pytests)
 
         if runner.has_target_entities():
-
             return runner.trace_result, runner.get_target_entities()
 
         return runner.trace_result
 
     @staticmethod
-    def trace_funcs(source_funcs, target_entities=None):
+    def trace_from_func(source_funcs, target_entities=None):
 
         runner = TraceRunner()
         runner.target_entities = target_entities

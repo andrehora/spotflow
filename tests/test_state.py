@@ -8,7 +8,7 @@ class TestChangeState(unittest.TestCase):
     def test_change_var_state(self):
         sut = TargetEntityLoader.find('stub_sut.ChangeState.change_var_state', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestChangeState.test_change_var_state', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestChangeState.test_change_var_state', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -32,7 +32,7 @@ class TestChangeState(unittest.TestCase):
     def test_change_arg_state(self):
         sut = TargetEntityLoader.find('stub_sut.ChangeState.change_arg_state', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestChangeState.test_change_arg_state', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestChangeState.test_change_arg_state', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -50,7 +50,7 @@ class TestChangeState(unittest.TestCase):
     def test_change_var_state_with_conditional_true(self):
         sut = TargetEntityLoader.find('stub_sut.ChangeState.change_var_state_with_conditional', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestChangeState.test_change_var_state_with_conditional_true', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestChangeState.test_change_var_state_with_conditional_true', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -70,7 +70,7 @@ class TestChangeState(unittest.TestCase):
     def test_change_var_state_with_conditional_false(self):
         sut = TargetEntityLoader.find('stub_sut.ChangeState.change_var_state_with_conditional', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestChangeState.test_change_var_state_with_conditional_false', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestChangeState.test_change_var_state_with_conditional_false', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -90,7 +90,7 @@ class TestChangeState(unittest.TestCase):
     def test_change_multiple_vars_states(self):
         sut = TargetEntityLoader.find('stub_sut.ChangeState.change_multiple_vars_states', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestChangeState.test_change_multiple_vars_states', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestChangeState.test_change_multiple_vars_states', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -111,7 +111,7 @@ class TestChangeState(unittest.TestCase):
     def test_change_list_state(self):
         sut = TargetEntityLoader.find('stub_sut.ChangeState.change_list_state', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestChangeState.test_change_list_state', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestChangeState.test_change_list_state', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -132,7 +132,7 @@ class TestChangeState(unittest.TestCase):
     def test_change_var_state_with_loop(self):
         sut = TargetEntityLoader.find('stub_sut.ChangeState.change_var_state_with_loop', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestChangeState.test_change_var_state_with_loop', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestChangeState.test_change_var_state_with_loop', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -163,7 +163,7 @@ class TestChangeState(unittest.TestCase):
     def test_change_instance_var(self):
         sut = TargetEntityLoader.find('stub_sut.ChangeState.change_instance_var', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestChangeState.test_change_instance_var', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestChangeState.test_change_instance_var', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -187,7 +187,7 @@ class TestChangeState(unittest.TestCase):
     def test_init_with_instance_var(self):
         sut = TargetEntityLoader.find('stub_sut.ChangeState.__init__', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestChangeState.test_init', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestChangeState.test_init', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)
@@ -208,7 +208,7 @@ class TestChangeState(unittest.TestCase):
     def test_keep_var_state(self):
         sut = TargetEntityLoader.find('stub_sut.ChangeState.keep_var_state', '.', 'stub_sut')
 
-        trace_result = TraceRunner.trace_tests('tests.stub_test.TestChangeState.test_keep_var_state', sut)
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestChangeState.test_keep_var_state', sut)
         flow_result = sut.local_flows(trace_result)[0]
 
         self.assertEqual(flow_result.number_of_sources(), 1)

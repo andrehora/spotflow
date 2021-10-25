@@ -1,4 +1,4 @@
-from happyflow.playground import live_func
+from happyflow.playground import trace_from_func
 
 
 def count_uppercase_words(text):
@@ -52,8 +52,8 @@ def inputs_splitparam():
     splitparam("a")
 
 
-live_func(inputs_count, count_uppercase_words)
-# live_func(inputs_parseparam, parseparam)
-# live_func(inputs_splitparam, splitparam)
+trace_from_func(inputs_count, count_uppercase_words)
+# trace_from_func(inputs_parseparam, parseparam)
+# trace_from_func(inputs_splitparam, splitparam)
 
 
