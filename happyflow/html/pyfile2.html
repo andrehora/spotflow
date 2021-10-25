@@ -1,0 +1,28 @@
+{# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0 #}
+{# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt #}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    {# IE8 rounds line-height incorrectly, and adding this emulateIE7 line makes it right! #}
+    {# http://social.msdn.microsoft.com/Forums/en-US/iewebdevelopment/thread/7684445e-f080-4d8f-8529-132763348e21 #}
+    <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
+    <link rel="icon" sizes="32x32" href="favicon_32.png">
+    <link rel="stylesheet" href="highlight.css" type="text/css">
+</head>
+
+<body class="pyfile">
+
+<div id="source">
+
+    <div class="highlight"><pre>
+    {% for line in lines %}
+        {{line}}
+    {% endfor %}
+    </pre></div>
+
+</div>
+
+</body>
+</html>
