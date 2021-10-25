@@ -5,7 +5,7 @@ from happyflow.utils import *
 class TestUtils(unittest.TestCase):
 
     def test_find_python_file(self):
-        files = find_python_files('.')
+        files = find_python_files('')
         for filename in files:
             self.assertTrue('/' in filename)
             self.assertTrue(filename.endswith('.py'))

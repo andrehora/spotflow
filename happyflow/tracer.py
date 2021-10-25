@@ -157,8 +157,6 @@ class TraceResult:
                         if len(sut_flow) > 0:
                             result.add(test_name, sut_flow, state_result)
             results.append(result)
-        if len(results) == 1:
-            return results[0]
         return results
 
 

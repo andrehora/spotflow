@@ -1,5 +1,5 @@
 import unittest
-from happyflow.tests.stub_sut import *
+from tests.stub_sut import *
 
 
 class TestFoo(unittest.TestCase):

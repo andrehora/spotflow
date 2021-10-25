@@ -8,22 +8,22 @@ from happyflow.tracer import TraceRunner
 class TestTestLoader(unittest.TestCase):
 
     def test_count_test_case(self):
-        tests = UnittestLoader().find_tests('happyflow.tests.stub_test.TestSimpleFlow')
+        tests = UnittestLoader().find_tests('tests.stub_test.TestSimpleFlow')
         self.assertEqual(len(tests), 8)
 
     def test_count_test_method(self):
-        tests = UnittestLoader().find_tests('happyflow.tests.stub_test.TestFoo.test_foo')
+        tests = UnittestLoader().find_tests('tests.stub_test.TestFoo.test_foo')
         self.assertEqual(len(tests), 1)
 
 
 class TestTestRunner(unittest.TestCase):
 
     def test_run_test_case_shortcut(self):
-        result = TraceRunner.trace_tests('happyflow.tests.stub_test.TestSimpleFlow.test_simple_if_true')
+        result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow.test_simple_if_true')
         self.assertEqual(len(result.global_traces), 1)
 
     def test_run_test_suite_shortcut(self):
-        result = TraceRunner.trace_tests('happyflow.tests.stub_test.TestSimpleFlow')
+        result = TraceRunner.trace_tests('tests.stub_test.TestSimpleFlow')
         self.assertEqual(len(result.global_traces), 8)
 
     def test_run_test_case(self):
@@ -31,7 +31,7 @@ class TestTestRunner(unittest.TestCase):
         runner.get_source_entity_name_wrapper = UnittestLoader.get_test_name
         runner.run_source_entity_wrapper = UnittestLoader.run_test
 
-        tests = UnittestLoader().find_tests('happyflow.tests.stub_test.TestSimpleFlow.test_simple_if_true')
+        tests = UnittestLoader().find_tests('tests.stub_test.TestSimpleFlow.test_simple_if_true')
         runner.run(tests)
         result = runner.trace_result
 
@@ -42,7 +42,7 @@ class TestTestRunner(unittest.TestCase):
         runner.get_source_entity_name_wrapper = UnittestLoader.get_test_name
         runner.run_source_entity_wrapper = UnittestLoader.run_test
 
-        tests = UnittestLoader().find_tests('happyflow.tests.stub_test.TestSimpleFlow')
+        tests = UnittestLoader().find_tests('tests.stub_test.TestSimpleFlow')
         runner.run(tests)
         result = runner.trace_result
 
@@ -150,7 +150,7 @@ class TestSUT(unittest.TestCase):
         self.assertEqual(m2.full_name(), 'm.c.m2')
 
     def test_loc(self):
-        sut = TargetEntity('', '')
+        sut = TargetEntity('.', '.')
         sut.start_line = 10
         sut.end_line = 20
 
