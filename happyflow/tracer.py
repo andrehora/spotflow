@@ -287,6 +287,10 @@ class TraceCollector:
         entity_name = find_full_entity_name(frame)
         # print(entity_name, frame.f_code.co_filename)
 
+        # import os
+        # print(os.path.abspath(frame.f_code.co_filename))
+        # print(frame.f_code.co_filename)
+
         for target_entity in self.target_entities:
             if type(target_entity) is str:
                 target_entity = self.ensure_target_entity(entity_name, target_entity, frame)

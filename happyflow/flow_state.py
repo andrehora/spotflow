@@ -92,7 +92,7 @@ class StateResult:
         self.vars[name] = self.vars.get(name, VarStateHistory(name, []))
         self.vars[name].add(name, value, line, inline)
 
-    def is_line_return_value(self, line_number):
+    def is_return_value(self, line_number):
         if self.has_return():
             return line_number == self.return_state.line
         return False
@@ -108,7 +108,7 @@ class StateResult:
                         if str(state) not in var_states and state.value_has_changed:
                             var_states += str(state) + ' '
             if var_states:
-                states.append(var_states)
+                states.append(var_states.strip())
         return states
 
 

@@ -74,6 +74,7 @@ class TargetEntity(TargetBaseEntity):
         executable_lines = trace._find_executable_linenos(self.filename)
         # remove the target_entity definition, eg, def, class
         return tuple(self.intersection(executable_lines)[1:])
+        # return tuple(self.intersection(executable_lines))
 
     def intersection(self, other_lines):
         my_lines = range(self.start_line, self.end_line + 1)
@@ -85,7 +86,7 @@ class TargetEntity(TargetBaseEntity):
     def line_is_executable(self, line):
         return line in self.executable_lines()
 
-    def line_is_definition(self, line):
+    def is_entity_definition(self, line):
         return line == self.start_line
 
     def has_line(self, line):
