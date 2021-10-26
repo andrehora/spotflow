@@ -3,9 +3,9 @@ import re
 import inspect
 import logging
 import copy
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import get_formatter_by_name
+# from pygments import highlight
+# from pygments.lexers import get_lexer_by_name
+# from pygments.formatters import get_formatter_by_name
 
 
 def open_file(filename):
@@ -140,20 +140,20 @@ def read_file_lines(filename):
         return f.readlines()
 
 
-def html_for_code(code):
-    lexer = get_lexer_by_name("python", stripall=True)
-    formatter = get_formatter_by_name("html", style="friendly")
-    return highlight(code, lexer, formatter)
+# def html_for_code(code):
+#     lexer = get_lexer_by_name("python", stripall=True)
+#     formatter = get_formatter_by_name("html", style="friendly")
+#     return highlight(code, lexer, formatter)
 
 
-def html_lines_for_code(code):
-    html = html_for_code(code)
-    lines = []
-    for line in html.splitlines():
-        line = line.replace('<div class="highlight"><pre><span></span>', '')
-        line = line.replace('</pre></div>', '')
-        lines.append(line)
-    return lines
+# def html_lines_for_code(code):
+#     html = html_for_code(code)
+#     lines = []
+#     for line in html.splitlines():
+#         line = line.replace('<div class="highlight"><pre><span></span>', '')
+#         line = line.replace('</pre></div>', '')
+#         lines.append(line)
+#     return lines
 
 
 def write_html(fname, html):
