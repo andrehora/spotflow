@@ -1,6 +1,6 @@
 from happyflow.tracer import TraceRunner
 from happyflow.target_loader import TargetEntityLoader
-from happyflow.txt_report import TextReport
+from happyflow.report_txt import TextReport
 
 
 def parseparam(s):
@@ -44,7 +44,7 @@ def inputs_parseparam():
     # parseparam('a=1;b=2;b=2;b=2')
     # parseparam('a=1;b=2;b=2;b=2')
     # parseparam('a="1;1"')
-    count_uppercase_words('AAA')
+    count_uppercase_words('a')
     # count_uppercase_words('A B')
     # count_uppercase_words('A B C')
     # zipp()
@@ -59,7 +59,8 @@ for flow_result in flow_results:
     reporter = TextReport(flow_result.target_entity, flow_result)
     reporter.show_code_state()
 
-    entity_info = reporter.code_flows_and_states(0)
-    for line_info in entity_info:
-        print(line_info)
+    entity_info = reporter.get_entity_info(0)
+    for flow_state_info in entity_info:
+        for line_info in flow_state_info:
+            print(line_info)
 

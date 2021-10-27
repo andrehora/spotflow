@@ -36,8 +36,8 @@ def splitparam(param):
 
 
 def inputs_count():
+    count_uppercase_words('')
     count_uppercase_words('a b')
-    count_uppercase_words('A B')
     count_uppercase_words('A B C')
 
 

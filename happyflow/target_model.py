@@ -1,6 +1,6 @@
 import trace
 import types
-from happyflow.utils import line_intersection
+from happyflow.utils import line_intersection, get_code_lines, get_html_lines
 from happyflow.utils import function_metadata, method_metadata
 
 
@@ -83,14 +83,23 @@ class TargetEntity(TargetBaseEntity):
     def loc(self):
         return self.end_line - self.start_line
 
-    def line_is_executable(self, line):
-        return line in self.executable_lines()
+    def line_is_executable(self, lineno):
+        return lineno in self.executable_lines()
 
-    def is_entity_definition(self, line):
-        return line == self.start_line
+    def line_is_entity_definition(self, lineno):
+        return lineno == self.start_line
 
-    def has_line(self, line):
-        return line in range(self.start_line, self.end_line + 1)
+    def has_lineno(self, lineno):
+        return lineno in range(self.start_line, self.end_line + 1)
+
+    def get_code(self):
+        return ''.join(self.get_code_lines())
+
+    def get_code_lines(self):
+        return get_code_lines(self)
+
+    def get_html_lines(self):
+        return get_html_lines(self.get_code())
 
     def summary(self):
         return f'{self.full_name()} (lines: {self.start_line}-{self.end_line})'

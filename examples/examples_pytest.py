@@ -1,6 +1,6 @@
 from happyflow.target_loader import TargetEntityLoader
 from happyflow.tracer import TraceRunner
-from happyflow.txt_report import TextReport
+from happyflow.report_txt import TextReport
 
 # trace_result, target = TraceRunner.trace_suite("tests", ['url.url_is_from_any_domain'])
 trace_result, target = TraceRunner.trace_pytests("tests/test_color.py", ['color.Color.downgrade'])

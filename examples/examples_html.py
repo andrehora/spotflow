@@ -1,6 +1,14 @@
 from happyflow.tracer import TraceRunner
 from happyflow.target_loader import TargetEntityLoader
-from happyflow.html_report import HTMLReport
+from happyflow.report import Report
+
+
+def count_uppercase_words(text):
+    counter = 0
+    for word in text.split():
+        if word.isupper():
+            counter += 1
+    return counter
 
 
 def parseparam(s):
@@ -22,10 +30,16 @@ def parseparam(s):
     return plist
 
 
+def inputs_count():
+    count_uppercase_words('')
+    count_uppercase_words('a')
+    count_uppercase_words('A')
+
+
 def inputs_parseparam():
-    # parseparam('a')
+    parseparam('a')
     parseparam('a=1;b=2')
-    # parseparam('a="1;1"')
+    parseparam('a="1;1"')
 
 
 target = TargetEntityLoader.load_func(parseparam)
@@ -33,6 +47,6 @@ trace_result = TraceRunner.trace_from_func(inputs_parseparam, target)
 flow_results = target.local_flows(trace_result)
 
 for flow_result in flow_results:
-    reporter = HTMLReport(flow_result.target_entity, flow_result)
-    reporter.report(0)
+    reporter = Report(flow_result.target_entity, flow_result)
+    reporter.html_report()
 

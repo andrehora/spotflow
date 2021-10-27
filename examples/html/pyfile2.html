@@ -16,11 +16,21 @@
 
 <div id="source">
 
-    <div class="highlight"><pre>
-    {% for line in code %}
-        {{line.html}}
-    {% endfor %}
-    </pre></div>
+    <div class="highlight">
+        {{entity_info.name}}
+        <br>
+        {{entity_info.full_name}}
+        <br>
+        {{entity_info.filename}}
+        <pre>
+            {% for flow_state_info in entity_info %}
+                {% for line_info in flow_state_info %}
+{{line_info.lineno_entity}} {{line_info.html}}
+                {% endfor %}
+                <br>
+            {% endfor %}
+        </pre>
+    </div>
 
 </div>
 

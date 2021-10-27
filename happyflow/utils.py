@@ -3,17 +3,9 @@ import re
 import inspect
 import logging
 import copy
-# from pygments import highlight
-# from pygments.lexers import get_lexer_by_name
-# from pygments.formatters import get_formatter_by_name
-
-
-def open_file(filename):
-    try:
-        with open(filename, 'r', encoding="utf-8") as f:
-            return f.read()
-    except:
-        return None
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import get_formatter_by_name
 
 
 def find_python_files(dir='.'):
@@ -130,6 +122,14 @@ def is_list_or_set(element):
     return type(element) == list or type(element) == set
 
 
+def open_file(filename):
+    try:
+        with open(filename, 'r', encoding="utf-8") as f:
+            return f.read()
+    except:
+        return None
+
+
 def read_file(filename):
     with open(filename) as f:
         return f.read()
@@ -140,20 +140,31 @@ def read_file_lines(filename):
         return f.readlines()
 
 
-# def html_for_code(code):
-#     lexer = get_lexer_by_name("python", stripall=True)
-#     formatter = get_formatter_by_name("html", style="friendly")
-#     return highlight(code, lexer, formatter)
+def get_code_lines(entity):
+    lines = read_file_lines(entity.filename)
+    code_lines = []
+    lineno = 0
+    for line in lines:
+        lineno += 1
+        if entity.has_lineno(lineno):
+            code_lines.append(line)
+    return code_lines
 
 
-# def html_lines_for_code(code):
-#     html = html_for_code(code)
-#     lines = []
-#     for line in html.splitlines():
-#         line = line.replace('<div class="highlight"><pre><span></span>', '')
-#         line = line.replace('</pre></div>', '')
-#         lines.append(line)
-#     return lines
+def get_html_lines(code):
+    html = html_for_code(code)
+    lines = []
+    for line in html.splitlines():
+        line = line.replace('<div class="highlight"><pre><span></span>', '')
+        line = line.replace('</pre></div>', '')
+        lines.append(line)
+    return lines
+
+
+def html_for_code(code):
+    lexer = get_lexer_by_name("python", stripall=True)
+    formatter = get_formatter_by_name("html", style="friendly")
+    return highlight(code, lexer, formatter)
 
 
 def write_html(fname, html):

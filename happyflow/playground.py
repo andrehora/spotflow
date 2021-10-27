@@ -1,6 +1,6 @@
 from happyflow.target_loader import TargetEntityLoader
 from happyflow.tracer import TraceRunner
-from happyflow.txt_report import TextReport
+from happyflow.report_txt import TextReport
 
 
 def trace_from_func(source_func, target_func):
