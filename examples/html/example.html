@@ -9,68 +9,38 @@
 <body class="pyfile">
 <div id="source">
     <div class="highlight">
-        parseparam
-        <br>
-        examples_html.parseparam
-        <br>
-        /Users/andrehora/Documents/PycharmProjects/happyflow/examples/examples_html.py
-        <pre>
-14 <span class="k">def</span> <span class="nf">parseparam</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-15 <span class="full run">    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></span>
-16 <span class="full run">    <span class="n">plist</span> <span class="o">=</span> <span class="p">[]</span></span>
-17 <span class="full run">    <span class="k">while</span> <span class="n">s</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;;&#39;</span><span class="p">:</span></span>
-18 <span class="full run">        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></span>
-19 <span class="full run">        <span class="n">end</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span></span>
-20 <span class="full run">        <span class="k">while</span> <span class="n">end</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span></span>
-21 <span class="full not_run">            <span class="n">end</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></span>
-22 <span class="full run">        <span class="k">if</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span></span>
-23 <span class="full run">            <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></span>
-24 <span class="full run">        <span class="n">f</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="n">end</span><span class="p">]</span></span>
-25 <span class="full run">        <span class="k">if</span> <span class="s1">&#39;=&#39;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span></span>
-26 <span class="full not_run">            <span class="n">i</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span></span>
-27 <span class="full not_run">            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;=&#39;</span> <span class="o">+</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></span>
-28 <span class="full run">        <span class="n">plist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></span>
-29 <span class="full run">        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">end</span><span class="p">:]</span></span>
-30 <span class="full run">    <span class="k">return</span> <span class="n">plist</span></span>
-                <br>
-14 <span class="k">def</span> <span class="nf">parseparam</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-15 <span class="full run">    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></span>
-16 <span class="full run">    <span class="n">plist</span> <span class="o">=</span> <span class="p">[]</span></span>
-17 <span class="full run">    <span class="k">while</span> <span class="n">s</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;;&#39;</span><span class="p">:</span></span>
-18 <span class="full run">        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></span>
-19 <span class="full run">        <span class="n">end</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span></span>
-20 <span class="full run">        <span class="k">while</span> <span class="n">end</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span></span>
-21 <span class="full not_run">            <span class="n">end</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></span>
-22 <span class="full run">        <span class="k">if</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span></span>
-23 <span class="full run">            <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></span>
-24 <span class="full run">        <span class="n">f</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="n">end</span><span class="p">]</span></span>
-25 <span class="full run">        <span class="k">if</span> <span class="s1">&#39;=&#39;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span></span>
-26 <span class="full run">            <span class="n">i</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span></span>
-27 <span class="full run">            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;=&#39;</span> <span class="o">+</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></span>
-28 <span class="full run">        <span class="n">plist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></span>
-29 <span class="full run">        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">end</span><span class="p">:]</span></span>
-30 <span class="full run">    <span class="k">return</span> <span class="n">plist</span></span>
-                <br>
-14 <span class="k">def</span> <span class="nf">parseparam</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-15 <span class="full run">    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;;&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></span>
-16 <span class="full run">    <span class="n">plist</span> <span class="o">=</span> <span class="p">[]</span></span>
-17 <span class="full run">    <span class="k">while</span> <span class="n">s</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;;&#39;</span><span class="p">:</span></span>
-18 <span class="full run">        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></span>
-19 <span class="full run">        <span class="n">end</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span></span>
-20 <span class="full run">        <span class="k">while</span> <span class="n">end</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span></span>
-21 <span class="full run">            <span class="n">end</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></span>
-22 <span class="full run">        <span class="k">if</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span></span>
-23 <span class="full run">            <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></span>
-24 <span class="full run">        <span class="n">f</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="n">end</span><span class="p">]</span></span>
-25 <span class="full run">        <span class="k">if</span> <span class="s1">&#39;=&#39;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span></span>
-26 <span class="full run">            <span class="n">i</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span></span>
-27 <span class="full run">            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;=&#39;</span> <span class="o">+</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></span>
-28 <span class="full run">        <span class="n">plist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></span>
-29 <span class="full run">        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">end</span><span class="p">:]</span></span>
-30 <span class="full run">    <span class="k">return</span> <span class="n">plist</span></span>
-                <br>
-        </pre>
+        <h1>_splitparam</h1>
+        <h2>message._splitparam</h2>
+            <button type="button" class="xxx" title="calls...">384 calls</button>
+            <button type="button" class="run" title="lines run...">4 run</button>
+            <button type="button" class="not_run" title="lines not run...">1 not run</button>
+            <pre>
+<span class="num"><a href="#1">1</a></span><span class="full run"><span class="k">def</span> <span class="nf">_splitparam</span><span class="p">(</span><span class="n">param</span><span class="p">):</span></span>
+<span class="num"><a href="#2">2</a></span>    <span class="c1"># Split header parameters.  BAW: this may be too simple.  It isn&#39;t</span>
+<span class="num"><a href="#3">3</a></span>    <span class="c1"># strictly RFC 2045 (section 5.1) compliant, but it catches most headers</span>
+<span class="num"><a href="#4">4</a></span>    <span class="c1"># found in the wild.  We may eventually need a full fledged parser.</span>
+<span class="num"><a href="#5">5</a></span>    <span class="c1"># RDM: we might have a Header here; for now just stringify it.</span>
+<span class="num"><a href="#6">6</a></span><span class="full run">    <span class="n">a</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">)</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span></span>
+<span class="num"><a href="#7">7</a></span><span class="full run">    <span class="k">if</span> <span class="ow">not</span> <span class="n">sep</span><span class="p">:</span></span>
+<span class="num"><a href="#8">8</a></span><span class="full not_run">        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="kc">None</span></span>
+<span class="num"><a href="#9">9</a></span><span class="full run">    <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">b</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></span>
+            </pre>
+            <button type="button" class="xxx" title="calls...">60 calls</button>
+            <button type="button" class="run" title="lines run...">4 run</button>
+            <button type="button" class="not_run" title="lines not run...">1 not run</button>
+            <pre>
+<span class="num"><a href="#1">1</a></span><span class="full run"><span class="k">def</span> <span class="nf">_splitparam</span><span class="p">(</span><span class="n">param</span><span class="p">):</span></span>
+<span class="num"><a href="#2">2</a></span>    <span class="c1"># Split header parameters.  BAW: this may be too simple.  It isn&#39;t</span>
+<span class="num"><a href="#3">3</a></span>    <span class="c1"># strictly RFC 2045 (section 5.1) compliant, but it catches most headers</span>
+<span class="num"><a href="#4">4</a></span>    <span class="c1"># found in the wild.  We may eventually need a full fledged parser.</span>
+<span class="num"><a href="#5">5</a></span>    <span class="c1"># RDM: we might have a Header here; for now just stringify it.</span>
+<span class="num"><a href="#6">6</a></span><span class="full run">    <span class="n">a</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="p">)</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span></span>
+<span class="num"><a href="#7">7</a></span><span class="full run">    <span class="k">if</span> <span class="ow">not</span> <span class="n">sep</span><span class="p">:</span></span>
+<span class="num"><a href="#8">8</a></span><span class="full run">        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="kc">None</span></span>
+<span class="num"><a href="#9">9</a></span><span class="full not_run">    <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">b</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></span>
+            </pre>
     </div>
 </div>
+<i class="bi bi-arrow-down"></i>
 </body>
 </html>

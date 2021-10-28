@@ -34,6 +34,7 @@ def inputs_count():
     count_uppercase_words('')
     count_uppercase_words('a')
     count_uppercase_words('A')
+    count_uppercase_words('A B C')
 
 
 def inputs_parseparam():
@@ -42,11 +43,18 @@ def inputs_parseparam():
     parseparam('a="1;1"')
 
 
-target = TargetEntityLoader.load_func(parseparam)
-trace_result = TraceRunner.trace_from_func(inputs_parseparam, target)
+# target = TargetEntityLoader.load_func(count_uppercase_words)
+# trace_result = TraceRunner.trace_from_func(inputs_count, target)
+# flow_results = target.local_flows(trace_result)
+
+# from test import test_gzip
+# trace_result, target = TraceRunner.trace_from_test_module(test_gzip, ['gzip.open'])
+# flow_results = target.local_flows(trace_result)
+
+from test.test_email.test_email import TestMessageAPI
+trace_result, target = TraceRunner.trace_from_test_class(TestMessageAPI, ['message._splitparam'])
 flow_results = target.local_flows(trace_result)
 
 for flow_result in flow_results:
     reporter = Report(flow_result.target_entity, flow_result)
     reporter.html_report()
-

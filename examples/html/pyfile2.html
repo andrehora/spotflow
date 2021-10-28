@@ -17,22 +17,23 @@
 <div id="source">
 
     <div class="highlight">
-        {{entity_info.name}}
-        <br>
-        {{entity_info.full_name}}
-        <br>
-        {{entity_info.filename}}
-        <pre>
+        <h1>{{entity_info.name}}</h1>
+        <h2>{{entity_info.full_name}}</h2>
             {% for flow_state_info in entity_info %}
+            <button type="button" class="xxx" title="calls...">{{flow_state_info.call_count}} calls</button>
+            <button type="button" class="run" title="lines run...">{{flow_state_info.run_count}} run</button>
+            <button type="button" class="not_run" title="lines not run...">{{flow_state_info.not_run_count}} not run</button>
+            <pre>
                 {% for line_info in flow_state_info %}
-{{line_info.lineno_entity}} {{line_info.html}}
+<span class="num"><a href="#{{line_info.lineno}}">{{line_info.lineno}}</a></span>{{line_info.html}}
                 {% endfor %}
-                <br>
+            </pre>
             {% endfor %}
-        </pre>
-    </div>
 
+    </div>
 </div>
+
+<i class="bi bi-arrow-down"></i>
 
 </body>
 </html>

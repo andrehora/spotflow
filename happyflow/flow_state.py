@@ -9,12 +9,6 @@ class RunResult:
         self.source_entity_names = []
         self.flows = []
 
-    # def __len__(self):
-    #     return len(self.flows)
-    #
-    # def __getitem__(self, position):
-    #     return self.flows[position]
-
     def flow_result_by_lines(self, lines):
         target_flows = []
         for flow in self.flows:
