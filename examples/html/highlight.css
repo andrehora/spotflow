@@ -1,6 +1,9 @@
 /*html, body, h1, h2, h3, p, table, td, th { margin: 0; padding: 0; border: 0; font-weight: inherit; font-style: inherit; font-size: 100%; font-family: inherit; vertical-align: baseline; }*/
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; font-size: 1em; background: #fff; color: #000; }
 html > body { font-size: 15px;}
+#header { background: #e5f8ff; width: 100%; border-bottom: 1px solid #eee; }
+#header .content { padding: 1rem; }
+h1 { font-size: 1.25em; margin-block-start: 0em; }
 
 
 pre { line-height: 125%; }

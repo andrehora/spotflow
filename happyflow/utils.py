@@ -200,3 +200,8 @@ def try_copy(obj, name):
         raise
 
 
+def ratio(a, b, dec=1):
+    r = a / b * 100
+    return f'{round(r, dec)}%'
+
+

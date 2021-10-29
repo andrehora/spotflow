@@ -52,7 +52,7 @@ def inputs_parseparam():
 # flow_results = target.local_flows(trace_result)
 
 from test.test_email.test_email import TestMessageAPI
-trace_result, target = TraceRunner.trace_from_test_class(TestMessageAPI, ['message._splitparam'])
+trace_result, target = TraceRunner.trace_from_test_class(TestMessageAPI, ['message.Message.attach'])
 flow_results = target.local_flows(trace_result)
 
 for flow_result in flow_results:
