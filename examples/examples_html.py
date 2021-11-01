@@ -48,13 +48,15 @@ def inputs_parseparam():
 # flow_results = target.local_flows(trace_result)
 
 # from test import test_gzip
-# trace_result, target = TraceRunner.trace_from_test_module(test_gzip, ['gzip.open'])
+# trace_result, target = TraceRunner.trace_from_test_module(test_gzip, ['gzip'])
 # flow_results = target.local_flows(trace_result)
 
 from test.test_email.test_email import TestMessageAPI
-trace_result, target = TraceRunner.trace_from_test_class(TestMessageAPI, ['message.Message.attach'])
+trace_result, target = TraceRunner.trace_from_test_class(TestMessageAPI, ['message'])
 flow_results = target.local_flows(trace_result)
 
+
 for flow_result in flow_results:
+    print(flow_result.target_entity.full_name())
     reporter = Report(flow_result.target_entity, flow_result)
     reporter.html_report()

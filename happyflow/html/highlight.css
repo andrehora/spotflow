@@ -1,6 +1,9 @@
-html {
-
-}
+/*html, body, h1, h2, h3, p, table, td, th { margin: 0; padding: 0; border: 0; font-weight: inherit; font-style: inherit; font-size: 100%; font-family: inherit; vertical-align: baseline; }*/
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; font-size: 1em; background: #fff; color: #000; }
+html > body { font-size: 15px;}
+#header { background: #f6f8fa; width: 100%; border-bottom: 1px solid #eee; }
+#header .content { padding: 1rem; }
+h1 { font-size: 1.25em; margin-block-start: 0em; }
 
 
 pre { line-height: 125%; }
@@ -77,26 +80,47 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 
 
-.highlight .happy { background-color: #dfd; background-size: cover }
-.highlight .happy:hover {
+a:active, a:focus { outline: 2px dashed #007acc; }
+
+
+.num { float: left; text-align: right; width: 3.5rem; box-sizing: border-box; margin-left: -1.5rem; padding-right: 0.5em; color: #999; }
+.num a { text-decoration: none; color: #999; }
+
+.state { color: #999; }
+
+.full { display: inline-block; width: 100%;}
+
+button { font-family: inherit; font-size: inherit; border: 1px solid; border-radius: .2em; color: inherit; padding: .1em .5em; margin: 1px calc(.1em + 1px); cursor: pointer; border-color: #ccc; }
+
+.run { background-color: #dfd; }
+.run:hover {
     background-color: #abcdab;
     -webkit-transition: background-color 10ms linear;
     -ms-transition: background-color 10ms linear;
     transition: background-color 10ms linear;
 }
 
-.highlight .alter { background-color: #fdd }
-.highlight .alter:hover {
+.not_run { background-color: #fdd }
+.not_run:hover {
     background-color: #cdabab;
     -webkit-transition: background-color 10ms linear;
     -ms-transition: background-color 10ms linear;
     transition: background-color 10ms linear;
 }
 
-.highlight .both { background-color: #ffa }
-.highlight .both:hover {
+.not_exec { background-color: #ffa }
+.not_exec:hover {
     background-color: #cdcd84;
     -webkit-transition: background-color 10ms linear;
     -ms-transition: background-color 10ms linear;
     transition: background-color 10ms linear;
+}
+
+.calls { background-color: #bbebff }
+
+.truncate {
+  width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

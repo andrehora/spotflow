@@ -30,6 +30,7 @@ def find_class_name(frame):
     if 'self' in args.locals:
         obj = args.locals['self']
         try:
+            # print(obj.__class__.__module__)
             return obj.__class__.__name__
         except Exception:
             return None
@@ -37,10 +38,10 @@ def find_class_name(frame):
 
 
 def find_full_entity_name(frame):
-    code = frame.f_code
-    module_name = find_module_name(code.co_filename)
+    f_code = frame.f_code
+    module_name = find_module_name(f_code.co_filename)
     class_name = find_class_name(frame)
-    function_name = code.co_name
+    function_name = f_code.co_name
     if class_name:
         return f'{module_name}.{class_name}.{function_name}'
     return f'{module_name}.{function_name}'
@@ -175,22 +176,28 @@ def write_html(fname, html):
 
 def copy_or_type(obj):
     try:
-        return copy.deepcopy(obj)
+        # return copy.deepcopy(obj)
+        return guess_name(obj)
     except Exception:
         return guess_name(obj)
 
 
 def guess_name(obj):
+    obj_string = ''
     try:
         obj_string = str(obj)
         if obj_string.startswith('<') and obj_string.endswith('>'):
-            if inspect.ismodule(obj) or inspect.isclass(obj) or inspect.ismethod(obj) or inspect.isfunction(obj):
+            if is_live(obj):
                 return f'{obj.__name__} class'
             return f'{obj.__class__.__name__} object'
         return obj_string
     except Exception:
         return obj_string
 
+
+def is_live(obj):
+    return inspect.ismodule(obj) or inspect.isclass(obj) or inspect.ismethod(obj) or inspect.isfunction(obj)
+           # inspect.isgeneratorfunction(obj) or inspect.isgenerator(obj)
 
 def try_copy(obj, name):
     try:

@@ -32,9 +32,12 @@ class TargetEntityLoader:
 
     @staticmethod
     def find(target_entity_name, dir='.', module_name=None):
-        loader = TargetEntityLoader(dir, module_name)
-        loader.load()
-        return loader.target_container.get(target_entity_name)
+        try:
+            loader = TargetEntityLoader(dir, module_name)
+            loader.load()
+            return loader.target_container.get(target_entity_name)
+        except Exception:
+            return None
 
     @staticmethod
     def load_func(func_or_method):

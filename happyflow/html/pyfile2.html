@@ -16,13 +16,40 @@
 
 <div id="source">
 
-    <div class="highlight"><pre>
-    {% for line in lines %}
-        {{line}}
-    {% endfor %}
-    </pre></div>
+    <div class="highlight">
+        <div id="header">
+            <div class="content">
+                <h1>Method: {{entity_data.full_name}}</h1>
+                <span>{{entity_data.total_flows}} flows,</span>
+                <span>{{entity_data.total_calls}} calls, and </span>
+                <span>{{entity_data.exec_lines_count}} statements</span>
+            </div>
+        </div>
 
+        {% for flow_data in entity_data %}
+            <p><b>Flow {{flow_data.pos}}</b>: {{flow_data.call_count}} calls ({{flow_data.call_ratio}})</p>
+
+            {% for each in flow_data.arg_values %}
+                <p><span>&#8594;</span> <b>{{each.name}}</b>: {{each.value}}</p>
+            {% endfor %}
+
+            {% if flow_data.return_values %}
+                <p><span>&#8592;</span> {{flow_data.return_values}}</p>
+            {% endif %}
+
+            <button type="button" class="run" title="lines run...">{{flow_data.run_count}} run</button>
+            <button type="button" class="not_run" title="lines not run...">{{flow_data.not_run_count}} not run</button>
+            <pre>
+                {% for line_data in flow_data %}
+<span class="num"><a href="#{{line_data.lineno}}">{{line_data.lineno}}</a></span>{{line_data.html}}
+                {% endfor %}
+            </pre>
+        {% endfor %}
+
+    </div>
 </div>
+
+<i class="bi bi-arrow-down"></i>
 
 </body>
 </html>

@@ -13,7 +13,7 @@ class TextReport:
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
         print('Target entity:', self.target_entity)
         print('Executable lines:', len(self.target_entity.executable_lines()))
-        print('Total flows:', self.analysis.number_of_flows(),  'Distinct:', self.analysis.number_of_distinct_flows())
+        print('Total flows:', self.analysis.number_of_calls(), 'Distinct:', self.analysis.number_of_distinct_flows())
         # exec_lines = self.target_entity.executable_lines()
         # print(f'Executable lines ({len(exec_lines)}): {exec_lines}')
         count = 0
@@ -24,7 +24,7 @@ class TextReport:
             analysis = Analysis(self.target_entity, flow_result)
 
             print(f'=-=-=-=-=-=-=-= Flow {count} =-=-=-=-=-=-=-=')
-            print('Total:', analysis.number_of_flows())
+            print('Total:', analysis.number_of_calls())
             print(f'Flow ({len(target_flow_lines)}): {target_flow_lines}')
             print('Args:', analysis.most_common_args())
             print('Return values:', analysis.most_common_return_values())

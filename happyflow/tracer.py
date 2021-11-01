@@ -273,7 +273,7 @@ class TraceCollector:
             return self.target_entities_cache[entity_name]
 
         entity = TargetEntityLoader.find(entity_name, frame.f_code.co_filename)
-        if not entity.is_target():
+        if not entity or not entity.is_target():
             return None
 
         self.target_entities_cache[entity_name] = entity
@@ -285,11 +285,6 @@ class TraceCollector:
             return
 
         entity_name = find_full_entity_name(frame)
-        # print(entity_name, frame.f_code.co_filename)
-
-        # import os
-        # print(os.path.abspath(frame.f_code.co_filename))
-        # print(frame.f_code.co_filename)
 
         for target_entity in self.target_entities:
             if type(target_entity) is str:
