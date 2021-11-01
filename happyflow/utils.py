@@ -176,8 +176,8 @@ def write_html(fname, html):
 
 def copy_or_type(obj):
     try:
-        # return copy.deepcopy(obj)
-        return guess_name(obj)
+        return copy.deepcopy(obj)
+        # return guess_name(obj)
     except Exception:
         return guess_name(obj)
 
