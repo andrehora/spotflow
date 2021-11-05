@@ -241,7 +241,7 @@ class TraceCollector:
         self.source_entity_name = None
         self.target_entities = None
         self.local_traces = {}
-        self.last_entity_line = {}
+        self.last_frame_line = {}
         self.target_entities_cache = {}
 
     def find_args_states(self, frame):
@@ -296,10 +296,11 @@ class TraceCollector:
                 if entity_name not in self.local_traces:
                     self.local_traces[entity_name] = []
 
-                if entity_name not in self.last_entity_line:
-                    self.last_entity_line[entity_name] = -1
+                if entity_name not in self.last_frame_line:
+                    self.last_frame_line[entity_name] = -1
 
                 if why == 'call':
+                    # Initialize states
                     target_entity_flow = self.local_traces[entity_name]
                     state = StateResult(entity_name)
                     target_entity_flow.append((self.source_entity_name, [], state))
@@ -309,15 +310,16 @@ class TraceCollector:
                 else:
                     target_entity_flow = self.local_traces[entity_name]
                     # get the last flow and update it
-                    source_entity_name, current_flow, current_state = target_entity_flow[-1]
+                    _, current_flow, current_state = target_entity_flow[-1]
 
                     lineno = frame.f_lineno
                     if why == 'line':
                         current_flow.append(lineno)
-                    if why == 'return':
+                    elif why == 'return':
                         has_return = line_has_explicit_return(frame)
                         current_state.return_state = ReturnState(copy_or_type(arg), lineno, has_return)
-                    if why == 'exception':
+                    else:
+                        # why == 'exception':
                         current_state.exception_state = ExceptionState(arg, lineno)
 
                     if current_state:
@@ -325,5 +327,5 @@ class TraceCollector:
                         for arg in argvalues.locals:
                             value = copy_or_type(argvalues.locals[arg])
                             current_state.add(name=arg, value=value, line=lineno,
-                                              inline=self.last_entity_line[entity_name])
-                    self.last_entity_line[entity_name] = lineno
+                                              inline=self.last_frame_line[entity_name])
+                    self.last_frame_line[entity_name] = lineno
