@@ -40,6 +40,13 @@ class TargetEntityLoader:
             return None
 
     @staticmethod
+    def load_from_frame(frame):
+        func_or_method = find_func_or_method_from_frame(frame)
+        if func_or_method:
+            return TargetEntityLoader.load_func(func_or_method)
+        return None
+
+    @staticmethod
     def load_func(func_or_method):
         return TargetEntity.build_from_func(func_or_method)
 

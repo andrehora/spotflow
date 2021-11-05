@@ -113,20 +113,20 @@ class VarStateHistory:
         self.states = states
 
     def add(self, name, value, line, inline):
-        value_has_changed = False
-        if len(self.states) == 0:
-            value_has_changed = True
-            # inline = line
-        else:
-            last_state = self.get_last()
-            # inline = last_state.line
-            if last_state.value != value:
-                value_has_changed = True
-
+        value_has_changed = self.detect_value_has_changed(value)
+        # if value_has_changed:
         new_state = VarState(name, value, line, inline, value_has_changed)
         self.states.append(new_state)
 
-    def get_last(self):
+    def detect_value_has_changed(self, new_value):
+        if not self.states:
+            return True
+        last_state = self.get_last_state()
+        if last_state.value != new_value:
+            return True
+        return False
+
+    def get_last_state(self):
         return self.states[-1]
 
     def first_last(self):

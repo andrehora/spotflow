@@ -223,7 +223,7 @@ class Trace2(trace.Trace):
 
     def localtrace_trace_and_count(self, frame, why, arg):
 
-        if why == "line" or why == 'return' or why == 'exception':
+        if why in ('line', 'return', 'exception'):
             self.trace_collector.collect_flow_and_state(frame, why, arg)
 
         if why == "line":
@@ -272,7 +272,8 @@ class TraceCollector:
         if entity_name in self.target_entities_cache:
             return self.target_entities_cache[entity_name]
 
-        entity = TargetEntityLoader.find(entity_name, frame.f_code.co_filename)
+        # entity = TargetEntityLoader.find(entity_name, frame.f_code.co_filename)
+        entity = TargetEntityLoader.load_from_frame(frame)
         if not entity or not entity.is_target():
             return None
 
@@ -302,11 +303,10 @@ class TraceCollector:
                     target_entity_flow = self.local_traces[entity_name]
                     state = StateResult(entity_name)
                     target_entity_flow.append((self.source_entity_name, [], state))
-
-                    # save arg states
                     state.args = self.find_args_states(frame)
 
-                if why == 'line' or why == 'return' or why == 'exception':
+                # why in ('line', 'return', 'exception')
+                else:
                     target_entity_flow = self.local_traces[entity_name]
                     # get the last flow and update it
                     source_entity_name, current_flow, current_state = target_entity_flow[-1]
@@ -327,4 +327,3 @@ class TraceCollector:
                             current_state.add(name=arg, value=value, line=lineno,
                                               inline=self.last_entity_line[entity_name])
                     self.last_entity_line[entity_name] = lineno
-

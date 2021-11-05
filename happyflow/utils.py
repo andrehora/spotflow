@@ -51,6 +51,14 @@ def line_intersection(lines, other_lines):
     return sorted(list(set(lines).intersection(other_lines)))
 
 
+def method_metadata(method):
+    func = method.__func__
+    class_name = (method.__self__.__class__.__name__)
+    module_name, name, filename, start_line, end_line = function_metadata(func)
+
+    return module_name, class_name, name, filename, start_line, end_line
+
+
 def function_metadata(func):
     module_name = find_module_name(func.__code__.co_filename)
     name = func.__name__
@@ -63,12 +71,22 @@ def function_metadata(func):
     return module_name, name, filename, start_line, end_line
 
 
-def method_metadata(method):
-    func = method.__func__
-    class_name = (method.__self__.__class__.__name__)
-    module_name, name, filename, start_line, end_line = function_metadata(func)
+def find_func_or_method_from_frame(frame):
+    entity_name = frame.f_code.co_name
 
-    return module_name, class_name, name, filename, start_line, end_line
+    if entity_name == '<listcomp>':
+        return None
+
+    if 'self' in frame.f_locals:
+        obj = frame.f_locals['self']
+        members = dict(inspect.getmembers(obj, inspect.ismethod))
+        if entity_name in members:
+            return members[entity_name]
+
+    if entity_name in frame.f_globals:
+        return frame.f_globals[entity_name]
+
+    return None
 
 
 def get_end_line(start_line, source):

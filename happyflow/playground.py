@@ -21,7 +21,7 @@ def trace_from_test_module(module, target_names):
 
 def _trace_and_show(trace_result, target):
     flow_results = target.local_flows(trace_result)
-    _show_results(flow_results)
+    # _show_results(flow_results)
 
 
 def _show_results(flow_results):
