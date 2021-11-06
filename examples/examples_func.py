@@ -1,4 +1,4 @@
-from happyflow.playground import trace_from_func
+from happyflow.api import trace_from_func
 
 
 def count_uppercase_words(text):

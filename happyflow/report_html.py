@@ -5,11 +5,23 @@ from happyflow.templite import Templite
 
 class HTMLReport:
 
+    LOCAL_DIR = 'htmlfiles'
+    INDEX_FILE = 'index.html'
+    PY_FILE = 'pyfile2.html'
+    STATIC_FILES = [
+        "highlight.css"
+    ]
+    REPORT_DIR = 'report'
+
     def __init__(self, entity_data, analysis):
         self.entity_data = entity_data
         self.analysis = analysis
 
-        self.pyfile_html_source = read_file("./html/pyfile2.html")
+        pyfile_path = full_filename(self.LOCAL_DIR, self.PY_FILE)
+        ensure_dir(self.REPORT_DIR)
+        copy_files(self.LOCAL_DIR, self.STATIC_FILES, self.REPORT_DIR)
+
+        self.pyfile_html_source = read_file(pyfile_path)
         self.source_tmpl = Templite(self.pyfile_html_source)
 
     def report(self):
@@ -28,7 +40,9 @@ class HTMLReport:
         html = self.source_tmpl.render({
             'entity_data': self.entity_data
         })
-        write_html(f'./html/{self.entity_data.full_name}.html', html)
+
+        pyfile = os.path.join(self.REPORT_DIR, self.entity_data.full_name + '.html')
+        write_html(pyfile, html)
 
     def pluralize(self, value):
         if value >= 2:

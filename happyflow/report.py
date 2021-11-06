@@ -111,6 +111,24 @@ class Report:
     def var_states(self, states):
         return StateStatus.VAR, states
 
+    @staticmethod
+    def export_html(flow_results):
+        count = 0
+        print(f'Exporting {len(flow_results)} files')
+        for flow_result in flow_results:
+            count += 1
+            print(f'{count}. {flow_result.target_entity.full_name()}')
+            reporter = Report(flow_result.target_entity, flow_result)
+            reporter.html_report()
+
+    @staticmethod
+    def export_txt(flow_results):
+        #TODO
+        from happyflow.report_txt import TextReport
+        for flow_result in flow_results:
+            report = TextReport(flow_result.target_entity, flow_result)
+            report.show_most_common_args_and_return_values(3, show_code=True)
+
 
 class StateStatus:
     ARG = 'arg'

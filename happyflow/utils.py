@@ -3,6 +3,7 @@ import re
 import inspect
 import logging
 import copy
+import shutil
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import get_formatter_by_name
@@ -230,3 +231,16 @@ def ratio(a, b, dec=1):
     return f'{round(r, dec)}%'
 
 
+def ensure_dir(directory):
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+
+
+def full_filename(local_dir, filename):
+    dir_path = os.path.dirname(__file__)
+    return os.path.join(dir_path, local_dir, filename)
+
+
+def copy_files(local_dir, files, destination):
+    for static in files:
+        shutil.copyfile(full_filename(local_dir, static), os.path.join(destination, static))

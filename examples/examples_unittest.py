@@ -1,5 +1,5 @@
 import unittest
-from happyflow.playground import trace_from_test_class, trace_from_test_module
+from happyflow.api import trace_from_test_class, trace_from_test_module
 from test.test_email.test_email import TestMessageAPI
 # from test import test_email
 
