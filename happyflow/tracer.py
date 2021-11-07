@@ -1,7 +1,7 @@
 import trace
 import inspect
 import logging
-from happyflow.utils import copy_or_type, find_full_entity_name, line_has_explicit_return
+from happyflow.utils import copy_or_type, find_full_entity_name, line_has_explicit_return, find_callers
 from happyflow.flow_state import StateResult, RunResult, ArgState, ReturnState, ExceptionState
 from happyflow.test_loader import UnittestLoader, PytestLoader
 from happyflow.target_loader import TargetEntityLoader
@@ -56,8 +56,8 @@ class TraceRunner:
         try:
             tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.trace_collector)
             tracer.runfunc(func)
-            result = tracer.results()
-            return TraceCount(source_entity_name, result.counts)
+            # result = tracer.results()
+            # return TraceCount(source_entity_name, result.counts)
         except Exception as e:
             logging.warning(f'Error run: {e}')
 
@@ -78,7 +78,6 @@ class TraceRunner:
 
         return runner.trace_result
 
-
     @staticmethod
     def trace_from_test_class(test_class, target_entities=None):
 
@@ -94,7 +93,6 @@ class TraceRunner:
 
         return runner.trace_result
 
-
     @staticmethod
     def trace_from_test_module(module, target_entities=None):
 
@@ -109,7 +107,6 @@ class TraceRunner:
             return runner.trace_result, runner.get_target_entities()
 
         return runner.trace_result
-
 
     @staticmethod
     def trace_from_pytest(pytests='.', target_entities=None):
@@ -226,11 +223,11 @@ class Trace2(trace.Trace):
         if why in ('line', 'return', 'exception'):
             self.trace_collector.collect_flow_and_state(frame, why, arg)
 
-        if why == "line":
-            filename = frame.f_code.co_filename
-            lineno = frame.f_lineno
-            key = filename, lineno
-            self.counts[key] = self.counts.get(key, 0) + 1
+        # if why == "line":
+        #     filename = frame.f_code.co_filename
+        #     lineno = frame.f_lineno
+        #     key = filename, lineno
+        #     self.counts[key] = self.counts.get(key, 0) + 1
 
         return self.localtrace
 
@@ -301,6 +298,7 @@ class TraceCollector:
 
                 if why == 'call':
                     # Initialize states
+                    print(find_callers(frame))
                     target_entity_flow = self.local_traces[entity_name]
                     state = StateResult(entity_name)
                     target_entity_flow.append((self.source_entity_name, [], state))

@@ -30,7 +30,7 @@
             <p><b>Flow {{flow_data.pos}}</b>: {{flow_data.call_count}} calls ({{flow_data.call_ratio}})</p>
 
             {% for each in flow_data.arg_values %}
-            <p><button class="input"><span>&#8594;</span> {{each.name}}</button>: {{each.value}}</p>
+            <p><button class="input"><span>&#8594;</span> {{each.name}}</button> {{each.value}}</p>
             {% endfor %}
 
             {% if flow_data.return_values %}

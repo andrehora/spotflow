@@ -244,3 +244,13 @@ def full_filename(local_dir, filename):
 def copy_files(local_dir, files, destination):
     for static in files:
         shutil.copyfile(full_filename(local_dir, static), os.path.join(destination, static))
+
+
+def find_callers(frame):
+    callers = []
+    callers.append(frame.f_code.co_name)
+    while 'test' not in frame.f_code.co_name:
+        frame = frame.f_back
+        callers.append(frame.f_code.co_name)
+    callers.reverse()
+    return callers
