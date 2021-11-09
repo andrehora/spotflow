@@ -50,17 +50,17 @@ def inputs_parseparam():
     # zipp()
 
 
-target = TargetEntityLoader.load_func(count_uppercase_words)
-trace_result = TraceRunner.trace_from_func(inputs_parseparam, target)
-flow_results = target.local_flows(trace_result)
-
-for flow_result in flow_results:
-
-    reporter = TextReport(flow_result.target_entity, flow_result)
-    reporter.show_code_state()
-
-    entity_info = reporter.get_entity_info(0)
-    for flow_state_info in entity_info:
-        for line_info in flow_state_info:
-            print(line_info)
+# target = TargetEntityLoader.load_func(count_uppercase_words)
+# trace_result = TraceRunner.trace_from_func(inputs_parseparam, target)
+# flow_results = target.local_flows(trace_result)
+#
+# for flow_result in flow_results:
+#
+#     reporter = TextReport(flow_result.target_entity, flow_result)
+#     reporter.show_code_state()
+#
+#     entity_info = reporter.get_entity_info(0)
+#     for flow_state_info in entity_info:
+#         for line_info in flow_state_info:
+#             print(line_info)
 

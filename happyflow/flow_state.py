@@ -1,7 +1,31 @@
-from happyflow.utils import *
+from happyflow.utils import clear_element
 
 
-class RunResult:
+class TraceResult:
+
+    def __init__(self):
+        self.results = {}
+
+    def __getitem__(self, key):
+        return self.results[key]
+
+    def __setitem__(self, key, value):
+        self.results[key] = value
+
+    def __contains__(self, key):
+        return key in self.results
+
+    def __len__(self):
+        return len(self.results)
+
+    def __repr__(self):
+        return repr(self.results)
+
+    def __iter__(self):
+        return iter(self.results)
+
+
+class EntityTraceResult:
 
     def __init__(self, target_entity):
         self.target_entity = target_entity
@@ -13,13 +37,16 @@ class RunResult:
         for flow in self.flows:
             if tuple(flow.distinct_lines()) == tuple(lines):
                 target_flows.append(flow)
-        flow_result = RunResult(self.target_entity)
+        flow_result = EntityTraceResult(self.target_entity)
         flow_result.flows = target_flows
         return flow_result
 
     def add(self, flow_lines, state_result=None):
         flow = Flow(flow_lines, state_result)
         self.flows.append(flow)
+
+    def get_last_flow(self):
+        return self.flows[-1]
 
     def distinct_lines(self):
         lines = []
@@ -67,7 +94,7 @@ class StateResult:
         self.target_entity_name = name
         self.vars = {}
 
-        self.args = None
+        self.arg_states = None
         self.return_state = None
         self.exception_state = None
 

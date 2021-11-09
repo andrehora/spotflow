@@ -31,63 +31,41 @@ def find_class_name(frame):
     if 'self' in args.locals:
         obj = args.locals['self']
         try:
-            # print(obj.__class__.__module__)
             return obj.__class__.__name__
         except Exception:
             return None
     return None
 
 
-def find_full_entity_name(frame):
-    f_code = frame.f_code
-    module_name = find_module_name(f_code.co_filename)
-    class_name = find_class_name(frame)
-    function_name = f_code.co_name
-    if class_name:
-        return f'{module_name}.{class_name}.{function_name}'
-    return f'{module_name}.{function_name}'
-
-
-def line_intersection(lines, other_lines):
-    return sorted(list(set(lines).intersection(other_lines)))
+def full_name_from_frame(frame):
+    func_or_method = find_func_or_method_from_frame(frame)
+    if func_or_method:
+        return find_full_name(func_or_method)
+    return None
 
 
 def method_metadata(method):
     func = method.__func__
     class_name = (method.__self__.__class__.__name__)
-    module_name, name, filename, start_line, end_line = function_metadata(func)
-
-    return module_name, class_name, name, filename, start_line, end_line
+    module_name, name, filename, start_line, end_line, full_name = function_metadata(func)
+    return module_name, class_name, name, filename, start_line, end_line, full_name
 
 
 def function_metadata(func):
     module_name = find_module_name(func.__code__.co_filename)
     name = func.__name__
     filename = func.__code__.co_filename
+    full_name = find_full_name(func)
 
     source = inspect.getsource(func)
 
     start_line = func.__code__.co_firstlineno
     end_line = get_end_line(start_line, source)
-    return module_name, name, filename, start_line, end_line
+    return module_name, name, filename, start_line, end_line, full_name
 
 
-def find_func_or_method_from_frame(frame):
-    entity_name = frame.f_code.co_name
-
-    if entity_name == '<listcomp>':
-        return None
-
-    if 'self' in frame.f_locals:
-        obj = frame.f_locals['self']
-        members = dict(inspect.getmembers(obj, inspect.ismethod))
-        if entity_name in members:
-            return members[entity_name]
-
-    if entity_name in frame.f_globals:
-        return frame.f_globals[entity_name]
-
-    return None
+def find_full_name(func_or_method):
+    return f'{func_or_method.__module__}.{func_or_method.__qualname__}'
 
 
 def get_end_line(start_line, source):
@@ -108,6 +86,10 @@ def line_has_explicit_return(frame):
 def diff(list1, list2):
     second = set(list2)
     return [item for item in list1 if item not in second]
+
+
+def line_intersection(lines, other_lines):
+    return sorted(list(set(lines).intersection(other_lines)))
 
 
 def clear_element(element):
@@ -218,6 +200,7 @@ def is_live(obj):
     return inspect.ismodule(obj) or inspect.isclass(obj) or inspect.ismethod(obj) or inspect.isfunction(obj)
            # inspect.isgeneratorfunction(obj) or inspect.isgenerator(obj)
 
+
 def try_copy(obj, name):
     try:
         return copy.deepcopy(obj)
@@ -254,3 +237,27 @@ def find_callers(frame):
         callers.append(frame.f_code.co_name)
     callers.reverse()
     return callers
+
+
+def find_func_or_method_from_frame(frame):
+    entity_name = frame.f_code.co_name
+
+    if entity_name == '<listcomp>':
+        return None
+
+    if 'self' in frame.f_locals:
+        obj = frame.f_locals['self']
+        members = dict(inspect.getmembers(obj, inspect.ismethod))
+        if entity_name in members:
+            return members[entity_name]
+
+    if entity_name in frame.f_globals:
+        return frame.f_globals[entity_name]
+
+    return None
+
+
+def pluralize(value):
+    if value >= 2:
+        return 's'
+    return ''

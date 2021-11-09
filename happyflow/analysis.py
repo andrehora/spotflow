@@ -1,5 +1,5 @@
 from collections import Counter
-from happyflow.utils import *
+from happyflow.utils import guess_name
 
 
 class Analysis:

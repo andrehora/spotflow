@@ -1,4 +1,3 @@
-import collections
 from happyflow.analysis import Analysis
 from happyflow.report_html import HTMLReport
 
@@ -112,21 +111,22 @@ class Report:
         return StateStatus.VAR, states
 
     @staticmethod
-    def export_html(flow_results):
+    def export_html(trace_result):
         count = 0
-        print(f'Exporting {len(flow_results)} files')
-        for flow_result in flow_results:
+        print(f'Exporting {len(trace_result)} files')
+        for entity_name in trace_result:
+            entity_result = trace_result[entity_name]
             count += 1
-            print(f'{count}. {flow_result.target_entity.full_name()}')
-            reporter = Report(flow_result.target_entity, flow_result)
+            print(f'{count}. {entity_result.target_entity.full_name}')
+            reporter = Report(entity_result.target_entity, entity_result)
             reporter.html_report()
 
     @staticmethod
-    def export_txt(flow_results):
-        #TODO
+    def export_txt(trace_result):
         from happyflow.report_txt import TextReport
-        for flow_result in flow_results:
-            report = TextReport(flow_result.target_entity, flow_result)
+        for entity_name in trace_result:
+            entity_result = trace_result[entity_name]
+            report = TextReport(entity_result.target_entity, entity_result)
             report.show_most_common_args_and_return_values(3, show_code=True)
 
 
@@ -222,9 +222,9 @@ class EntityData:
     def append(self, other):
         self.flows_data.append(other)
 
-    @classmethod
-    def build_from(cls, entity):
-        return EntityData(entity.name, entity.full_name(), entity.filename,
+    @staticmethod
+    def build_from(entity):
+        return EntityData(entity.name, entity.full_name, entity.filename,
                           entity.start_line, entity.end_line,
                           entity.get_code_lines(), entity.get_html_lines(),
                           len(entity.executable_lines()))

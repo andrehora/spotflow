@@ -1,4 +1,3 @@
-from happyflow.target_loader import TargetEntityLoader
 from happyflow.tracer import TraceRunner
 from happyflow.report_txt import TextReport
 

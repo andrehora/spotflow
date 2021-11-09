@@ -1,4 +1,3 @@
-from happyflow.analysis import Analysis
 from happyflow.utils import *
 from happyflow.templite import Templite
 
@@ -43,9 +42,4 @@ class HTMLReport:
 
         pyfile = os.path.join(self.REPORT_DIR, self.entity_data.full_name + '.html')
         write_html(pyfile, html)
-
-    def pluralize(self, value):
-        if value >= 2:
-            return 's'
-        return ''
 

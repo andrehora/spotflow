@@ -1,17 +1,14 @@
 import unittest
-from happyflow.target_loader import TargetEntityLoader
 from happyflow.tracer import TraceRunner
 
 
 class TestException(unittest.TestCase):
 
     def test_zero_division(self):
-        sut = TargetEntityLoader.find('stub_sut.Exceptions.zero_division', '.', 'stub_sut')
+        target_entity_name = 'tests.stub_sut.Exceptions.zero_division'
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_zero_division', [target_entity_name])
 
-        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_zero_division', sut)
-        flow_result = sut.local_flows(trace_result)
-
-        flows = flow_result[0].flows
+        flows = trace_result[target_entity_name].flows
         self.assertEqual(len(flows), 1)
 
         state_result = flows[0].state_result
@@ -20,12 +17,10 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value[0], ZeroDivisionError)
 
     def test_raise_generic_exception(self):
-        sut = TargetEntityLoader.find('stub_sut.Exceptions.raise_generic_exception', '.', 'stub_sut')
+        target_entity_name = 'tests.stub_sut.Exceptions.raise_generic_exception'
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_generic_exception', [target_entity_name])
 
-        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_generic_exception', sut)
-        flow_result = sut.local_flows(trace_result)
-
-        flows = flow_result[0].flows
+        flows = trace_result[target_entity_name].flows
         self.assertEqual(len(flows), 1)
 
         state_result = flows[0].state_result
@@ -34,12 +29,10 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value[0], Exception)
 
     def test_raise_specific_exception(self):
-        sut = TargetEntityLoader.find('stub_sut.Exceptions.raise_specific_exception', '.', 'stub_sut')
+        target_entity_name = 'tests.stub_sut.Exceptions.raise_specific_exception'
+        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_specific_exception', [target_entity_name])
 
-        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_specific_exception', sut)
-        flow_result = sut.local_flows(trace_result)
-
-        flows = flow_result[0].flows
+        flows = trace_result[target_entity_name].flows
         self.assertEqual(len(flows), 1)
 
         state_result = flows[0].state_result

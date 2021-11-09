@@ -10,6 +10,7 @@ class PytestLoader:
             pytest.main(["-x", test])
         return run
 
+
 class UnittestLoader:
 
     def __init__(self):
