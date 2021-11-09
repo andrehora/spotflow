@@ -14,14 +14,14 @@ class TestE2E(unittest.TestCase):
         self.assertTrue(os.path.isfile('./report/email.message._parseparam.html'))
         self.assertTrue(os.path.isfile('./report/highlight.css'))
 
-    # def test_generate_html_report_from_test_module(self):
-    #
-    #     from test.test_email import test_email
-    #
-    #     is_exported = trace_from_test_module(test_email, ['email.message._formatparam'], report_format='html')
-    #     self.assertTrue(is_exported)
-    #     self.assertTrue(os.path.isfile('./report/email.message._formatparam.html'))
-    #     self.assertTrue(os.path.isfile('./report/highlight.css'))
+    def test_generate_html_report_from_test_module(self):
+
+        from test.test_email import test_email
+
+        is_exported = trace_from_test_module(test_email, ['email.message._formatparam'], report_format='html')
+        self.assertTrue(is_exported)
+        self.assertTrue(os.path.isfile('./report/email.message._formatparam.html'))
+        self.assertTrue(os.path.isfile('./report/highlight.css'))
 
     def test_generate_txt_report(self):
 
