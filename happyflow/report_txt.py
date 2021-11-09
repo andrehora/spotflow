@@ -97,7 +97,7 @@ class TextReport:
                 if self.target_entity.line_is_entity_definition(current_line):
                     arg_summary = ''
                     separator = '🟢 '
-                    for arg in state_result.args:
+                    for arg in state_result.arg_states:
                         if arg.name != 'self':
                             arg_summary += f'{separator}{arg} '
                     if arg_summary:
@@ -118,7 +118,7 @@ class TextReport:
 
     def show_state_summary(self, state_result):
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
-        for arg in state_result.args:
+        for arg in state_result.arg_states:
             if arg.name != 'self':
                 arg_summary = f'🟢 IN {arg.name}: {str(arg.value)}'
                 print(arg_summary)

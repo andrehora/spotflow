@@ -16,7 +16,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
@@ -34,7 +34,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
@@ -52,7 +52,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 3)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'msg')
@@ -72,7 +72,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 3)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'a')
@@ -92,7 +92,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
@@ -110,7 +110,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
@@ -128,7 +128,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
@@ -146,7 +146,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
@@ -164,7 +164,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
@@ -182,7 +182,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 2)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'enter')
@@ -201,7 +201,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 2)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'enter')
@@ -220,7 +220,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 2)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'new_n')
@@ -239,7 +239,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
@@ -257,7 +257,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
@@ -275,7 +275,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
@@ -293,7 +293,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
@@ -311,7 +311,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 4)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'add1')
@@ -332,7 +332,7 @@ class TestArgAndReturnValue(unittest.TestCase):
 
         state_result = flows[0].state_result
 
-        args = state_result.args
+        args = state_result.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 

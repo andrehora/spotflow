@@ -11,11 +11,10 @@ from happyflow.target_model import TargetContainerEntity
 class TraceRunner:
 
     def __init__(self):
-        self.trace_result = TraceResult()
         self.trace_collector = TraceCollector()
+        self.run_results = self.trace_collector.run_results
 
         self.target_entities = None
-        self.get_source_entity_name_wrapper = None
         self.run_source_entity_wrapper = None
 
     def get_target_entities(self):
@@ -32,32 +31,20 @@ class TraceRunner:
             source_entities = [source_entities]
 
         for source_entity in source_entities:
-            basic_trace = self._run_func(source_entity)
-            self.trace_result.add_trace(basic_trace)
+            self.run_func(source_entity)
 
-        self.trace_result.local_traces = self.trace_collector.local_traces
+        # self.trace_data.traces = self.trace_collector.traces
 
-    def _run_func(self, func):
-
-        if self.get_source_entity_name_wrapper:
-            source_entity_name = self.get_source_entity_name_wrapper(func)
-        else:
-            try:
-                source_entity_name = func.__name__
-            except Exception:
-                source_entity_name = ''
+    def run_func(self, func):
 
         if self.run_source_entity_wrapper:
             func = self.run_source_entity_wrapper(func)
 
-        self.trace_collector.source_entity_name = source_entity_name
         self.trace_collector.target_entities = self.target_entities
 
         try:
             tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.trace_collector)
             tracer.runfunc(func)
-            # result = tracer.results()
-            # return TraceCount(source_entity_name, result.counts)
         except Exception as e:
             logging.warning(f'Error run: {e}')
 
@@ -67,16 +54,11 @@ class TraceRunner:
 
         runner = TraceRunner()
         runner.target_entities = target_entities
-        runner.get_source_entity_name_wrapper = UnittestLoader.get_test_name
         runner.run_source_entity_wrapper = UnittestLoader.run_test
 
         tests = UnittestLoader().loadTestsFromName(source_pattern)
         runner.run(tests)
-
-        if runner.has_target_entities():
-            return runner.trace_result, runner.get_target_entities()
-
-        return runner.trace_result
+        return runner.run_results
 
     @staticmethod
     def trace_from_test_class(test_class, target_entities=None):
@@ -89,9 +71,9 @@ class TraceRunner:
         runner.run(tests)
 
         if runner.has_target_entities():
-            return runner.trace_result, runner.get_target_entities()
+            return runner.trace_data, runner.get_target_entities()
 
-        return runner.trace_result
+        return runner.trace_data
 
     @staticmethod
     def trace_from_test_module(module, target_entities=None):
@@ -104,9 +86,9 @@ class TraceRunner:
         runner.run(tests)
 
         if runner.has_target_entities():
-            return runner.trace_result, runner.get_target_entities()
+            return runner.trace_data, runner.get_target_entities()
 
-        return runner.trace_result
+        return runner.trace_data
 
     @staticmethod
     def trace_from_pytest(pytests='.', target_entities=None):
@@ -119,9 +101,9 @@ class TraceRunner:
         runner.run(pytests)
 
         if runner.has_target_entities():
-            return runner.trace_result, runner.get_target_entities()
+            return runner.trace_data, runner.get_target_entities()
 
-        return runner.trace_result
+        return runner.trace_data
 
     @staticmethod
     def trace_from_func(source_funcs, target_entities=None):
@@ -130,67 +112,7 @@ class TraceRunner:
         runner.target_entities = target_entities
         runner.run(source_funcs)
 
-        return runner.trace_result
-
-
-class TraceResult:
-
-    def __init__(self):
-        self.global_traces = []
-        self.local_traces = []
-
-    def add_trace(self, t):
-        self.global_traces.append(t)
-
-    def global_sut_flows(self, sut):
-        if not sut:
-            return None
-
-        result = RunResult(sut)
-
-        for base_sut in sut:
-            for global_trace in self.global_traces:
-                run_files_and_lines = global_trace.run_files_and_lines
-                if base_sut.filename in run_files_and_lines:
-                    lines = run_files_and_lines[base_sut.filename]
-                    sut_flow = base_sut.intersection(lines)
-                    if len(sut_flow) > 0:
-                        result.add(global_trace.test_name, sut_flow)
-        return result
-
-    def local_sut_flows(self, sut):
-        if not sut:
-            return None
-
-        results = []
-        for base_sut in sut:
-            result = RunResult(base_sut)
-            target_sut_full_name = base_sut.full_name()
-            for candidate_sut_full_name in self.local_traces:
-                if candidate_sut_full_name == target_sut_full_name:
-                    target_flows = self.local_traces[candidate_sut_full_name]
-                    for test_name, sut_flow, state_result in target_flows:
-                        if len(sut_flow) > 0:
-                            result.add(test_name, sut_flow, state_result)
-            results.append(result)
-        return results
-
-
-class TraceCount:
-
-    def __init__(self, test_name, counts):
-        self.test_name = test_name
-        self.counts = counts
-        self.run_files_and_lines = self.find_run_files_and_lines()
-
-    def find_run_files_and_lines(self):
-        result = {}
-        for event in self.counts:
-            filename = event[0]
-            line_number = event[1]
-            result[filename] = result.get(filename, [])
-            result[filename].append(line_number)
-        return result
+        return runner.trace_data
 
 
 class Trace2(trace.Trace):
@@ -223,25 +145,20 @@ class Trace2(trace.Trace):
         if why in ('line', 'return', 'exception'):
             self.trace_collector.collect_flow_and_state(frame, why, arg)
 
-        # if why == "line":
-        #     filename = frame.f_code.co_filename
-        #     lineno = frame.f_lineno
-        #     key = filename, lineno
-        #     self.counts[key] = self.counts.get(key, 0) + 1
-
         return self.localtrace
 
 
 class TraceCollector:
 
     def __init__(self):
-        self.source_entity_name = None
+        self.run_results = []
+
         self.target_entities = None
-        self.local_traces = {}
+        self.traces = {}
         self.last_frame_line = {}
         self.target_entities_cache = {}
 
-    def find_args_states(self, frame):
+    def find_arg_states(self, frame):
         states = []
 
         argvalues = inspect.getargvalues(frame)
@@ -269,7 +186,6 @@ class TraceCollector:
         if entity_name in self.target_entities_cache:
             return self.target_entities_cache[entity_name]
 
-        # entity = TargetEntityLoader.find(entity_name, frame.f_code.co_filename)
         entity = TargetEntityLoader.load_from_frame(frame)
         if not entity or not entity.is_target():
             return None
@@ -290,29 +206,35 @@ class TraceCollector:
 
             if entity_name and target_entity and entity_name == target_entity.full_name():
 
-                if entity_name not in self.local_traces:
-                    self.local_traces[entity_name] = []
+                if entity_name not in self.traces:
+                    run_result = RunResult(target_entity)
+                    self.run_results.append(run_result)
+                    self.traces[entity_name] = []
 
                 if entity_name not in self.last_frame_line:
                     self.last_frame_line[entity_name] = -1
 
                 if why == 'call':
-                    # Initialize states
-                    print(find_callers(frame))
-                    target_entity_flow = self.local_traces[entity_name]
-                    state = StateResult(entity_name)
-                    target_entity_flow.append((self.source_entity_name, [], state))
-                    state.args = self.find_args_states(frame)
+                    # print(find_callers(frame))
+
+                    flow_lines = []
+                    state_result = StateResult(entity_name)
+                    state_result.args = self.find_arg_states(frame)
+
+                    run_result = self.run_results[-1]
+                    run_result.add(flow_lines, state_result)
+
+                    collector = self.traces[entity_name]
+                    collector.append((flow_lines, state_result))
 
                 # why in ('line', 'return', 'exception')
                 else:
-                    target_entity_flow = self.local_traces[entity_name]
-                    # get the last flow and update it
-                    _, current_flow, current_state = target_entity_flow[-1]
+                    collector = self.traces[entity_name]
+                    current_flow_lines, current_state = collector[-1]
 
                     lineno = frame.f_lineno
                     if why == 'line':
-                        current_flow.append(lineno)
+                        current_flow_lines.append(lineno)
                     elif why == 'return':
                         has_return = line_has_explicit_return(frame)
                         current_state.return_state = ReturnState(copy_or_type(arg), lineno, has_return)

@@ -33,7 +33,7 @@ class TestTestRunner(unittest.TestCase):
 
         tests = UnittestLoader().loadTestsFromName('tests.stub_test.TestSimpleFlow.test_simple_if_true')
         runner.run(tests)
-        result = runner.trace_result
+        result = runner.trace_data
 
         self.assertEqual(len(result.global_traces), 1)
 
@@ -44,7 +44,7 @@ class TestTestRunner(unittest.TestCase):
 
         tests = UnittestLoader().loadTestsFromName('tests.stub_test.TestSimpleFlow')
         runner.run(tests)
-        result = runner.trace_result
+        result = runner.trace_data
 
         self.assertEqual(len(result.global_traces), 8)
 

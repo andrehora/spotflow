@@ -16,12 +16,6 @@ class TargetBaseEntity:
     def is_target(self):
         return False
 
-    def global_flows(self, trace_result):
-        return trace_result.global_sut_flows(self)
-
-    def local_flows(self, trace_result):
-        return trace_result.local_sut_flows(self)
-
     def loc(self):
         pass
 

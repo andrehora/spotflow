@@ -6,7 +6,6 @@ class RunResult:
     def __init__(self, target_entity):
         self.target_entity = target_entity
         self.target_entity_name = target_entity.name
-        self.source_entity_names = []
         self.flows = []
 
     def flow_result_by_lines(self, lines):
@@ -18,13 +17,9 @@ class RunResult:
         flow_result.flows = target_flows
         return flow_result
 
-    def add(self, source_entity_name, flow, state_result=None):
-        self.source_entity_names.append(source_entity_name)
-        flow = Flow(source_entity_name, flow, state_result)
+    def add(self, flow_lines, state_result=None):
+        flow = Flow(flow_lines, state_result)
         self.flows.append(flow)
-
-    def number_of_sources(self):
-        return len(self.source_entity_names)
 
     def distinct_lines(self):
         lines = []
@@ -32,17 +27,15 @@ class RunResult:
             lines.append(tuple(flow.distinct_lines()))
         return lines
 
-    def args(self):
+    def arg_states(self):
         args_and_values = {}
         for flow in self.flows:
-            if flow.state_result and flow.state_result.args:
-                for arg in flow.state_result.args:
+            if flow.state_result and flow.state_result.arg_states:
+                for arg in flow.state_result.arg_states:
                     if arg.name != 'self':
                         value = clear_element(arg.value)
-                        if arg.name in args_and_values:
-                            args_and_values[arg.name].append(value)
-                        else:
-                            args_and_values[arg.name] = [value]
+                        args_and_values[arg.name] = args_and_values.get(arg.name, [])
+                        args_and_values[arg.name].append(value)
         return args_and_values
 
     def return_states(self):
@@ -57,8 +50,7 @@ class RunResult:
 
 class Flow:
 
-    def __init__(self, source_entity_name, run_lines, state_result=None):
-        self.source_entity_name = source_entity_name
+    def __init__(self, run_lines, state_result=None):
         self.run_lines = run_lines
         self.state_result = state_result
 

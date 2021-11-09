@@ -99,7 +99,7 @@ class Report:
     def arg_state(self, flow):
         arg_str = ''
         # separator = '# '
-        for arg in flow.state_result.args:
+        for arg in flow.state_result.arg_states:
             if arg.name != 'self':
                 arg_str += str(arg)
         return StateStatus.ARG, arg_str

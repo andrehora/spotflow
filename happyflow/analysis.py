@@ -24,7 +24,7 @@ class Analysis:
         return self._most_common(lines, n)
 
     def most_common_args(self, n=None):
-        args = self.flow_result.args()
+        args = self.flow_result.arg_states()
         args_count = {}
         if n == -1:
             for arg in args:
