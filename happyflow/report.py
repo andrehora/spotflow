@@ -1,5 +1,6 @@
 from happyflow.analysis import Analysis
 from happyflow.report_html import HTMLReport
+from happyflow.report_txt import TextReport
 
 
 class Report:
@@ -123,7 +124,6 @@ class Report:
 
     @staticmethod
     def export_txt(trace_result):
-        from happyflow.report_txt import TextReport
         for entity_name in trace_result:
             entity_result = trace_result[entity_name]
             report = TextReport(entity_result.target_entity, entity_result)
