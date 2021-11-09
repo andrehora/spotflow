@@ -240,21 +240,23 @@ def find_callers(frame):
 
 
 def find_func_or_method_from_frame(frame):
-    entity_name = frame.f_code.co_name
+    try:
+        entity_name = frame.f_code.co_name
 
-    if entity_name == '<listcomp>':
+        if entity_name == '<listcomp>':
+            return None
+
+        if 'self' in frame.f_locals:
+            obj = frame.f_locals['self']
+            members = dict(inspect.getmembers(obj, inspect.ismethod))
+            if entity_name in members:
+                return members[entity_name]
+
+        if entity_name in frame.f_globals:
+            return frame.f_globals[entity_name]
+    except Exception as e:
+        print(e)
         return None
-
-    if 'self' in frame.f_locals:
-        obj = frame.f_locals['self']
-        members = dict(inspect.getmembers(obj, inspect.ismethod))
-        if entity_name in members:
-            return members[entity_name]
-
-    if entity_name in frame.f_globals:
-        return frame.f_globals[entity_name]
-
-    return None
 
 
 def pluralize(value):

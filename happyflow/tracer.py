@@ -35,11 +35,11 @@ class TraceRunner:
 
         self.trace_collector.target_entity_names = self.target_entities
 
-        try:
-            tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.trace_collector)
-            tracer.runfunc(func)
-        except Exception as e:
-            logging.warning(f'Error run: {e}')
+        # try:
+        tracer = Trace2(count=1, trace=1, countfuncs=0, countcallers=0, trace_collector=self.trace_collector)
+        tracer.runfunc(func)
+        # except Exception as e:
+        #     logging.warning(f'Error run: {e}')
 
 
     @staticmethod
@@ -80,9 +80,7 @@ class TraceRunner:
 
         runner = TraceRunner()
         runner.target_entities = target_entities
-        runner.get_source_entity_name_wrapper = PytestLoader.get_suite_name
         runner.run_source_entity_wrapper = PytestLoader.run_test
-
         runner.run(pytests)
 
         return runner.trace_result
@@ -161,6 +159,10 @@ class TraceCollector:
         return states
 
     def ensure_target_entity(self, current_entity_name, target_entity, frame):
+
+        if not isinstance(target_entity, str):
+            return target_entity
+
         if not current_entity_name.startswith(target_entity):
             return None
 

@@ -52,8 +52,8 @@ def inputs_splitparam():
     splitparam("a")
 
 
-trace_from_func(inputs_count, count_uppercase_words)
-# trace_from_func(inputs_parseparam, parseparam)
-# trace_from_func(inputs_splitparam, splitparam)
+trace_from_func(inputs_count, count_uppercase_words, report_format='txt')
+trace_from_func(inputs_parseparam, parseparam, report_format='txt')
+trace_from_func(inputs_splitparam, splitparam, report_format='txt')
 
 
