@@ -15,12 +15,16 @@ REPORT_DIR = 'report'
 
 class HTMLCodeReport:
 
-    def __init__(self, entity_info):
+    def __init__(self, entity_info, report_dir=None):
         self.entity_info = entity_info
 
+        self.report_dir = report_dir
+        if not self.report_dir:
+            self.report_dir = REPORT_DIR
+
         pyfile_path = full_filename(LOCAL_DIR, PY_FILE)
-        ensure_dir(REPORT_DIR)
-        copy_files(LOCAL_DIR, STATIC_FILES, REPORT_DIR)
+        ensure_dir(self.report_dir)
+        copy_files(LOCAL_DIR, STATIC_FILES, self.report_dir)
 
         pyfile_html_source = read_file(pyfile_path)
         self.source_tmpl = Templite(pyfile_html_source)
@@ -38,17 +42,21 @@ class HTMLCodeReport:
             'entity_info': self.entity_info
         })
 
-        pyfile = os.path.join(REPORT_DIR, self.entity_info.target_entity.full_name + '.html')
+        pyfile = os.path.join(self.report_dir, self.entity_info.target_entity.full_name + '.html')
         write_html(pyfile, html)
 
 
 class HTMLIndexReport:
 
-    def __init__(self, summary):
+    def __init__(self, summary, report_dir=None):
         self.summary = summary
 
+        self.report_dir = report_dir
+        if not self.report_dir:
+            self.report_dir = REPORT_DIR
+
         index_path = full_filename(LOCAL_DIR, INDEX_FILE)
-        ensure_dir(REPORT_DIR)
+        ensure_dir(self.report_dir)
         # copy_files(LOCAL_DIR, STATIC_FILES, REPORT_DIR)
 
         index_html_source = read_file(index_path)
@@ -60,5 +68,5 @@ class HTMLIndexReport:
             'summary': self.summary
         })
 
-        index_file = os.path.join(REPORT_DIR, INDEX_FILE)
+        index_file = os.path.join(self.report_dir, INDEX_FILE)
         write_html(index_file, html)
