@@ -12,7 +12,10 @@ class TestE2E(unittest.TestCase):
         is_exported = trace_from_test_class(TestMessageAPI, ['email.message._parseparam'], report_format='html')
         self.assertTrue(is_exported)
         self.assertTrue(os.path.isfile('./report/email.message._parseparam.html'))
+        self.assertTrue(os.path.isfile('./report/index.html'))
+        self.assertTrue(os.path.isfile('./report/style.css'))
         self.assertTrue(os.path.isfile('./report/highlight.css'))
+        self.assertTrue(os.path.isfile('./report/coverage_html.js'))
 
     # def test_generate_html_report_from_test_module(self):
     #
