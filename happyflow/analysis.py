@@ -4,27 +4,24 @@ from happyflow.utils import guess_name
 
 class Analysis:
 
-    def __init__(self, target_entity, flow_result):
+    def __init__(self, target_entity, entity_result):
         self.target_entity = target_entity
-        self.flow_result = flow_result
-
-    def number_of_distinct_sources(self):
-        return len(set(self.flow_result.source_entity_names))
+        self.entity_result = entity_result
 
     def number_of_distinct_flows(self):
-        return len(set(self.flow_result.distinct_lines()))
+        return len(set(self.entity_result.distinct_lines()))
 
     def number_of_calls(self):
-        return len(self.flow_result.flows)
+        return len(self.entity_result.flows)
 
     def most_common_flow(self, n=None):
-        lines = self.flow_result.distinct_lines()
+        lines = self.entity_result.distinct_lines()
         if n == -1:
             return self._least_common(lines)
         return self._most_common(lines, n)
 
     def most_common_args(self, n=None):
-        args = self.flow_result.arg_states()
+        args = self.entity_result.arg_states()
         args_count = {}
         if n == -1:
             for arg in args:
@@ -40,7 +37,7 @@ class Analysis:
         return self.pretty_args(self.most_common_args(n))
 
     def most_common_return_values(self, n=None):
-        values = self.flow_result.return_states()
+        values = self.entity_result.return_states()
         if n == -1:
             return self._least_common(values)
         return self._most_common(values, n)
