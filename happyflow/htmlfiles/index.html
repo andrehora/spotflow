@@ -1,0 +1,59 @@
+{# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0 #}
+{# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt #}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Flow and state report</title>
+    <link rel="icon" sizes="32x32" href="favicon_32.png">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script type="text/javascript" src="coverage_html.js" defer></script>
+</head>
+<body class="indexfile">
+
+<header>
+    <div class="content">
+        <h1>Flow and state report</h1>
+
+        <form id="filter_container">
+            <input id="filter" type="text" value="" placeholder="filter..." />
+        </form>
+    </div>
+</header>
+
+<main id="index">
+    <table class="index" data-sortable>
+        <thead>
+            {# The title="" attr doesn"t work in Safari. #}
+            <tr class="tablehead" title="Click to sort">
+                <th class="name left" aria-sort="none" data-shortcut="n">Function/Method</th>
+                <th aria-sort="none" data-default-sort-order="descending">statements</th>
+                <th aria-sort="none" data-default-sort-order="descending">flows</th>
+                <th aria-sort="none" data-default-sort-order="descending">calls</th>
+                <th aria-sort="none" data-default-sort-order="descending">top flow calls</th>
+                <th aria-sort="none" data-default-sort-order="descending">top flow ratio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entity in summary %}
+            <tr class="file">
+                <td class="name left"><a href="{{entity.full_name}}.html">{{entity.full_name}}</a></td>
+                <td>{{entity.statements_count}}</td>
+                <td>{{entity.total_flows}}</td>
+                <td>{{entity.total_calls}}</td>
+                <td>{{entity.top_flow_calls}}</td>
+                <td>{{entity.top_flow_ratio}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p id="no_rows">
+        No items found using the specified filter.
+    </p>
+
+</main>
+
+</body>
+</html>
