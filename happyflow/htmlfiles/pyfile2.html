@@ -19,14 +19,14 @@
     <div class="highlight">
         <div id="header">
             <div class="content">
-                <h1>Method: {{entity_data.full_name}}</h1>
-                <span>{{entity_data.total_flows}} flows,</span>
-                <span>{{entity_data.total_calls}} calls, and </span>
-                <span>{{entity_data.exec_lines_count}} statements</span>
+                <h1>Method: {{entity_info.target_entity.full_name}}</h1>
+                <span>{{entity_info.total_flows}} flows,</span>
+                <span>{{entity_info.total_calls}} calls, and </span>
+                <span>{{entity_info.target_entity.executable_lines_count}} statements</span>
             </div>
         </div>
 
-        {% for flow_data in entity_data %}
+        {% for flow_data in entity_info %}
             <p><b>Flow {{flow_data.pos}}</b>: {{flow_data.call_count}} calls ({{flow_data.call_ratio}})</p>
 
             {% for each in flow_data.arg_values %}

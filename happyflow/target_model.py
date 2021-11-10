@@ -11,6 +11,7 @@ class TargetBaseEntity:
         self.name = name
         self.full_name = full_name
         self.filename = filename
+        self.info = None
 
     def __str__(self):
         return self.full_name
@@ -39,6 +40,9 @@ class TargetEntity(TargetBaseEntity):
         executable_lines = trace._find_executable_linenos(self.filename)
         # remove the target_entity definition, eg, def, class
         return tuple(self.intersection(executable_lines)[1:])
+
+    def executable_lines_count(self):
+        return len(self.executable_lines())
 
     def intersection(self, other_lines):
         my_lines = range(self.start_line, self.end_line + 1)

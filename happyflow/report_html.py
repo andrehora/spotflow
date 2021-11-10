@@ -12,8 +12,8 @@ class HTMLReport:
     ]
     REPORT_DIR = 'report'
 
-    def __init__(self, entity_data, analysis):
-        self.entity_data = entity_data
+    def __init__(self, entity_info, analysis):
+        self.entity_info = entity_info
         self.analysis = analysis
 
         pyfile_path = full_filename(self.LOCAL_DIR, self.PY_FILE)
@@ -25,9 +25,9 @@ class HTMLReport:
 
     def report(self):
 
-        for flow_data in self.entity_data:
+        for flow_data in self.entity_info:
 
-            flow_data.call_ratio = ratio(flow_data.call_count, self.entity_data.total_calls)
+            flow_data.call_ratio = ratio(flow_data.call_count, self.entity_info.total_calls)
 
             for line_data in flow_data:
 
@@ -37,9 +37,9 @@ class HTMLReport:
                     line_data.html = f'<span class="full not_run">{line_data.html}</span>'
 
         html = self.source_tmpl.render({
-            'entity_data': self.entity_data
+            'entity_info': self.entity_info
         })
 
-        pyfile = os.path.join(self.REPORT_DIR, self.entity_data.full_name + '.html')
+        pyfile = os.path.join(self.REPORT_DIR, self.entity_info.target_entity.full_name + '.html')
         write_html(pyfile, html)
 

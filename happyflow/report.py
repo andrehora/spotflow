@@ -5,74 +5,74 @@ from happyflow.report_txt import TextReport
 
 class Report:
 
-    def __init__(self, target_entity, flow_result):
-        self.target_entity = target_entity
-        self.flow_result = flow_result
-        self.analysis = Analysis(self.target_entity, self.flow_result)
+    def __init__(self, entity_result):
+        self.entity_result = entity_result
+        self.target_entity = entity_result.target_entity
+        self.analysis = Analysis(self.target_entity, self.entity_result)
 
     def html_report(self):
-        entity_data = self.get_entity_data()
-        return HTMLReport(entity_data, self.analysis).report()
+        entity_info = self.get_entity_info()
+        return HTMLReport(entity_info, self.analysis).report()
 
     def txt_report(self):
         pass
 
-    def get_entity_data(self, flow_number=None):
+    def get_entity_info(self, flow_number=None):
 
-        entity_data = EntityData.build_from(self.target_entity)
+        entity_info = EntityInfo(self.target_entity)
 
         if flow_number is not None:
-            flow = self.flow_result.flows[flow_number]
-            flow_data = self.get_flow_data(entity_data, flow)
-            entity_data.append(flow_data)
-            return entity_data
+            flow = self.entity_result.flows[flow_number]
+            flow_data = self.get_flow_info(entity_info, flow)
+            entity_info.append(flow_data)
+            return entity_info
 
         most_common_flows = self.analysis.most_common_flow()
-        entity_data.total_flows = len(most_common_flows)
+        entity_info.total_flows = len(most_common_flows)
 
         flow_pos = 0
         for flow in most_common_flows:
             flow_pos += 1
             target_flow_lines = flow[0]
 
-            flow_result = self.flow_result.flow_result_by_lines(target_flow_lines)
-            flow_data = self.get_flow_data(entity_data, flow_result)
+            flow_result = self.entity_result.flow_result_by_lines(target_flow_lines)
+            flow_data = self.get_flow_info(entity_info, flow_result)
             flow_data.pos = flow_pos
 
-            entity_data.append(flow_data)
+            entity_info.append(flow_data)
 
-        return entity_data
+        return entity_info
 
-    def get_flow_data(self, entity_data, flow_result):
+    def get_flow_info(self, entity_info, flow_result):
 
         lineno = 0
-        lineno_entity = entity_data.start_line - 1
+        lineno_entity = entity_info.target_entity.start_line - 1
 
         analysis = Analysis(self.target_entity, flow_result)
 
-        flow_data = FlowData()
-        flow_data.call_count = analysis.number_of_calls()
-        flow_data.arg_values = analysis.most_common_args_pretty()
+        flow_info = FlowInfo()
+        flow_info.call_count = analysis.number_of_calls()
+        flow_info.arg_values = analysis.most_common_args_pretty()
         return_values = analysis.most_common_return_values_pretty()
         if return_values:
-            flow_data.return_values = return_values
+            flow_info.return_values = return_values
 
-        entity_data.total_calls += flow_data.call_count
+        entity_info.total_calls += flow_info.call_count
         flow = flow_result.flows[0]
 
-        for code, html in zip(entity_data.code_lines, entity_data.html_lines):
+        for code, html in zip(entity_info.target_entity.get_code_lines(), entity_info.target_entity.get_html_lines()):
 
             lineno += 1
             lineno_entity += 1
 
-            run_status = self.line_run_status(flow.run_lines, lineno_entity, entity_data.start_line)
+            run_status = self.line_run_status(flow.run_lines, lineno_entity, entity_info.target_entity.start_line)
             state = self.get_state(flow, lineno_entity)
 
-            line_data = LineData(lineno, lineno_entity, run_status, code.rstrip(), html, state)
-            flow_data.append(line_data)
-            flow_data.update_run_status(line_data)
+            line_info = LineInfo(lineno, lineno_entity, run_status, code.rstrip(), html, state)
+            flow_info.append(line_info)
+            flow_info.update_run_status(line_info)
 
-        return flow_data
+        return flow_info
 
     def get_state(self, flow, lineno_entity):
 
@@ -119,7 +119,7 @@ class Report:
             entity_result = trace_result[entity_name]
             count += 1
             print(f'{count}. {entity_result.target_entity.full_name}')
-            reporter = Report(entity_result.target_entity, entity_result)
+            reporter = Report(entity_result)
             reporter.html_report()
 
     @staticmethod
@@ -142,7 +142,7 @@ class RunStatus:
     NOT_EXEC = 2
 
 
-class LineData:
+class LineInfo:
 
     def __init__(self, lineno, lineno_entity, run_status, code, html, state):
         self.lineno = lineno
@@ -162,7 +162,7 @@ class LineData:
         return self.run_status == RunStatus.NOT_EXEC
 
 
-class FlowData:
+class FlowInfo:
 
     def __init__(self):
         self.pos = 0
@@ -197,18 +197,10 @@ class FlowData:
             self.not_exec_count += 1
 
 
-class EntityData:
+class EntityInfo:
 
-    def __init__(self, name, full_name, filename, start_line, end_line, code_lines, html_lines, exec_lines_count):
-        self.name = name
-        self.full_name = full_name
-        self.filename = filename
-        self.start_line = start_line
-        self.end_line = end_line
-        self.code_lines = code_lines
-        self.html_lines = html_lines
-        self.exec_lines_count = exec_lines_count
-
+    def __init__(self, target_entity):
+        self.target_entity = target_entity
         self.flows_data = []
         self.total_flows = 0
         self.total_calls = 0
@@ -221,10 +213,3 @@ class EntityData:
 
     def append(self, other):
         self.flows_data.append(other)
-
-    @staticmethod
-    def build_from(entity):
-        return EntityData(entity.name, entity.full_name, entity.filename,
-                          entity.start_line, entity.end_line,
-                          entity.get_code_lines(), entity.get_html_lines(),
-                          len(entity.executable_lines()))
