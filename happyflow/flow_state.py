@@ -1,6 +1,3 @@
-from happyflow.utils import clear_element
-
-
 class TraceResult:
 
     def __init__(self):
@@ -60,7 +57,7 @@ class EntityTraceResult:
             if flow.state_result and flow.state_result.arg_states:
                 for arg in flow.state_result.arg_states:
                     if arg.name != 'self':
-                        value = clear_element(arg.value)
+                        value = arg.value
                         args_and_values[arg.name] = args_and_values.get(arg.name, [])
                         args_and_values[arg.name].append(value)
         return args_and_values
@@ -70,7 +67,6 @@ class EntityTraceResult:
         for flow in self.flows:
             if flow.state_result and flow.state_result.has_return():
                 value = flow.state_result.return_state.value
-                value = clear_element(value)
                 values.append(value)
         return values
 
@@ -141,9 +137,13 @@ class VarStateHistory:
         if not self.states:
             return True
         last_state = self.get_last_state()
-        if last_state.value != new_value:
-            return True
-        return False
+        try:
+            if last_state.value != new_value:
+                return True
+            return False
+        except Exception as e:
+            # print(e)
+            return False
 
     def get_last_state(self):
         return self.states[-1]

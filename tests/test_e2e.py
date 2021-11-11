@@ -5,6 +5,7 @@ from happyflow.api import trace_from_test_class, trace_from_test_module, trace_f
 
 class TestE2E(unittest.TestCase):
 
+    # @unittest.skip
     def test_generate_html_report_from_test_class(self):
 
         from test.test_email.test_email import TestMessageAPI
@@ -17,15 +18,17 @@ class TestE2E(unittest.TestCase):
         self.assertTrue(os.path.isfile('./report/highlight.css'))
         self.assertTrue(os.path.isfile('./report/coverage_html.js'))
 
-    # def test_generate_html_report_from_test_module(self):
-    #
-    #     from test.test_email import test_email
-    #
-    #     is_exported = trace_from_test_module(test_email, ['email.message._formatparam'], report_format='html')
-    #     self.assertTrue(is_exported)
-    #     self.assertTrue(os.path.isfile('./report/email.message._formatparam.html'))
-    #     self.assertTrue(os.path.isfile('./report/highlight.css'))
+    @unittest.skip
+    def test_generate_html_report_from_test_module(self):
 
+        from test.test_email import test_email
+
+        is_exported = trace_from_test_module(test_email, ['email.message._formatparam'], report_format='html')
+        self.assertTrue(is_exported)
+        self.assertTrue(os.path.isfile('./report/email.message._formatparam.html'))
+        self.assertTrue(os.path.isfile('./report/highlight.css'))
+
+    # @unittest.skip
     def test_generate_txt_report(self):
 
         from examples.examples_func import inputs_count, inputs_parseparam, inputs_splitparam, count_uppercase_words, parseparam, splitparam

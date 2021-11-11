@@ -126,7 +126,7 @@ class Report:
         for entity_name in trace_result:
             entity_result = trace_result[entity_name]
             report = TextReport(entity_result.target_entity, entity_result)
-            report.show_most_common_args_and_return_values(3, show_code=True)
+            report.show_most_common_args_and_return_values(show_code=True)
 
 
 class StateStatus:

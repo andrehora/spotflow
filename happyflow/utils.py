@@ -1,8 +1,6 @@
 import os
 import re
 import inspect
-import logging
-import copy
 import shutil
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
@@ -22,26 +20,41 @@ def find_python_files(dir='.'):
     return python_files
 
 
+def open_file(filename):
+    try:
+        with open(filename, 'r', encoding="utf-8") as f:
+            return f.read()
+    except:
+        return None
+
+
+def read_file(filename):
+    with open(filename) as f:
+        return f.read()
+
+
+def read_file_lines(filename):
+    with open(filename) as f:
+        return f.readlines()
+
+
+def copy_files(local_dir, files, destination):
+    for static in files:
+        shutil.copyfile(full_filename(local_dir, static), os.path.join(destination, static))
+
+
+def ensure_dir(directory):
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+
+
+def full_filename(local_dir, filename):
+    dir_path = os.path.dirname(__file__)
+    return os.path.join(dir_path, local_dir, filename)
+
+
 def find_module_name(filename):
     return filename.split('/')[-1].split('.')[0]
-
-
-def find_class_name(frame):
-    args = inspect.getargvalues(frame)
-    if 'self' in args.locals:
-        obj = args.locals['self']
-        try:
-            return obj.__class__.__name__
-        except Exception:
-            return None
-    return None
-
-
-def full_name_from_frame(frame):
-    func_or_method = find_func_or_method_from_frame(frame)
-    if func_or_method:
-        return find_full_name(func_or_method)
-    return None
 
 
 def method_metadata(method):
@@ -64,13 +77,19 @@ def function_metadata(func):
     return module_name, name, filename, start_line, end_line, full_name
 
 
-def find_full_name(func_or_method):
-    return f'{func_or_method.__module__}.{func_or_method.__qualname__}'
-
-
 def get_end_line(start_line, source):
     loc = source.count('\n')
     return start_line + loc - 1
+
+
+def check_is_generator_function(func_or_method):
+    if inspect.isgeneratorfunction(func_or_method):
+        return None
+    return func_or_method
+
+
+def find_full_name(func_or_method):
+    return f'{func_or_method.__module__}.{func_or_method.__qualname__}'
 
 
 def line_has_explicit_return(frame):
@@ -83,63 +102,22 @@ def line_has_explicit_return(frame):
     return False
 
 
-def diff(list1, list2):
-    second = set(list2)
-    return [item for item in list1 if item not in second]
-
-
-def line_intersection(lines, other_lines):
-    return sorted(list(set(lines).intersection(other_lines)))
-
-
-def clear_element(element):
-
-    if is_hashable(element):
-        return element
-
-    if is_list_or_set(element):
-        t = []
-        for each in element:
-            t.append(element_or_type(each))
-        return tuple(t)
-
-    return element_or_type(element)
-
-
-def element_or_type(element):
-    if is_hashable(element):
-        return element
-    return element.__class__.__name__
-
-
-def is_hashable(element):
+def get_obj_value(obj):
+    obj_string = ''
     try:
-        hash(element)
-        return True
-    except TypeError:
-        return False
+        obj_string = repr(obj)
+        if obj_string.startswith('<') and obj_string.endswith('>'):
+            if is_definition(obj):
+                return f'{obj.__name__} def'
+            return f'{obj.__class__.__name__} obj'
+        return obj_string
+    except Exception as e:
+        return obj_string
 
 
-def is_list_or_set(element):
-    return type(element) == list or type(element) == set
-
-
-def open_file(filename):
-    try:
-        with open(filename, 'r', encoding="utf-8") as f:
-            return f.read()
-    except:
-        return None
-
-
-def read_file(filename):
-    with open(filename) as f:
-        return f.read()
-
-
-def read_file_lines(filename):
-    with open(filename) as f:
-        return f.readlines()
+def is_definition(obj):
+    return inspect.ismodule(obj) or inspect.isclass(obj) or inspect.ismethod(obj) or inspect.isfunction(obj)
+    # inspect.isgeneratorfunction(obj) or inspect.isgenerator(obj)
 
 
 def get_code_lines(entity):
@@ -175,91 +153,10 @@ def write_html(fname, html):
         fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 
 
-def copy_or_type(obj):
-    try:
-        return copy.deepcopy(obj)
-        # return guess_name(obj)
-    except Exception:
-        return guess_name(obj)
-
-
-def guess_name(obj):
-    obj_string = ''
-    try:
-        obj_string = str(obj)
-        if obj_string.startswith('<') and obj_string.endswith('>'):
-            if is_live(obj):
-                return f'{obj.__name__} class'
-            return f'{obj.__class__.__name__} object'
-        return obj_string
-    except Exception:
-        return obj_string
-
-
-def is_live(obj):
-    return inspect.ismodule(obj) or inspect.isclass(obj) or inspect.ismethod(obj) or inspect.isfunction(obj)
-           # inspect.isgeneratorfunction(obj) or inspect.isgenerator(obj)
-
-
-def try_copy(obj, name):
-    try:
-        return copy.deepcopy(obj)
-    except Exception:
-        logging.warning(f'Copy error: {name} {str(obj)}')
-        raise
+def line_intersection(lines, other_lines):
+    return sorted(list(set(lines).intersection(other_lines)))
 
 
 def ratio(a, b, dec=1):
     r = a / b * 100
     return f'{round(r, dec)}%'
-
-
-def ensure_dir(directory):
-    if directory:
-        os.makedirs(directory, exist_ok=True)
-
-
-def full_filename(local_dir, filename):
-    dir_path = os.path.dirname(__file__)
-    return os.path.join(dir_path, local_dir, filename)
-
-
-def copy_files(local_dir, files, destination):
-    for static in files:
-        shutil.copyfile(full_filename(local_dir, static), os.path.join(destination, static))
-
-
-def find_callers(frame):
-    callers = []
-    callers.append(frame.f_code.co_name)
-    while 'test' not in frame.f_code.co_name:
-        frame = frame.f_back
-        callers.append(frame.f_code.co_name)
-    callers.reverse()
-    return callers
-
-
-def find_func_or_method_from_frame(frame):
-    try:
-        entity_name = frame.f_code.co_name
-
-        if entity_name == '<listcomp>':
-            return None
-
-        if 'self' in frame.f_locals:
-            obj = frame.f_locals['self']
-            members = dict(inspect.getmembers(obj, inspect.ismethod))
-            if entity_name in members:
-                return members[entity_name]
-
-        if entity_name in frame.f_globals:
-            return frame.f_globals[entity_name]
-    except Exception as e:
-        print(e)
-        return None
-
-
-def pluralize(value):
-    if value >= 2:
-        return 's'
-    return ''

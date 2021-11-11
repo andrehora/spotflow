@@ -9,7 +9,7 @@ class TextReport:
         self.flow_result = flow_result
         self.analysis = Analysis(self.target_entity, self.flow_result)
 
-    def show_most_common_args_and_return_values(self, n=None, show_code=False):
+    def show_most_common_args_and_return_values(self, show_code=False):
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
         print('Target entity:', self.target_entity)
         print('Executable lines:', len(self.target_entity.executable_lines()))
@@ -17,7 +17,7 @@ class TextReport:
         # exec_lines = self.target_entity.executable_lines()
         # print(f'Executable lines ({len(exec_lines)}): {exec_lines}')
         count = 0
-        for flow in self.analysis.most_common_flow(n):
+        for flow in self.analysis.most_common_flow():
             count += 1
             target_flow_lines = flow[0]
             flow_result = self.flow_result.flow_result_by_lines(target_flow_lines)

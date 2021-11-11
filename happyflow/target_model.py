@@ -1,6 +1,5 @@
 import trace
 import types
-from happyflow.utils import find_func_or_method_from_frame
 from happyflow.utils import line_intersection, get_code_lines, get_html_lines
 from happyflow.utils import function_metadata, method_metadata
 
@@ -89,13 +88,6 @@ class TargetEntity(TargetBaseEntity):
         target_entity.end_line = end_line
 
         return target_entity
-
-    @staticmethod
-    def build_from_frame(frame):
-        func_or_method = find_func_or_method_from_frame(frame)
-        if func_or_method:
-            return TargetEntity.build_from_func(func_or_method)
-        return None
 
 
 class TargetMethod(TargetEntity):
