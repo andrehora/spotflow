@@ -21,6 +21,9 @@ class TraceResult:
     def __iter__(self):
         return iter(self.results)
 
+    def values(self):
+        return self.results.values()
+
     def filter(self, filter_func):
         self.results = {k: v for k, v in self.results.items() if filter_func(k, v)}
         return self
@@ -45,8 +48,8 @@ class EntityTraceResult:
         flow_result.flows = target_flows
         return flow_result
 
-    def add(self, flow_lines, state_result=None):
-        flow = Flow(flow_lines, state_result)
+    def add(self, flow_lines, state_result, callers):
+        flow = Flow(flow_lines, state_result, callers)
         self.flows.append(flow)
 
     def get_last_flow(self):
@@ -77,12 +80,22 @@ class EntityTraceResult:
                 values.append(value)
         return values
 
+    def callers(self):
+        cs = []
+        for flow in self.flows:
+            cs.append(flow.callers)
+        return cs
+
+    def callers_tests(self):
+        return set(map(lambda each: each[0], self.callers()))
+
 
 class Flow:
 
-    def __init__(self, run_lines, state_result=None):
+    def __init__(self, run_lines, state_result, callers):
         self.run_lines = run_lines
         self.state_result = state_result
+        self.callers = callers
 
     def __eq__(self, other):
         return other == self.run_lines
@@ -93,10 +106,8 @@ class Flow:
 
 class StateResult:
 
-    def __init__(self, name):
-        self.target_entity_name = name
+    def __init__(self):
         self.vars = {}
-
         self.arg_states = None
         self.return_state = None
         self.exception_state = None

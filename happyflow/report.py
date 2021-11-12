@@ -24,8 +24,7 @@ class Report:
     def get_report(self):
         count = 0
         print(f'Report size: {len(self.trace_result)}')
-        for entity_name in self.trace_result:
-            entity_result = self.trace_result[entity_name]
+        for entity_result in self.trace_result.values():
             count += 1
             print(f'{count}. {entity_result.target_entity.full_name}')
             entity_info = self.get_entity_info(entity_result)
@@ -40,6 +39,9 @@ class Report:
         analysis = Analysis(entity_result.target_entity, entity_result)
         most_common_flows = analysis.most_common_flow()
         entity_info.total_flows = len(most_common_flows)
+
+        # print(len(entity_result.callers()), len(set(entity_result.callers())))
+        # print(len(entity_result.callers_tests()))
 
         flow_pos = 0
         for flow in most_common_flows:
@@ -70,6 +72,7 @@ class Report:
             flow_info.return_values = return_values
 
         flow = flow_result.flows[0]
+        # print(len(flow_result.callers()), len(set(flow_result.callers())))
 
         for code, html in zip(entity_info.target_entity.get_code_lines(), entity_info.target_entity.get_html_lines()):
 
@@ -204,6 +207,7 @@ class EntityInfo:
         self.flows_data = []
         self.total_flows = 0
         self.total_calls = len(entity_result.flows)
+        self.total_tests = len(entity_result.callers_tests())
 
     def __len__(self):
         return len(self.flows_data)
@@ -218,10 +222,11 @@ class EntityInfo:
 class EntitySummary:
 
     def __init__(self, entity_info):
-        self.name = entity_info.target_entity.name
+        # self.name = entity_info.target_entity.name
         self.full_name = entity_info.target_entity.full_name
         self.total_flows = entity_info.total_flows
         self.total_calls = entity_info.total_calls
+        self.total_tests = entity_info.total_tests
         self.top_flow_calls = entity_info.flows_data[0].call_count
         self.top_flow_ratio = entity_info.flows_data[0].call_ratio
         self.statements_count = entity_info.target_entity.executable_lines_count()

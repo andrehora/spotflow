@@ -139,7 +139,7 @@ class TraceCollector:
         self.target_entities_cache = {}
         self.frame_cache = {}
 
-    def find_arg_states(self, frame):
+    def get_arg_states(self, frame):
         states = []
 
         argvalues = inspect.getargvalues(frame)
@@ -211,7 +211,7 @@ class TraceCollector:
         except Exception as e:
             return None
 
-    def get_full_name(self, frame):
+    def get_full_entity_name(self, frame):
         func_or_method = self.ensure_func_or_method(frame)
         if func_or_method:
             return find_full_name(func_or_method)
@@ -224,9 +224,9 @@ class TraceCollector:
             frame = frame.f_back
             callers.append(frame.f_code.co_name)
         callers.reverse()
-        return callers
+        return tuple(callers)
 
-    def is_valid_collection(self, frame):
+    def is_valid(self, frame):
 
         if not self.target_entity_names:
             return False
@@ -240,10 +240,10 @@ class TraceCollector:
 
     def collect_flow_and_state(self, frame, event, arg):
 
-        if not self.is_valid_collection(frame):
+        if not self.is_valid(frame):
             return
 
-        current_entity_name = self.get_full_name(frame)
+        current_entity_name = self.get_full_entity_name(frame)
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:
@@ -257,14 +257,14 @@ class TraceCollector:
                         self.last_frame_line[current_entity_name] = -1
 
                     if event == 'call':
-                        # print(find_callers(frame))
 
-                        flow_lines = []
-                        state_result = StateResult(current_entity_name)
-                        state_result.arg_states = self.find_arg_states(frame)
+                        run_lines = []
+                        state_result = StateResult()
+                        state_result.arg_states = self.get_arg_states(frame)
+                        callers = self.find_callers(frame)
 
                         entity_result = self.trace_result[current_entity_name]
-                        entity_result.add(flow_lines, state_result)
+                        entity_result.add(run_lines, state_result, callers)
 
                     # event in ('line', 'return', 'exception')
                     else:

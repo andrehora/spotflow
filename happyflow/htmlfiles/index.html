@@ -30,6 +30,7 @@
                 <th class="name left" aria-sort="none" data-shortcut="n">Function/Method</th>
                 <th aria-sort="none" data-default-sort-order="descending">statements</th>
                 <th aria-sort="none" data-default-sort-order="descending">flows</th>
+                <th aria-sort="none" data-default-sort-order="descending">tests</th>
                 <th aria-sort="none" data-default-sort-order="descending">calls</th>
                 <th aria-sort="none" data-default-sort-order="descending">top flow calls</th>
                 <th aria-sort="none" data-default-sort-order="descending">top flow ratio</th>
@@ -38,9 +39,10 @@
         <tbody>
             {% for entity in summary %}
             <tr class="file">
-                <td class="name left"><a href="{{entity.full_name}}.html">{{entity.name}}</a></td>
+                <td class="name left"><a href="{{entity.full_name}}.html">{{entity.full_name}}</a></td>
                 <td>{{entity.statements_count}}</td>
                 <td>{{entity.total_flows}}</td>
+                <td>{{entity.total_tests}}</td>
                 <td>{{entity.total_calls}}</td>
                 <td>{{entity.top_flow_calls}}</td>
                 <td>{{entity.top_flow_ratio}}</td>
