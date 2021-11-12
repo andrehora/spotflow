@@ -111,11 +111,6 @@ coverage.wire_up_filter = function () {
                 // Accumulate dynamic totals
                 cell = row.cells[column]
                 if (column === totals.length - 1) {
-                    // Last column contains percentage
-                    const [numer, denom] = cell.dataset.ratio.split(" ");
-                    totals[column]["numer"] += parseInt(numer, 10);
-                    totals[column]["denom"] += parseInt(denom, 10);
-                } else {
                     totals[column] += parseInt(cell.textContent, 10);
                 }
             }
@@ -166,7 +161,7 @@ coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
 
 // Loaded on index.html
 coverage.index_ready = function () {
-    coverage.assign_shortkeys();
+    // coverage.assign_shortkeys();
     coverage.wire_up_filter();
     document.querySelectorAll("[data-sortable] th[aria-sort]").forEach(
         th => th.addEventListener("click", e => sortColumn(e.target))

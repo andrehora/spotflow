@@ -2,14 +2,14 @@ import unittest
 from happyflow.api import trace_from_test_class, trace_from_test_module
 
 
-# from test.test_email.test_email import TestMessageAPI
-# trace_from_test_class(TestMessageAPI, ['email.generator.Generator.flatten'], report_format='html', report_dir='xxx')
+from test.test_email.test_email import TestMessageAPI
+trace_from_test_class(TestMessageAPI, ['email.message.Message.get_content'], report_format='html', report_dir='email')
 
 # from test.test_email import test_email
 # trace_from_test_module(test_email, ['email.generator.Generator.flatten'], report_format='html', report_dir='xxx2')
 
-from test.test_email import test_email
-trace_from_test_module(test_email, ['email'], report_format='html', report_dir='email')
+# from test import test_email
+# trace_from_test_module(test_email, ['email'], report_format='html', report_dir='email2')
 
 # runner = unittest.TextTestRunner()
 # suite = unittest.TestLoader().loadTestsFromModule(test_email)

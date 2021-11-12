@@ -15,9 +15,10 @@ class Report:
         print(f'Exporting {len(self.trace_result)} files')
         for entity_name in self.trace_result:
             entity_result = self.trace_result[entity_name]
-            count += 1
-            print(f'{count}. {entity_result.target_entity.full_name}')
-            self.html_code_report(entity_result, report_dir)
+            if entity_result.flows:
+                count += 1
+                print(f'{count}. {entity_result.target_entity.full_name}')
+                self.html_code_report(entity_result, report_dir)
         self.html_index_report(report_dir)
 
     def html_code_report(self, entity_result, report_dir):
@@ -217,6 +218,7 @@ class EntityInfo:
 class EntitySummary:
 
     def __init__(self, entity_info):
+        self.name = entity_info.target_entity.name
         self.full_name = entity_info.target_entity.full_name
         self.total_flows = entity_info.total_flows
         self.total_calls = entity_info.total_calls

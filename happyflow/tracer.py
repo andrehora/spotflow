@@ -188,9 +188,6 @@ class TraceCollector:
         lineno = frame.f_lineno
         key = filename, lineno
 
-        # self.frame_cache[key] = self.frame_cache.get(key, self._find_func_or_method(frame))
-        # return self.frame_cache[key]
-
         if key in self.frame_cache:
             return self.frame_cache[key]
         self.frame_cache[key] = self._find_func_or_method(frame)
@@ -231,6 +228,9 @@ class TraceCollector:
 
     def collect_flow_and_state(self, frame, event, arg):
         if not self.target_entity_names:
+            return
+
+        if 'email' not in frame.f_code.co_filename:
             return
 
         current_entity_name = self.get_full_name(frame)
@@ -276,10 +276,10 @@ class TraceCollector:
                                 # event == 'exception':
                                 current_state_result.exception_state = ExceptionState(arg, lineno)
 
-                            if current_state_result:
-                                argvalues = inspect.getargvalues(frame)
-                                for arg in argvalues.locals:
-                                    value = get_obj_value(argvalues.locals[arg])
-                                    current_state_result.add(name=arg, value=value, line=lineno,
-                                                      inline=self.last_frame_line[current_entity_name])
-                            self.last_frame_line[current_entity_name] = lineno
+                            # if current_state_result:
+                            #     argvalues = inspect.getargvalues(frame)
+                            #     for arg in argvalues.locals:
+                            #         value = get_obj_value(argvalues.locals[arg])
+                            #         current_state_result.add(name=arg, value=value, line=lineno,
+                            #                           inline=self.last_frame_line[current_entity_name])
+                            # self.last_frame_line[current_entity_name] = lineno
