@@ -241,3 +241,35 @@ class Exceptions:
 
     def raise_specific_exception(self):
         raise TypeError
+
+    def raise_distinct_exception(self, first_line=False, second_line=False, third_line=False):
+        self.raise_here(first_line)
+        self.raise_here(second_line)
+        self.raise_here(third_line)
+
+    def raise_here(self, yes):
+        if yes:
+            raise Exception
+
+
+class Generators:
+
+    def no_generator_1(self):
+        return
+
+    def no_generator_2(self):
+        g = self.has_generator_1()
+        next(g)
+
+    def no_generator_3(self):
+        g = self.has_generator_2()
+        next(g)
+        next(g)
+        next(g)
+
+    def has_generator_1(self):
+        yield
+
+    def has_generator_2(self):
+        for each in range(1, 4):
+            yield each

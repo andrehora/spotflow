@@ -26,7 +26,7 @@ def trace_pytests():
 def export_report(trace_result, report_format, report_dir=None):
     try:
         if report_format == 'html':
-            Report(trace_result).export_html(report_dir)
+            Report(trace_result).html(report_dir)
         elif report_format == 'txt':
             Report.export_txt(trace_result)
         return True

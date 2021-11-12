@@ -194,6 +194,67 @@ class TestExceptions(unittest.TestCase):
         except Exception:
             pass
 
+    def test_raise_exception_line_1(self):
+        try:
+            self.ex.raise_distinct_exception(first_line=True)
+        except Exception:
+            pass
+
+    def test_raise_exception_line_2(self):
+        try:
+            self.ex.raise_distinct_exception(second_line=True)
+        except Exception:
+            pass
+
+    def test_raise_exception_line_3(self):
+        try:
+            self.ex.raise_distinct_exception(third_line=True)
+        except Exception:
+            pass
+
+    def test_raise_no_exception(self):
+        try:
+            self.ex.raise_distinct_exception()
+        except Exception:
+            pass
+
+    def test_flows_with_exceptions(self):
+        try:
+            self.ex.raise_distinct_exception(first_line=True)
+        except Exception:
+            pass
+
+        try:
+            self.ex.raise_distinct_exception(second_line=True)
+        except Exception:
+            pass
+
+        try:
+            self.ex.raise_distinct_exception(third_line=True)
+        except Exception:
+            pass
+
+
+class TestGenerators(unittest.TestCase):
+
+    def setUp(self):
+        self.g = Generators()
+
+    def test_no_generator_1(self):
+        self.g.no_generator_1()
+
+    def test_no_generator_2(self):
+        self.g.no_generator_2()
+
+    def test_no_generator_3(self):
+        self.g.no_generator_3()
+
+    def test_has_generator_1(self):
+        self.g.has_generator_1()
+
+    def test_has_generator_2(self):
+        self.g.has_generator_2()
+
 
 if __name__ == '__main__':
     unittest.main()

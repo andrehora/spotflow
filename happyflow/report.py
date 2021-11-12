@@ -7,34 +7,35 @@ from happyflow.report_txt import TextReport
 class Report:
 
     def __init__(self, trace_result):
-        self.trace_result = trace_result
+        self.trace_result = trace_result.filter(trace_result.has_flows)
         self.summary = []
 
-    def export_html(self, report_dir):
-        count = 0
-        print(f'Exporting {len(self.trace_result)} files')
-        for entity_name in self.trace_result:
-            entity_result = self.trace_result[entity_name]
-            if entity_result.flows:
-                count += 1
-                print(f'{count}. {entity_result.target_entity.full_name}')
-                self.html_code_report(entity_result, report_dir)
-        self.html_index_report(report_dir)
-
-    def html_code_report(self, entity_result, report_dir):
-        entity_info = self.get_entity_info(entity_result)
-        self.summary.append(EntitySummary(entity_info))
-        return HTMLCodeReport(entity_info, report_dir).report()
-
-    def html_index_report(self, report_dir):
+    def html(self, report_dir):
+        for entity_info in self.get_report():
+            HTMLCodeReport(entity_info, report_dir).report()
         HTMLIndexReport(self.summary, report_dir).report()
 
-    def txt_report(self):
+    def txt(self):
         pass
+
+    def csv(self):
+        pass
+
+    def get_report(self):
+        count = 0
+        print(f'Report size: {len(self.trace_result)}')
+        for entity_name in self.trace_result:
+            entity_result = self.trace_result[entity_name]
+            count += 1
+            print(f'{count}. {entity_result.target_entity.full_name}')
+            entity_info = self.get_entity_info(entity_result)
+            yield entity_info
 
     def get_entity_info(self, entity_result):
 
         entity_info = EntityInfo(entity_result)
+        if not entity_result.flows:
+            return entity_info
 
         analysis = Analysis(entity_result.target_entity, entity_result)
         most_common_flows = analysis.most_common_flow()
@@ -51,6 +52,7 @@ class Report:
 
             entity_info.append(flow_info)
 
+        self.summary.append(EntitySummary(entity_info))
         return entity_info
 
     def get_flow_info(self, entity_info, flow_result):
@@ -66,8 +68,6 @@ class Report:
         return_values = analysis.most_common_return_values_pretty()
         if return_values:
             flow_info.return_values = return_values
-
-        # entity_info.total_calls += flow_info.call_count
 
         flow = flow_result.flows[0]
 

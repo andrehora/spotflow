@@ -21,6 +21,13 @@ class TraceResult:
     def __iter__(self):
         return iter(self.results)
 
+    def filter(self, filter_func):
+        self.results = {k: v for k, v in self.results.items() if filter_func(k, v)}
+        return self
+
+    def has_flows(self, entity_name, entity_result):
+        return entity_result.flows
+
 
 class EntityTraceResult:
 

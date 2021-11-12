@@ -3,7 +3,7 @@ from happyflow.api import trace_from_test_class, trace_from_test_module
 
 
 from test.test_email.test_email import TestMessageAPI
-trace_from_test_class(TestMessageAPI, ['email.message.Message.get_content'], report_format='html', report_dir='email')
+trace_from_test_class(TestMessageAPI, ['email.message.Message'], report_format='html', report_dir='email')
 
 # from test.test_email import test_email
 # trace_from_test_module(test_email, ['email.generator.Generator.flatten'], report_format='html', report_dir='xxx2')
