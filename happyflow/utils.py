@@ -94,7 +94,7 @@ def find_full_name(func_or_method):
 
 def line_has_explicit_return(frame):
     traceback = inspect.getframeinfo(frame)
-    if len(traceback.code_context) >= 1:
+    if traceback.code_context and len(traceback.code_context) >= 1:
         code_line = traceback.code_context[0].strip()
         # __return__ = eval(code_line.split()[1], frame.f_globals, frame.f_locals)
         # print(__return__)

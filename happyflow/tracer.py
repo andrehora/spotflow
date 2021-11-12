@@ -145,6 +145,7 @@ class TraceCollector:
         argvalues = inspect.getargvalues(frame)
         for arg in argvalues.args:
             value = get_obj_value(argvalues.locals[arg])
+
             arg_state = ArgState(arg, value, frame.f_lineno)
             states.append(arg_state)
 
@@ -182,11 +183,20 @@ class TraceCollector:
         if frame.f_code.co_name in ['<listcomp>', '__next__', 'deepcopy', '_reconstruct']:
             return None
 
-        f_id = id(frame)
-        if f_id in self.frame_cache:
-            return self.frame_cache[f_id]
-        self.frame_cache[f_id] = self._find_func_or_method(frame)
-        return self.frame_cache[f_id]
+        filename = frame.f_code.co_filename
+        # name = frame.f_code.co_name
+        lineno = frame.f_lineno
+        key = filename, lineno
+
+        # self.frame_cache[key] = self.frame_cache.get(key, self._find_func_or_method(frame))
+        # return self.frame_cache[key]
+
+        if key in self.frame_cache:
+            return self.frame_cache[key]
+        self.frame_cache[key] = self._find_func_or_method(frame)
+        return self.frame_cache[key]
+
+        # return self._find_func_or_method(frame)
 
     def _find_func_or_method(self, frame):
         try:
@@ -250,24 +260,26 @@ class TraceCollector:
                     else:
                         entity_result = self.trace_result[current_entity_name]
 
-                        flow = entity_result.get_last_flow()
-                        current_run_lines = flow.run_lines
-                        current_state_result = flow.state_result
+                        if entity_result.flows:
 
-                        lineno = frame.f_lineno
-                        if event == 'line':
-                            current_run_lines.append(lineno)
-                        elif event == 'return':
-                            has_return = line_has_explicit_return(frame)
-                            current_state_result.return_state = ReturnState(get_obj_value(arg), lineno, has_return)
-                        else:
-                            # event == 'exception':
-                            current_state_result.exception_state = ExceptionState(arg, lineno)
+                            flow = entity_result.get_last_flow()
+                            current_run_lines = flow.run_lines
+                            current_state_result = flow.state_result
 
-                        if current_state_result:
-                            argvalues = inspect.getargvalues(frame)
-                            for arg in argvalues.locals:
-                                value = get_obj_value(argvalues.locals[arg])
-                                current_state_result.add(name=arg, value=value, line=lineno,
-                                                  inline=self.last_frame_line[current_entity_name])
-                        self.last_frame_line[current_entity_name] = lineno
+                            lineno = frame.f_lineno
+                            if event == 'line':
+                                current_run_lines.append(lineno)
+                            elif event == 'return':
+                                has_return = line_has_explicit_return(frame)
+                                current_state_result.return_state = ReturnState(get_obj_value(arg), lineno, has_return)
+                            else:
+                                # event == 'exception':
+                                current_state_result.exception_state = ExceptionState(arg, lineno)
+
+                            if current_state_result:
+                                argvalues = inspect.getargvalues(frame)
+                                for arg in argvalues.locals:
+                                    value = get_obj_value(argvalues.locals[arg])
+                                    current_state_result.add(name=arg, value=value, line=lineno,
+                                                      inline=self.last_frame_line[current_entity_name])
+                            self.last_frame_line[current_entity_name] = lineno
