@@ -1,6 +1,6 @@
 from happyflow.tracer import TraceRunner
 from happyflow.report import Report
-from happyflow.target_model import TargetEntity
+from happyflow.target import TargetEntity
 
 
 def trace_from_func(source_func, target_func, report_format):

@@ -1,5 +1,5 @@
 import unittest
-from happyflow.target_model import TargetFunction, TargetMethod
+from happyflow.target import TargetFunction, TargetMethod
 
 
 class TestTestLoader(unittest.TestCase):
