@@ -40,9 +40,6 @@ class Report:
         most_common_flows = analysis.most_common_flow()
         entity_info.total_flows = len(most_common_flows)
 
-        # print(len(entity_result.callers()), len(set(entity_result.callers())))
-        # print(len(entity_result.callers_tests()))
-
         flow_pos = 0
         for flow in most_common_flows:
             flow_pos += 1
@@ -72,7 +69,6 @@ class Report:
             flow_info.return_values = return_values
 
         flow = flow_result.flows[0]
-        # print(len(flow_result.callers()), len(set(flow_result.callers())))
 
         for code, html in zip(entity_info.target_entity.get_code_lines(), entity_info.target_entity.get_html_lines()):
 
