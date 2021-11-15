@@ -79,7 +79,6 @@ class Collector:
         try:
             entity_name = frame.f_code.co_name
 
-
             if entity_name in frame.f_globals:
                 func_or_method = frame.f_globals[entity_name]
                 return check_is_generator_function(func_or_method)
@@ -116,7 +115,8 @@ class Collector:
         if not self.target_entity_names:
             return False
 
-        if frame.f_code.co_name in ['<listcomp>', '<module>']:
+        # example: <module>, <genexpr>, <listcomp>
+        if frame.f_code.co_name.startswith('<'):
             return False
 
         for target_entity_name in self.target_entity_names:

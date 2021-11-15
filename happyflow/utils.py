@@ -83,7 +83,7 @@ def get_end_line(start_line, source):
 
 
 def check_is_generator_function(func_or_method):
-    if inspect.isgeneratorfunction(func_or_method):
+    if inspect.isgeneratorfunction(func_or_method) or inspect.isgenerator(func_or_method):
         return None
     return func_or_method
 

@@ -76,16 +76,17 @@ class TargetEntity(TargetBaseEntity):
 
         target_entity = None
 
-        if isinstance(func_or_method, types.MethodType):
+        if isinstance(func_or_method, types.MethodType) and getattr(func_or_method, '__code__', False):
             module_name, class_name, name, filename, start_line, end_line, full_name = method_metadata(func_or_method)
             target_entity = TargetMethod(module_name, class_name, name, full_name, filename)
 
-        if isinstance(func_or_method, types.FunctionType):
+        if isinstance(func_or_method, types.FunctionType) and getattr(func_or_method, '__code__', False):
             module_name, name, filename, start_line, end_line, full_name = function_metadata(func_or_method)
             target_entity = TargetFunction(module_name, name, full_name, filename)
 
-        target_entity.start_line = start_line
-        target_entity.end_line = end_line
+        if target_entity:
+            target_entity.start_line = start_line
+            target_entity.end_line = end_line
 
         return target_entity
 
