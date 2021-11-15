@@ -44,9 +44,6 @@ class Collector:
         if not current_entity_name.startswith(target_entity):
             return None
 
-        # if event == 'call':
-        #     print(event, current_entity_name, target_entity)
-
         if current_entity_name in self.target_entities_cache:
             return self.target_entities_cache[current_entity_name]
 
@@ -63,32 +60,34 @@ class Collector:
         filename = frame.f_code.co_filename
         lineno = frame.f_lineno
         key = filename, lineno
+        # key = id(frame)
 
         if key in self.frame_cache:
             return self.frame_cache[key]
 
-        entity = self._find_func_or_method(frame, event)
-
+        entity = self._get_func_or_method(frame, event)
         if not entity:
             return None
 
-        self.frame_cache[key] = self._find_func_or_method(frame, event)
+        self.frame_cache[key] = self._get_func_or_method(frame, event)
         return self.frame_cache[key]
 
-    def _find_func_or_method(self, frame, event):
+    def _get_func_or_method(self, frame, event):
         try:
             entity_name = frame.f_code.co_name
 
             if entity_name in frame.f_globals:
                 func_or_method = frame.f_globals[entity_name]
-                return check_is_generator_function(func_or_method)
+                # return check_is_generator_function(func_or_method)
+                return func_or_method
 
             if 'self' in frame.f_locals:
                 obj = frame.f_locals['self']
                 members = dict(inspect.getmembers(obj, inspect.ismethod))
                 if entity_name in members:
                     func_or_method = members[entity_name]
-                    return check_is_generator_function(func_or_method)
+                    # return check_is_generator_function(func_or_method)
+                    return func_or_method
         except Exception as e:
             return None
 
@@ -148,18 +147,24 @@ class Collector:
             return
 
         current_entity_name = self.get_full_entity_name(frame, event)
+        # print(current_entity_name, frame.f_lineno, event, id(frame))
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:
 
                 target_entity = self.ensure_target_entity(current_entity_name, target_entity_name, frame, event)
-
                 if target_entity and current_entity_name == target_entity.full_name:
 
                     if current_entity_name not in self.last_frame_line:
                         self.last_frame_line[current_entity_name] = -1
 
-                    if event == 'call':
+                    # Tip from Coverage.py :)
+                    # The call event is really a "start frame" event, and happens for
+                    # function calls and re-entering generators.  The f_lasti field is
+                    # -1 for calls, and a real offset for generators.  Use <0 as the
+                    # line number for calls, and the real line number for generators.
+                    if event == 'call' and getattr(frame, 'f_lasti', -1) < 0:
+
                         if current_entity_name not in self.trace_result:
                             self.trace_result[current_entity_name] = EntityTraceResult(target_entity)
 
@@ -169,16 +174,16 @@ class Collector:
                         callers = self.find_callers(frame)
 
                         entity_result = self.trace_result[current_entity_name]
-                        entity_result.add(run_lines, state_result, callers)
+                        entity_result.add(run_lines, state_result, callers, id(frame))
 
-                    elif event in ('line', 'return', 'exception'):
+                    # Event is line, return, exception or call for re-entering generators
+                    else:
                         if current_entity_name in self.trace_result:
-
                             entity_result = self.trace_result[current_entity_name]
-
                             if entity_result.flows:
 
-                                flow = entity_result.get_last_flow()
+                                # flow = entity_result.get_last_flow()
+                                flow = entity_result.get_flow_from_id(id(frame))
                                 current_run_lines = flow.run_lines
                                 current_state_result = flow.state_result
 

@@ -2,6 +2,7 @@ import unittest
 from happyflow.tracer import TraceRunner
 
 
+@unittest.skip
 class TestGenerator(unittest.TestCase):
 
     def test_no_generator1(self):

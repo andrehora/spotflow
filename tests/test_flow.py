@@ -85,6 +85,8 @@ class TestFlowSUTMethod(unittest.TestCase):
         target_entity_name = 'tests.stub_sut.ComplexFlow.hello'
         trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestComplexFlow.test_multiple_call_to_sut', [target_entity_name])
 
+        self.assertEqual(len(trace_result[target_entity_name].flows), 3)
+
         self.assertIn([35, 39], trace_result[target_entity_name].flows)
         self.assertIn([35, 36, 38], trace_result[target_entity_name].flows)
         self.assertIn([35, 36, 37], trace_result[target_entity_name].flows)

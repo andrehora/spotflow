@@ -73,22 +73,22 @@ class TargetEntity(TargetBaseEntity):
 
     @staticmethod
     def build_from_func(func_or_method):
+        try:
+            target_entity = None
 
-        target_entity = None
+            if isinstance(func_or_method, types.MethodType):
+                module_name, class_name, name, filename, start_line, end_line, full_name = method_metadata(func_or_method)
+                target_entity = TargetMethod(module_name, class_name, name, full_name, filename)
 
-        if isinstance(func_or_method, types.MethodType) and getattr(func_or_method, '__code__', False):
-            module_name, class_name, name, filename, start_line, end_line, full_name = method_metadata(func_or_method)
-            target_entity = TargetMethod(module_name, class_name, name, full_name, filename)
+            if isinstance(func_or_method, types.FunctionType):
+                module_name, name, filename, start_line, end_line, full_name = function_metadata(func_or_method)
+                target_entity = TargetFunction(module_name, name, full_name, filename)
 
-        if isinstance(func_or_method, types.FunctionType) and getattr(func_or_method, '__code__', False):
-            module_name, name, filename, start_line, end_line, full_name = function_metadata(func_or_method)
-            target_entity = TargetFunction(module_name, name, full_name, filename)
-
-        if target_entity:
             target_entity.start_line = start_line
             target_entity.end_line = end_line
-
-        return target_entity
+            return target_entity
+        except Exception as e:
+            return None
 
 
 class TargetMethod(TargetEntity):

@@ -37,6 +37,7 @@ class EntityTraceResult:
     def __init__(self, target_entity):
         self.target_entity = target_entity
         self.target_entity_name = target_entity.name
+        self._flows = {}
         self.flows = []
 
     def flow_result_by_lines(self, lines):
@@ -48,12 +49,16 @@ class EntityTraceResult:
         flow_result.flows = target_flows
         return flow_result
 
-    def add(self, flow_lines, state_result, callers):
+    def add(self, flow_lines, state_result, callers, flow_id):
         flow = Flow(flow_lines, state_result, callers)
         self.flows.append(flow)
+        self._flows[flow_id] = flow
 
     def get_last_flow(self):
         return self.flows[-1]
+
+    def get_flow_from_id(self, flow_id):
+        return self._flows[flow_id]
 
     def distinct_lines(self):
         lines = []

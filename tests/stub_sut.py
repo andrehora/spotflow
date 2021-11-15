@@ -266,6 +266,11 @@ class Generators:
         next(g)
         next(g)
         next(g)
+        # x = self.has_generator_2()
+        # next(x)
+        # next(x)
+        # next(x)
+        # next(g)
 
     def has_generator_1(self):
         yield
