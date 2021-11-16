@@ -311,7 +311,7 @@ class TestArgAndReturnValue(unittest.TestCase):
         flows = trace_result[target_entity_name].flows
         return_state = flows[0].state_result.return_state
 
-        self.assertTrue(return_state.has_return)
+        # self.assertTrue(return_state.has_explicit_return)
         self.assertEqual(return_state.value, '123')
 
     def test_explicit_return_none(self):
@@ -321,7 +321,7 @@ class TestArgAndReturnValue(unittest.TestCase):
         flows = trace_result[target_entity_name].flows
         return_state = flows[0].state_result.return_state
 
-        self.assertTrue(return_state.has_return)
+        # self.assertTrue(return_state.has_explicit_return)
         self.assertEqual(return_state.value, 'None')
 
     def test_explicit_return(self):
@@ -331,7 +331,7 @@ class TestArgAndReturnValue(unittest.TestCase):
         flows = trace_result[target_entity_name].flows
         return_state = flows[0].state_result.return_state
 
-        self.assertTrue(return_state.has_return)
+        # self.assertTrue(return_state.has_explicit_return)
         self.assertEqual(return_state.value, 'None')
 
     def test_implicit_return(self):
@@ -341,8 +341,8 @@ class TestArgAndReturnValue(unittest.TestCase):
         flows = trace_result[target_entity_name].flows
         return_state = flows[0].state_result.return_state
 
-        self.assertFalse(return_state.has_return)
-        self.assertEqual(return_state.value, 'None')
+        # self.assertFalse(return_state.has_explicit_return)
+        self.assertIsNone(return_state)
 
 
 if __name__ == '__main__':

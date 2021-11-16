@@ -1,7 +1,7 @@
 import inspect
 import trace
-from happyflow.utils import get_obj_value, line_has_explicit_return, find_full_name, line_has_yield
-from happyflow.flow_state import StateResult, EntityTraceResult, ArgState, ReturnState, ExceptionState, TraceResult
+from happyflow.utils import obj_value, line_has_explicit_return, find_full_name, line_has_yield
+from happyflow.flow_state import StateResult, EntityTraceResult, ArgState, ReturnState, YieldState, ExceptionState, TraceResult
 from happyflow.target import TargetEntity
 
 
@@ -20,18 +20,18 @@ class Collector:
 
         argvalues = inspect.getargvalues(frame)
         for arg in argvalues.args:
-            value = get_obj_value(argvalues.locals[arg])
+            value = obj_value(argvalues.locals[arg])
 
             arg_state = ArgState(arg, value, frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.varargs:
-            value = get_obj_value(argvalues.locals[argvalues.varargs])
+            value = obj_value(argvalues.locals[argvalues.varargs])
             arg_state = ArgState(argvalues.varargs, value, frame.f_lineno)
             states.append(arg_state)
 
         if argvalues.keywords:
-            value = get_obj_value(argvalues.locals[argvalues.keywords])
+            value = obj_value(argvalues.locals[argvalues.keywords])
             arg_state = ArgState(argvalues.keywords, value, frame.f_lineno)
             states.append(arg_state)
 
@@ -188,21 +188,27 @@ class Collector:
                                 current_state_result = flow.state_result
 
                                 lineno = frame.f_lineno
+
                                 if event == 'line':
                                     current_run_lines.append(lineno)
+
                                 elif event == 'return':
-                                    # print(line_has_yield(frame), frame.f_lineno, arg)
-                                    has_return = line_has_explicit_return(frame)
-                                    current_state_result.return_state = ReturnState(get_obj_value(arg), lineno, has_return)
+
+                                    if line_has_explicit_return(frame):
+                                        current_state_result.add_return_state(obj_value(arg), lineno)
+
+                                    elif line_has_yield(frame):
+                                        current_state_result.add_yield_state(obj_value(arg), lineno)
+
                                 elif event == 'exception':
                                     current_state_result.exception_state = ExceptionState(arg, lineno)
 
                                 if current_state_result:
                                     argvalues = inspect.getargvalues(frame)
                                     for arg in argvalues.locals:
-                                        value = get_obj_value(argvalues.locals[arg])
-                                        current_state_result.add(name=arg, value=value, line=lineno,
-                                                          inline=self.last_frame_line[current_entity_name])
+                                        value = obj_value(argvalues.locals[arg])
+                                        current_state_result.add_var_state(name=arg, value=value, lineno=lineno,
+                                                                 inline=self.last_frame_line[current_entity_name])
                                 self.last_frame_line[current_entity_name] = lineno
 
         return self.collect_flow_and_state

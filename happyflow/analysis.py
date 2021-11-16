@@ -1,5 +1,5 @@
 from collections import Counter
-from happyflow.utils import get_obj_value
+from happyflow.utils import obj_value
 
 
 class Analysis:
@@ -50,7 +50,7 @@ class Analysis:
             arg_value['name'] = arg_name
             values = ''
             for value in args[arg_name]:
-                value_str = get_obj_value(value[0])
+                value_str = obj_value(value[0])
                 count = value[1]
                 values += f'{value_str} ({count}), '
             arg_value['value'] = self.clear_values(values, max_len)

@@ -142,13 +142,13 @@ class TestChangeState(unittest.TestCase):
         obj = state_result.vars['self'].states
         self.assertEqual(len(obj), 3)
 
-        self.assertEqual(obj[0].line, 100)
+        self.assertEqual(obj[0].lineno, 100)
         # self.assertEqual(obj[0].value.inst_var, 'default')
 
-        self.assertEqual(obj[1].line, 101)
+        self.assertEqual(obj[1].lineno, 101)
         # self.assertEqual(obj[1].value.inst_var, 'foo')
 
-        self.assertEqual(obj[2].line, 101)
+        self.assertEqual(obj[2].lineno, 101)
         # self.assertEqual(obj[2].value.inst_var, 'new foo')
 
     def test_init_with_instance_var(self):
@@ -162,10 +162,10 @@ class TestChangeState(unittest.TestCase):
         obj = state_result.vars['self'].states
         self.assertEqual(len(obj), 2)
 
-        self.assertEqual(obj[0].line, 97)
+        self.assertEqual(obj[0].lineno, 97)
         self.assertNotIn('inst_var', dir(obj[0].value))
 
-        self.assertEqual(obj[1].line, 97)
+        self.assertEqual(obj[1].lineno, 97)
         # self.assertEqual(obj[1].value.inst_var, 'default')
 
     def test_keep_var_state(self):

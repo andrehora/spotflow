@@ -265,6 +265,11 @@ class Generators:
         g = self.has_generator_2()
         next(g)
         next(g)
+
+    def call_generator_3(self):
+        g = self.has_generator_3()
+        next(g)
+        next(g)
         next(g)
         next(g)
 
@@ -272,6 +277,10 @@ class Generators:
         yield
 
     def has_generator_2(self):
+        yield 100
+        yield 200
+
+    def has_generator_3(self):
         for each in range(1, 4):
             yield each
             if each == 3:

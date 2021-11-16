@@ -249,11 +249,17 @@ class TestGenerators(unittest.TestCase):
     def test_call_generator_2(self):
         self.g.call_generator_2()
 
+    def test_call_generator_3(self):
+        self.g.call_generator_3()
+
     def test_has_generator_1(self):
         self.g.has_generator_1()
 
     def test_has_generator_2(self):
         self.g.has_generator_2()
+
+    def test_has_generator_3(self):
+        self.g.has_generator_3()
 
 
 if __name__ == '__main__':

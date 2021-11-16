@@ -25,22 +25,22 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(find_module_name('a/b/module.py'), 'module')
 
     def test_guess_value(self):
-        self.assertEqual(get_obj_value(100), '100')
-        self.assertEqual(get_obj_value('foo'), "'foo'")
-        self.assertEqual(get_obj_value([1, 2, 3, 4]), "[1, 2, 3, 4]")
-        self.assertEqual(get_obj_value({1, 2, 3, 4}), "{1, 2, 3, 4}")
-        self.assertEqual(get_obj_value(object()), "object obj")
-        self.assertEqual(get_obj_value(self.test_guess_value), "test_guess_value def")
-        self.assertEqual(get_obj_value(TestUtils), "TestUtils def")
+        self.assertEqual(obj_value(100), '100')
+        self.assertEqual(obj_value('foo'), "'foo'")
+        self.assertEqual(obj_value([1, 2, 3, 4]), "[1, 2, 3, 4]")
+        self.assertEqual(obj_value({1, 2, 3, 4}), "{1, 2, 3, 4}")
+        self.assertEqual(obj_value(object()), "object obj")
+        self.assertEqual(obj_value(self.test_guess_value), "test_guess_value def")
+        self.assertEqual(obj_value(TestUtils), "TestUtils def")
 
         from tests.stub_sut import Calculator
-        self.assertEqual(get_obj_value(Calculator), 'Calculator def')
-        self.assertEqual(get_obj_value(Calculator()), 'Calculator obj')
-        self.assertEqual(get_obj_value(Calculator(100)), 'Calculator obj')
-        self.assertEqual(get_obj_value(Calculator(100).add), 'add def')
-        self.assertEqual(get_obj_value(Calculator(100).__str__), '__str__ def')
-        self.assertEqual(get_obj_value(Calculator(100).add(1)), 'None')
-        self.assertEqual(get_obj_value(Calculator(100).total), '100')
+        self.assertEqual(obj_value(Calculator), 'Calculator def')
+        self.assertEqual(obj_value(Calculator()), 'Calculator obj')
+        self.assertEqual(obj_value(Calculator(100)), 'Calculator obj')
+        self.assertEqual(obj_value(Calculator(100).add), 'add def')
+        self.assertEqual(obj_value(Calculator(100).__str__), '__str__ def')
+        self.assertEqual(obj_value(Calculator(100).add(1)), 'None')
+        self.assertEqual(obj_value(Calculator(100).total), '100')
 
 
 

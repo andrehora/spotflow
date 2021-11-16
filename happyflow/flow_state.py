@@ -114,20 +114,33 @@ class StateResult:
     def __init__(self):
         self.vars = {}
         self.arg_states = None
+        self.yield_states = []
         self.return_state = None
         self.exception_state = None
 
-    def has_return(self):
-        return self.return_state and self.return_state.has_return
+    def get_yield_states(self):
+        if len(self.yield_states) <= 1:
+            return self.yield_states
+        # Remove the last element. This one saved as an implicit return
+        return self.yield_states[:-1]
 
-    def add(self, name, value, line, inline):
+    def add_var_state(self, name, value, lineno, inline):
         self.vars[name] = self.vars.get(name, VarStateHistory(name, []))
-        self.vars[name].add(name, value, line, inline)
+        self.vars[name].add(name, value, lineno, inline)
 
-    def is_return_value(self, line_number):
+    def add_yield_state(self, value, lineno):
+        self.yield_states.append(YieldState(value, lineno))
+
+    def add_return_state(self, value, lineno):
+        self.return_state = ReturnState(value, lineno)
+
+    def is_return_value(self, lineno):
         if self.has_return():
-            return line_number == self.return_state.line
+            return lineno == self.return_state.lineno
         return False
+
+    def has_return(self):
+        return self.return_state  # and self.return_state.has_explicit_return
 
     def states_for_line(self, line_number):
         states = []
@@ -150,10 +163,10 @@ class VarStateHistory:
         self.name = name
         self.states = states
 
-    def add(self, name, value, line, inline):
+    def add(self, name, value, lineno, inline):
         value_has_changed = self.detect_value_has_changed(value)
         # if value_has_changed:
-        new_state = VarState(name, value, line, inline, value_has_changed)
+        new_state = VarState(name, value, lineno, inline, value_has_changed)
         self.states.append(new_state)
 
     def detect_value_has_changed(self, new_value):
@@ -205,10 +218,10 @@ class VarStateHistory:
 
 class VarState:
 
-    def __init__(self, name, value, line, inline, value_has_changed=False):
+    def __init__(self, name, value, lineno, inline, value_has_changed=False):
         self.name = name
         self.value = value
-        self.line = line
+        self.lineno = lineno
         self.inline = inline
         self.value_has_changed = value_has_changed
 
@@ -218,10 +231,10 @@ class VarState:
 
 class ArgState:
 
-    def __init__(self, name, value, line):
+    def __init__(self, name, value, lineno):
         self.name = name
         self.value = value
-        self.line = line
+        self.lineno = lineno
 
     def __str__(self):
         return f'{self.name}={self.value}'
@@ -229,10 +242,22 @@ class ArgState:
 
 class ReturnState:
 
-    def __init__(self, value, line=0, has_return=False):
+    def __init__(self, value, lineno=0):
         self.value = value
-        self.line = line
-        self.has_return = has_return
+        self.lineno = lineno
+
+    def __str__(self):
+        return f'{self.value}'
+
+    def __eq__(self, other):
+        return self.value == other
+
+
+class YieldState:
+
+    def __init__(self, value, lineno=0):
+        self.value = value
+        self.lineno = lineno
 
     def __str__(self):
         return f'{self.value}'

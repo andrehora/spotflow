@@ -96,8 +96,6 @@ def line_has_explicit_return(frame):
     traceback = inspect.getframeinfo(frame)
     if traceback.code_context and len(traceback.code_context) >= 1:
         code_line = traceback.code_context[0].strip()
-        # __return__ = eval(code_line.split()[1], frame.f_globals, frame.f_locals)
-        # print(__return__)
         return code_line.startswith('return')
     return False
 
@@ -106,13 +104,11 @@ def line_has_yield(frame):
     traceback = inspect.getframeinfo(frame)
     if traceback.code_context and len(traceback.code_context) >= 1:
         code_line = traceback.code_context[0].strip()
-        # __return__ = eval(code_line.split()[1], frame.f_globals, frame.f_locals)
-        # print(__return__)
         return code_line.startswith('yield')
     return False
 
 
-def get_obj_value(obj):
+def obj_value(obj):
     obj_string = ''
     try:
         obj_string = repr(obj)
