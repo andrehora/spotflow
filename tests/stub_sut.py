@@ -254,23 +254,19 @@ class Exceptions:
 
 class Generators:
 
-    def no_generator_1(self):
+    def no_generator(self):
         return
 
-    def no_generator_2(self):
+    def call_generator_1(self):
         g = self.has_generator_1()
         next(g)
 
-    def no_generator_3(self):
+    def call_generator_2(self):
         g = self.has_generator_2()
         next(g)
         next(g)
         next(g)
-        # x = self.has_generator_2()
-        # next(x)
-        # next(x)
-        # next(x)
-        # next(g)
+        next(g)
 
     def has_generator_1(self):
         yield
@@ -278,3 +274,5 @@ class Generators:
     def has_generator_2(self):
         for each in range(1, 4):
             yield each
+            if each == 3:
+                yield 10

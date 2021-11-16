@@ -240,14 +240,14 @@ class TestGenerators(unittest.TestCase):
     def setUp(self):
         self.g = Generators()
 
-    def test_no_generator_1(self):
-        self.g.no_generator_1()
+    def test_no_generator(self):
+        self.g.no_generator()
 
-    def test_no_generator_2(self):
-        self.g.no_generator_2()
+    def test_call_generator_1(self):
+        self.g.call_generator_1()
 
-    def test_no_generator_3(self):
-        self.g.no_generator_3()
+    def test_call_generator_2(self):
+        self.g.call_generator_2()
 
     def test_has_generator_1(self):
         self.g.has_generator_1()

@@ -1,6 +1,6 @@
 import inspect
 import trace
-from happyflow.utils import get_obj_value, line_has_explicit_return, find_full_name, check_is_generator_function
+from happyflow.utils import get_obj_value, line_has_explicit_return, find_full_name, line_has_yield
 from happyflow.flow_state import StateResult, EntityTraceResult, ArgState, ReturnState, ExceptionState, TraceResult
 from happyflow.target import TargetEntity
 
@@ -191,6 +191,7 @@ class Collector:
                                 if event == 'line':
                                     current_run_lines.append(lineno)
                                 elif event == 'return':
+                                    # print(line_has_yield(frame), frame.f_lineno, arg)
                                     has_return = line_has_explicit_return(frame)
                                     current_state_result.return_state = ReturnState(get_obj_value(arg), lineno, has_return)
                                 elif event == 'exception':
