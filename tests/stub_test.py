@@ -252,6 +252,9 @@ class TestGenerators(unittest.TestCase):
     def test_call_generator_3(self):
         self.g.call_generator_3()
 
+    def test_call_generator_4(self):
+        self.g.call_generator_4()
+
     def test_has_generator_1(self):
         self.g.has_generator_1()
 
@@ -260,6 +263,9 @@ class TestGenerators(unittest.TestCase):
 
     def test_has_generator_3(self):
         self.g.has_generator_3()
+
+    def test_has_generator_4(self):
+        self.g.has_generator_4()
 
 
 if __name__ == '__main__':

@@ -285,3 +285,13 @@ class Generators:
             yield each
             if each == 3:
                 yield 10
+
+    def call_generator_4(self):
+        g = self.has_generator_4()
+        next(g)
+        next(g)
+
+    def has_generator_4(self):
+        yield 100
+        yield 200
+        yield 300 # not called
