@@ -1,7 +1,5 @@
-import trace
 import types
-from happyflow.utils import line_intersection, get_code_lines, get_html_lines
-from happyflow.utils import function_metadata, method_metadata
+from happyflow.utils import line_intersection, get_code_lines, get_html_lines, find_executable_linenos, function_metadata, method_metadata
 
 
 class TargetBaseEntity:
@@ -16,36 +14,32 @@ class TargetBaseEntity:
         return self.full_name
 
     def is_target(self):
-        return False
+        return True
 
     def loc(self):
-        pass
-
-    def executable_lines(self):
         pass
 
 
 class TargetEntity(TargetBaseEntity):
     start_line = 0
     end_line = 0
+    _executable_lines = {}
 
     def __iter__(self):
         return iter([self])
 
-    def is_target(self):
-        return True
-
     def executable_lines(self):
-        executable_lines = trace._find_executable_linenos(self.filename)
-        # remove the target_entity definition, eg, def, class
-        return tuple(self.intersection(executable_lines)[1:])
+        exec_lines = self.ensure_executable_lines_for_file(self.filename)
+        my_lines = range(self.start_line, self.end_line + 1)
+        return line_intersection(exec_lines, my_lines)
+
+    def ensure_executable_lines_for_file(self, filename):
+        if self.filename not in TargetEntity._executable_lines:
+            TargetEntity._executable_lines[filename] = find_executable_linenos(filename)
+        return TargetEntity._executable_lines[filename]
 
     def executable_lines_count(self):
         return len(self.executable_lines())
-
-    def intersection(self, other_lines):
-        my_lines = range(self.start_line, self.end_line + 1)
-        return line_intersection(my_lines, other_lines)
 
     def loc(self):
         return self.end_line - self.start_line

@@ -58,7 +58,7 @@ class EntityTraceResult:
         return self.flows[-1]
 
     def get_flow_from_id(self, flow_id):
-        return self._flows[flow_id]
+        return self._flows.get(flow_id, None)
 
     def distinct_lines(self):
         lines = []

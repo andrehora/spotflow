@@ -2,6 +2,7 @@ import os
 import re
 import inspect
 import shutil
+import trace
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import get_formatter_by_name
@@ -166,3 +167,8 @@ def line_intersection(lines, other_lines):
 def ratio(a, b, dec=1):
     r = a / b * 100
     return f'{round(r, dec)}%'
+
+
+def find_executable_linenos(filename):
+    print(filename)
+    return trace._find_executable_linenos(filename)

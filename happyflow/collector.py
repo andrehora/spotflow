@@ -178,37 +178,36 @@ class Collector:
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
+                        lineno = frame.f_lineno
                         if current_entity_name in self.trace_result:
                             entity_result = self.trace_result[current_entity_name]
                             if entity_result.flows:
 
                                 # flow = entity_result.get_last_flow()
                                 flow = entity_result.get_flow_from_id(id(frame))
-                                current_run_lines = flow.run_lines
-                                current_state_result = flow.state_result
+                                if flow:
+                                    current_run_lines = flow.run_lines
+                                    current_state_result = flow.state_result
 
-                                lineno = frame.f_lineno
+                                    if event == 'line':
+                                        current_run_lines.append(lineno)
 
-                                if event == 'line':
-                                    current_run_lines.append(lineno)
+                                    elif event == 'return':
 
-                                elif event == 'return':
+                                        if line_has_explicit_return(frame):
+                                            current_state_result.add_return_state(obj_value(arg), lineno)
 
-                                    if line_has_explicit_return(frame):
-                                        current_state_result.add_return_state(obj_value(arg), lineno)
+                                        elif line_has_yield(frame):
+                                            current_state_result.add_yield_state(obj_value(arg), lineno)
 
-                                    elif line_has_yield(frame):
-                                        current_state_result.add_yield_state(obj_value(arg), lineno)
+                                    elif event == 'exception':
+                                        current_state_result.exception_state = ExceptionState(arg, lineno)
 
-                                elif event == 'exception':
-                                    current_state_result.exception_state = ExceptionState(arg, lineno)
-
-                                if current_state_result:
-                                    argvalues = inspect.getargvalues(frame)
-                                    for arg in argvalues.locals:
-                                        value = obj_value(argvalues.locals[arg])
-                                        current_state_result.add_var_state(name=arg, value=value, lineno=lineno,
-                                                                 inline=self.last_frame_line[current_entity_name])
-                                self.last_frame_line[current_entity_name] = lineno
-
+                                    if current_state_result:
+                                        argvalues = inspect.getargvalues(frame)
+                                        for arg in argvalues.locals:
+                                            value = obj_value(argvalues.locals[arg])
+                                            current_state_result.add_var_state(name=arg, value=value, lineno=lineno,
+                                                                     inline=self.last_frame_line[current_entity_name])
+                        self.last_frame_line[current_entity_name] = lineno
         return self.collect_flow_and_state
