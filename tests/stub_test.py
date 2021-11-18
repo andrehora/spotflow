@@ -8,9 +8,9 @@ class TestFoo(unittest.TestCase):
         pass
 
 
-class TestSimpleFlow(unittest.TestCase):
+class TestSimpleFlow:
 
-    def setUp(self):
+    def __init__(self):
         self.bs = SimpleFlow()
 
     def test_simple_if_true(self):
@@ -38,10 +38,20 @@ class TestSimpleFlow(unittest.TestCase):
     def test_try_fail(self):
         self.bs.try_fail()
 
+    def run_all(self):
+        self.test_simple_if_true()
+        self.test_simple_if_false()
+        self.test_simple_if_else_true()
+        self.test_simple_if_else_false()
+        self.test_simple_if_else_true_and_false()
+        self.test_loop()
+        self.test_try_success()
+        self.test_try_fail()
 
-class TestComplexFlow(unittest.TestCase):
 
-    def setUp(self):
+class TestComplexFlow:
+
+    def __init__(self):
         self.cs = ComplexFlow()
 
     def test_single_call_to_sut_bom_dia(self):
@@ -61,10 +71,17 @@ class TestComplexFlow(unittest.TestCase):
     def test_sut_call_sut(self):
         self.cs.func()
 
+    def run_all(self):
+        self.test_single_call_to_sut_bom_dia()
+        self.test_single_call_to_sut_boa_tarde()
+        self.test_single_call_to_sut_boa_noite()
+        self.test_multiple_call_to_sut()
+        self.test_sut_call_sut()
 
-class TestChangeState(unittest.TestCase):
 
-    def setUp(self):
+class TestChangeState:
+
+    def __init__(self):
         self.states = ChangeState()
 
     def test_change_var_state(self):
@@ -98,9 +115,9 @@ class TestChangeState(unittest.TestCase):
         self.states.keep_var_state()
 
 
-class TestReturnValue(unittest.TestCase):
+class TestReturnValue:
 
-    def setUp(self):
+    def __init__(self):
         self.ret = ReturnValue()
 
     def test_simple_return_local(self):
@@ -171,9 +188,9 @@ class TestReturnValue(unittest.TestCase):
         self.ret.implicit_return()
 
 
-class TestExceptions(unittest.TestCase):
+class TestExceptions:
 
-    def setUp(self):
+    def __init__(self):
         self.ex = Exceptions()
 
     def test_zero_division(self):
@@ -235,9 +252,9 @@ class TestExceptions(unittest.TestCase):
             pass
 
 
-class TestGenerators(unittest.TestCase):
+class TestGenerators:
 
-    def setUp(self):
+    def __init__(self):
         self.g = Generators()
 
     def test_no_generator(self):

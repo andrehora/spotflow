@@ -1,5 +1,5 @@
 from happyflow.utils import *
-from happyflow.templite import Templite
+from happyflow.libs.templite import Templite
 
 LOCAL_DIR = 'htmlfiles'
 INDEX_FILE = 'index.html'

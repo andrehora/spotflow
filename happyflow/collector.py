@@ -1,8 +1,8 @@
 import inspect
-import trace
 from happyflow.utils import obj_value, line_has_explicit_return, find_full_name, line_has_yield
 from happyflow.flow_state import StateResult, EntityTraceResult, ArgState, ReturnState, YieldState, ExceptionState, TraceResult
 from happyflow.target import TargetEntity
+from happyflow.tracer import PyTracer
 
 
 class Collector:
@@ -14,6 +14,14 @@ class Collector:
         self.last_frame_line = {}
         self.target_entities_cache = {}
         self.frame_cache = {}
+
+        self.py_tracer = PyTracer(self)
+
+    def start(self):
+        self.py_tracer.start_tracer()
+
+    def stop(self):
+        self.py_tracer.stop_tracer()
 
     def get_arg_states(self, frame):
         states = []
@@ -109,7 +117,7 @@ class Collector:
         callers.reverse()
         return tuple(callers)
 
-    def is_valid(self, frame):
+    def is_valid_frame(self, frame):
 
         if not self.target_entity_names:
             return False
@@ -125,25 +133,25 @@ class Collector:
                     return False
         return True
 
-    def global_trace(self, frame, event, arg):
-
-        if event in ('call', 'line', 'return', 'exception'):
-
-            self.collect_flow_and_state(frame, event, arg)
-
-            filename = frame.f_globals.get('__file__', None)
-            if filename:
-                modulename = trace._modname(filename)
-                if modulename is not None:
-                    ignore_it = trace._Ignore().names(filename, modulename)
-                    if not ignore_it:
-                        return self.global_trace
-            else:
-                return None
+    # def global_trace(self, frame, event, arg):
+    #
+    #     if event in ('call', 'line', 'return', 'exception'):
+    #
+    #         self.collect_flow_and_state(frame, event, arg)
+    #
+    #         filename = frame.f_globals.get('__file__', None)
+    #         if filename:
+    #             modulename = trace._modname(filename)
+    #             if modulename is not None:
+    #                 ignore_it = trace._Ignore().names(filename, modulename)
+    #                 if not ignore_it:
+    #                     return self.global_trace
+    #         else:
+    #             return None
 
     def collect_flow_and_state(self, frame, event, arg):
 
-        if not self.is_valid(frame):
+        if not self.is_valid_frame(frame):
             return
 
         current_entity_name = self.get_full_entity_name(frame, event)

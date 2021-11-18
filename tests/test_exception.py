@@ -1,14 +1,17 @@
 import unittest
-from happyflow.tracer import TraceRunner
+from tests.stub_test import TestExceptions
+from happyflow.api import run_and_flow_func
 
 
 class TestException(unittest.TestCase):
 
     def test_zero_division(self):
         target_entity_name = 'tests.stub_sut.Exceptions.zero_division'
-        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_zero_division', [target_entity_name])
+        func = TestExceptions().test_zero_division
 
-        flows = trace_result[target_entity_name].flows
+        result = run_and_flow_func(func, target_entity_name)
+
+        flows = result[target_entity_name].flows
         self.assertEqual(len(flows), 1)
 
         state_result = flows[0].state_result
@@ -18,9 +21,11 @@ class TestException(unittest.TestCase):
 
     def test_raise_generic_exception(self):
         target_entity_name = 'tests.stub_sut.Exceptions.raise_generic_exception'
-        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_generic_exception', [target_entity_name])
+        func = TestExceptions().test_raise_generic_exception
 
-        flows = trace_result[target_entity_name].flows
+        result = run_and_flow_func(func, target_entity_name)
+
+        flows = result[target_entity_name].flows
         self.assertEqual(len(flows), 1)
 
         state_result = flows[0].state_result
@@ -30,9 +35,11 @@ class TestException(unittest.TestCase):
 
     def test_raise_specific_exception(self):
         target_entity_name = 'tests.stub_sut.Exceptions.raise_specific_exception'
-        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_specific_exception', [target_entity_name])
+        func = TestExceptions().test_raise_specific_exception
 
-        flows = trace_result[target_entity_name].flows
+        result = run_and_flow_func(func, target_entity_name)
+
+        flows = result[target_entity_name].flows
         self.assertEqual(len(flows), 1)
 
         state_result = flows[0].state_result
@@ -43,9 +50,11 @@ class TestException(unittest.TestCase):
 
     def test_raise_exception_line_1(self):
         target_entity_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
-        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_exception_line_1', [target_entity_name])
+        func = TestExceptions().test_raise_exception_line_1
 
-        flows = trace_result[target_entity_name].flows
+        result = run_and_flow_func(func, target_entity_name)
+
+        flows = result[target_entity_name].flows
         self.assertEqual(len(flows), 1)
 
         run_lines = flows[0].run_lines
@@ -58,9 +67,11 @@ class TestException(unittest.TestCase):
 
     def test_raise_exception_line_2(self):
         target_entity_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
-        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_exception_line_2', [target_entity_name])
+        func = TestExceptions().test_raise_exception_line_2
 
-        flows = trace_result[target_entity_name].flows
+        result = run_and_flow_func(func, target_entity_name)
+
+        flows = result[target_entity_name].flows
         self.assertEqual(len(flows), 1)
 
         run_lines = flows[0].run_lines
@@ -73,9 +84,11 @@ class TestException(unittest.TestCase):
 
     def test_raise_exception_line_3(self):
         target_entity_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
-        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_exception_line_3', [target_entity_name])
+        func = TestExceptions().test_raise_exception_line_3
 
-        flows = trace_result[target_entity_name].flows
+        result = run_and_flow_func(func, target_entity_name)
+
+        flows = result[target_entity_name].flows
         self.assertEqual(len(flows), 1)
 
         run_lines = flows[0].run_lines
@@ -88,9 +101,11 @@ class TestException(unittest.TestCase):
 
     def test_raise_no_exception(self):
         target_entity_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
-        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_raise_no_exception', [target_entity_name])
+        func = TestExceptions().test_raise_no_exception
 
-        flows = trace_result[target_entity_name].flows
+        result = run_and_flow_func(func, target_entity_name)
+
+        flows = result[target_entity_name].flows
         self.assertEqual(len(flows), 1)
 
         run_lines = flows[0].run_lines
@@ -98,9 +113,11 @@ class TestException(unittest.TestCase):
 
     def test_flows_with_exceptions(self):
         target_entity_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
-        trace_result = TraceRunner.trace_from_tests('tests.stub_test.TestExceptions.test_flows_with_exceptions', [target_entity_name])
+        func = TestExceptions().test_flows_with_exceptions
 
-        flows = trace_result[target_entity_name].flows
+        result = run_and_flow_func(func, target_entity_name)
+
+        flows = result[target_entity_name].flows
         self.assertEqual(len(flows), 3)
 
         # Flow 1
