@@ -17,10 +17,10 @@ class TextReport:
         # exec_lines = self.target_entity.executable_lines()
         # print(f'Executable lines ({len(exec_lines)}): {exec_lines}')
         count = 0
-        for flow in self.analysis.most_common_flow():
+        for flow in self.analysis.most_common_run_lines():
             count += 1
             target_flow_lines = flow[0]
-            flow_result = self.flow_result.flow_result_by_lines(target_flow_lines)
+            flow_result = self.flow_result.flow_by_lines(target_flow_lines)
             analysis = Analysis(self.target_entity, flow_result)
 
             print(f'=-=-=-=-=-=-=-= Flow {count} =-=-=-=-=-=-=-=')
@@ -56,7 +56,7 @@ class TextReport:
 
     def show_most_common_flow(self):
 
-        flow = self.analysis.most_common_flow()
+        flow = self.analysis.most_common_run_lines()
         self._common_flow(flow, 'Most')
 
     def show_least_common_flow(self):
@@ -67,11 +67,11 @@ class TextReport:
 
         flow = self.flow_result.flows[flow_number]
 
-        state_result = flow.state_result
+        state_history = flow.state_history
         flow_lines = flow.run_lines
 
         if state_summary:
-            self.show_state_summary(state_result)
+            self.show_state_summary(state_history)
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
         content = read_file_lines(self.target_entity.filename)
         current_line = 0
@@ -79,7 +79,7 @@ class TextReport:
             current_line += 1
             if self.target_entity.has_lineno(current_line):
 
-                states = state_result.states_for_line(current_line)
+                states = state_history.states_for_line(current_line)
 
                 if current_line in flow_lines:
                     is_run = '✅'
@@ -97,16 +97,16 @@ class TextReport:
                 if self.target_entity.line_is_entity_definition(current_line):
                     arg_summary = ''
                     separator = '🟢 '
-                    for arg in state_result.arg_states:
+                    for arg in state_history.arg_states:
                         if arg.name != 'self':
                             arg_summary += f'{separator}{arg} '
                     if arg_summary:
                         print(code_str, arg_summary)
                     else:
                         print(code_str)
-                elif state_result.is_return_value(current_line):
+                elif state_history.is_return_value(current_line):
                     separator = '🔴 '
-                    return_state = state_result.return_state
+                    return_state = state_history.return_state
                     return_str = f'{separator}{return_state}'
                     print(code_str, return_str)
                 elif states:

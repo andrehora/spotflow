@@ -14,7 +14,7 @@ class Analysis:
     def number_of_calls(self):
         return len(self.entity_result.flows)
 
-    def most_common_flow(self):
+    def most_common_run_lines(self):
         lines = self.entity_result.distinct_lines()
         return self._most_common(lines)
 

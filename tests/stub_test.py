@@ -1,8 +1,7 @@
-import unittest
 from tests.stub_sut import *
 
 
-class TestFoo(unittest.TestCase):
+class TestFoo:
 
     def test_foo(self):
         pass
@@ -109,7 +108,7 @@ class TestChangeState:
         self.states.change_instance_var()
 
     def test_init(self):
-        pass
+        ChangeState()
 
     def test_keep_var_state(self):
         self.states.keep_var_state()
@@ -284,6 +283,13 @@ class TestGenerators:
     def test_has_generator_4(self):
         self.g.has_generator_4()
 
-
-if __name__ == '__main__':
-    unittest.main()
+    def run_all(self):
+        self.test_no_generator()
+        self.test_call_generator_1()
+        self.test_call_generator_2()
+        self.test_call_generator_3()
+        self.test_call_generator_4()
+        self.test_has_generator_1()
+        self.test_has_generator_2()
+        self.test_has_generator_3()
+        self.test_has_generator_4()

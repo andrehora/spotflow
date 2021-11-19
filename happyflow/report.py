@@ -10,15 +10,15 @@ class Report:
         self.trace_result = trace_result.filter(trace_result.has_flows)
         self.summary = []
 
-    def html(self, report_dir):
+    def html_report(self, report_dir):
         for entity_info in self.get_report():
             HTMLCodeReport(entity_info, report_dir).report()
         HTMLIndexReport(self.summary, report_dir).report()
 
-    def txt(self):
-        pass
+    def txt_report(self):
+        Report.txt(self.trace_result)
 
-    def csv(self):
+    def csv_report(self):
         pass
 
     def get_report(self):
@@ -37,15 +37,15 @@ class Report:
             return entity_info
 
         analysis = Analysis(entity_result.target_entity, entity_result)
-        most_common_flows = analysis.most_common_flow()
-        entity_info.total_flows = len(most_common_flows)
+        most_common_run_lines = analysis.most_common_run_lines()
+        entity_info.total_flows = len(most_common_run_lines)
 
         flow_pos = 0
-        for flow in most_common_flows:
+        for run_lines in most_common_run_lines:
             flow_pos += 1
-            target_flow_lines = flow[0]
+            target_run_lines = run_lines[0]
 
-            flow_result = entity_result.flow_result_by_lines(target_flow_lines)
+            flow_result = entity_result.flow_by_lines(target_run_lines)
             flow_info = self.get_flow_info(entity_info, flow_result)
             flow_info.pos = flow_pos
 
@@ -86,11 +86,11 @@ class Report:
 
     def get_state(self, entity_info, flow, lineno_entity):
 
-        states = flow.state_result.states_for_line(lineno_entity)
+        states = flow.state_history.states_for_line(lineno_entity)
 
         if entity_info.target_entity.line_is_entity_definition(lineno_entity):
             return self.arg_state(flow)
-        elif flow.state_result.is_return_value(lineno_entity):
+        elif flow.state_history.is_return_value(lineno_entity):
             return self.return_state(flow)
         elif states:
             return self.var_states(states)
@@ -109,20 +109,20 @@ class Report:
     def arg_state(self, flow):
         arg_str = ''
         # separator = '# '
-        for arg in flow.state_result.arg_states:
+        for arg in flow.state_history.arg_states:
             if arg.name != 'self':
                 arg_str += str(arg)
         return StateStatus.ARG, arg_str
 
     def return_state(self, flow):
-        return_state = flow.state_result.return_state
+        return_state = flow.state_history.return_state
         return StateStatus.RETURN, str(return_state)
 
     def var_states(self, states):
         return StateStatus.VAR, states
 
     @staticmethod
-    def export_txt(trace_result):
+    def txt(trace_result):
         for entity_name in trace_result:
             entity_result = trace_result[entity_name]
             report = TextReport(entity_result.target_entity, entity_result)

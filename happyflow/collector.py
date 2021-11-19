@@ -1,6 +1,6 @@
 import inspect
 from happyflow.utils import obj_value, line_has_explicit_return, find_full_name, line_has_yield
-from happyflow.flow_state import StateResult, EntityTraceResult, ArgState, ReturnState, YieldState, ExceptionState, TraceResult
+from happyflow.flow import StateHistory, EntityFlowContainer, ArgState, ReturnState, YieldState, ExceptionState, FlowResult
 from happyflow.target import TargetEntity
 from happyflow.tracer import PyTracer
 
@@ -8,7 +8,7 @@ from happyflow.tracer import PyTracer
 class Collector:
 
     def __init__(self):
-        self.trace_result = TraceResult()
+        self.trace_result = FlowResult()
         self.target_entity_names = None
 
         self.last_frame_line = {}
@@ -174,15 +174,15 @@ class Collector:
                     if event == 'call' and getattr(frame, 'f_lasti', -1) < 0:
 
                         if current_entity_name not in self.trace_result:
-                            self.trace_result[current_entity_name] = EntityTraceResult(target_entity)
+                            self.trace_result[current_entity_name] = EntityFlowContainer(target_entity)
 
                         run_lines = []
-                        state_result = StateResult()
-                        state_result.arg_states = self.get_arg_states(frame)
+                        state_history = StateHistory()
+                        state_history.arg_states = self.get_arg_states(frame)
                         callers = self.find_callers(frame)
 
                         entity_result = self.trace_result[current_entity_name]
-                        entity_result.add(run_lines, state_result, callers, id(frame))
+                        entity_result.add_flow(run_lines, state_history, callers, id(frame))
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
@@ -195,7 +195,7 @@ class Collector:
                                 flow = entity_result.get_flow_from_id(id(frame))
                                 if flow:
                                     current_run_lines = flow.run_lines
-                                    current_state_result = flow.state_result
+                                    current_state_history = flow.state_history
 
                                     if event == 'line':
                                         current_run_lines.append(lineno)
@@ -203,19 +203,19 @@ class Collector:
                                     elif event == 'return':
 
                                         if line_has_explicit_return(frame):
-                                            current_state_result.add_return_state(obj_value(arg), lineno)
+                                            current_state_history.add_return_state(obj_value(arg), lineno)
 
                                         elif line_has_yield(frame):
-                                            current_state_result.add_yield_state(obj_value(arg), lineno)
+                                            current_state_history.add_yield_state(obj_value(arg), lineno)
 
                                     elif event == 'exception':
-                                        current_state_result.exception_state = ExceptionState(arg, lineno)
+                                        current_state_history.exception_state = ExceptionState(arg, lineno)
 
-                                    if current_state_result:
+                                    if current_state_history:
                                         argvalues = inspect.getargvalues(frame)
                                         for arg in argvalues.locals:
                                             value = obj_value(argvalues.locals[arg])
-                                            current_state_result.add_var_state(name=arg, value=value, lineno=lineno,
+                                            current_state_history.add_var_state(name=arg, value=value, lineno=lineno,
                                                                      inline=self.last_frame_line[current_entity_name])
                         self.last_frame_line[current_entity_name] = lineno
         return self.collect_flow_and_state

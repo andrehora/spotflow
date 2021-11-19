@@ -170,5 +170,4 @@ def ratio(a, b, dec=1):
 
 
 def find_executable_linenos(filename):
-    print(filename)
     return trace._find_executable_linenos(filename)

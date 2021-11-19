@@ -1,4 +1,7 @@
-from happyflow.api import trace_from_func
+def inputs_count():
+    count_uppercase_words('')
+    count_uppercase_words('a b')
+    count_uppercase_words('A B C')
 
 
 def count_uppercase_words(text):
@@ -7,6 +10,12 @@ def count_uppercase_words(text):
         if word.isupper():
             counter += 1
     return counter
+
+
+def inputs_parseparam():
+    parseparam('a')
+    parseparam('a=1;b=2')
+    parseparam('a="1;1"')
 
 
 def parseparam(s):
@@ -28,32 +37,16 @@ def parseparam(s):
     return plist
 
 
+def inputs_splitparam():
+    splitparam("a;b")
+    splitparam("a")
+
+
 def splitparam(param):
     a, sep, b = str(param).partition(';')
     if not sep:
         return a.strip(), None
     return a.strip(), b.strip()
 
-
-def inputs_count():
-    count_uppercase_words('')
-    count_uppercase_words('a b')
-    count_uppercase_words('A B C')
-
-
-def inputs_parseparam():
-    parseparam('a')
-    parseparam('a=1;b=2')
-    parseparam('a="1;1"')
-
-
-def inputs_splitparam():
-    splitparam("a;b")
-    splitparam("a")
-
-
-trace_from_func(inputs_count, count_uppercase_words, report_format='txt')
-trace_from_func(inputs_parseparam, parseparam, report_format='txt')
-trace_from_func(inputs_splitparam, splitparam, report_format='txt')
 
 

@@ -22,12 +22,25 @@ class HappyFlow:
         return self._collector.trace_result
 
     def html_report(self, directory='report'):
-        Report(self._collector.trace_result).html(directory)
+        try:
+            Report(self._collector.trace_result).html_report(directory)
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    def txt_report(self):
+        try:
+            Report(self._collector.trace_result).txt_report()
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
 
-def run_and_flow_func(func, target_entity_name):
+def run_and_flow_func(func, target_entities):
     flow = HappyFlow()
-    flow.target_entities([target_entity_name])
+    flow.target_entities(target_entities)
     flow.start()
 
     func()

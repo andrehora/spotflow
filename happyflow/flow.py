@@ -1,38 +1,38 @@
-class TraceResult:
+class FlowResult:
 
     def __init__(self):
-        self.results = {}
+        self.entity_flows = {}
 
     def __getitem__(self, key):
-        return self.results[key]
+        return self.entity_flows[key]
 
     def __setitem__(self, key, value):
-        self.results[key] = value
+        self.entity_flows[key] = value
 
     def __contains__(self, key):
-        return key in self.results
+        return key in self.entity_flows
 
     def __len__(self):
-        return len(self.results)
+        return len(self.entity_flows)
 
     def __repr__(self):
-        return repr(self.results)
+        return repr(self.entity_flows)
 
     def __iter__(self):
-        return iter(self.results)
+        return iter(self.entity_flows)
 
     def values(self):
-        return self.results.values()
+        return self.entity_flows.values()
 
     def filter(self, filter_func):
-        self.results = {k: v for k, v in self.results.items() if filter_func(k, v)}
+        self.entity_flows = {k: v for k, v in self.entity_flows.items() if filter_func(k, v)}
         return self
 
     def has_flows(self, entity_name, entity_result):
         return entity_result.flows
 
 
-class EntityTraceResult:
+class EntityFlowContainer:
 
     def __init__(self, target_entity):
         self.target_entity = target_entity
@@ -40,22 +40,19 @@ class EntityTraceResult:
         self._flows = {}
         self.flows = []
 
-    def flow_result_by_lines(self, lines):
+    def add_flow(self, run_lines, state_history, callers, flow_id):
+        flow = Flow(run_lines, state_history, callers)
+        self.flows.append(flow)
+        self._flows[flow_id] = flow
+
+    def flow_by_lines(self, lines):
         target_flows = []
         for flow in self.flows:
             if tuple(flow.distinct_lines()) == tuple(lines):
                 target_flows.append(flow)
-        flow_result = EntityTraceResult(self.target_entity)
-        flow_result.flows = target_flows
-        return flow_result
-
-    def add(self, flow_lines, state_result, callers, flow_id):
-        flow = Flow(flow_lines, state_result, callers)
-        self.flows.append(flow)
-        self._flows[flow_id] = flow
-
-    def get_last_flow(self):
-        return self.flows[-1]
+        flow_container = EntityFlowContainer(self.target_entity)
+        flow_container.flows = target_flows
+        return flow_container
 
     def get_flow_from_id(self, flow_id):
         return self._flows.get(flow_id, None)
@@ -69,8 +66,8 @@ class EntityTraceResult:
     def arg_states(self):
         args_and_values = {}
         for flow in self.flows:
-            if flow.state_result and flow.state_result.arg_states:
-                for arg in flow.state_result.arg_states:
+            if flow.state_history and flow.state_history.arg_states:
+                for arg in flow.state_history.arg_states:
                     if arg.name != 'self':
                         value = arg.value
                         args_and_values[arg.name] = args_and_values.get(arg.name, [])
@@ -80,8 +77,8 @@ class EntityTraceResult:
     def return_states(self):
         values = []
         for flow in self.flows:
-            if flow.state_result and flow.state_result.has_return():
-                value = flow.state_result.return_state.value
+            if flow.state_history and flow.state_history.has_return():
+                value = flow.state_history.return_state.value
                 values.append(value)
         return values
 
@@ -97,9 +94,9 @@ class EntityTraceResult:
 
 class Flow:
 
-    def __init__(self, run_lines, state_result, callers):
+    def __init__(self, run_lines, state_history, callers):
         self.run_lines = run_lines
-        self.state_result = state_result
+        self.state_history = state_history
         self.callers = callers
 
     def __eq__(self, other):
@@ -109,7 +106,7 @@ class Flow:
         return sorted(list(set(self.run_lines)))
 
 
-class StateResult:
+class StateHistory:
 
     def __init__(self):
         self.vars = {}
