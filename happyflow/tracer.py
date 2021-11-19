@@ -20,7 +20,7 @@ class PyTracer:
 
         if event in ('call', 'line', 'return', 'exception'):
 
-            self.collector.collect_flow_and_state(frame, event, arg)
+            self.collector.collect_flow(frame, event, arg)
 
             filename = frame.f_globals.get('__file__', None)
             if filename:

@@ -1,32 +1,17 @@
-import types
-from happyflow.utils import line_intersection, get_code_lines, get_html_lines, find_executable_linenos, function_metadata, method_metadata
+from happyflow.utils import line_intersection, get_code_lines, get_html_lines, find_executable_linenos, build_from_func_or_method
 
 
-class TargetBaseEntity:
+class TargetEntity:
+    _executable_lines = {}
 
     def __init__(self, name, full_name, filename):
         self.name = name
         self.full_name = full_name
         self.filename = filename
+        self.start_line = None
+        self.end_line = None
+
         self.info = None
-
-    def __str__(self):
-        return self.full_name
-
-    def is_target(self):
-        return True
-
-    def loc(self):
-        pass
-
-
-class TargetEntity(TargetBaseEntity):
-    start_line = 0
-    end_line = 0
-    _executable_lines = {}
-
-    def __iter__(self):
-        return iter([self])
 
     def executable_lines(self):
         exec_lines = self.ensure_executable_lines_for_file(self.filename)
@@ -65,24 +50,26 @@ class TargetEntity(TargetBaseEntity):
     def summary(self):
         return f'{self.full_name()} (lines: {self.start_line}-{self.end_line})'
 
+    def __str__(self):
+        return self.full_name
+
+    def __iter__(self):
+        return iter([self])
+
     @staticmethod
-    def build_from_func(func_or_method):
+    def build(func_or_method):
         try:
-            target_entity = None
-
-            if isinstance(func_or_method, types.MethodType):
-                module_name, class_name, name, filename, start_line, end_line, full_name = method_metadata(func_or_method)
-                target_entity = TargetMethod(module_name, class_name, name, full_name, filename)
-
-            if isinstance(func_or_method, types.FunctionType):
-                module_name, name, filename, start_line, end_line, full_name = function_metadata(func_or_method)
-                target_entity = TargetFunction(module_name, name, full_name, filename)
-
-            target_entity.start_line = start_line
-            target_entity.end_line = end_line
-            return target_entity
+            return build_from_func_or_method(func_or_method, TargetFunction, TargetMethod)
         except Exception as e:
+            print(e)
             return None
+
+
+class TargetFunction(TargetEntity):
+
+    def __init__(self, module_name, name, full_name, filename=''):
+        super().__init__(name, full_name, filename)
+        self.module_name = module_name
 
 
 class TargetMethod(TargetEntity):
@@ -92,12 +79,6 @@ class TargetMethod(TargetEntity):
         self.module_name = module_name
         self.class_name = class_name
 
-
-class TargetFunction(TargetEntity):
-
-    def __init__(self, module_name, name, full_name, filename=''):
-        super().__init__(name, full_name, filename)
-        self.module_name = module_name
 
 
 

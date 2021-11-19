@@ -1,6 +1,6 @@
 [run]
 omit =
-    happyflow/templite.py
+    happyflow/libs/*
 
 [report]
 exclude_lines =

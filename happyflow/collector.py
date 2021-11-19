@@ -57,8 +57,8 @@ class Collector:
 
         func_or_method = self.ensure_func_or_method(frame, event)
 
-        entity = TargetEntity.build_from_func(func_or_method)
-        if not entity or not entity.is_target():
+        entity = TargetEntity.build(func_or_method)
+        if not entity:
             return None
 
         self.target_entities_cache[current_entity_name] = entity
@@ -133,23 +133,7 @@ class Collector:
                     return False
         return True
 
-    # def global_trace(self, frame, event, arg):
-    #
-    #     if event in ('call', 'line', 'return', 'exception'):
-    #
-    #         self.collect_flow_and_state(frame, event, arg)
-    #
-    #         filename = frame.f_globals.get('__file__', None)
-    #         if filename:
-    #             modulename = trace._modname(filename)
-    #             if modulename is not None:
-    #                 ignore_it = trace._Ignore().names(filename, modulename)
-    #                 if not ignore_it:
-    #                     return self.global_trace
-    #         else:
-    #             return None
-
-    def collect_flow_and_state(self, frame, event, arg):
+    def collect_flow(self, frame, event, arg):
 
         if not self.is_valid_frame(frame):
             return
@@ -218,4 +202,4 @@ class Collector:
                                             current_state_history.add_var_state(name=arg, value=value, lineno=lineno,
                                                                      inline=self.last_frame_line[current_entity_name])
                         self.last_frame_line[current_entity_name] = lineno
-        return self.collect_flow_and_state
+        return self.collect_flow
