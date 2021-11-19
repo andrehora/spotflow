@@ -112,6 +112,8 @@ class Collector:
         callers = []
         callers.append(frame.f_code.co_name)
         while 'test' not in frame.f_code.co_name:
+            if not frame.f_back:
+                break
             frame = frame.f_back
             callers.append(frame.f_code.co_name)
         callers.reverse()
@@ -139,7 +141,6 @@ class Collector:
             return
 
         current_entity_name = self.get_full_entity_name(frame, event)
-        # print(current_entity_name, frame.f_lineno, event, id(frame))
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:

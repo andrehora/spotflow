@@ -314,29 +314,5 @@ def make_code_from_pyc(filename):
     return code
 
 
-import sys
-from happyflow.collector import Collector
-from happyflow.report import Report
-
-print(sys.argv)
-
-collector = Collector()
-collector.target_entity_names = ['rich']
-
-
-sys.settrace(collector.global_trace)
-
-try:
-    run_python_module(sys.argv[1:])
-except Exception:
-    print('exception')
-    raise
-finally:
-    print('finally')
-    sys.settrace(None)
-    trace_result = collector.trace_result
-    Report(trace_result).html('rich_report')
-
-
 
 

@@ -95,6 +95,10 @@ def function_metadata(func):
     return module_name, name, filename, start_line, end_line, full_name
 
 
+def find_full_name(func_or_method):
+    return f'{func_or_method.__module__}.{func_or_method.__qualname__}'
+
+
 def get_end_line(start_line, source):
     loc = source.count('\n')
     return start_line + loc - 1
@@ -104,10 +108,6 @@ def check_is_generator_function(func_or_method):
     if inspect.isgeneratorfunction(func_or_method) or inspect.isgenerator(func_or_method):
         return None
     return func_or_method
-
-
-def find_full_name(func_or_method):
-    return f'{func_or_method.__module__}.{func_or_method.__qualname__}'
 
 
 def line_has_explicit_return(frame):
