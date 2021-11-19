@@ -5,8 +5,9 @@ from happyflow.libs.execfile import PyRunner
 OK, ERR = 0, 1
 
 parser = argparse.ArgumentParser(description='Command line for HappyFlow')
-parser.add_argument('--target', type=str, nargs='+', help='one or more target entities')
-parser.add_argument('--run',  type=str, nargs='+', help='command line to be run')
+parser.add_argument('--dir', type=str, help='Write the output files to dir')
+parser.add_argument('target', type=str, nargs='+', help='One or more target entities')
+parser.add_argument('--run',  type=str, nargs='+', help='Command line to be run')
 args = parser.parse_args()
 
 
@@ -14,12 +15,15 @@ class HappyFlowScript:
 
     def command_line(self):
 
+        directory = args.dir
         target_entitie_names = args.target
         run_args = args.run
+        if directory:
+            print(f"Dir: {directory}")
         print(f"Target: {' '.join(target_entitie_names)}")
         print(f"Run: {' '.join(run_args)}")
 
-        return self.run(target_entitie_names, run_args)
+        # return self.run(target_entitie_names, run_args)
 
     def run(self, target_entitie_names, run_args):
 
