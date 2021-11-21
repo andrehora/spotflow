@@ -7,7 +7,7 @@ from happyflow.tracer import PyTracer
 
 class Collector:
 
-    IGNORE_FILES = ['happyflow', 'site-packages', 'unittest', 'pytest']
+    IGNORE_FILES = ['site-packages', 'unittest', 'pytest']
     # IGNORE_FILES = []
 
     def __init__(self):
