@@ -79,11 +79,13 @@ class Collector:
         if not isinstance(target_entity_name, str):
             return target_entity_name
 
-        if not current_entity_name.startswith(target_entity_name) and not self.try_all_possible_targets:
-            return None
+        if not self.try_all_possible_targets:
+            if not current_entity_name.startswith(target_entity_name):
+                return None
 
-        if 'test_' in current_entity_name:
-            return None
+        if self.try_all_possible_targets:
+            if 'test_' in current_entity_name:
+                return None
 
         if current_entity_name in self.target_entities_cache:
             return self.target_entities_cache[current_entity_name]
