@@ -91,5 +91,6 @@ class TestE2E(unittest.TestCase):
         self.assertTrue(os.path.isfile('./report/coverage_html.js'))
         shutil.rmtree('./report')
 
+
 if __name__ == '__main__':
     unittest.main()

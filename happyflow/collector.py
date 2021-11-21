@@ -1,15 +1,19 @@
 import inspect
 from happyflow.utils import obj_value, line_has_explicit_return, find_full_name, line_has_yield
-from happyflow.flow import StateHistory, EntityFlowContainer, ArgState, ReturnState, YieldState, ExceptionState, FlowResult
+from happyflow.flow import StateHistory, EntityFlowContainer, ArgState, ExceptionState, FlowResult
 from happyflow.target import TargetEntity
 from happyflow.tracer import PyTracer
 
 
 class Collector:
 
+    IGNORE_FILES = ['happyflow', 'site-packages', 'unittest', 'pytest']
+    # IGNORE_FILES = []
+
     def __init__(self):
         self.trace_result = FlowResult()
         self.target_entity_names = None
+        self.ignore_files = None
 
         self.last_frame_line = {}
         self.target_entities_cache = {}
@@ -17,11 +21,36 @@ class Collector:
 
         self.py_tracer = PyTracer(self)
 
+        # Flags used when target is not set
+        self.try_all_possible_targets = False
+        self.tests_started = False
+
     def start(self):
+        self.init_target()
+        self.init_ignore()
         self.py_tracer.start_tracer()
 
     def stop(self):
         self.py_tracer.stop_tracer()
+
+    def init_target(self):
+        if not self.target_entity_names:
+            self.try_all_possible_targets = True
+            self.target_entity_names = ['__ALL__']
+
+    def check_tests_started(self, filename):
+
+        if self.tests_started:
+            return True
+
+        if 'test_' in filename:
+            self.tests_started = True
+            return True
+        return False
+
+    def init_ignore(self):
+        if not self.ignore_files:
+            self.ignore_files = self.IGNORE_FILES
 
     def get_arg_states(self, frame):
         states = []
@@ -45,18 +74,21 @@ class Collector:
 
         return states
 
-    def ensure_target_entity(self, current_entity_name, target_entity, frame, event):
-        if not isinstance(target_entity, str):
-            return target_entity
+    def ensure_target_entity(self, current_entity_name, target_entity_name, frame):
 
-        if not current_entity_name.startswith(target_entity):
+        if not isinstance(target_entity_name, str):
+            return target_entity_name
+
+        if not current_entity_name.startswith(target_entity_name) and not self.try_all_possible_targets:
+            return None
+
+        if 'test_' in current_entity_name:
             return None
 
         if current_entity_name in self.target_entities_cache:
             return self.target_entities_cache[current_entity_name]
 
-        func_or_method = self.ensure_func_or_method(frame, event)
-
+        func_or_method = self.ensure_func_or_method(frame)
         entity = TargetEntity.build(func_or_method)
         if not entity:
             return None
@@ -64,7 +96,7 @@ class Collector:
         self.target_entities_cache[current_entity_name] = entity
         return entity
 
-    def ensure_func_or_method(self, frame, event):
+    def ensure_func_or_method(self, frame):
         filename = frame.f_code.co_filename
         lineno = frame.f_lineno
         key = filename, lineno
@@ -73,14 +105,14 @@ class Collector:
         if key in self.frame_cache:
             return self.frame_cache[key]
 
-        entity = self._get_func_or_method(frame, event)
+        entity = self._get_func_or_method(frame)
         if not entity:
             return None
 
-        self.frame_cache[key] = self._get_func_or_method(frame, event)
+        self.frame_cache[key] = self._get_func_or_method(frame)
         return self.frame_cache[key]
 
-    def _get_func_or_method(self, frame, event):
+    def _get_func_or_method(self, frame):
         try:
             entity_name = frame.f_code.co_name
 
@@ -99,9 +131,9 @@ class Collector:
         except Exception as e:
             return None
 
-    def get_full_entity_name(self, frame, event):
+    def get_full_entity_name(self, frame):
 
-        func_or_method = self.ensure_func_or_method(frame, event)
+        func_or_method = self.ensure_func_or_method(frame)
 
         if func_or_method:
             return find_full_name(func_or_method)
@@ -121,12 +153,15 @@ class Collector:
 
     def is_valid_frame(self, frame):
 
-        if not self.target_entity_names:
+        if frame.f_code.co_filename.startswith('<'):
             return False
 
-        # example: <module>, <genexpr>, <listcomp>
-        if frame.f_code.co_name.startswith('<'):
-            return False
+        for ignore in self.ignore_files:
+            if ignore in frame.f_code.co_filename:
+                return False
+
+        if self.try_all_possible_targets:
+            return self.check_tests_started(frame.f_code.co_filename)
 
         for target_entity_name in self.target_entity_names:
             if isinstance(target_entity_name, str):
@@ -140,12 +175,12 @@ class Collector:
         if not self.is_valid_frame(frame):
             return
 
-        current_entity_name = self.get_full_entity_name(frame, event)
+        current_entity_name = self.get_full_entity_name(frame)
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:
 
-                target_entity = self.ensure_target_entity(current_entity_name, target_entity_name, frame, event)
+                target_entity = self.ensure_target_entity(current_entity_name, target_entity_name, frame)
                 if target_entity and current_entity_name == target_entity.full_name:
 
                     if current_entity_name not in self.last_frame_line:

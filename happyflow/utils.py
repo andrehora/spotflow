@@ -96,7 +96,10 @@ def function_metadata(func):
 
 
 def find_full_name(func_or_method):
-    return f'{func_or_method.__module__}.{func_or_method.__qualname__}'
+    try:
+        return f'{func_or_method.__module__}.{func_or_method.__qualname__}'
+    except:
+        return None
 
 
 def get_end_line(start_line, source):

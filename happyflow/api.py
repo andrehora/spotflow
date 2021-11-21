@@ -10,6 +10,9 @@ class HappyFlow:
     def target_entities(self, target_entities):
         self._collector.target_entity_names = target_entities
 
+    def ignore_files(self, ignore):
+        self._collector.ignore = ignore
+
     def start(self):
         self._collector.start()
 
