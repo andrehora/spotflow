@@ -61,18 +61,27 @@ def find_module_name(filename):
 
 def build_from_func_or_method(func_or_method, function_class, method_class):
 
-    if isinstance(func_or_method, types.FunctionType):
-        module_name, name, filename, start_line, end_line, full_name = function_metadata(func_or_method)
-        target_entity = function_class(module_name, name, full_name, filename)
+    try:
+        if isinstance(func_or_method, types.FunctionType):
+            module_name, name, filename, start_line, end_line, full_name = function_metadata(func_or_method)
+            target_entity = function_class(module_name, name, full_name, filename)
+            target_entity.start_line = start_line
+            target_entity.end_line = end_line
+            return target_entity
 
-    if isinstance(func_or_method, types.MethodType):
-        module_name, class_name, name, filename, start_line, end_line, full_name = method_metadata(func_or_method)
-        target_entity = method_class(module_name, class_name, name, full_name, filename)
+        elif isinstance(func_or_method, types.MethodType):
+            module_name, class_name, name, filename, start_line, end_line, full_name = method_metadata(func_or_method)
+            target_entity = method_class(module_name, class_name, name, full_name, filename)
+            target_entity.start_line = start_line
+            target_entity.end_line = end_line
+            return target_entity
 
-    target_entity.start_line = start_line
-    target_entity.end_line = end_line
+        else:
+            return None
 
-    return target_entity
+    except Exception as e:
+        print(e)
+        return None
 
 
 def method_metadata(method):
@@ -130,21 +139,24 @@ def line_has_yield(frame):
 
 
 def obj_value(obj):
-    obj_string = ''
     try:
         obj_string = repr(obj)
         if obj_string.startswith('<') and obj_string.endswith('>'):
             if is_definition(obj):
-                return f'{obj.__name__} def'
-            return f'{obj.__class__.__name__} obj'
+                # print('is_definition', obj_string,  f'{obj.__qualname__} def')
+                return f'{obj.__qualname__} def'
+            # print('not is_definition', obj_string, f'{obj.__class__.__qualname__}')
+            return f'{obj.__class__.__qualname__}'
+        # print('obj_string', obj_string)
         return obj_string
     except Exception as e:
-        return obj_string
+        # print('exception', type(obj).__qualname__)
+        return type(obj).__qualname__
 
 
 def is_definition(obj):
-    return inspect.ismodule(obj) or inspect.isclass(obj) or inspect.ismethod(obj) or inspect.isfunction(obj)
-    # inspect.isgeneratorfunction(obj) or inspect.isgenerator(obj)
+    return inspect.ismodule(obj) or inspect.isclass(obj) or inspect.ismethod(obj) or inspect.isfunction(obj) or \
+           inspect.isgeneratorfunction(obj) or inspect.isgenerator(obj) or inspect.isbuiltin(obj)
 
 
 def get_code_lines(entity):

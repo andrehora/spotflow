@@ -68,14 +68,16 @@ class Report:
         if return_values:
             flow_info.return_values = return_values
 
+        # Select any flow from the results. They are all equals
         flow = flow_result.flows[0]
 
+        self._found_first_run_line = False
         for code, html in zip(entity_info.target_entity.get_code_lines(), entity_info.target_entity.get_html_lines()):
 
             lineno += 1
             lineno_entity += 1
 
-            run_status = self.line_run_status(entity_info, flow.run_lines, lineno_entity, entity_info.target_entity.start_line)
+            run_status = self.line_run_status(entity_info, flow.run_lines, lineno_entity)
             state = self.get_state(entity_info, flow, lineno_entity)
 
             line_info = LineInfo(lineno, lineno_entity, run_status, code.rstrip(), html, state)
@@ -96,10 +98,18 @@ class Report:
             return self.var_states(states)
         return ''
 
-    def line_run_status(self, entity_info, flow_lines, current_line, start_line):
+    def line_run_status(self, entity_info, flow_lines, current_line):
 
-        if current_line in flow_lines: #or current_line == start_line:
+        if current_line in flow_lines:
+            self._found_first_run_line = True
             return RunStatus.RUN
+
+        # _find_executable_linenos of trace returns method/function definitions as executable lines (?).
+        # We should flag those definitions as not executable lines (NOT_EXEC). Otherwise, the definitions
+        # would impact on the flows. The solution for now is flagging all first lines as not executable
+        # until we find the first run line. This way, the definitions are flagged as not executable lines...
+        if not self._found_first_run_line:
+            return RunStatus.NOT_EXEC
 
         if current_line not in flow_lines:
             if not entity_info.target_entity.line_is_executable(current_line):

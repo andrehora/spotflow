@@ -131,6 +131,7 @@ class Collector:
                     # return check_is_generator_function(func_or_method)
                     return func_or_method
         except Exception as e:
+            # print(e)
             return None
 
     def get_full_entity_name(self, frame):
@@ -178,6 +179,7 @@ class Collector:
             return
 
         current_entity_name = self.get_full_entity_name(frame)
+        # print(current_entity_name)
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:

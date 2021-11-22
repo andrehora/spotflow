@@ -58,11 +58,7 @@ class TargetEntity:
 
     @staticmethod
     def build(func_or_method):
-        try:
-            return build_from_func_or_method(func_or_method, TargetFunction, TargetMethod)
-        except Exception as e:
-            # print(e)
-            return None
+        return build_from_func_or_method(func_or_method, TargetFunction, TargetMethod)
 
 
 class TargetFunction(TargetEntity):
