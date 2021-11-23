@@ -43,6 +43,5 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(obj_value(Calculator(100).total), '100')
 
 
-
 if __name__ == '__main__':
     unittest.main()

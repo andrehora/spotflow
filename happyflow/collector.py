@@ -173,13 +173,24 @@ class Collector:
                     return False
         return True
 
+    def get_frame_id(self, frame):
+        # If we are dealing with comprehensions and generator expressions
+        # then we should get the enclosing frame id, not the current one.
+        # This is done to avoid novel flows being created to listcomp and genexpr...
+        if self.is_listcomp_or_genexpr(frame):
+            return id(frame.f_back)
+        return id(frame)
+
+    def is_listcomp_or_genexpr(self, frame):
+        return frame.f_code.co_name in ['<listcomp>', '<genexpr>']
+
     def collect_flow(self, frame, event, arg):
 
         if not self.is_valid_frame(frame):
             return
 
         current_entity_name = self.get_full_entity_name(frame)
-        # print(current_entity_name)
+        # print(event, frame.f_lineno, frame.f_code.co_name, id(frame))
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:
@@ -193,9 +204,9 @@ class Collector:
                     # Tip from Coverage.py :)
                     # The call event is really a "start frame" event, and happens for
                     # function calls and re-entering generators.  The f_lasti field is
-                    # -1 for calls, and a real offset for generators.  Use <0 as the
+                    # -1 for calls, and a real offset for generators.  Use < 0 as the
                     # line number for calls, and the real line number for generators.
-                    if event == 'call' and getattr(frame, 'f_lasti', -1) < 0:
+                    if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not self.is_listcomp_or_genexpr(frame):
 
                         if current_entity_name not in self.trace_result:
                             self.trace_result[current_entity_name] = EntityFlowContainer(target_entity)
@@ -206,7 +217,9 @@ class Collector:
                         callers = self.find_callers(frame)
 
                         entity_result = self.trace_result[current_entity_name]
-                        entity_result.add_flow(run_lines, state_history, callers, id(frame))
+
+                        frame_id = self.get_frame_id(frame)
+                        entity_result.add_flow(run_lines, state_history, callers, frame_id)
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
@@ -215,8 +228,8 @@ class Collector:
                             entity_result = self.trace_result[current_entity_name]
                             if entity_result.flows:
 
-                                # flow = entity_result.get_last_flow()
-                                flow = entity_result.get_flow_from_id(id(frame))
+                                frame_id = self.get_frame_id(frame)
+                                flow = entity_result.get_flow_from_id(frame_id)
                                 if flow:
                                     current_run_lines = flow.run_lines
                                     current_state_history = flow.state_history
@@ -241,5 +254,6 @@ class Collector:
                                             value = obj_value(argvalues.locals[arg])
                                             current_state_history.add_var_state(name=arg, value=value, lineno=lineno,
                                                                      inline=self.last_frame_line[current_entity_name])
+
                         self.last_frame_line[current_entity_name] = lineno
         return self.collect_flow

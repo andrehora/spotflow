@@ -251,7 +251,7 @@ class TestExceptions:
             pass
 
 
-class TestGenerators:
+class TestGenerator:
 
     def __init__(self):
         self.g = Generators()
@@ -293,3 +293,15 @@ class TestGenerators:
         self.test_has_generator_2()
         self.test_has_generator_3()
         self.test_has_generator_4()
+
+
+class TestGeneratorExpression:
+
+    def __init__(self):
+        self.ge = GeneratorExpression()
+
+    def test_generator_expression_1(self):
+        self.ge.generator_expression_1()
+
+    def test_generator_expression_2(self):
+        self.ge.generator_expression_2()

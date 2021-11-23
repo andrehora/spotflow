@@ -295,3 +295,15 @@ class Generators:
         yield 100
         yield 200
         yield 300 # not called
+
+
+class GeneratorExpression:
+
+    def generator_expression_1(self):
+        g = (x for x in range(1, 10))
+
+    def generator_expression_2(self):
+        g = (x for x in range(1, 10))
+        next(g)
+        next(g)
+        next(g)
