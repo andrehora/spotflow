@@ -305,3 +305,33 @@ class TestGeneratorExpression:
 
     def test_generator_expression_2(self):
         self.ge.generator_expression_2()
+
+
+class TestComprehension:
+
+    def __init__(self):
+        self.c = Comprehension()
+
+    def test_listcomp_1(self):
+        self.c.listcomp_1()
+
+    def test_listcomp_2(self):
+        self.c.listcomp_2()
+
+    def test_setcomp_1(self):
+        self.c.setcomp_1()
+
+    def test_setcomp_2(self):
+        self.c.setcomp_2()
+
+    def test_dictcomp(self):
+        self.c.dictcomp()
+
+
+class TestInternalMethod:
+
+    def __init__(self):
+        self.im = LocalMethod()
+
+    def test_has_local_method(self):
+        self.im.has_local_method()

@@ -1,4 +1,4 @@
 import sys
 
-g = (x for x in range(1, 10000))
-print(g)
+g = {each: each for each in range(1, 10)}
+print(type(g))

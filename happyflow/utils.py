@@ -107,7 +107,8 @@ def function_metadata(func):
 def find_full_name(func_or_method):
     try:
         return f'{func_or_method.__module__}.{func_or_method.__qualname__}'
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 

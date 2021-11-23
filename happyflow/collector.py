@@ -118,20 +118,26 @@ class Collector:
         try:
             entity_name = frame.f_code.co_name
 
+            # Function
             if entity_name in frame.f_globals:
                 func_or_method = frame.f_globals[entity_name]
-                # return check_is_generator_function(func_or_method)
                 return func_or_method
 
+            # Method
             if 'self' in frame.f_locals:
                 obj = frame.f_locals['self']
                 members = dict(inspect.getmembers(obj, inspect.ismethod))
                 if entity_name in members:
                     func_or_method = members[entity_name]
-                    # return check_is_generator_function(func_or_method)
                     return func_or_method
+
+            # Local function or method
+            if entity_name in frame.f_back.f_locals:
+                func_or_method = frame.f_back.f_locals[entity_name]
+                print(frame.f_code.co_name, frame.f_lineno, func_or_method)
+                return func_or_method
+
         except Exception as e:
-            # print(e)
             return None
 
     def get_full_entity_name(self, frame):
@@ -177,12 +183,12 @@ class Collector:
         # If we are dealing with comprehensions and generator expressions
         # then we should get the enclosing frame id, not the current one.
         # This is done to avoid novel flows being created to listcomp and genexpr...
-        if self.is_listcomp_or_genexpr(frame):
+        if self.is_comprehension(frame):
             return id(frame.f_back)
         return id(frame)
 
-    def is_listcomp_or_genexpr(self, frame):
-        return frame.f_code.co_name in ['<listcomp>', '<genexpr>']
+    def is_comprehension(self, frame):
+        return frame.f_code.co_name in ['<listcomp>', '<setcomp>', '<dictcomp>', '<genexpr>']
 
     def collect_flow(self, frame, event, arg):
 
@@ -190,7 +196,7 @@ class Collector:
             return
 
         current_entity_name = self.get_full_entity_name(frame)
-        # print(event, frame.f_lineno, frame.f_code.co_name, id(frame))
+        print(current_entity_name, event, frame.f_lineno, frame.f_code.co_name, id(frame))
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:
@@ -206,7 +212,7 @@ class Collector:
                     # function calls and re-entering generators.  The f_lasti field is
                     # -1 for calls, and a real offset for generators.  Use < 0 as the
                     # line number for calls, and the real line number for generators.
-                    if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not self.is_listcomp_or_genexpr(frame):
+                    if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not self.is_comprehension(frame):
 
                         if current_entity_name not in self.trace_result:
                             self.trace_result[current_entity_name] = EntityFlowContainer(target_entity)

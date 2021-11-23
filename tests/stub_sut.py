@@ -307,3 +307,36 @@ class GeneratorExpression:
         next(g)
         next(g)
         next(g)
+
+
+class Comprehension:
+
+    def listcomp_1(self):
+        g = [x for x in range(1, 10)]
+
+    def listcomp_2(self):
+        s = sum([x for x in range(1, 10)])
+
+    def setcomp_1(self):
+        g = {x for x in range(1, 10)}
+
+    def setcomp_2(self):
+        s = sum({x for x in range(1, 10)})
+
+    def dictcomp(self):
+        g = {x: x for x in range(1, 10)}
+
+
+class LocalMethod:
+
+    def has_local_method(self):
+        x = 100
+        y = 200
+
+        def local_method(x=300):
+            return x
+
+        z = local_method()
+        z = local_method()
+
+        return x, y, z
