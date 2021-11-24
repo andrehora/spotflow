@@ -6,7 +6,7 @@ from happyflow.api import HappyFlow
 
 class TestE2E(unittest.TestCase):
 
-    @unittest.skip
+    # @unittest.skip
     def test_generate_html_report_from_test_class(self):
         flow = HappyFlow()
         flow.target_entities(['email.message._parseparam'])

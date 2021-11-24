@@ -99,10 +99,10 @@ class Collector:
         return entity
 
     def ensure_func_or_method(self, frame):
-        filename = frame.f_code.co_filename
-        lineno = frame.f_lineno
-        key = filename, lineno
-        # key = id(frame)
+        # filename = frame.f_code.co_filename
+        # lineno = frame.f_lineno
+        # key = filename, lineno
+        key = self.get_frame_id(frame)
 
         if key in self.frame_cache:
             return self.frame_cache[key]
@@ -123,6 +123,11 @@ class Collector:
                 func_or_method = frame.f_globals[entity_name]
                 return func_or_method
 
+            # Local function or method
+            if entity_name in frame.f_back.f_locals:
+                func_or_method = frame.f_back.f_locals[entity_name]
+                return func_or_method
+
             # Method
             if 'self' in frame.f_locals:
                 obj = frame.f_locals['self']
@@ -130,12 +135,6 @@ class Collector:
                 if entity_name in members:
                     func_or_method = members[entity_name]
                     return func_or_method
-
-            # Local function or method
-            if entity_name in frame.f_back.f_locals:
-                func_or_method = frame.f_back.f_locals[entity_name]
-                print(frame.f_code.co_name, frame.f_lineno, func_or_method)
-                return func_or_method
 
         except Exception as e:
             return None
@@ -190,20 +189,26 @@ class Collector:
     def is_comprehension(self, frame):
         return frame.f_code.co_name in ['<listcomp>', '<setcomp>', '<dictcomp>', '<genexpr>']
 
+    def is_local_function(self, entity_name):
+        return '<locals>' in entity_name
+
     def collect_flow(self, frame, event, arg):
 
         if not self.is_valid_frame(frame):
             return
 
         current_entity_name = self.get_full_entity_name(frame)
-        print(current_entity_name, event, frame.f_lineno, frame.f_code.co_name, id(frame))
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:
 
-                target_entity = self.ensure_target_entity(current_entity_name, target_entity_name, frame)
-                if target_entity and current_entity_name == target_entity.full_name:
 
+                # print(current_entity_name, event, frame.f_lineno, frame.f_code.co_name, id(frame))
+                # print(event == 'call' and getattr(frame, 'f_lasti', -1) < 0)
+
+                target_entity = self.ensure_target_entity(current_entity_name, target_entity_name, frame)
+
+                if target_entity and current_entity_name == target_entity.full_name:
                     if current_entity_name not in self.last_frame_line:
                         self.last_frame_line[current_entity_name] = -1
 
@@ -234,7 +239,7 @@ class Collector:
                             entity_result = self.trace_result[current_entity_name]
                             if entity_result.flows:
 
-                                frame_id = self.get_frame_id(frame)
+                                frame_id = self.get_frame_id(frame,)
                                 flow = entity_result.get_flow_from_id(frame_id)
                                 if flow:
                                     current_run_lines = flow.run_lines

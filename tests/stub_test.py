@@ -333,5 +333,14 @@ class TestInternalMethod:
     def __init__(self):
         self.im = LocalMethod()
 
-    def test_has_local_method(self):
-        self.im.has_local_method()
+    def test_has_local_method_1(self):
+        self.im.has_local_method_1()
+
+    def test_has_local_method_2(self):
+        self.im.has_local_method_2()
+
+    def test_has_local_method_3(self):
+        self.im.has_local_method_3()
+
+    def test_has_local_method_4(self):
+        self.im.has_local_method_4()

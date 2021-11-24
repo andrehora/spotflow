@@ -329,14 +329,46 @@ class Comprehension:
 
 class LocalMethod:
 
-    def has_local_method(self):
+    def has_local_method_1(self):
         x = 100
         y = 200
 
-        def local_method(x=300):
-            return x
+        def local_method():
+            return
 
-        z = local_method()
-        z = local_method()
+    def has_local_method_2(self):
+        x = 100
+        y = 200
 
-        return x, y, z
+        def local_method():
+            return
+
+        local_method()
+        local_method()
+
+    def has_local_method_3(self):
+        x = 100
+        y = 200
+
+        def local_method_1():
+            return
+
+        def local_method_2():
+            return
+
+        local_method_1()
+        local_method_2()
+
+    def has_local_method_4(self):
+        x = 100
+        y = 200
+
+        def local_method_1():
+
+            def local_method_2():
+                return
+
+            local_method_2()
+            return
+
+        local_method_1()
