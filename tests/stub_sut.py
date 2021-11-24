@@ -372,3 +372,51 @@ class LocalMethod:
             return
 
         local_method_1()
+
+
+def has_local_function_1():
+    x = 100
+    y = 200
+
+    def local_function():
+        return
+
+
+def has_local_function_2():
+    x = 100
+    y = 200
+
+    def local_function():
+        return
+
+    local_function()
+    local_function()
+
+
+def has_local_function_3():
+    x = 100
+    y = 200
+
+    def local_function_1():
+        return
+
+    def local_function_2():
+        return
+
+    local_function_1()
+    local_function_2()
+
+
+def has_local_function_4():
+    x = 100
+    y = 200
+
+    def local_function_1():
+
+        def local_function_2():
+            return
+
+        local_function_2()
+        return
+
+    local_function_1()

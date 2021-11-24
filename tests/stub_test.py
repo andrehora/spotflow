@@ -328,19 +328,34 @@ class TestComprehension:
         self.c.dictcomp()
 
 
-class TestInternalMethod:
+class TestLocalMethod:
 
     def __init__(self):
-        self.im = LocalMethod()
+        self.lm = LocalMethod()
 
     def test_has_local_method_1(self):
-        self.im.has_local_method_1()
+        self.lm.has_local_method_1()
 
     def test_has_local_method_2(self):
-        self.im.has_local_method_2()
+        self.lm.has_local_method_2()
 
     def test_has_local_method_3(self):
-        self.im.has_local_method_3()
+        self.lm.has_local_method_3()
 
     def test_has_local_method_4(self):
-        self.im.has_local_method_4()
+        self.lm.has_local_method_4()
+
+
+class TestLocalFunction:
+
+    def test_has_local_function_1(self):
+        has_local_function_1()
+
+    def test_has_local_function_2(self):
+        has_local_function_2()
+
+    def test_has_local_function_3(self):
+        has_local_function_3()
+
+    def test_has_local_function_4(self):
+        has_local_function_4()
