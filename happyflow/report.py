@@ -228,8 +228,8 @@ class EntityInfo:
 class EntitySummary:
 
     def __init__(self, entity_info):
-        # self.name = entity_info.target_entity.name
         self.full_name = entity_info.target_entity.full_name
+        self.full_name_escaped = entity_info.target_entity.full_name_escaped()
         self.total_flows = entity_info.total_flows
         self.total_calls = entity_info.total_calls
         self.total_tests = entity_info.total_tests

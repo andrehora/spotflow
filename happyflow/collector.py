@@ -99,10 +99,14 @@ class Collector:
         return entity
 
     def ensure_func_or_method(self, frame):
-        # filename = frame.f_code.co_filename
-        # lineno = frame.f_lineno
-        # key = filename, lineno
-        key = self.get_frame_id(frame)
+
+        filename = frame.f_code.co_filename
+        lineno = frame.f_lineno
+        name = frame.f_code.co_name
+        if self.is_comprehension(frame):
+            name = frame.f_back.f_code.co_name
+
+        key = filename, lineno, name
 
         if key in self.frame_cache:
             return self.frame_cache[key]
@@ -159,6 +163,17 @@ class Collector:
         callers.reverse()
         return tuple(callers)
 
+    def get_frame_id(self, frame):
+        # If we are dealing with comprehensions and generator expressions
+        # then we should get the enclosing frame id, not the current one.
+        # This is done to avoid novel flows being created to listcomp and genexpr...
+        if self.is_comprehension(frame):
+            return id(frame.f_back)
+        return id(frame)
+
+    def is_comprehension(self, frame):
+        return frame.f_code.co_name in ['<listcomp>', '<setcomp>', '<dictcomp>', '<genexpr>']
+
     def is_valid_frame(self, frame):
 
         if frame.f_code.co_filename.startswith('<'):
@@ -178,20 +193,6 @@ class Collector:
                     return False
         return True
 
-    def get_frame_id(self, frame):
-        # If we are dealing with comprehensions and generator expressions
-        # then we should get the enclosing frame id, not the current one.
-        # This is done to avoid novel flows being created to listcomp and genexpr...
-        if self.is_comprehension(frame):
-            return id(frame.f_back)
-        return id(frame)
-
-    def is_comprehension(self, frame):
-        return frame.f_code.co_name in ['<listcomp>', '<setcomp>', '<dictcomp>', '<genexpr>']
-
-    def is_local_function(self, entity_name):
-        return '<locals>' in entity_name
-
     def collect_flow(self, frame, event, arg):
 
         if not self.is_valid_frame(frame):
@@ -201,7 +202,6 @@ class Collector:
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:
-
 
                 # print(current_entity_name, event, frame.f_lineno, frame.f_code.co_name, id(frame))
                 # print(event == 'call' and getattr(frame, 'f_lasti', -1) < 0)

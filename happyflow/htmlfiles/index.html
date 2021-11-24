@@ -5,8 +5,9 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Flow and state report</title>
-    <link rel="icon" sizes="32x32" href="favicon_32.png">
+    <title>FlowSpotter report</title>
+<!--    <link rel="icon" sizes="32x32" href="favicon_32.png">-->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔎</text></svg>">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
 </head>
@@ -14,7 +15,7 @@
 
 <header>
     <div class="content">
-        <h1>Flow and state report</h1>
+        <h1>🔎 FlowSpotter report</h1>
 
         <form id="filter_container">
             <input id="filter" type="text" value="" placeholder="filter..." />
@@ -39,7 +40,7 @@
         <tbody>
             {% for entity in summary %}
             <tr class="file">
-                <td class="name left"><a href="{{entity.full_name}}.html">{{entity.full_name}}</a></td>
+                <td class="name left"><a href="{{entity.full_name}}.html">{{entity.full_name_escaped}}</a></td>
                 <td>{{entity.statements_count}}</td>
                 <td>{{entity.total_flows}}</td>
                 <td>{{entity.total_tests}}</td>

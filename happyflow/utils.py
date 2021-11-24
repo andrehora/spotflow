@@ -196,6 +196,10 @@ def write_html(fname, html):
         fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 
 
+def escape(s):
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
 def line_intersection(lines, other_lines):
     return sorted(list(set(lines).intersection(other_lines)))
 

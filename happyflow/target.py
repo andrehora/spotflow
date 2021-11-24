@@ -1,4 +1,5 @@
-from happyflow.utils import line_intersection, get_code_lines, get_html_lines, find_executable_linenos, build_from_func_or_method
+from happyflow.utils import line_intersection, get_code_lines, get_html_lines, find_executable_linenos, \
+    build_from_func_or_method, escape
 
 
 class TargetEntity:
@@ -49,6 +50,9 @@ class TargetEntity:
 
     def summary(self):
         return f'{self.full_name()} (lines: {self.start_line}-{self.end_line})'
+
+    def full_name_escaped(self):
+        return escape(self.full_name)
 
     def __str__(self):
         return self.full_name
