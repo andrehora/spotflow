@@ -72,6 +72,7 @@ class Report:
         flow = flow_result.flows[0]
 
         self._found_first_run_line = False
+
         for code, html in zip(entity_info.target_entity.get_code_lines(), entity_info.target_entity.get_html_lines()):
 
             lineno += 1

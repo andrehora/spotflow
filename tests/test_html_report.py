@@ -19,7 +19,12 @@ class TestE2E(unittest.TestCase):
         runner.run(suite)
 
         flow.stop()
+
+        result = flow.result()
         is_exported = flow.html_report()
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result['email.message._parseparam'].flows), 94)
 
         self.assertTrue(is_exported)
         self.assertTrue(os.path.isdir('./report'))

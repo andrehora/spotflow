@@ -24,6 +24,21 @@ import unittest
 # from test import test_urlparse
 # trace_from_test_module(test_urlparse, ['urllib'], report_format='html', report_dir='urllib')
 
+# test.test_email.test_email email
+# test.test_ast ast
+# test.test_gzip gzip
+# test.test_urlparse urllib
+# test.test_json json
+# test.test_calendar calendar
+# test.test_collections collections
+
+# test.test_csv csv
+# test.test_ftplib ftplib
+# test.test_htmlparser html
+# test.test_httplib http
+# test.test_os os
+# test.test_math math
+
 
 # runner = unittest.TextTestRunner()
 # suite = unittest.TestLoader().loadTestsFromTestCase(TestMessageAPI)
