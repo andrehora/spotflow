@@ -4,6 +4,7 @@ import inspect
 import shutil
 import trace
 import types
+import csv
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import get_formatter_by_name
@@ -190,10 +191,16 @@ def html_for_code(code):
     return highlight(code, lexer, formatter)
 
 
-def write_html(fname, html):
-    html = re.sub(r"(\A\s+)|(\s+$)", "", html, flags=re.MULTILINE) + "\n"
-    with open(fname, "wb") as fout:
+def write_html(filename, content):
+    html = re.sub(r"(\A\s+)|(\s+$)", "", content, flags=re.MULTILINE) + "\n"
+    with open(filename, "wb") as fout:
         fout.write(html.encode('ascii', 'xmlcharrefreplace'))
+
+
+def write_csv(filename, content):
+    with open(filename, 'w') as fout:
+        wr = csv.writer(fout, quoting=csv.QUOTE_ALL)
+        wr.writerows(content)
 
 
 def escape(s):
@@ -206,7 +213,8 @@ def line_intersection(lines, other_lines):
 
 def ratio(a, b, dec=1):
     r = a / b * 100
-    return f'{round(r, dec)}%'
+    # return f'{round(r, dec)}%'
+    return round(r, dec)
 
 
 def find_executable_linenos(filename):

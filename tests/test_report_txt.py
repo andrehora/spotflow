@@ -2,7 +2,7 @@ import unittest
 from happyflow.api import HappyFlow
 
 
-class TestE2E(unittest.TestCase):
+class TestTXTReport(unittest.TestCase):
 
     def test_generate_txt_report_count_uppercase_words(self):
 

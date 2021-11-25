@@ -1,7 +1,5 @@
 from happyflow.utils import ratio
 from happyflow.analysis import Analysis
-from happyflow.report_html import HTMLCodeReport, HTMLIndexReport
-from happyflow.report_txt import TextReport
 
 
 class Report:
@@ -11,15 +9,19 @@ class Report:
         self.summary = []
 
     def html_report(self, report_dir):
+        from happyflow.report_html import HTMLCodeReport, HTMLIndexReport
         for entity_info in self.get_report():
             HTMLCodeReport(entity_info, report_dir).report()
         HTMLIndexReport(self.summary, report_dir).report()
 
+    def csv_report(self, report_dir):
+        from happyflow.report_csv import CSVCodeReport, CSVIndexReport
+        for entity_info in self.get_report():
+            CSVCodeReport(entity_info, report_dir).report()
+        CSVIndexReport(self.summary, report_dir).report()
+
     def txt_report(self):
         Report.txt(self.trace_result)
-
-    def csv_report(self):
-        pass
 
     def get_report(self):
         count = 0
@@ -68,9 +70,7 @@ class Report:
         if return_values:
             flow_info.return_values = return_values
 
-        # Select any flow from the results. They are all equals
         flow = flow_result.flows[0]
-
         self._found_first_run_line = False
 
         for code, html in zip(entity_info.target_entity.get_code_lines(), entity_info.target_entity.get_html_lines()):
@@ -134,6 +134,7 @@ class Report:
 
     @staticmethod
     def txt(trace_result):
+        from happyflow.report_txt import TextReport
         for entity_name in trace_result:
             entity_result = trace_result[entity_name]
             report = TextReport(entity_result.target_entity, entity_result)

@@ -1,8 +1,5 @@
 import trace
-# import unittest
 import sys
-# from happyflow.test_loader import UnittestLoader, PytestLoader
-# from happyflow.collector import Collector
 
 
 class PyTracer:
@@ -11,7 +8,8 @@ class PyTracer:
         self.collector = collector
 
     def start_tracer(self):
-        sys.settrace(self._global_trace)
+        global prev_tracefunc
+        prev_tracefunc = sys.settrace(self._global_trace)
 
     def stop_tracer(self):
         sys.settrace(None)

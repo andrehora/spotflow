@@ -49,7 +49,8 @@ class HappyFlowScript:
         finally:
             flow.stop()
             if code_ran:
-                flow.html_report(directory)
+                # flow.html_report(directory)
+                flow.csv_report(directory)
         return OK
 
 

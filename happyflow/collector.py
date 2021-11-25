@@ -267,4 +267,4 @@ class Collector:
                                                                      inline=self.last_frame_line[current_entity_name])
 
                         self.last_frame_line[current_entity_name] = lineno
-        return self.collect_flow
+        # return self.collect_flow

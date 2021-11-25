@@ -22,13 +22,17 @@ class HappyFlow:
     def result(self):
         return self._collector.trace_result
 
-    def html_report(self, directory='report'):
+    def html_report(self, directory=None):
         try:
             Report(self._collector.trace_result).html_report(directory)
-            return True
         except Exception as e:
             print(e)
-            return False
+
+    def csv_report(self, directory=None):
+        try:
+            Report(self._collector.trace_result).csv_report(directory)
+        except Exception as e:
+            print(e)
 
     def txt_report(self):
         try:

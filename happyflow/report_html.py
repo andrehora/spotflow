@@ -10,7 +10,7 @@ STATIC_FILES = [
     "style.css",
     "coverage_html.js"
 ]
-REPORT_DIR = 'report'
+REPORT_DIR = 'report_html'
 
 
 class HTMLCodeReport:
