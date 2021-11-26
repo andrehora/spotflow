@@ -89,12 +89,13 @@ class EntityFlowContainer:
         return cs
 
     def callers_tests(self):
+        # return []
         return set(map(lambda each: each[0], self.callers()))
 
 
 class Flow:
 
-    def __init__(self, run_lines, state_history, callers):
+    def __init__(self, run_lines, state_history, callers=[]):
         self.run_lines = run_lines
         self.state_history = state_history
         self.callers = callers
@@ -175,7 +176,7 @@ class VarStateHistory:
                 return True
             return False
         except Exception as e:
-            # print(e)
+            print(e)
             return False
 
     def get_last_state(self):

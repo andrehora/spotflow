@@ -48,9 +48,9 @@ class HappyFlowScript:
             return ERR
         finally:
             flow.stop()
-            if code_ran:
-                # flow.html_report(directory)
-                flow.csv_report(directory)
+            # if code_ran:
+            #     flow.html_report(directory)
+                # flow.csv_report(directory)
         return OK
 
 

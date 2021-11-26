@@ -8,8 +8,7 @@ class PyTracer:
         self.collector = collector
 
     def start_tracer(self):
-        global prev_tracefunc
-        prev_tracefunc = sys.settrace(self._global_trace)
+        sys.settrace(self._global_trace)
 
     def stop_tracer(self):
         sys.settrace(None)
@@ -20,13 +19,15 @@ class PyTracer:
 
             self.collector.collect_flow(frame, event, arg)
 
-            filename = frame.f_globals.get('__file__', None)
-            if filename:
-                modulename = trace._modname(filename)
-                if modulename is not None:
-                    ignore_it = trace._Ignore().names(filename, modulename)
-                    if not ignore_it:
-                        return self._global_trace
-            else:
-                return None
+            return self._global_trace
+
+            # filename = frame.f_globals.get('__file__', None)
+            # if filename:
+            #     modulename = trace._modname(filename)
+            #     if modulename is not None:
+            #         ignore_it = trace._Ignore().names(filename, modulename)
+            #         if not ignore_it:
+            #             return self._global_trace
+            # else:
+            #     return None
 

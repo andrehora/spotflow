@@ -53,26 +53,30 @@ class Collector:
             self.ignore_files = self.IGNORE_FILES
 
     def get_arg_states(self, frame):
-        states = []
+        try:
+            states = []
+            argvalues = inspect.getargvalues(frame)
 
-        argvalues = inspect.getargvalues(frame)
-        for arg in argvalues.args:
-            value = obj_value(argvalues.locals[arg])
+            for arg in argvalues.args:
+                value = obj_value(argvalues.locals[arg])
+                arg_state = ArgState(arg, value, frame.f_lineno)
+                states.append(arg_state)
 
-            arg_state = ArgState(arg, value, frame.f_lineno)
-            states.append(arg_state)
+            if argvalues.varargs:
+                value = obj_value(argvalues.locals[argvalues.varargs])
+                arg_state = ArgState(argvalues.varargs, value, frame.f_lineno)
+                states.append(arg_state)
 
-        if argvalues.varargs:
-            value = obj_value(argvalues.locals[argvalues.varargs])
-            arg_state = ArgState(argvalues.varargs, value, frame.f_lineno)
-            states.append(arg_state)
+            if argvalues.keywords:
+                value = obj_value(argvalues.locals[argvalues.keywords])
+                arg_state = ArgState(argvalues.keywords, value, frame.f_lineno)
+                states.append(arg_state)
 
-        if argvalues.keywords:
-            value = obj_value(argvalues.locals[argvalues.keywords])
-            arg_state = ArgState(argvalues.keywords, value, frame.f_lineno)
-            states.append(arg_state)
+            return states
 
-        return states
+        except Exception as e:
+            # print(e)
+            raise
 
     def ensure_target_entity(self, current_entity_name, target_entity_name, frame):
 
@@ -98,6 +102,15 @@ class Collector:
         self.target_entities_cache[current_entity_name] = entity
         return entity
 
+    def get_full_entity_name(self, frame):
+
+        func_or_method = self.ensure_func_or_method(frame)
+
+        if func_or_method:
+            return find_full_name(func_or_method)
+
+        return None
+
     def ensure_func_or_method(self, frame):
 
         filename = frame.f_code.co_filename
@@ -115,7 +128,7 @@ class Collector:
         if not entity:
             return None
 
-        self.frame_cache[key] = self._get_func_or_method(frame)
+        self.frame_cache[key] = entity
         return self.frame_cache[key]
 
     def _get_func_or_method(self, frame):
@@ -135,22 +148,18 @@ class Collector:
             # Method
             if 'self' in frame.f_locals:
                 obj = frame.f_locals['self']
-                members = dict(inspect.getmembers(obj, inspect.ismethod))
-                if entity_name in members:
-                    func_or_method = members[entity_name]
-                    return func_or_method
+
+                return getattr(obj.__class__, entity_name, None)
+
+                # members = dict(inspect.getmembers(obj))
+                # if entity_name in members:
+                #     func_or_method = members[entity_name]
+                #     return func_or_method
 
         except Exception as e:
+            raise
+            # print(e)
             return None
-
-    def get_full_entity_name(self, frame):
-
-        func_or_method = self.ensure_func_or_method(frame)
-
-        if func_or_method:
-            return find_full_name(func_or_method)
-
-        return None
 
     def find_callers(self, frame):
         callers = []
@@ -204,7 +213,6 @@ class Collector:
             for target_entity_name in self.target_entity_names:
 
                 # print(current_entity_name, event, frame.f_lineno, frame.f_code.co_name, id(frame))
-                # print(event == 'call' and getattr(frame, 'f_lasti', -1) < 0)
 
                 target_entity = self.ensure_target_entity(current_entity_name, target_entity_name, frame)
 
@@ -218,7 +226,6 @@ class Collector:
                     # -1 for calls, and a real offset for generators.  Use < 0 as the
                     # line number for calls, and the real line number for generators.
                     if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not self.is_comprehension(frame):
-
                         if current_entity_name not in self.trace_result:
                             self.trace_result[current_entity_name] = EntityFlowContainer(target_entity)
 
@@ -226,6 +233,7 @@ class Collector:
                         state_history = StateHistory()
                         state_history.arg_states = self.get_arg_states(frame)
                         callers = self.find_callers(frame)
+                        # callers = []
 
                         entity_result = self.trace_result[current_entity_name]
 
@@ -239,7 +247,7 @@ class Collector:
                             entity_result = self.trace_result[current_entity_name]
                             if entity_result.flows:
 
-                                frame_id = self.get_frame_id(frame,)
+                                frame_id = self.get_frame_id(frame)
                                 flow = entity_result.get_flow_from_id(frame_id)
                                 if flow:
                                     current_run_lines = flow.run_lines
@@ -257,7 +265,7 @@ class Collector:
                                             current_state_history.add_yield_state(obj_value(arg), lineno)
 
                                     elif event == 'exception':
-                                        current_state_history.exception_state = ExceptionState(arg, lineno)
+                                        current_state_history.exception_state = ExceptionState(obj_value(arg), lineno)
 
                                     if current_state_history:
                                         argvalues = inspect.getargvalues(frame)
@@ -267,4 +275,3 @@ class Collector:
                                                                      inline=self.last_frame_line[current_entity_name])
 
                         self.last_frame_line[current_entity_name] = lineno
-        # return self.collect_flow

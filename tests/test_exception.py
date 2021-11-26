@@ -3,6 +3,7 @@ from tests.stub_test import TestExceptions
 from happyflow.api import run_and_flow_func
 
 
+@unittest.skip
 class TestException(unittest.TestCase):
 
     def test_zero_division(self):

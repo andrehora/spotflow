@@ -5,6 +5,7 @@ import shutil
 import trace
 import types
 import csv
+import sys
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import get_formatter_by_name
@@ -81,7 +82,7 @@ def build_from_func_or_method(func_or_method, function_class, method_class):
             return None
 
     except Exception as e:
-        print(e)
+        # print(e)
         return None
 
 
@@ -107,12 +108,12 @@ def function_metadata(func):
 
 def find_full_name(func_or_method):
     try:
-
         module = func_or_method.__module__
         qualname = func_or_method.__qualname__
 
         return f'{module}.{qualname}'
     except Exception as e:
+        # print(e)
         return None
 
 
@@ -145,23 +146,56 @@ def line_has_yield(frame):
 
 def obj_value(obj):
     try:
-        obj_string = repr(obj)
-        if obj_string.startswith('<') and obj_string.endswith('>'):
-            if is_definition(obj):
-                # print('is_definition', obj_string,  f'{obj.__qualname__} def')
-                return f'{obj.__qualname__} def'
-            # print('not is_definition', obj_string, f'{obj.__class__.__qualname__}')
-            return f'{obj.__class__.__qualname__}'
-        # print('obj_string', obj_string)
-        return obj_string
+        if is_definition(obj):
+            return f'{obj.__qualname__} def'
+        elif is_basic(obj) or is_safe_iterator(obj) or is_safe_set(obj) or is_safe_map(obj):
+            return repr(obj)
+        else:
+            return obj.__class__.__qualname__
     except Exception as e:
-        # print('exception', type(obj).__qualname__)
         return type(obj).__qualname__
 
 
 def is_definition(obj):
-    return inspect.ismodule(obj) or inspect.isclass(obj) or inspect.ismethod(obj) or inspect.isfunction(obj) or \
-           inspect.isgeneratorfunction(obj) or inspect.isgenerator(obj) or inspect.isbuiltin(obj)
+    return obj.__class__.__name__ in ['type', 'module', 'function', 'method',
+                                      'code', 'traceback', 'frame', 'generator', 'coroutine']
+
+
+def is_basic(obj):
+    return obj.__class__.__name__ in ['NoneType', 'bool', 'int', 'float', 'complex', 'str', 'range']
+
+
+def is_safe_iterator(obj):
+    if obj.__class__.__name__ in ['list', 'tuple']:
+        if not obj:
+            return True
+        if obj and is_basic(obj[0]):
+            return True
+    return False
+
+
+def is_safe_set(obj):
+    if obj.__class__.__name__ in ['set', 'frozenset']:
+        if not obj:
+            return True
+        for each in obj:
+            # Only check the first element
+            if is_basic(each):
+                return True
+            return False
+    return False
+
+
+def is_safe_map(obj):
+    if obj.__class__.__name__ == 'dict':
+        if not obj:
+            return True
+        for key in obj:
+            # Only check the first element
+            if is_basic(obj[key]):
+                return True
+            return False
+    return False
 
 
 def get_code_lines(entity):
