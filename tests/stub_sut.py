@@ -420,3 +420,48 @@ def has_local_function_4():
         return
 
     local_function_1()
+
+
+class ClassA:
+
+    def __init__(self, value):
+        self.value = value
+        self.a = 321
+
+    def foobar(self, x):
+        self.value = x
+
+
+class ClassB(ClassA):
+
+    def __init__(self, value):
+        super().__init__(value)
+        self.b = 321
+
+    def foobar(self, x):
+        super().foobar(x)
+        y = x
+        z = y
+
+
+class ClassC(ClassB):
+
+    def __init__(self, value):
+        super().__init__(value)
+        super().__init__(value)
+        self.c = None
+
+    def foobar(self, x):
+        super().foobar(x)
+        k = x
+
+
+# import dis
+# x = dis.dis(ClassC.__init__)
+# print(x)
+# LOAD_GLOBAL = dis.opmap['LOAD_GLOBAL']
+
+
+# bytecode = dis.Bytecode(ClassC.__init__.__code__)
+# for instr in bytecode:
+#     print(instr)

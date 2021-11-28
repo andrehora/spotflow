@@ -1,9 +1,11 @@
 import inspect
-from happyflow.utils import obj_value, line_has_explicit_return, find_full_name, line_has_yield
+import dis
+from happyflow.utils import obj_value, line_has_explicit_return, find_full_name, line_has_yield, line_has_super
 from happyflow.flow import StateHistory, EntityFlowContainer, ArgState, ExceptionState, FlowResult
 from happyflow.target import TargetEntity
 from happyflow.tracer import PyTracer
 
+LOAD_GLOBAL = dis.opmap['LOAD_GLOBAL']
 
 class Collector:
 
@@ -24,6 +26,9 @@ class Collector:
         # Flags used when target is not set
         self.try_all_possible_targets = False
         self.tests_started = False
+
+        # Flag to handle inheritance
+        self.current_class = None
 
     def start(self):
         self.init_target()
@@ -111,18 +116,6 @@ class Collector:
 
         return None
 
-    def get_full_entity_name2(self, frame):
-
-        func_or_method = self.ensure_func_or_method(frame)
-        # print(func_or_method)
-        # print(func_or_method.__module__)
-        # print(func_or_method.__qualname__)
-
-        if func_or_method:
-            return find_full_name(func_or_method)
-
-        return None
-
     def ensure_func_or_method(self, frame):
 
         filename = frame.f_code.co_filename
@@ -143,9 +136,40 @@ class Collector:
         self.frame_cache[key] = entity
         return self.frame_cache[key]
 
+    def is_super_call(self, frame):
+        if self.method_has_super_call(frame) and self.is_super_instruction(frame):
+            return True
+        return False
+
+    def method_has_super_call(self, frame):
+        return '__class__' in frame.f_locals and 'super' in frame.f_code.co_names
+
+    def is_super_instruction(self, frame):
+        instructions = dis.Bytecode(frame.f_code)
+        print(instructions)
+        for instr in instructions:
+            if instr.offset == frame.f_lasti and instr.argval == 'super':
+                return True
+        return False
+
     def _get_func_or_method(self, frame):
         try:
             entity_name = frame.f_code.co_name
+            code = frame.f_code.co_code
+            print(self.is_super_call(frame))
+
+            # for each in dis.Bytecode(frame.f_code, current_offset=0):
+            #     print(each)
+
+            print('Index', frame.f_lasti)
+            print(code[frame.f_lasti], LOAD_GLOBAL)
+            print(frame.f_code.co_names)
+
+            print(self.is_super_call(frame))
+            if self.is_super_call(frame):
+                self.current_class = frame.f_locals['__class__']
+                print(self.current_class)
+                print(inspect.getmro(self.current_class))
 
             # Method
             if 'self' in frame.f_locals:
@@ -216,12 +240,13 @@ class Collector:
         if not self.is_valid_frame(frame):
             return
 
+        print("======== ======== ========")
+        print(event, frame.f_lineno, frame.f_code.co_name, id(frame))
+        # print(inspect.getargvalues(frame))
         current_entity_name = self.get_full_entity_name(frame)
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:
-
-                # print(current_entity_name, event, frame.f_lineno, frame.f_code.co_name, id(frame))
 
                 target_entity = self.ensure_target_entity(current_entity_name, target_entity_name, frame)
 
@@ -243,16 +268,6 @@ class Collector:
                         state_history.arg_states = self.get_arg_states(frame)
                         callers = self.find_callers(frame)
                         # callers = []
-
-                        # if current_entity_name == 'rich.cells.cell_len':
-                        #     argvalues = inspect.getargvalues(frame)
-                        #     # print(argvalues.args)
-                        #     if len(argvalues.args) != 2:
-                        #         print('==========>>>')
-                        #         current_entity_name = self.get_full_entity_name2(frame)
-                        #         print(current_entity_name)
-                        #         print(frame)
-                        #         print(argvalues)
 
                         entity_result = self.trace_result[current_entity_name]
 

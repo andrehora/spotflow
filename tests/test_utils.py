@@ -24,13 +24,13 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(find_module_name('module.py'), 'module')
         self.assertEqual(find_module_name('a/b/module.py'), 'module')
 
-    def test_guess_value(self):
+    def test_obj_value(self):
         self.assertEqual(obj_value(100), '100')
         self.assertEqual(obj_value('foo'), "'foo'")
         self.assertEqual(obj_value([1, 2, 3, 4]), '[1, 2, 3, 4]')
         self.assertEqual(obj_value({1, 2, 3, 4}), '{1, 2, 3, 4}')
         self.assertEqual(obj_value(object()), 'object')
-        self.assertEqual(obj_value(self.test_guess_value), "TestUtils.test_guess_value def")
+        self.assertEqual(obj_value(self.test_obj_value), "TestUtils.test_obj_value def")
         self.assertEqual(obj_value(TestUtils), "TestUtils def")
 
         from tests.stub_sut import Calculator

@@ -359,3 +359,17 @@ class TestLocalFunction:
 
     def test_has_local_function_4(self):
         has_local_function_4()
+
+
+class TestSuper:
+
+    def test_super_init_a(self):
+        ClassA(123)
+
+    def test_super_init_b(self):
+        ClassB(123)
+
+    def test_super_init_c(self):
+        ClassC(123)
+
+

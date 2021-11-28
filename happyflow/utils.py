@@ -144,6 +144,14 @@ def line_has_yield(frame):
     return False
 
 
+def line_has_super(frame):
+    traceback = inspect.getframeinfo(frame)
+    if traceback.code_context and len(traceback.code_context) >= 1:
+        code_line = traceback.code_context[0].strip()
+        return code_line.startswith('super')
+    return False
+
+
 def obj_value(obj):
     try:
         if is_definition(obj):
