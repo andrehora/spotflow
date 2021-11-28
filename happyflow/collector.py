@@ -111,6 +111,18 @@ class Collector:
 
         return None
 
+    def get_full_entity_name2(self, frame):
+
+        func_or_method = self.ensure_func_or_method(frame)
+        # print(func_or_method)
+        # print(func_or_method.__module__)
+        # print(func_or_method.__qualname__)
+
+        if func_or_method:
+            return find_full_name(func_or_method)
+
+        return None
+
     def ensure_func_or_method(self, frame):
 
         filename = frame.f_code.co_filename
@@ -135,29 +147,26 @@ class Collector:
         try:
             entity_name = frame.f_code.co_name
 
+            # Method
+            if 'self' in frame.f_locals:
+                obj = frame.f_locals['self']
+                method = getattr(obj.__class__, entity_name, None)
+                return method
+
             # Function
             if entity_name in frame.f_globals:
-                func_or_method = frame.f_globals[entity_name]
-                return func_or_method
+                func = frame.f_globals[entity_name]
+                return func
 
             # Local function or method
             if entity_name in frame.f_back.f_locals:
                 func_or_method = frame.f_back.f_locals[entity_name]
-                return func_or_method
-
-            # Method
-            if 'self' in frame.f_locals:
-                obj = frame.f_locals['self']
-
-                return getattr(obj.__class__, entity_name, None)
-
-                # members = dict(inspect.getmembers(obj))
-                # if entity_name in members:
-                #     func_or_method = members[entity_name]
-                #     return func_or_method
+                # Check if 'entity_name' is local in frame.f_back
+                if '<locals>' in func_or_method.__qualname__ and \
+                        frame.f_back.f_code.co_name in func_or_method.__qualname__:
+                    return func_or_method
 
         except Exception as e:
-            raise
             # print(e)
             return None
 
@@ -234,6 +243,16 @@ class Collector:
                         state_history.arg_states = self.get_arg_states(frame)
                         callers = self.find_callers(frame)
                         # callers = []
+
+                        # if current_entity_name == 'rich.cells.cell_len':
+                        #     argvalues = inspect.getargvalues(frame)
+                        #     # print(argvalues.args)
+                        #     if len(argvalues.args) != 2:
+                        #         print('==========>>>')
+                        #         current_entity_name = self.get_full_entity_name2(frame)
+                        #         print(current_entity_name)
+                        #         print(frame)
+                        #         print(argvalues)
 
                         entity_result = self.trace_result[current_entity_name]
 
