@@ -137,16 +137,15 @@ class Collector:
         return self.frame_cache[key]
 
     def is_super_call(self, frame):
-        if self.method_has_super_call(frame) and self.is_super_instruction(frame):
+        if self.method_has_super_call(frame) and self.method_call_super(frame):
             return True
         return False
 
     def method_has_super_call(self, frame):
         return '__class__' in frame.f_locals and 'super' in frame.f_code.co_names
 
-    def is_super_instruction(self, frame):
+    def method_call_super(self, frame):
         instructions = dis.Bytecode(frame.f_code)
-        print(instructions)
         for instr in instructions:
             if instr.offset == frame.f_lasti and instr.argval == 'super':
                 return True
@@ -155,21 +154,18 @@ class Collector:
     def _get_func_or_method(self, frame):
         try:
             entity_name = frame.f_code.co_name
-            code = frame.f_code.co_code
-            print(self.is_super_call(frame))
 
-            # for each in dis.Bytecode(frame.f_code, current_offset=0):
-            #     print(each)
+            # code = frame.f_code.co_code
+            # print(self.is_super_call(frame))
+            # print('Index', frame.f_lasti)
+            # print(code[frame.f_lasti], LOAD_GLOBAL)
+            # print(frame.f_code.co_names)
 
-            print('Index', frame.f_lasti)
-            print(code[frame.f_lasti], LOAD_GLOBAL)
-            print(frame.f_code.co_names)
-
-            print(self.is_super_call(frame))
-            if self.is_super_call(frame):
-                self.current_class = frame.f_locals['__class__']
-                print(self.current_class)
-                print(inspect.getmro(self.current_class))
+            # if self.is_super_call(frame):
+            #     self.current_class = frame.f_locals['__class__']
+            #     print(frame.f_lineno, self.current_class)
+            #     print(inspect.getmro(self.current_class))
+            #     print(self.current_class in inspect.getmro(self.current_class))
 
             # Method
             if 'self' in frame.f_locals:
@@ -240,8 +236,8 @@ class Collector:
         if not self.is_valid_frame(frame):
             return
 
-        print("======== ======== ========")
-        print(event, frame.f_lineno, frame.f_code.co_name, id(frame))
+        # print("======== ======== ========")
+        # print(event, frame.f_lineno, frame.f_code.co_name, id(frame))
         # print(inspect.getargvalues(frame))
         current_entity_name = self.get_full_entity_name(frame)
 
