@@ -448,7 +448,6 @@ class ClassC(ClassB):
 
     def __init__(self, value):
         super().__init__(value)
-        super().__init__(value)
         self.c = None
 
     def foobar(self, x):
@@ -457,11 +456,10 @@ class ClassC(ClassB):
 
 
 # import dis
-# x = dis.dis(ClassC.__init__)
-# print(x)
-# LOAD_GLOBAL = dis.opmap['LOAD_GLOBAL']
-
-
+# # x = dis.dis(ClassC.__init__)
+# # print(x)
+# # LOAD_GLOBAL = dis.opmap['LOAD_GLOBAL']
 # bytecode = dis.Bytecode(ClassC.__init__.__code__)
+# print(bytecode.dis())
 # for instr in bytecode:
 #     print(instr)

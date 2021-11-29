@@ -372,4 +372,13 @@ class TestSuper:
     def test_super_init_c(self):
         ClassC(123)
 
+    def test_super_foobar_a(self):
+        ClassA(123).foobar(123)
+
+    def test_super_foobar_b(self):
+        ClassB(123).foobar(123)
+
+    def test_super_foobar_c(self):
+        ClassC(123).foobar(123)
+
 

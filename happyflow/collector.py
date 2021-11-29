@@ -5,8 +5,6 @@ from happyflow.flow import StateHistory, EntityFlowContainer, ArgState, Exceptio
 from happyflow.target import TargetEntity
 from happyflow.tracer import PyTracer
 
-LOAD_GLOBAL = dis.opmap['LOAD_GLOBAL']
-
 class Collector:
 
     IGNORE_FILES = ['site-packages', 'unittest', 'pytest']
@@ -28,7 +26,9 @@ class Collector:
         self.tests_started = False
 
         # Flag to handle inheritance
+        self.super_classes = {}
         self.current_class = None
+        self.called_super = False
 
     def start(self):
         self.init_target()
@@ -123,7 +123,6 @@ class Collector:
         name = frame.f_code.co_name
         if self.is_comprehension(frame):
             name = frame.f_back.f_code.co_name
-
         key = filename, lineno, name
 
         if key in self.frame_cache:
@@ -147,30 +146,35 @@ class Collector:
     def method_call_super(self, frame):
         instructions = dis.Bytecode(frame.f_code)
         for instr in instructions:
-            if instr.offset == frame.f_lasti and instr.argval == 'super':
+            if instr.offset == frame.f_lasti and instr.opname == 'LOAD_GLOBAL' and instr.argval == 'super':
                 return True
         return False
+
+    def get_super_class(self):
+        base_classes = inspect.getmro(self.current_class)
+        current_class_index = base_classes.index(self.current_class)
+        return base_classes[current_class_index+1]
 
     def _get_func_or_method(self, frame):
         try:
             entity_name = frame.f_code.co_name
 
-            # code = frame.f_code.co_code
-            # print(self.is_super_call(frame))
-            # print('Index', frame.f_lasti)
-            # print(code[frame.f_lasti], LOAD_GLOBAL)
-            # print(frame.f_code.co_names)
-
-            # if self.is_super_call(frame):
-            #     self.current_class = frame.f_locals['__class__']
-            #     print(frame.f_lineno, self.current_class)
-            #     print(inspect.getmro(self.current_class))
-            #     print(self.current_class in inspect.getmro(self.current_class))
-
             # Method
             if 'self' in frame.f_locals:
-                obj = frame.f_locals['self']
-                method = getattr(obj.__class__, entity_name, None)
+
+                # When super is called, save the super class, not self
+                if self.called_super:
+                    # print(self.get_super_class())
+                    self.super_classes[id(frame)] = self.get_super_class()
+                    self.called_super = False
+
+                # When super is called, get the super class, not self
+                if id(frame) in self.super_classes:
+                    obj_class = self.super_classes[id(frame)]
+                else:
+                    obj_class = frame.f_locals['self'].__class__
+
+                method = getattr(obj_class, entity_name, None)
                 return method
 
             # Function
@@ -236,9 +240,6 @@ class Collector:
         if not self.is_valid_frame(frame):
             return
 
-        # print("======== ======== ========")
-        # print(event, frame.f_lineno, frame.f_code.co_name, id(frame))
-        # print(inspect.getargvalues(frame))
         current_entity_name = self.get_full_entity_name(frame)
 
         if current_entity_name:
@@ -272,6 +273,12 @@ class Collector:
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
+
+                        # Handle super calls
+                        if self.is_super_call(frame):
+                            self.current_class = frame.f_locals['__class__']
+                            self.called_super = True
+
                         lineno = frame.f_lineno
                         if current_entity_name in self.trace_result:
                             entity_result = self.trace_result[current_entity_name]
