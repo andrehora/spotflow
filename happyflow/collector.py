@@ -237,7 +237,7 @@ class Collector:
             return
 
         current_entity_name = self.get_full_entity_name(frame)
-        # print(frame.f_lineno, current_entity_name, frame.f_locals)
+        # print(frame.f_lineno, current_entity_name)
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:

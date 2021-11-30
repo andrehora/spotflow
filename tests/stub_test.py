@@ -361,6 +361,18 @@ class TestLocalFunction:
         has_local_function_4()
 
 
+class TestLocalClass:
+
+    def test_has_local_class_1(self):
+        HasLocalClass().LocalClass1().local()
+
+    def test_has_local_class_2(self):
+        HasLocalClass().has_local_class()
+
+    def test_has_local_class_3(self):
+        has_local_class()
+
+
 class TestSuper:
 
     def test_super_init_a(self):

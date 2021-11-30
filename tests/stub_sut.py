@@ -523,4 +523,26 @@ class ClassSuper3(ClassSuper2):
         super().foobar()
 
 
-ClassSuper3()
+class HasLocalClass:
+
+    class LocalClass1:
+
+        def local(self):
+            return 'me 1'
+
+    def has_local_class(self):
+
+        class LocalClass2:
+            def local(self):
+                return 'me 2'
+
+        return LocalClass2().local()
+
+
+def has_local_class():
+
+    class LocalClass3:
+        def local(self):
+            return 'me 3'
+
+    return LocalClass3().local()
