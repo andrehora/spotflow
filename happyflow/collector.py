@@ -128,34 +128,14 @@ class Collector:
         if key in self.frame_cache:
             return self.frame_cache[key]
 
-        entity = self._get_func_or_method(frame)
+        entity = self.get_func_or_method(frame)
         if not entity:
             return None
 
         self.frame_cache[key] = entity
         return self.frame_cache[key]
 
-    # def is_super_call(self, frame):
-    #     if self.method_has_super_call(frame) and self.method_call_super(frame):
-    #         return True
-    #     return False
-
-    def method_has_super_call(self, frame):
-        return '__class__' in frame.f_locals and 'super' in frame.f_code.co_names
-
-    # def method_call_super(self, frame):
-    #     instructions = dis.Bytecode(frame.f_code)
-    #     for instr in instructions:
-    #         if instr.offset == frame.f_lasti and instr.opname == 'LOAD_GLOBAL' and instr.argval == 'super':
-    #             return True
-    #     return False
-
-    def get_next_mro_class(self, current_class):
-        mro_classes = current_class.__mro__
-        current_class_index = mro_classes.index(current_class)
-        return mro_classes[current_class_index+1]
-
-    def _get_func_or_method(self, frame):
+    def get_func_or_method(self, frame):
         try:
             entity_name = frame.f_code.co_name
 
@@ -194,6 +174,21 @@ class Collector:
         except Exception as e:
             # print(e)
             return None
+
+    def method_has_super_call(self, frame):
+        return '__class__' in frame.f_locals and 'super' in frame.f_code.co_names
+
+    def get_next_mro_class(self, current_class):
+        mro_classes = current_class.__mro__
+        current_class_index = mro_classes.index(current_class)
+        return mro_classes[current_class_index+1]
+
+    # def is_super_call(self, frame):
+    #     instructions = dis.Bytecode(frame.f_code)
+    #     for instr in instructions:
+    #         if instr.offset == frame.f_lasti and instr.opname == 'LOAD_GLOBAL' and instr.argval == 'super':
+    #             return True
+    #     return False
 
     def find_callers(self, frame):
         callers = []
@@ -275,11 +270,6 @@ class Collector:
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
-
-                        # Handle super calls
-                        # if self.is_super_call(frame):
-                        #     self.current_class = frame.f_locals['__class__']
-                        #     self.called_super = True
 
                         lineno = frame.f_lineno
                         if current_entity_name in self.trace_result:
