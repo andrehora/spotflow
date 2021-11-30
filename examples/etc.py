@@ -7,3 +7,13 @@
 # print(bytecode.dis())
 # for instr in bytecode:
 #     print(instr)
+
+from collections import Counter
+
+a = 'abcde'
+b = '[]'
+
+elements = [a, b]
+
+c = Counter(elements).most_common()
+print(c)

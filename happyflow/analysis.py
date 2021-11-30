@@ -37,9 +37,9 @@ class Analysis:
     def most_common_return_values_pretty(self):
         return self.pretty_return_values(self.most_common_return_values())
 
-    def _most_common(self, elements):
+    def _most_common(self, elements, n=10):
         try:
-            return Counter(elements).most_common()
+            return Counter(elements).most_common(n)
         except TypeError:
             return []
 
@@ -50,9 +50,9 @@ class Analysis:
             arg_value['name'] = arg_name
             values = ''
             for value in args[arg_name]:
-                value_str = obj_value(value[0])
+                value_str = value[0]
                 count = value[1]
-                values += f'{value_str} ({count}), '
+                values += f'{value_str} ({count}) '
             arg_value['value'] = self.clear_values(values, max_len)
             result.append(arg_value)
         return result
@@ -60,13 +60,13 @@ class Analysis:
     def pretty_return_values(self, return_values, max_len=150):
         values = ''
         for value in return_values:
-            values += f'{value[0]} ({value[1]}), '
+            values += f'{value[0]} ({value[1]}) '
         if values:
             return self.clear_values(values, max_len)
         return None
 
     def clear_values(self, values, max_len):
-        values = values.rstrip(', ')
+        # values = values.rstrip(', ')
         if len(values) >= max_len:
             values = f'{values[0:max_len]}...'
         return values
