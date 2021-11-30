@@ -372,6 +372,9 @@ class TestSuper:
     def test_super_init_c(self):
         ClassC(123)
 
+    def test_super_init_d(self):
+        ClassD(123)
+
     def test_super_foobar_a(self):
         ClassA(123).foobar(123)
 
@@ -382,3 +385,34 @@ class TestSuper:
         ClassC(123).foobar(123)
 
 
+class TestOverride:
+
+    def test_base_class_main(self):
+        BaseClass().main()
+
+    def test_base_class_show(self):
+        BaseClass().show()
+
+    def test_base_class_report(self):
+        BaseClass().report()
+
+    def test_override_show(self):
+        OverrideShow().main()
+
+    def test_override_main(self):
+        OverrideMain().main()
+
+    def test_override_main_and_report(self):
+        OverrideMainAndReport().main()
+
+
+class TestMoreSuper:
+
+    def test_super_1(self):
+        ClassSuper1()
+
+    def test_super_2(self):
+        ClassSuper2()
+
+    def test_super_3(self):
+        ClassSuper3()

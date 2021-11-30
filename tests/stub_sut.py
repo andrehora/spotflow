@@ -455,12 +455,72 @@ class ClassC(ClassB):
         k = x
 
 
+class ClassD(ClassB):
 
-# import dis
-# # x = dis.dis(ClassC.__init__)
-# # print(x)
-# # LOAD_GLOBAL = dis.opmap['LOAD_GLOBAL']
-# bytecode = dis.Bytecode(ClassC.__init__.__code__)
-# print(bytecode.dis())
-# for instr in bytecode:
-#     print(instr)
+    def __init__(self, value):
+        super(ClassD, self).__init__(value)
+        self.c = None
+
+    def foobar(self, x):
+        super().foobar(x)
+        k = x
+
+
+class BaseClass:
+
+    def main(self):
+        self.show()
+
+    def show(self):
+        return
+
+    def report(self):
+        return
+
+
+class OverrideShow(BaseClass):
+
+    def show(self):
+        return
+
+
+class OverrideMain(BaseClass):
+
+    def main(self):
+        self.report()
+
+
+class OverrideMainAndReport(BaseClass):
+
+    def main(self):
+        self.report()
+
+    def report(self):
+        self.show()
+
+
+class ClassSuper1:
+
+    def __init__(self):
+        self.foobar()
+        self.a = 1
+        self.b = 2
+
+    def foobar(self):
+        self.a = 2
+        self.b = 2
+
+
+class ClassSuper2(ClassSuper1):
+
+    def __init__(self):
+        super().__init__()
+
+
+class ClassSuper3(ClassSuper2):
+
+    def foobar(self):
+        super().foobar()
+
+
+ClassSuper3()

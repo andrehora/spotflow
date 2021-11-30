@@ -175,6 +175,7 @@ class Collector:
                     obj_class = frame.f_locals['self'].__class__
                 # print(frame.f_lineno, obj_class)
                 method = getattr(obj_class, entity_name, None)
+                # print('==> class', obj_class, method)
                 return method
 
             # Function
@@ -241,6 +242,7 @@ class Collector:
             return
 
         current_entity_name = self.get_full_entity_name(frame)
+        # print(frame.f_lineno, current_entity_name, frame.f_locals)
 
         if current_entity_name:
             for target_entity_name in self.target_entity_names:
