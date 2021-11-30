@@ -135,25 +135,25 @@ class Collector:
         self.frame_cache[key] = entity
         return self.frame_cache[key]
 
-    def is_super_call(self, frame):
-        if self.method_has_super_call(frame) and self.method_call_super(frame):
-            return True
-        return False
+    # def is_super_call(self, frame):
+    #     if self.method_has_super_call(frame) and self.method_call_super(frame):
+    #         return True
+    #     return False
 
     def method_has_super_call(self, frame):
         return '__class__' in frame.f_locals and 'super' in frame.f_code.co_names
 
-    def method_call_super(self, frame):
-        instructions = dis.Bytecode(frame.f_code)
-        for instr in instructions:
-            if instr.offset == frame.f_lasti and instr.opname == 'LOAD_GLOBAL' and instr.argval == 'super':
-                return True
-        return False
+    # def method_call_super(self, frame):
+    #     instructions = dis.Bytecode(frame.f_code)
+    #     for instr in instructions:
+    #         if instr.offset == frame.f_lasti and instr.opname == 'LOAD_GLOBAL' and instr.argval == 'super':
+    #             return True
+    #     return False
 
-    def get_super_class(self):
-        base_classes = inspect.getmro(self.current_class)
-        current_class_index = base_classes.index(self.current_class)
-        return base_classes[current_class_index+1]
+    def get_next_mro_class(self, current_class):
+        mro_classes = current_class.__mro__
+        current_class_index = mro_classes.index(current_class)
+        return mro_classes[current_class_index+1]
 
     def _get_func_or_method(self, frame):
         try:
@@ -162,18 +162,18 @@ class Collector:
             # Method
             if 'self' in frame.f_locals:
 
-                # When super is called, save the super class, not self
-                if self.called_super:
-                    # print(self.get_super_class())
-                    self.super_classes[id(frame)] = self.get_super_class()
-                    self.called_super = False
-
-                # When super is called, get the super class, not self
-                if id(frame) in self.super_classes:
-                    obj_class = self.super_classes[id(frame)]
+                # In methods with super, use the free variable, __class__, not self
+                if self.method_has_super_call(frame):
+                    obj_class = frame.f_locals['__class__']
+                # In methods without super but that was called by super (ie, the back frame has super),
+                # get the next mro class to discover the actual class
+                elif self.method_has_super_call(frame.f_back):
+                    f_back = frame.f_back
+                    obj_class = self.get_next_mro_class(f_back.f_locals['__class__'])
+                # The most common case: simply get self class
                 else:
                     obj_class = frame.f_locals['self'].__class__
-
+                # print(frame.f_lineno, obj_class)
                 method = getattr(obj_class, entity_name, None)
                 return method
 
@@ -275,9 +275,9 @@ class Collector:
                     else:
 
                         # Handle super calls
-                        if self.is_super_call(frame):
-                            self.current_class = frame.f_locals['__class__']
-                            self.called_super = True
+                        # if self.is_super_call(frame):
+                        #     self.current_class = frame.f_locals['__class__']
+                        #     self.called_super = True
 
                         lineno = frame.f_lineno
                         if current_entity_name in self.trace_result:
