@@ -182,12 +182,12 @@ class Collector:
                                     elif event == 'exception':
                                         current_state_history.exception_state = ExceptionState(obj_value(arg), lineno)
 
-                                    # if current_state_history:
-                                    #     argvalues = inspect.getargvalues(frame)
-                                    #     for arg in argvalues.locals:
-                                    #         value = obj_value(argvalues.locals[arg])
-                                    #         current_state_history.add_var_state(name=arg, value=value, lineno=lineno,
-                                    #                                  inline=self.last_frame_line[current_entity_name])
+                                    if current_state_history:
+                                        argvalues = inspect.getargvalues(frame)
+                                        for arg in argvalues.locals:
+                                            value = obj_value(argvalues.locals[arg])
+                                            current_state_history.add_var_state(name=arg, value=value, lineno=lineno,
+                                                                     inline=self.last_frame_line[current_entity_name])
 
                         self.last_frame_line[current_entity_name] = lineno
 
