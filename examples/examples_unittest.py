@@ -1,45 +1,19 @@
-import unittest
-# from happyflow.api import trace_from_test_class, trace_from_test_module
-#
-#
-# from test.test_email.test_email import TestMessageAPI
-# trace_from_test_class(TestMessageAPI, ['email.message'], report_format='html', report_dir='email2')
+# python -m happyflow -t XXX -d report/XXX unittest XXX
 
+# python -m happyflow -t email -d report/email unittest test.test_email.test_email
+# python -m happyflow -t ast -d report/ast unittest test.test_ast
+# python -m happyflow -t gzip -d report/gzip unittest test.test_gzip
+# python -m happyflow -t urllib -d report/urllib unittest test.test_urlparse
+# python -m happyflow -t json -d report/json unittest test.test_json
+# python -m happyflow -t calendar -d report/calendar unittest test.test_calendar
+# python -m happyflow -t collections -d report/collections unittest test.test_collections
+# python -m happyflow -t csv -d report/csv unittest test.test_csv
+# python -m happyflow -t ftplib -d report/ftplib unittest test.test_ftplib
+# python -m happyflow -t html -d report/html unittest test.test_htmlparser
+# python -m happyflow -t http -d report/http unittest test.test_httplib
+# python -m happyflow -t os -d report/os unittest test.test_os
+# python -m happyflow -t math -d report/math unittest test.test_math
 
-# from test.test_email import test_email
-# trace_from_test_module(test_email, ['email'], report_format='html', report_dir='email2')
-
-# from test import test_email
-# trace_from_test_module(test_email, ['email'], report_format='html', report_dir='email3')
-
-
-# from test import test_ast
-# trace_from_test_module(test_ast, ['ast'], report_format='html', report_dir='ast')
-
-
-# from test import test_gzip
-# trace_from_test_module(test_gzip, ['gzip'], report_format='html', report_dir='gzip')
-
-
-# from test import test_urlparse
-# trace_from_test_module(test_urlparse, ['urllib'], report_format='html', report_dir='urllib')
-
-# test.test_email.test_email email
-# test.test_ast ast
-# test.test_gzip gzip
-# test.test_urlparse urllib
-# test.test_json json
-# test.test_calendar calendar
-# test.test_collections collections
-
-# test.test_csv csv
-# test.test_ftplib ftplib
-# test.test_htmlparser html
-# test.test_httplib http
-# test.test_os os
-# test.test_math math
-
-
-# runner = unittest.TextTestRunner()
-# suite = unittest.TestLoader().loadTestsFromTestCase(TestMessageAPI)
-# runner.run(suite)
+# python -m happyflow -t rich -d report/rich2 pytest rich/tests
+# python -m happyflow -t dateutil -d report_dateutil pytest dateutil/test
+# python -m happyflow -t rest_framework -d report_rest_framework pytest tests
