@@ -1,25 +1,24 @@
 from collections import Counter
-from happyflow.utils import obj_value
 
 
 class Analysis:
 
-    def __init__(self, target_entity, entity_result):
+    def __init__(self, target_entity, flow_container):
         self.target_entity = target_entity
-        self.entity_result = entity_result
+        self.flow_container = flow_container
 
     def number_of_distinct_flows(self):
-        return len(set(self.entity_result.distinct_lines()))
+        return len(set(self.flow_container.distinct_lines()))
 
     def number_of_calls(self):
-        return len(self.entity_result.flows)
+        return len(self.flow_container.flows)
 
     def most_common_run_lines(self):
-        lines = self.entity_result.distinct_lines()
+        lines = self.flow_container.distinct_lines()
         return self._most_common(lines)
 
     def most_common_args(self):
-        args = self.entity_result.arg_states()
+        args = self.flow_container.arg_states()
         args_count = {}
 
         for arg in args:
@@ -31,7 +30,7 @@ class Analysis:
         return self.pretty_args(self.most_common_args())
 
     def most_common_return_values(self):
-        values = self.entity_result.return_states()
+        values = self.flow_container.return_states()
         return self._most_common(values)
 
     def most_common_return_values_pretty(self):

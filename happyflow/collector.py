@@ -1,34 +1,8 @@
 import inspect
 from happyflow.utils import obj_value, find_full_name
-from happyflow.flow import StateHistory, EntityFlowContainer, ArgState, ExceptionState, FlowResult
+from happyflow.flow import StateHistory, FlowContainer, ArgState, ExceptionState, FlowResult
 from happyflow.target import TargetEntity
 from happyflow.tracer import PyTracer
-
-
-def get_arg_states(frame):
-    try:
-        states = []
-        argvalues = inspect.getargvalues(frame)
-
-        for arg in argvalues.args:
-            value = obj_value(argvalues.locals[arg])
-            arg_state = ArgState(arg, value, frame.f_lineno)
-            states.append(arg_state)
-
-        if argvalues.varargs:
-            value = obj_value(argvalues.locals[argvalues.varargs])
-            arg_state = ArgState(argvalues.varargs, value, frame.f_lineno)
-            states.append(arg_state)
-
-        if argvalues.keywords:
-            value = obj_value(argvalues.locals[argvalues.keywords])
-            arg_state = ArgState(argvalues.keywords, value, frame.f_lineno)
-            states.append(arg_state)
-
-        return states
-
-    except Exception as e:
-        raise
 
 
 def get_next_mro_class(current_class):
@@ -66,14 +40,6 @@ def method_has_super_call(frame):
     return '__class__' in frame.f_locals and 'super' in frame.f_code.co_names
 
 
-def line_has_keyword(frame, keyword):
-    traceback = inspect.getframeinfo(frame)
-    if traceback.code_context and len(traceback.code_context) >= 1:
-        code_line = traceback.code_context[0].strip()
-        return code_line.startswith(keyword)
-    return False
-
-
 def line_has_return(frame):
     return line_has_keyword(frame, 'return')
 
@@ -82,16 +48,24 @@ def line_has_yield(frame):
     return line_has_keyword(frame, 'yield')
 
 
+def line_has_keyword(frame, keyword):
+    traceback = inspect.getframeinfo(frame)
+    if traceback.code_context and len(traceback.code_context) >= 1:
+        code_line = traceback.code_context[0].strip()
+        return code_line.startswith(keyword)
+    return False
+
+
 class Collector:
 
     IGNORE_FILES = ['site-packages', 'unittest', 'pytest']
 
     def __init__(self):
-        self.trace_result = FlowResult()
+        self.flow_result = FlowResult()
         self.target_entity_names = None
         self.ignore_files = None
 
-        self.last_frame_line = {}
+        self.last_frame_lineno = {}
         self.target_entities_cache = {}
         self.frame_cache = {}
 
@@ -131,8 +105,8 @@ class Collector:
                 target_entity = self.ensure_target_entity(current_entity_name, target_entity_name, frame)
 
                 if target_entity and current_entity_name == target_entity.full_name:
-                    if current_entity_name not in self.last_frame_line:
-                        self.last_frame_line[current_entity_name] = -1
+                    if current_entity_name not in self.last_frame_lineno:
+                        self.last_frame_lineno[current_entity_name] = -1
 
                     # Tip from Coverage.py
                     # The call event is really a "start frame" event, and happens for
@@ -140,30 +114,26 @@ class Collector:
                     # -1 for calls, and a real offset for generators.  Use < 0 as the
                     # line number for calls, and the real line number for generators.
                     if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not is_comprehension(frame):
-                        if current_entity_name not in self.trace_result:
-                            self.trace_result[current_entity_name] = EntityFlowContainer(target_entity)
+                        if current_entity_name not in self.flow_result:
+                            self.flow_result[current_entity_name] = FlowContainer(target_entity)
 
                         run_lines = []
                         state_history = StateHistory()
-                        state_history.arg_states = get_arg_states(frame)
+                        state_history.save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
                         callers = find_callers(frame)
-                        # callers = []
-
-                        entity_result = self.trace_result[current_entity_name]
-
                         frame_id = get_frame_id(frame)
-                        entity_result.add_flow(run_lines, state_history, callers, frame_id)
+
+                        flow_container = self.flow_result[current_entity_name]
+                        flow_container.add_flow(run_lines, state_history, callers, frame_id)
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
-
                         lineno = frame.f_lineno
-                        if current_entity_name in self.trace_result:
-                            entity_result = self.trace_result[current_entity_name]
-                            if entity_result.flows:
-
+                        if current_entity_name in self.flow_result:
+                            flow_container = self.flow_result[current_entity_name]
+                            if flow_container.flows:
                                 frame_id = get_frame_id(frame)
-                                flow = entity_result.get_flow_from_id(frame_id)
+                                flow = flow_container.get_flow_from_id(frame_id)
                                 if flow:
                                     current_run_lines = flow.run_lines
                                     current_state_history = flow.state_history
@@ -172,24 +142,20 @@ class Collector:
                                         current_run_lines.append(lineno)
 
                                     elif event == 'return':
-
                                         if line_has_return(frame):
-                                            current_state_history.add_return_state(obj_value(arg), lineno)
-
+                                            current_state_history.save_return_state(obj_value(arg), lineno)
                                         elif line_has_yield(frame):
-                                            current_state_history.add_yield_state(obj_value(arg), lineno)
+                                            current_state_history.save_yield_state(obj_value(arg), lineno)
 
                                     elif event == 'exception':
-                                        current_state_history.exception_state = ExceptionState(obj_value(arg), lineno)
+                                        current_state_history.save_exception_state(obj_value(arg), lineno)
 
                                     if current_state_history:
                                         argvalues = inspect.getargvalues(frame)
-                                        for arg in argvalues.locals:
-                                            value = obj_value(argvalues.locals[arg])
-                                            current_state_history.add_var_state(name=arg, value=value, lineno=lineno,
-                                                                     inline=self.last_frame_line[current_entity_name])
+                                        inline = self.last_frame_lineno[current_entity_name]
+                                        current_state_history.save_var_states(argvalues, lineno, inline)
 
-                        self.last_frame_line[current_entity_name] = lineno
+                        self.last_frame_lineno[current_entity_name] = lineno
 
     def is_valid_frame(self, frame):
 
@@ -292,9 +258,7 @@ class Collector:
                 # The most common case: simply get self class
                 else:
                     obj_class = frame.f_locals['self'].__class__
-                # print(frame.f_lineno, obj_class)
                 method = getattr(obj_class, entity_name, None)
-                # print('==> class', obj_class, method)
                 return method
 
             # Function

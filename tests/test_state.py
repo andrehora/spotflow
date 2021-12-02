@@ -15,7 +15,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(result[target_entity_name].target_entity_name, 'change_var_state')
 
         state_history = result[target_entity_name].flows[0].state_history
-        a = state_history.vars['a'].states
+        a = state_history.var_states['a'].states
         self.assertEqual(a[0].value, '1')
         self.assertEqual(a[1].value, '2')
         self.assertEqual(a[2].value, '3')
@@ -35,7 +35,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(result[target_entity_name].target_entity_name, 'change_arg_state')
 
         state_history = result[target_entity_name].flows[0].state_history
-        a = state_history.vars['a'].states
+        a = state_history.var_states['a'].states
         self.assertEqual(a[0].value, '0')
         self.assertEqual(a[1].value, '1')
         self.assertEqual(a[2].value, '2')
@@ -51,11 +51,11 @@ class TestState(unittest.TestCase):
         self.assertEqual(result[target_entity_name].target_entity_name, 'change_var_state_with_conditional')
 
         state_history = result[target_entity_name].flows[0].state_history
-        a = state_history.vars['a'].states
+        a = state_history.var_states['a'].states
         self.assertEqual(a[0].value, '1')
         self.assertEqual(a[-1].value, '100')
 
-        first, last = state_history.vars['a'].first_last()
+        first, last = state_history.var_states['a'].first_last()
         self.assertEqual(first.value, '1')
         self.assertEqual(last.value, '100')
 
@@ -69,11 +69,11 @@ class TestState(unittest.TestCase):
         self.assertEqual(result[target_entity_name].target_entity_name, 'change_var_state_with_conditional')
 
         state_history = result[target_entity_name].flows[0].state_history
-        a = state_history.vars['a'].states
+        a = state_history.var_states['a'].states
         self.assertEqual(a[0].value, '1')
         self.assertEqual(a[-1].value, '200')
 
-        first, last = state_history.vars['a'].first_last()
+        first, last = state_history.var_states['a'].first_last()
         self.assertEqual(first.value, '1')
         self.assertEqual(last.value, '200')
 
@@ -88,11 +88,11 @@ class TestState(unittest.TestCase):
 
         state_history = result[target_entity_name].flows[0].state_history
 
-        first, last = state_history.vars['a'].first_last()
+        first, last = state_history.var_states['a'].first_last()
         self.assertEqual(first.value, '1')
         self.assertEqual(last.value, '2')
 
-        first, last = state_history.vars['b'].first_last()
+        first, last = state_history.var_states['b'].first_last()
         self.assertEqual(first.value, '10')
         self.assertEqual(last.value, '110')
 
@@ -106,7 +106,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(result[target_entity_name].target_entity_name, 'change_list_state')
 
         state_history = result[target_entity_name].flows[0].state_history
-        a_list = state_history.vars['a'].states
+        a_list = state_history.var_states['a'].states
         self.assertEqual(a_list[0].value, '[]')
         self.assertEqual(a_list[1].value, '[1]')
         self.assertEqual(a_list[2].value, '[1, 2]')
@@ -126,7 +126,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(result[target_entity_name].target_entity_name, 'change_var_state_with_loop')
 
         state_history = result[target_entity_name].flows[0].state_history
-        a = state_history.vars['a'].states
+        a = state_history.var_states['a'].states
         self.assertEqual(len(a), 10)
 
         self.assertEqual(a[0].value, '0')
@@ -154,7 +154,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(result[target_entity_name].target_entity_name, 'change_instance_var')
 
         state_history = result[target_entity_name].flows[0].state_history
-        obj = state_history.vars['self'].states
+        obj = state_history.var_states['self'].states
         self.assertEqual(len(obj), 3)
 
         self.assertEqual(obj[0].lineno, 100)
@@ -173,7 +173,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(result[target_entity_name].target_entity_name, '__init__')
 
         state_history = result[target_entity_name].flows[0].state_history
-        obj = state_history.vars['self'].states
+        obj = state_history.var_states['self'].states
         self.assertEqual(len(obj), 2)
 
         self.assertEqual(obj[0].lineno, 97)
@@ -192,7 +192,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(result[target_entity_name].target_entity_name, 'keep_var_state')
 
         state_history = result[target_entity_name].flows[0].state_history
-        a = state_history.vars['a'].states
+        a = state_history.var_states['a'].states
         self.assertEqual(a[0].value, '1')
         self.assertEqual(a[1].value, '1')
         self.assertEqual(a[2].value, '1')

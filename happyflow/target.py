@@ -11,7 +11,6 @@ class TargetEntity:
         self.filename = filename
         self.start_line = None
         self.end_line = None
-
         self.info = None
 
     def executable_lines(self):
@@ -78,8 +77,3 @@ class TargetMethod(TargetEntity):
         super().__init__(name, full_name, filename)
         self.module_name = module_name
         self.class_name = class_name
-
-
-
-
-

@@ -127,9 +127,9 @@ class TextReport:
             return_summary = f'🔴 OUT {state_result.return_state}'
             print(return_summary)
 
-        for var in state_result.vars:
+        for var in state_result.var_states:
             if var != 'self':
-                state_history = state_result.vars[var]
+                state_history = state_result.var_states[var]
                 values = state_history.distinct_sequential_values()
                 values_str = ' -> '.join(map(str, values))
                 var_summary = f'🟡 {var}: {values_str}'

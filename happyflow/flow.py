@@ -1,38 +1,41 @@
+from happyflow.utils import obj_value
+
+
 class FlowResult:
 
     def __init__(self):
-        self.entity_flows = {}
+        self.flow_containers = {}
 
     def __getitem__(self, key):
-        return self.entity_flows[key]
+        return self.flow_containers[key]
 
     def __setitem__(self, key, value):
-        self.entity_flows[key] = value
+        self.flow_containers[key] = value
 
     def __contains__(self, key):
-        return key in self.entity_flows
+        return key in self.flow_containers
 
     def __len__(self):
-        return len(self.entity_flows)
+        return len(self.flow_containers)
 
     def __repr__(self):
-        return repr(self.entity_flows)
+        return repr(self.flow_containers)
 
     def __iter__(self):
-        return iter(self.entity_flows)
+        return iter(self.flow_containers)
 
     def values(self):
-        return self.entity_flows.values()
+        return self.flow_containers.values()
 
     def filter(self, filter_func):
-        self.entity_flows = {k: v for k, v in self.entity_flows.items() if filter_func(k, v)}
+        self.flow_containers = {k: v for k, v in self.flow_containers.items() if filter_func(k, v)}
         return self
 
-    def has_flows(self, entity_name, entity_result):
-        return entity_result.flows
+    def has_flows(self, entity_name, flow_container):
+        return flow_container.flows
 
 
-class EntityFlowContainer:
+class FlowContainer:
 
     def __init__(self, target_entity):
         self.target_entity = target_entity
@@ -45,12 +48,12 @@ class EntityFlowContainer:
         self.flows.append(flow)
         self._flows[flow_id] = flow
 
-    def flow_by_lines(self, lines):
+    def flow_by_lines(self, distinct_lines):
         target_flows = []
         for flow in self.flows:
-            if tuple(flow.distinct_lines()) == tuple(lines):
+            if tuple(flow.distinct_lines()) == tuple(distinct_lines):
                 target_flows.append(flow)
-        flow_container = EntityFlowContainer(self.target_entity)
+        flow_container = FlowContainer(self.target_entity)
         flow_container.flows = target_flows
         return flow_container
 
@@ -89,7 +92,6 @@ class EntityFlowContainer:
         return cs
 
     def callers_tests(self):
-        # return []
         return set(map(lambda each: each[0], self.callers()))
 
 
@@ -110,27 +112,45 @@ class Flow:
 class StateHistory:
 
     def __init__(self):
-        self.vars = {}
-        self.arg_states = None
+        self.var_states = {}
+        self.arg_states = []
         self.yield_states = []
         self.return_state = None
         self.exception_state = None
 
-    def get_yield_states(self):
-        if len(self.yield_states) <= 1:
-            return self.yield_states
-        # Remove the last element. This one saved as an implicit return
-        return self.yield_states[:-1]
+    def save_arg_states(self, argvalues, lineno):
+        for arg in argvalues.args:
+            value = obj_value(argvalues.locals[arg])
+            arg_state = ArgState(arg, value, lineno)
+            self.arg_states.append(arg_state)
 
-    def add_var_state(self, name, value, lineno, inline):
-        self.vars[name] = self.vars.get(name, VarStateHistory(name, []))
-        self.vars[name].add(name, value, lineno, inline)
+        if argvalues.varargs:
+            value = obj_value(argvalues.locals[argvalues.varargs])
+            arg_state = ArgState(argvalues.varargs, value, lineno)
+            self.arg_states.append(arg_state)
 
-    def add_yield_state(self, value, lineno):
+        if argvalues.keywords:
+            value = obj_value(argvalues.locals[argvalues.keywords])
+            arg_state = ArgState(argvalues.keywords, value, lineno)
+            self.arg_states.append(arg_state)
+
+    def save_var_states(self, argvalues, lineno, inline):
+        for arg in argvalues.locals:
+            value = obj_value(argvalues.locals[arg])
+            self._save_var_state(name=arg, value=value, lineno=lineno, inline=inline)
+
+    def _save_var_state(self, name, value, lineno, inline):
+        self.var_states[name] = self.var_states.get(name, VarStateHistory(name, []))
+        self.var_states[name].add(name, value, lineno, inline)
+
+    def save_yield_state(self, value, lineno):
         self.yield_states.append(YieldState(value, lineno))
 
-    def add_return_state(self, value, lineno):
+    def save_return_state(self, value, lineno):
         self.return_state = ReturnState(value, lineno)
+
+    def save_exception_state(self, value, lineno):
+        self.exception_state = ExceptionState(value, lineno)
 
     def is_return_value(self, lineno):
         if self.has_return():
@@ -140,12 +160,18 @@ class StateHistory:
     def has_return(self):
         return self.return_state  # and self.return_state.has_explicit_return
 
+    def get_yield_states(self):
+        if len(self.yield_states) <= 1:
+            return self.yield_states
+        # Remove the last element. This one saved as an implicit return
+        return self.yield_states[:-1]
+
     def states_for_line(self, line_number):
         states = []
-        for var in self.vars:
+        for var in self.var_states:
             var_states = ''
             if var != 'self':
-                state_history = self.vars[var]
+                state_history = self.var_states[var]
                 for state in state_history.states:
                     if state.inline == line_number:
                         if str(state) not in var_states and state.value_has_changed:

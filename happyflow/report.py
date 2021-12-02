@@ -4,8 +4,8 @@ from happyflow.analysis import Analysis
 
 class Report:
 
-    def __init__(self, trace_result):
-        self.trace_result = trace_result.filter(trace_result.has_flows)
+    def __init__(self, flow_result):
+        self.flow_result = flow_result.filter(flow_result.has_flows)
         self.summary = []
 
     def html_report(self, report_dir):
@@ -21,12 +21,12 @@ class Report:
         CSVIndexReport(self.summary, report_dir).report()
 
     def txt_report(self):
-        Report.txt(self.trace_result)
+        Report.txt(self.flow_result)
 
     def get_report(self):
         count = 0
-        print(f'Report size: {len(self.trace_result)}')
-        for entity_result in self.trace_result.values():
+        print(f'Report size: {len(self.flow_result)}')
+        for entity_result in self.flow_result.values():
             count += 1
             print(f'{count}. {entity_result.target_entity.full_name}')
             entity_info = self.get_entity_info(entity_result)
@@ -45,10 +45,10 @@ class Report:
         flow_pos = 0
         for run_lines in most_common_run_lines:
             flow_pos += 1
-            target_run_lines = run_lines[0]
+            distinct_lines = run_lines[0]
 
-            flow_result = entity_result.flow_by_lines(target_run_lines)
-            flow_info = self.get_flow_info(entity_info, flow_result)
+            flow_container = entity_result.flow_by_lines(distinct_lines)
+            flow_info = self.get_flow_info(entity_info, flow_container)
             flow_info.pos = flow_pos
 
             entity_info.append(flow_info)
@@ -56,12 +56,12 @@ class Report:
         self.summary.append(EntitySummary(entity_info))
         return entity_info
 
-    def get_flow_info(self, entity_info, flow_result):
+    def get_flow_info(self, entity_info, flow_container):
 
         lineno = 0
         lineno_entity = entity_info.target_entity.start_line - 1
 
-        analysis = Analysis(entity_info.target_entity, flow_result)
+        analysis = Analysis(entity_info.target_entity, flow_container)
         flow_info = FlowInfo()
         flow_info.call_count = analysis.number_of_calls()
         flow_info.call_ratio = ratio(flow_info.call_count, entity_info.total_calls)
@@ -70,7 +70,7 @@ class Report:
         if return_values:
             flow_info.return_values = return_values
 
-        flow = flow_result.flows[0]
+        flow = flow_container.flows[0]
         self._found_first_run_line = False
 
         for code, html in zip(entity_info.target_entity.get_code_lines(), entity_info.target_entity.get_html_lines()):
@@ -133,10 +133,10 @@ class Report:
         return StateStatus.VAR, states
 
     @staticmethod
-    def txt(trace_result):
+    def txt(flow_result):
         from happyflow.report_txt import TextReport
-        for entity_name in trace_result:
-            entity_result = trace_result[entity_name]
+        for entity_name in flow_result:
+            entity_result = flow_result[entity_name]
             report = TextReport(entity_result.target_entity, entity_result)
             report.show_most_common_args_and_return_values(show_code=True)
 
