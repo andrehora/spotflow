@@ -21,14 +21,16 @@ class Report:
         CSVIndexReport(self.summary, report_dir).report()
 
     def txt_report(self):
-        Report.txt(self.flow_result)
+        from happyflow.report_txt import TextReport
+        for entity_info in self.get_report():
+            TextReport(entity_info).report()
 
     def get_report(self):
         count = 0
         print(f'Report size: {len(self.flow_result)}')
         for entity_result in self.flow_result.values():
             count += 1
-            print(f'{count}. {entity_result.target_entity.full_name}')
+            # print(f'{count}. {entity_result.target_entity.full_name}')
             entity_info = self.get_entity_info(entity_result)
             yield entity_info
 
@@ -131,14 +133,6 @@ class Report:
 
     def var_states(self, states):
         return StateStatus.VAR, states
-
-    @staticmethod
-    def txt(flow_result):
-        from happyflow.report_txt import TextReport
-        for entity_name in flow_result:
-            entity_result = flow_result[entity_name]
-            report = TextReport(entity_result.target_entity, entity_result)
-            report.show_most_common_args_and_return_values(show_code=True)
 
 
 class StateStatus:

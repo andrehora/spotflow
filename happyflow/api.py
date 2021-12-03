@@ -29,10 +29,10 @@ class HappyFlow:
             print(e)
 
     def csv_report(self, directory=None):
-        # try:
-        Report(self.collector.flow_result).csv_report(directory)
-        # except Exception as e:
-        #     print(e)
+        try:
+            Report(self.collector.flow_result).csv_report(directory)
+        except Exception as e:
+            print(e)
 
     def txt_report(self):
         try:
@@ -52,5 +52,16 @@ def run_and_flow_func(func, target_entities):
 
     flow.stop()
     return flow.result()
+
+
+def live(func, target_entities):
+    flow = HappyFlow()
+    flow.target_entities(target_entities)
+    flow.start()
+
+    func()
+
+    flow.stop()
+    flow.txt_report()
 
 

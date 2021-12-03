@@ -1,4 +1,5 @@
 import inspect
+import types
 from happyflow.utils import obj_value, find_full_name
 from happyflow.flow import StateHistory, FlowContainer, ArgState, ExceptionState, FlowResult
 from happyflow.target import TargetEntity
@@ -94,8 +95,8 @@ class Collector:
 
     def collect_flow(self, frame, event, arg):
 
-        if not self.is_valid_frame(frame):
-            return
+        # if not self.is_valid_frame(frame):
+        #     return
 
         current_entity_name = self.get_full_entity_name(frame)
 
@@ -199,8 +200,8 @@ class Collector:
 
     def ensure_target_entity(self, current_entity_name, target_entity_name, frame):
 
-        if not isinstance(target_entity_name, str):
-            return target_entity_name
+        if isinstance(target_entity_name, types.FunctionType) or isinstance(target_entity_name, types.MethodType):
+            return TargetEntity.build(target_entity_name)
 
         if not self.try_all_possible_targets:
             if not current_entity_name.startswith(target_entity_name):
