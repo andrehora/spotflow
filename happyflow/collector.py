@@ -1,7 +1,7 @@
 import inspect
 import types
 from happyflow.utils import obj_value, find_full_name
-from happyflow.flow import StateHistory, FlowContainer, ArgState, ExceptionState, FlowResult
+from happyflow.flow import CallState, MethodTrace, FlowResult
 from happyflow.target import TargetEntity
 from happyflow.tracer import PyTracer
 
@@ -12,16 +12,16 @@ def get_next_mro_class(current_class):
     return mro_classes[current_class_index+1]
 
 
-def find_callers(frame):
-    callers = []
-    callers.append(frame.f_code.co_name)
+def find_call_stack(frame):
+    call_stack = []
+    call_stack.append(frame.f_code.co_name)
     while 'test' not in frame.f_code.co_name:
         if not frame.f_back:
             break
         frame = frame.f_back
-        callers.append(frame.f_code.co_name)
-    callers.reverse()
-    return tuple(callers)
+        call_stack.append(frame.f_code.co_name)
+    call_stack.reverse()
+    return tuple(call_stack)
 
 
 def get_frame_id(frame):
@@ -63,11 +63,11 @@ class Collector:
 
     def __init__(self):
         self.flow_result = FlowResult()
-        self.target_entity_names = None
+        self.target_method_names = None
         self.ignore_files = None
 
         self.last_frame_lineno = {}
-        self.target_entities_cache = {}
+        self.target_methods_cache = {}
         self.frame_cache = {}
 
         self.py_tracer = PyTracer(self)
@@ -85,9 +85,9 @@ class Collector:
         self.py_tracer.stop_tracer()
 
     def init_target(self):
-        if not self.target_entity_names:
+        if not self.target_method_names:
             self.try_all_possible_targets = True
-            self.target_entity_names = ['__ALL__']
+            self.target_method_names = ['__ALL__']
 
     def init_ignore(self):
         if not self.ignore_files:
@@ -98,16 +98,16 @@ class Collector:
         # if not self.is_valid_frame(frame):
         #     return
 
-        current_entity_name = self.get_full_entity_name(frame)
+        current_method_name = self.get_full_entity_name(frame)
 
-        if current_entity_name:
-            for target_entity_name in self.target_entity_names:
+        if current_method_name:
+            for target_method_name in self.target_method_names:
 
-                target_entity = self.ensure_target_entity(current_entity_name, target_entity_name, frame)
+                target_method = self.ensure_target_method(current_method_name, target_method_name, frame)
 
-                if target_entity and current_entity_name == target_entity.full_name:
-                    if current_entity_name not in self.last_frame_lineno:
-                        self.last_frame_lineno[current_entity_name] = -1
+                if target_method and current_method_name == target_method.full_name:
+                    if current_method_name not in self.last_frame_lineno:
+                        self.last_frame_lineno[current_method_name] = -1
 
                     # Tip from Coverage.py
                     # The call event is really a "start frame" event, and happens for
@@ -115,48 +115,48 @@ class Collector:
                     # -1 for calls, and a real offset for generators.  Use < 0 as the
                     # line number for calls, and the real line number for generators.
                     if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not is_comprehension(frame):
-                        if current_entity_name not in self.flow_result:
-                            self.flow_result[current_entity_name] = FlowContainer(target_entity)
+                        if current_method_name not in self.flow_result:
+                            self.flow_result[current_method_name] = MethodTrace(target_method)
 
                         run_lines = []
-                        state_history = StateHistory()
-                        state_history.save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
-                        callers = find_callers(frame)
+                        call_state = CallState()
+                        call_state.save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
+                        callers = find_call_stack(frame)
                         frame_id = get_frame_id(frame)
 
-                        flow_container = self.flow_result[current_entity_name]
-                        flow_container.add_flow(run_lines, state_history, callers, frame_id)
+                        method_trace = self.flow_result[current_method_name]
+                        method_trace.add_call(run_lines, call_state, callers, frame_id)
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
                         lineno = frame.f_lineno
-                        if current_entity_name in self.flow_result:
-                            flow_container = self.flow_result[current_entity_name]
-                            if flow_container.flows:
+                        if current_method_name in self.flow_result:
+                            method_trace = self.flow_result[current_method_name]
+                            if method_trace.calls:
                                 frame_id = get_frame_id(frame)
-                                flow = flow_container.get_flow_from_id(frame_id)
-                                if flow:
-                                    current_run_lines = flow.run_lines
-                                    current_state_history = flow.state_history
+                                method_call = method_trace.get_call_from_id(frame_id)
+                                if method_call:
+                                    current_run_lines = method_call.run_lines
+                                    current_call_state = method_call.call_state
 
                                     if event == 'line':
                                         current_run_lines.append(lineno)
 
                                     elif event == 'return':
                                         if line_has_return(frame):
-                                            current_state_history.save_return_state(obj_value(arg), lineno)
+                                            current_call_state.save_return_state(obj_value(arg), lineno)
                                         elif line_has_yield(frame):
-                                            current_state_history.save_yield_state(obj_value(arg), lineno)
+                                            current_call_state.save_yield_state(obj_value(arg), lineno)
 
                                     elif event == 'exception':
-                                        current_state_history.save_exception_state(obj_value(arg), lineno)
+                                        current_call_state.save_exception_state(obj_value(arg), lineno)
 
-                                    if current_state_history:
+                                    if current_call_state:
                                         argvalues = inspect.getargvalues(frame)
-                                        inline = self.last_frame_lineno[current_entity_name]
-                                        current_state_history.save_var_states(argvalues, lineno, inline)
+                                        inline = self.last_frame_lineno[current_method_name]
+                                        current_call_state.save_var_states(argvalues, lineno, inline)
 
-                        self.last_frame_lineno[current_entity_name] = lineno
+                        self.last_frame_lineno[current_method_name] = lineno
 
     def is_valid_frame(self, frame):
 
@@ -170,9 +170,9 @@ class Collector:
         if self.try_all_possible_targets:
             return self.check_tests_started(frame)
 
-        for target_entity_name in self.target_entity_names:
-            if isinstance(target_entity_name, str):
-                module_name = target_entity_name.split('.')[0]
+        for target_method_name in self.target_method_names:
+            if isinstance(target_method_name, str):
+                module_name = target_method_name.split('.')[0]
                 if module_name not in frame.f_code.co_filename:
                     return False
         return True
@@ -198,28 +198,28 @@ class Collector:
 
         return None
 
-    def ensure_target_entity(self, current_entity_name, target_entity_name, frame):
+    def ensure_target_method(self, current_entity_name, target_method_name, frame):
 
-        if isinstance(target_entity_name, types.FunctionType) or isinstance(target_entity_name, types.MethodType):
-            return TargetEntity.build(target_entity_name)
+        if isinstance(target_method_name, types.FunctionType) or isinstance(target_method_name, types.MethodType):
+            return TargetEntity.build(target_method_name)
 
         if not self.try_all_possible_targets:
-            if not current_entity_name.startswith(target_entity_name):
+            if not current_entity_name.startswith(target_method_name):
                 return None
 
         if self.try_all_possible_targets:
             if 'test_' in current_entity_name:
                 return None
 
-        if current_entity_name in self.target_entities_cache:
-            return self.target_entities_cache[current_entity_name]
+        if current_entity_name in self.target_methods_cache:
+            return self.target_methods_cache[current_entity_name]
 
         func_or_method = self.ensure_func_or_method(frame)
         entity = TargetEntity.build(func_or_method)
         if not entity:
             return None
 
-        self.target_entities_cache[current_entity_name] = entity
+        self.target_methods_cache[current_entity_name] = entity
         return entity
 
     def ensure_func_or_method(self, frame):

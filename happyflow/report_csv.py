@@ -1,5 +1,4 @@
 from happyflow.utils import *
-from happyflow.libs.templite import Templite
 
 REPORT_DIR = 'report_csv'
 INDEX_FILE = 'index.csv'
@@ -26,7 +25,7 @@ class CSVCodeReport:
                     flow_data.run_count, flow_data.not_run_count]
             content.append(line)
 
-        pyfile = os.path.join(self.report_dir, self.entity_info.target_entity.full_name + '.csv')
+        pyfile = os.path.join(self.report_dir, self.entity_info.target_method.full_name + '.csv')
         write_csv(pyfile, content)
 
 

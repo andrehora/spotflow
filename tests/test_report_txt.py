@@ -7,7 +7,7 @@ class TestTXTReport(unittest.TestCase):
     def test_generate_txt_report_count_uppercase_words(self):
 
         flow = HappyFlow()
-        flow.target_entities(['tests.stub_funcs.count_uppercase_words'])
+        flow.target_methods(['tests.stub_funcs.count_uppercase_words'])
         flow.start()
 
         from tests.stub_funcs import inputs_count
@@ -19,7 +19,7 @@ class TestTXTReport(unittest.TestCase):
 
     def test_generate_txt_report_parseparam(self):
         flow = HappyFlow()
-        flow.target_entities(['tests.stub_funcs.parseparam'])
+        flow.target_methods(['tests.stub_funcs.parseparam'])
         flow.start()
 
         from tests.stub_funcs import inputs_parseparam
@@ -31,7 +31,7 @@ class TestTXTReport(unittest.TestCase):
 
     def test_generate_txt_report_splitparam(self):
         flow = HappyFlow()
-        flow.target_entities(['tests.stub_funcs.splitparam'])
+        flow.target_methods(['tests.stub_funcs.splitparam'])
         flow.start()
 
         from tests.stub_funcs import inputs_splitparam

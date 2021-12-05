@@ -31,7 +31,7 @@ class HappyFlowScript:
     def run(self, run_args, directory=None, target_entities=None, ignore_files=None):
 
         flow = HappyFlow()
-        flow.target_entities(target_entities)
+        flow.target_methods(target_entities)
         flow.ignore_files(ignore_files)
 
         runner = PyRunner(run_args, as_module=True)

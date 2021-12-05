@@ -42,7 +42,7 @@ class HTMLCodeReport:
             'entity_info': self.entity_info
         })
 
-        pyfile = os.path.join(self.report_dir, self.entity_info.target_entity.full_name + '.html')
+        pyfile = os.path.join(self.report_dir, self.entity_info.target_method.full_name + '.html')
         write_html(pyfile, html)
 
 

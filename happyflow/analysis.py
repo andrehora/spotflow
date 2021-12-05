@@ -3,22 +3,21 @@ from collections import Counter
 
 class Analysis:
 
-    def __init__(self, target_entity, flow_container):
-        self.target_entity = target_entity
-        self.flow_container = flow_container
+    def __init__(self, method_trace):
+        self.method_trace = method_trace
 
     def number_of_distinct_flows(self):
-        return len(set(self.flow_container.distinct_lines()))
+        return len(set(self.method_trace.distinct_run_lines()))
 
     def number_of_calls(self):
-        return len(self.flow_container.flows)
+        return len(self.method_trace.calls)
 
     def most_common_run_lines(self):
-        lines = self.flow_container.distinct_lines()
+        lines = self.method_trace.distinct_run_lines()
         return self._most_common(lines)
 
     def most_common_args(self):
-        args = self.flow_container.arg_states()
+        args = self.method_trace.arg_states()
         args_count = {}
 
         for arg in args:
@@ -30,7 +29,7 @@ class Analysis:
         return self.pretty_args(self.most_common_args())
 
     def most_common_return_values(self):
-        values = self.flow_container.return_states()
+        values = self.method_trace.return_states()
         return self._most_common(values)
 
     def most_common_return_values_pretty(self):

@@ -6,264 +6,264 @@ from happyflow.api import run_and_flow_func
 class TestArg(unittest.TestCase):
 
     def test_simple_return_local(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.simple_return'
+        target_method_name = 'tests.stub_sut.ReturnValue.simple_return'
         func = TestReturnValue().test_simple_return_local
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
     def test_simple_return_global(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.simple_return'
+        target_method_name = 'tests.stub_sut.ReturnValue.simple_return'
         func = TestReturnValue().test_simple_return_global
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
     def test_simple_return_with_arg(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.simple_return_with_arg'
+        target_method_name = 'tests.stub_sut.ReturnValue.simple_return_with_arg'
         func = TestReturnValue().test_simple_return_with_arg
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 3)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'msg')
         self.assertEqual(args[2].name, 'name')
 
     def test_change_return_0(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_return_0'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_return_0'
         func = TestReturnValue().test_change_return_0
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 3)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'a')
         self.assertEqual(args[2].name, 'b')
 
     def test_change_return_1(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_return_1'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_return_1'
         func = TestReturnValue().test_change_return_1
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
     def test_change_return_2(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_return_2'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_return_2'
         func = TestReturnValue().test_change_return_2
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
     def test_change_return_3(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_return_3'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_return_3'
         func = TestReturnValue().test_change_return_3
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
     def test_change_return_4(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_return_4'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_return_4'
         func = TestReturnValue().test_change_return_4
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
     def test_change_return_5(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_return_5'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_return_5'
         func = TestReturnValue().test_change_return_5
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
     def test_multiple_return_true(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.multiple_return'
+        target_method_name = 'tests.stub_sut.ReturnValue.multiple_return'
         func = TestReturnValue().test_multiple_return_true
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 2)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'enter')
 
     def test_multiple_return_false(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.multiple_return'
+        target_method_name = 'tests.stub_sut.ReturnValue.multiple_return'
         func = TestReturnValue().test_multiple_return_false
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 2)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'enter')
 
     def test_change_attribute_0(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_attribute_0'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_attribute_0'
         func = TestReturnValue().test_change_attribute_0
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 2)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'new_n')
 
     def test_change_attribute_1(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_attribute_1'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_attribute_1'
         func = TestReturnValue().test_change_attribute_1
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
     def test_change_attribute_2(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_attribute_2'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_attribute_2'
         func = TestReturnValue().test_change_attribute_2
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
     def test_change_attribute_3(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_attribute_3'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_attribute_3'
         func = TestReturnValue().test_change_attribute_3
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
     def test_change_obj_1(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_obj_1'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_obj_1'
         func = TestReturnValue().test_change_obj_1
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 1)
         self.assertEqual(args[0].name, 'self')
 
     def test_change_obj_2(self):
-        target_entity_name = 'tests.stub_sut.ReturnValue.change_obj_2'
+        target_method_name = 'tests.stub_sut.ReturnValue.change_obj_2'
         func = TestReturnValue().test_change_obj_2
 
-        result = run_and_flow_func(func, [target_entity_name])
+        result = run_and_flow_func(func, [target_method_name])
 
-        flows = result[target_entity_name].flows
+        flows = result[target_method_name].calls
         self.assertEqual(len(flows), 1)
 
-        state_history = flows[0].state_history
+        call_state = flows[0].call_state
 
-        args = state_history.arg_states
+        args = call_state.arg_states
         self.assertEqual(len(args), 4)
         self.assertEqual(args[0].name, 'self')
         self.assertEqual(args[1].name, 'add1')

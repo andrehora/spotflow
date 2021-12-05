@@ -34,7 +34,7 @@ class TextReport:
 
                 # states = state_history.states_for_line(current_line)
                 #
-                # if self.target_entity.line_is_entity_definition(current_line):
+                # if self.target_method.line_is_entity_definition(current_line):
                 #     arg_summary = ''
                 #     separator = '🟢 '
                 #     for arg in state_history.arg_states:

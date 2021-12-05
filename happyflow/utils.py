@@ -5,7 +5,6 @@ import shutil
 import trace
 import types
 import csv
-import sys
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import get_formatter_by_name
@@ -66,17 +65,17 @@ def build_from_func_or_method(func_or_method, function_class, method_class):
     try:
         if isinstance(func_or_method, types.FunctionType):
             module_name, name, filename, start_line, end_line, full_name = function_metadata(func_or_method)
-            target_entity = function_class(module_name, name, full_name, filename)
-            target_entity.start_line = start_line
-            target_entity.end_line = end_line
-            return target_entity
+            target_method = function_class(module_name, name, full_name, filename)
+            target_method.start_line = start_line
+            target_method.end_line = end_line
+            return target_method
 
         elif isinstance(func_or_method, types.MethodType):
             module_name, class_name, name, filename, start_line, end_line, full_name = method_metadata(func_or_method)
-            target_entity = method_class(module_name, class_name, name, full_name, filename)
-            target_entity.start_line = start_line
-            target_entity.end_line = end_line
-            return target_entity
+            target_method = method_class(module_name, class_name, name, full_name, filename)
+            target_method.start_line = start_line
+            target_method.end_line = end_line
+            return target_method
 
         else:
             return None

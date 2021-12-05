@@ -4,73 +4,73 @@ from happyflow.utils import obj_value
 class FlowResult:
 
     def __init__(self):
-        self.flow_containers = {}
+        self.method_traces = {}
 
     def __getitem__(self, key):
-        return self.flow_containers[key]
+        return self.method_traces[key]
 
     def __setitem__(self, key, value):
-        self.flow_containers[key] = value
+        self.method_traces[key] = value
 
     def __contains__(self, key):
-        return key in self.flow_containers
+        return key in self.method_traces
 
     def __len__(self):
-        return len(self.flow_containers)
+        return len(self.method_traces)
 
     def __repr__(self):
-        return repr(self.flow_containers)
+        return repr(self.method_traces)
 
     def __iter__(self):
-        return iter(self.flow_containers)
+        return iter(self.method_traces)
 
     def values(self):
-        return self.flow_containers.values()
+        return self.method_traces.values()
 
     def filter(self, filter_func):
-        self.flow_containers = {k: v for k, v in self.flow_containers.items() if filter_func(k, v)}
+        self.method_traces = {k: v for k, v in self.method_traces.items() if filter_func(k, v)}
         return self
 
-    def has_flows(self, entity_name, flow_container):
-        return flow_container.flows
+    def has_calls(self, entity_name, method_trace):
+        return method_trace.calls
 
 
-class FlowContainer:
+class MethodTrace:
 
-    def __init__(self, target_entity):
-        self.target_entity = target_entity
-        self.target_entity_name = target_entity.name
-        self._flows = {}
-        self.flows = []
+    def __init__(self, target_method):
+        self.target_method = target_method
+        self.target_method_name = target_method.name
+        self._calls = {}
+        self.calls = []
 
-    def add_flow(self, run_lines, state_history, callers, flow_id):
-        flow = Flow(run_lines, state_history, callers)
-        self.flows.append(flow)
-        self._flows[flow_id] = flow
+    def add_call(self, run_lines, call_state, call_stack, flow_id):
+        flow = MethodCall(run_lines, call_state, call_stack)
+        self.calls.append(flow)
+        self._calls[flow_id] = flow
 
-    def flow_by_lines(self, distinct_lines):
-        target_flows = []
-        for flow in self.flows:
-            if tuple(flow.distinct_lines()) == tuple(distinct_lines):
-                target_flows.append(flow)
-        flow_container = FlowContainer(self.target_entity)
-        flow_container.flows = target_flows
-        return flow_container
+    def group_by_run_lines(self, distinct_lines):
+        calls = []
+        for call in self.calls:
+            if tuple(call.distinct_run_lines()) == tuple(distinct_lines):
+                calls.append(call)
+        method_trace = MethodTrace(self.target_method)
+        method_trace.calls = calls
+        return method_trace
 
-    def get_flow_from_id(self, flow_id):
-        return self._flows.get(flow_id, None)
+    def get_call_from_id(self, flow_id):
+        return self._calls.get(flow_id, None)
 
-    def distinct_lines(self):
+    def distinct_run_lines(self):
         lines = []
-        for flow in self.flows:
-            lines.append(tuple(flow.distinct_lines()))
+        for flow in self.calls:
+            lines.append(tuple(flow.distinct_run_lines()))
         return lines
 
     def arg_states(self):
         args_and_values = {}
-        for flow in self.flows:
-            if flow.state_history and flow.state_history.arg_states:
-                for arg in flow.state_history.arg_states:
+        for flow in self.calls:
+            if flow.call_state and flow.call_state.arg_states:
+                for arg in flow.call_state.arg_states:
                     if arg.name != 'self':
                         value = arg.value
                         args_and_values[arg.name] = args_and_values.get(arg.name, [])
@@ -79,41 +79,41 @@ class FlowContainer:
 
     def return_states(self):
         values = []
-        for flow in self.flows:
-            if flow.state_history and flow.state_history.has_return():
-                value = flow.state_history.return_state.value
+        for flow in self.calls:
+            if flow.call_state and flow.call_state.has_return():
+                value = flow.call_state.return_state.value
                 values.append(value)
         return values
 
-    def callers(self):
+    def call_stack(self):
         cs = []
-        for flow in self.flows:
-            cs.append(flow.callers)
+        for flow in self.calls:
+            cs.append(flow.call_stack)
         return cs
 
-    def callers_tests(self):
-        return set(map(lambda each: each[0], self.callers()))
+    def call_stack_tests(self):
+        return set(map(lambda each: each[0], self.call_stack()))
 
 
-class Flow:
+class MethodCall:
 
-    def __init__(self, run_lines, state_history, callers=[]):
+    def __init__(self, run_lines, call_state, call_stack=[]):
         self.run_lines = run_lines
-        self.state_history = state_history
-        self.callers = callers
+        self.call_stack = call_stack
+        self.call_state = call_state
 
     def __eq__(self, other):
         return other == self.run_lines
 
-    def distinct_lines(self):
+    def distinct_run_lines(self):
         return sorted(list(set(self.run_lines)))
 
 
-class StateHistory:
+class CallState:
 
     def __init__(self):
-        self.var_states = {}
         self.arg_states = []
+        self.var_states = {}
         self.yield_states = []
         self.return_state = None
         self.exception_state = None
@@ -171,8 +171,8 @@ class StateHistory:
         for var in self.var_states:
             var_states = ''
             if var != 'self':
-                state_history = self.var_states[var]
-                for state in state_history.states:
+                call_state = self.var_states[var]
+                for state in call_state.states:
                     if state.inline == line_number:
                         if str(state) not in var_states and state.value_has_changed:
                             var_states += str(state) + ' '

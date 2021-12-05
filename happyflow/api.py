@@ -7,8 +7,8 @@ class HappyFlow:
     def __init__(self):
         self.collector = Collector()
 
-    def target_entities(self, target_entities):
-        self.collector.target_entity_names = target_entities
+    def target_methods(self, target_method_names):
+        self.collector.target_method_names = target_method_names
 
     def ignore_files(self, ignore):
         self.collector.ignore = ignore
@@ -23,10 +23,10 @@ class HappyFlow:
         return self.collector.flow_result
 
     def html_report(self, directory=None):
-        try:
-            Report(self.collector.flow_result).html_report(directory)
-        except Exception as e:
-            print(e)
+        # try:
+        Report(self.collector.flow_result).html_report(directory)
+        # except Exception as e:
+        #     print(e)
 
     def csv_report(self, directory=None):
         try:
@@ -43,9 +43,9 @@ class HappyFlow:
             return False
 
 
-def run_and_flow_func(func, target_entities):
+def run_and_flow_func(func, target_methods):
     flow = HappyFlow()
-    flow.target_entities(target_entities)
+    flow.target_methods(target_methods)
     flow.start()
 
     func()
@@ -54,9 +54,9 @@ def run_and_flow_func(func, target_entities):
     return flow.result()
 
 
-def live(func, target_entities):
+def live(func, target_methods):
     flow = HappyFlow()
-    flow.target_entities(target_entities)
+    flow.target_methods(target_methods)
     flow.start()
 
     func()
