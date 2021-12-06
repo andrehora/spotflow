@@ -11,7 +11,7 @@ def count_uppercase_words(text):
 
 def inputs_count():
     count_uppercase_words('')
-    # count_uppercase_words('')
+    count_uppercase_words('')
     # count_uppercase_words('a b')
     # count_uppercase_words('A B C')
 

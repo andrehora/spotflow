@@ -9,7 +9,10 @@ class TestHTMLReport(unittest.TestCase):
     # @unittest.skip
     def test_generate_html_report_from_test_class(self):
         flow = HappyFlow()
-        flow.target_methods(['email.message._parseparam'])
+        flow.target_methods(['email.message._parseparam',
+                             'email.message._formatparam',
+                             'email.message._splitparam',
+                             'email.message._unquotevalue'])
         flow.start()
 
         from test.test_email.test_email import TestMessageAPI
@@ -23,11 +26,23 @@ class TestHTMLReport(unittest.TestCase):
         result = flow.result()
         flow.html_report()
 
-        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result), 4)
+
         self.assertEqual(len(result['email.message._parseparam'].calls), 94)
+        self.assertEqual(len(result['email.message._formatparam'].calls), 35)
+        self.assertEqual(len(result['email.message._splitparam'].calls), 444)
+        self.assertEqual(len(result['email.message._unquotevalue'].calls), 98)
+
+        self.assertEqual(len(result['email.message._parseparam'].flows), 3)
+        self.assertEqual(len(result['email.message._formatparam'].flows), 4)
+        self.assertEqual(len(result['email.message._splitparam'].flows), 2)
+        self.assertEqual(len(result['email.message._unquotevalue'].flows), 1)
 
         self.assertTrue(os.path.isdir('./report_html'))
         self.assertTrue(os.path.isfile('./report_html/email.message._parseparam.html'))
+        self.assertTrue(os.path.isfile('./report_html/email.message._formatparam.html'))
+        self.assertTrue(os.path.isfile('./report_html/email.message._splitparam.html'))
+        self.assertTrue(os.path.isfile('./report_html/email.message._unquotevalue.html'))
         self.assertTrue(os.path.isfile('./report_html/index.html'))
         self.assertTrue(os.path.isfile('./report_html/style.css'))
         self.assertTrue(os.path.isfile('./report_html/highlight.css'))

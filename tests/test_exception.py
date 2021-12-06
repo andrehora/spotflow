@@ -3,7 +3,7 @@ from tests.stub_test import TestExceptions
 from happyflow.api import run_and_flow_func
 
 
-@unittest.skip
+# @unittest.skip
 class TestException(unittest.TestCase):
 
     def test_zero_division(self):
@@ -18,7 +18,7 @@ class TestException(unittest.TestCase):
         call_state = flows[0].call_state
         exception_state = call_state.exception_state
         self.assertEqual(exception_state.line, 237)
-        self.assertEqual(exception_state.value[0], ZeroDivisionError)
+        self.assertEqual(exception_state.value, ZeroDivisionError)
 
     def test_raise_generic_exception(self):
         target_method_name = 'tests.stub_sut.Exceptions.raise_generic_exception'
@@ -32,7 +32,7 @@ class TestException(unittest.TestCase):
         call_state = flows[0].call_state
         exception_state = call_state.exception_state
         self.assertEqual(exception_state.line, 240)
-        self.assertEqual(exception_state.value[0], Exception)
+        self.assertEqual(exception_state.value, Exception)
 
     def test_raise_specific_exception(self):
         target_method_name = 'tests.stub_sut.Exceptions.raise_specific_exception'
@@ -46,7 +46,7 @@ class TestException(unittest.TestCase):
         call_state = flows[0].call_state
         exception_state = call_state.exception_state
         self.assertEqual(exception_state.line, 243)
-        self.assertEqual(exception_state.value[0], TypeError)
+        self.assertEqual(exception_state.value, TypeError)
 
 
     def test_raise_exception_line_1(self):
@@ -64,7 +64,7 @@ class TestException(unittest.TestCase):
         call_state = flows[0].call_state
         exception_state = call_state.exception_state
         self.assertEqual(exception_state.line, 246)
-        self.assertEqual(exception_state.value[0], Exception)
+        self.assertEqual(exception_state.value, Exception)
 
     def test_raise_exception_line_2(self):
         target_method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
@@ -81,7 +81,7 @@ class TestException(unittest.TestCase):
         call_state = flows[0].call_state
         exception_state = call_state.exception_state
         self.assertEqual(exception_state.line, 247)
-        self.assertEqual(exception_state.value[0], Exception)
+        self.assertEqual(exception_state.value, Exception)
 
     def test_raise_exception_line_3(self):
         target_method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
@@ -98,7 +98,7 @@ class TestException(unittest.TestCase):
         call_state = flows[0].call_state
         exception_state = call_state.exception_state
         self.assertEqual(exception_state.line, 248)
-        self.assertEqual(exception_state.value[0], Exception)
+        self.assertEqual(exception_state.value, Exception)
 
     def test_raise_no_exception(self):
         target_method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
@@ -127,7 +127,7 @@ class TestException(unittest.TestCase):
         call_state = flows[0].call_state
         exception_state = call_state.exception_state
         self.assertEqual(exception_state.line, 246)
-        self.assertEqual(exception_state.value[0], Exception)
+        self.assertEqual(exception_state.value, Exception)
 
         # Flow 2
         run_lines = flows[1].run_lines
@@ -135,7 +135,7 @@ class TestException(unittest.TestCase):
         call_state = flows[1].call_state
         exception_state = call_state.exception_state
         self.assertEqual(exception_state.line, 247)
-        self.assertEqual(exception_state.value[0], Exception)
+        self.assertEqual(exception_state.value, Exception)
 
         # Flow 3
         run_lines = flows[2].run_lines
@@ -143,7 +143,7 @@ class TestException(unittest.TestCase):
         call_state = flows[2].call_state
         exception_state = call_state.exception_state
         self.assertEqual(exception_state.line, 248)
-        self.assertEqual(exception_state.value[0], Exception)
+        self.assertEqual(exception_state.value, Exception)
 
 
 if __name__ == '__main__':

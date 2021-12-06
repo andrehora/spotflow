@@ -134,7 +134,7 @@ class Collector:
                             method_trace = self.flow_result[current_method_name]
                             if method_trace.calls:
                                 frame_id = get_frame_id(frame)
-                                method_call = method_trace.get_call_from_id(frame_id)
+                                method_call = method_trace._get_call_from_id(frame_id)
                                 if method_call:
                                     current_run_lines = method_call.run_lines
                                     current_call_state = method_call.call_state
@@ -149,7 +149,7 @@ class Collector:
                                             current_call_state.save_yield_state(obj_value(arg), lineno)
 
                                     elif event == 'exception':
-                                        current_call_state.save_exception_state(obj_value(arg), lineno)
+                                        current_call_state.save_exception_state(arg[0], lineno)
 
                                     if current_call_state:
                                         argvalues = inspect.getargvalues(frame)

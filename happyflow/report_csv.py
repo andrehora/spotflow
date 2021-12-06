@@ -6,8 +6,9 @@ INDEX_FILE = 'index.csv'
 
 class CSVCodeReport:
 
-    def __init__(self, entity_info, report_dir=None):
-        self.entity_info = entity_info
+    def __init__(self, method_trace, report_dir=None):
+        self.method_trace = method_trace
+        # self.trace_info = trace_info
 
         self.report_dir = report_dir
         if not self.report_dir:
@@ -20,19 +21,19 @@ class CSVCodeReport:
         line = ['pos', 'call_count', 'call_ratio', 'run_count', 'not_run_count']
         content.append(line)
 
-        for flow_data in self.entity_info:
-            line = [flow_data.pos, flow_data.call_count, flow_data.call_ratio,
-                    flow_data.run_count, flow_data.not_run_count]
+        for flow in self.method_trace.flows:
+            line = [flow.pos, flow.info.call_count, flow.info.call_ratio,
+                    flow.info.run_count, flow.info.not_run_count]
             content.append(line)
 
-        pyfile = os.path.join(self.report_dir, self.entity_info.target_method.full_name + '.csv')
+        pyfile = os.path.join(self.report_dir, self.method_trace.target_method.full_name + '.csv')
         write_csv(pyfile, content)
 
 
 class CSVIndexReport:
 
-    def __init__(self, summary, report_dir=None):
-        self.summary = summary
+    def __init__(self, flow_result, report_dir=None):
+        self.flow_result = flow_result
 
         self.report_dir = report_dir
         if not self.report_dir:
@@ -47,9 +48,13 @@ class CSVIndexReport:
                 'top_flow_calls', 'top_flow_ratio']
         content.append(line)
 
-        for entity in self.summary:
-            line = [entity.full_name, entity.statements_count, entity.total_flows, entity.total_tests,
-                    entity.total_calls, entity.top_flow_calls, entity.top_flow_ratio]
+        for method_trace in self.flow_result:
+
+            method_info = method_trace.info
+
+            line = [method_info.full_name, method_info.statements_count, method_info.total_flows,
+                    method_info.total_tests, method_info.total_calls, method_info.top_flow_calls,
+                    method_info.top_flow_ratio]
             content.append(line)
 
         index_file = os.path.join(self.report_dir, INDEX_FILE)

@@ -1,11 +1,7 @@
-from happyflow.analysis import Analysis
-from happyflow.utils import read_file_lines
-
-
 class TextReport:
 
-    def __init__(self, entity_info):
-        self.entity_info = entity_info
+    def __init__(self, method_trace):
+        self.method_trace = method_trace
 
     def report(self):
 
@@ -14,20 +10,20 @@ class TextReport:
         # print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
 
         current_line = 0
-        for flow_data in self.entity_info:
-            for line_data in flow_data:
+        for flow in self.method_trace.flows:
+            for line in flow.info.lines:
                 current_line += 1
-                if line_data.is_run():
+                if line.is_run():
                     is_run = '✅'
-                if line_data.is_not_run():
+                if line.is_not_run():
                     is_run = '❌'
-                if line_data.is_not_exec():
+                if line.is_not_exec():
                     is_run = '⬜'
 
                 line_number_str = str(current_line).ljust(2)
                 is_run = is_run.ljust(3)
 
-                code_str = f'{line_number_str} {is_run} {line_data.code.rstrip()}'
+                code_str = f'{line_number_str} {is_run} {line.code.rstrip()}'
                 code_str = code_str.ljust(50)
                 print(code_str)
             print()

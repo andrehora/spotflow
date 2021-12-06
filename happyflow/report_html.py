@@ -15,8 +15,8 @@ REPORT_DIR = 'report_html'
 
 class HTMLCodeReport:
 
-    def __init__(self, entity_info, report_dir=None):
-        self.entity_info = entity_info
+    def __init__(self, method_trace, report_dir=None):
+        self.method_trace = method_trace
 
         self.report_dir = report_dir
         if not self.report_dir:
@@ -31,25 +31,25 @@ class HTMLCodeReport:
 
     def report(self):
 
-        for flow_data in self.entity_info:
-            for line_data in flow_data:
-                if line_data.is_run():
-                    line_data.html = f'<span class="full run">{line_data.html}</span>'
-                if line_data.is_not_run():
-                    line_data.html = f'<span class="full not_run">{line_data.html}</span>'
+        for flow in self.method_trace.flows:
+            for line in flow.info.lines:
+                if line.is_run():
+                    line.html = f'<span class="full run">{line.html}</span>'
+                if line.is_not_run():
+                    line.html = f'<span class="full not_run">{line.html}</span>'
 
         html = self.source_tmpl.render({
-            'entity_info': self.entity_info
+            'method_trace': self.method_trace
         })
 
-        pyfile = os.path.join(self.report_dir, self.entity_info.target_method.full_name + '.html')
+        pyfile = os.path.join(self.report_dir, self.method_trace.target_method.full_name + '.html')
         write_html(pyfile, html)
 
 
 class HTMLIndexReport:
 
-    def __init__(self, summary, report_dir=None):
-        self.summary = summary
+    def __init__(self, flow_result, report_dir=None):
+        self.flow_result = flow_result
 
         self.report_dir = report_dir
         if not self.report_dir:
@@ -65,7 +65,7 @@ class HTMLIndexReport:
     def report(self):
 
         html = self.source_tmpl.render({
-            'summary': self.summary
+            'flow_result': self.flow_result
         })
 
         index_file = os.path.join(self.report_dir, INDEX_FILE)

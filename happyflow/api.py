@@ -29,10 +29,10 @@ class HappyFlow:
         #     print(e)
 
     def csv_report(self, directory=None):
-        try:
-            Report(self.collector.flow_result).csv_report(directory)
-        except Exception as e:
-            print(e)
+        # try:
+        Report(self.collector.flow_result).csv_report(directory)
+        # except Exception as e:
+        #     print(e)
 
     def txt_report(self):
         try:

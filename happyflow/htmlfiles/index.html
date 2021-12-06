@@ -38,15 +38,15 @@
             </tr>
         </thead>
         <tbody>
-            {% for entity in summary %}
+            {% for trace_method in flow_result %}
             <tr class="file">
-                <td class="name left"><a href="{{entity.full_name}}.html">{{entity.full_name_escaped}}</a></td>
-                <td>{{entity.statements_count}}</td>
-                <td>{{entity.total_flows}}</td>
-                <td>{{entity.total_tests}}</td>
-                <td>{{entity.total_calls}}</td>
-                <td>{{entity.top_flow_calls}}</td>
-                <td>{{entity.top_flow_ratio}}</td>
+                <td class="name left"><a href="{{trace_method.info.full_name}}.html">{{trace_method.info.full_name_escaped}}</a></td>
+                <td>{{trace_method.info.statements_count}}</td>
+                <td>{{trace_method.info.total_flows}}</td>
+                <td>{{trace_method.info.total_tests}}</td>
+                <td>{{trace_method.info.total_calls}}</td>
+                <td>{{trace_method.info.top_flow_calls}}</td>
+                <td>{{trace_method.info.top_flow_ratio}}</td>
             </tr>
             {% endfor %}
         </tbody>
