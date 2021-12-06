@@ -177,7 +177,7 @@ class MethodFlow(CallContainer):
 
         if target_method.line_is_entity_definition(lineno_entity):
             return self.arg_state(call)
-        elif call.call_state.is_return_value(lineno_entity):
+        elif call.call_state.line_has_return_value(lineno_entity):
             return self.return_state(call)
         elif states:
             return self.var_states(states)
@@ -244,7 +244,7 @@ class CallState:
 
     def _save_var_state(self, name, value, lineno, inline):
         self.var_states[name] = self.var_states.get(name, VarStateHistory(name, []))
-        self.var_states[name].add(name, value, lineno, inline)
+        self.var_states[name].add_var_state(name, value, lineno, inline)
 
     def save_yield_state(self, value, lineno):
         self.yield_states.append(YieldState(value, lineno))
@@ -255,33 +255,33 @@ class CallState:
     def save_exception_state(self, value, lineno):
         self.exception_state = ExceptionState(value, lineno)
 
-    def is_return_value(self, lineno):
-        if self.has_return():
-            return lineno == self.return_state.lineno
-        return False
-
-    def has_return(self):
-        return self.return_state  # and self.return_state.has_explicit_return
-
     def get_yield_states(self):
         if len(self.yield_states) <= 1:
             return self.yield_states
-        # Remove the last element. This one saved as an implicit return
+        # Remove the last element. This one is saved as an implicit return
         return self.yield_states[:-1]
 
-    def states_for_line(self, line_number):
+    def states_for_line(self, lineno):
         states = []
         for var in self.var_states:
             var_states = ''
             if var != 'self':
                 call_state = self.var_states[var]
                 for state in call_state.states:
-                    if state.inline == line_number:
+                    if state.inline == lineno:
                         if str(state) not in var_states and state.value_has_changed:
                             var_states += str(state) + ' '
             if var_states:
                 states.append(var_states.strip())
         return states
+
+    def line_has_return_value(self, lineno):
+        if self.has_return():
+            return lineno == self.return_state.lineno
+        return False
+
+    def has_return(self):
+        return self.return_state is not None
 
 
 class VarStateHistory:
@@ -290,9 +290,8 @@ class VarStateHistory:
         self.name = name
         self.states = states
 
-    def add(self, name, value, lineno, inline):
+    def add_var_state(self, name, value, lineno, inline):
         value_has_changed = self.detect_value_has_changed(value)
-        # if value_has_changed:
         new_state = VarState(name, value, lineno, inline, value_has_changed)
         self.states.append(new_state)
 
@@ -305,7 +304,6 @@ class VarStateHistory:
                 return True
             return False
         except Exception as e:
-            print(e)
             return False
 
     def get_last_state(self):
@@ -316,28 +314,21 @@ class VarStateHistory:
             return self.states[0], self.states[0]
         return self.states[0], self.states[-1]
 
-    def distinct_values_str(self):
-        str_values = {}
+    def distinct_values(self):
+        values = {}
         for state in self.states:
-            if str(state.value) not in str_values:
-                str_values[str(state.value)] = None
-        return str_values.keys()
+            if state.value not in values:
+                values[state.value] = None
+        return values.keys()
 
     def distinct_sequential_values(self):
-        distinct = []
+        values = []
         b = None
         for state in self.states:
             if state.value != b:
-                distinct.append(state.value)
+                values.append(state.value)
             b = state.value
-        return distinct
-
-    def distinct_values(self):
-        str_values = {}
-        for state in self.states:
-            if state.value not in str_values:
-                str_values[state.value] = None
-        return str_values.keys()
+        return values
 
     def __str__(self):
         return f'name: {self.name}, values: {len(self.states)}'
@@ -404,5 +395,3 @@ class ExceptionState:
 
     def __eq__(self, other):
         return self.value == other
-
-

@@ -71,18 +71,3 @@ class TargetMethod:
     @staticmethod
     def build(func_or_method):
         return build_from_func_or_method(func_or_method, TargetMethod)
-
-
-# class TargetFunction(TargetEntity):
-#
-#     def __init__(self, module_name, name, full_name, filename=''):
-#         super().__init__(module_name, name, full_name, filename)
-#         # self.module_name = module_name
-#
-#
-# class TargetMethod(TargetEntity):
-#
-#     def __init__(self, module_name, class_name, name, full_name, filename=''):
-#         super().__init__(module_name, name, full_name, filename)
-#         # self.module_name = module_name
-#         self.class_name = class_name
