@@ -2,7 +2,7 @@ import inspect
 import types
 from happyflow.utils import obj_value, find_full_name
 from happyflow.flow import CallState, MethodTrace, FlowResult
-from happyflow.target import TargetEntity
+from happyflow.target import TargetMethod
 from happyflow.tracer import PyTracer
 
 
@@ -201,7 +201,7 @@ class Collector:
     def ensure_target_method(self, current_entity_name, target_method_name, frame):
 
         if isinstance(target_method_name, types.FunctionType) or isinstance(target_method_name, types.MethodType):
-            return TargetEntity.build(target_method_name)
+            return TargetMethod.build(target_method_name)
 
         if not self.try_all_possible_targets:
             if not current_entity_name.startswith(target_method_name):
@@ -215,7 +215,7 @@ class Collector:
             return self.target_methods_cache[current_entity_name]
 
         func_or_method = self.ensure_func_or_method(frame)
-        entity = TargetEntity.build(func_or_method)
+        entity = TargetMethod.build(func_or_method)
         if not entity:
             return None
 

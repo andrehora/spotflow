@@ -60,34 +60,24 @@ def find_module_name(filename):
     return filename.split('/')[-1].split('.')[0]
 
 
-def build_from_func_or_method(func_or_method, function_class, method_class):
-
+def build_from_func_or_method(func_or_method, target_class):
     try:
-        if isinstance(func_or_method, types.FunctionType):
-            module_name, name, filename, start_line, end_line, full_name = function_metadata(func_or_method)
-            target_method = function_class(module_name, name, full_name, filename)
-            target_method.start_line = start_line
-            target_method.end_line = end_line
-            return target_method
-
-        elif isinstance(func_or_method, types.MethodType):
-            module_name, class_name, name, filename, start_line, end_line, full_name = method_metadata(func_or_method)
-            target_method = method_class(module_name, class_name, name, full_name, filename)
-            target_method.start_line = start_line
-            target_method.end_line = end_line
-            return target_method
-
-        else:
-            return None
-
+        module_name, class_name, name, filename, start_line, end_line, full_name = func_or_method_metadata(func_or_method)
+        target_method = target_class(module_name, class_name, name, full_name, filename)
+        target_method.start_line = start_line
+        target_method.end_line = end_line
+        return target_method
     except Exception as e:
-        # print(e)
         return None
 
 
-def method_metadata(method):
-    func = method.__func__
-    class_name = (method.__self__.__class__.__name__)
+def func_or_method_metadata(func_or_method):
+    func = func_or_method
+    class_name = None
+    if isinstance(func_or_method, types.MethodType):
+        func = func_or_method.__func__
+        class_name = func_or_method.__self__.__class__.__name__
+
     module_name, name, filename, start_line, end_line, full_name = function_metadata(func)
     return module_name, class_name, name, filename, start_line, end_line, full_name
 

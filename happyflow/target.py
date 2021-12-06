@@ -2,10 +2,13 @@ from happyflow.utils import line_intersection, get_code_lines, get_html_lines, f
     build_from_func_or_method, escape
 
 
-class TargetEntity:
+class TargetMethod:
+
     _executable_lines = {}
 
-    def __init__(self, name, full_name, filename):
+    def __init__(self, module_name, class_name, name, full_name, filename):
+        self.module_name = module_name
+        self.class_name = class_name
         self.name = name
         self.full_name = full_name
         self.filename = filename
@@ -19,9 +22,9 @@ class TargetEntity:
         return line_intersection(exec_lines, my_lines)
 
     def ensure_executable_lines_for_file(self, filename):
-        if self.filename not in TargetEntity._executable_lines:
-            TargetEntity._executable_lines[filename] = find_executable_linenos(filename)
-        return TargetEntity._executable_lines[filename]
+        if self.filename not in TargetMethod._executable_lines:
+            TargetMethod._executable_lines[filename] = find_executable_linenos(filename)
+        return TargetMethod._executable_lines[filename]
 
     def executable_lines_count(self):
         return len(self.executable_lines())
@@ -53,6 +56,12 @@ class TargetEntity:
     def full_name_escaped(self):
         return escape(self.full_name)
 
+    def is_method(self):
+        return self.class_name is not None
+
+    def is_func(self):
+        return not self.is_method()
+
     def __str__(self):
         return self.full_name
 
@@ -61,19 +70,19 @@ class TargetEntity:
 
     @staticmethod
     def build(func_or_method):
-        return build_from_func_or_method(func_or_method, TargetFunction, TargetMethod)
+        return build_from_func_or_method(func_or_method, TargetMethod)
 
 
-class TargetFunction(TargetEntity):
-
-    def __init__(self, module_name, name, full_name, filename=''):
-        super().__init__(name, full_name, filename)
-        self.module_name = module_name
-
-
-class TargetMethod(TargetEntity):
-
-    def __init__(self, module_name, class_name, name, full_name, filename=''):
-        super().__init__(name, full_name, filename)
-        self.module_name = module_name
-        self.class_name = class_name
+# class TargetFunction(TargetEntity):
+#
+#     def __init__(self, module_name, name, full_name, filename=''):
+#         super().__init__(module_name, name, full_name, filename)
+#         # self.module_name = module_name
+#
+#
+# class TargetMethod(TargetEntity):
+#
+#     def __init__(self, module_name, class_name, name, full_name, filename=''):
+#         super().__init__(module_name, name, full_name, filename)
+#         # self.module_name = module_name
+#         self.class_name = class_name
