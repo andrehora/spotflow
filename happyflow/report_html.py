@@ -31,12 +31,12 @@ class HTMLCodeReport:
 
     def report(self):
 
-        for flow in self.method_trace.flows:
-            for line in flow.info.lines:
-                if line.is_run():
-                    line.html = f'<span class="full run">{line.html}</span>'
-                if line.is_not_run():
-                    line.html = f'<span class="full not_run">{line.html}</span>'
+        # for flow in self.method_trace.flows:
+        #     for line in flow.info.lines:
+        #         if line.is_run():
+        #             line.html = f'<span class="full run">{line.html()}</span>'
+        #         if line.is_not_run():
+        #             line.html = f'<span class="full not_run">{line.html()}</span>'
 
         html = self.source_tmpl.render({
             'method_trace': self.method_trace

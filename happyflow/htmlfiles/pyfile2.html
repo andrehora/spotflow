@@ -44,7 +44,15 @@
             <button class="not_run" title="lines not run...">{{flow.info.not_run_count}} not run</button>
             <pre>
                 {% for line in flow.info.lines %}
-<span class="num"><a href="#{{line.lineno}}">{{line.lineno}}</a></span>{{line.html}}
+                {% if line.is_run %}
+<span class="num"><a href="#{{line.lineno}}">{{line.lineno}}</a></span><span class="full run">{{line.html}}</span>
+                {% endif %}
+                {% if line.is_not_run %}
+<span class="num"><a href="#{{line.lineno}}">{{line.lineno}}</a></span><span class="full not_run">{{line.html}}</span>
+                {% endif %}
+                {% if line.is_not_exec %}
+<span class="num"><a href="#{{line.lineno}}">{{line.lineno}}</a></span><span>{{line.html}}</span>
+                {% endif %}
                 {% endfor %}
             </pre>
         {% endfor %}

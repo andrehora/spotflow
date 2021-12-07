@@ -1,10 +1,11 @@
 from happyflow.utils import line_intersection, get_code_lines, get_html_lines, find_executable_linenos, \
-    build_from_func_or_method, escape
+    build_from_func_or_method, escape, read_file_lines
 
 
 class TargetMethod:
 
     _executable_lines = {}
+    _code_lines = {}
 
     def __init__(self, module_name, class_name, name, full_name, filename):
         self.module_name = module_name
@@ -17,14 +18,14 @@ class TargetMethod:
         self.info = None
 
     def executable_lines(self):
-        exec_lines = self.ensure_executable_lines_for_file(self.filename)
+        exec_lines = self.ensure_executable_lines_for_file()
         my_lines = range(self.start_line, self.end_line + 1)
         return line_intersection(exec_lines, my_lines)
 
-    def ensure_executable_lines_for_file(self, filename):
+    def ensure_executable_lines_for_file(self):
         if self.filename not in TargetMethod._executable_lines:
-            TargetMethod._executable_lines[filename] = find_executable_linenos(filename)
-        return TargetMethod._executable_lines[filename]
+            TargetMethod._executable_lines[self.filename] = find_executable_linenos(self.filename)
+        return TargetMethod._executable_lines[self.filename]
 
     def executable_lines_count(self):
         return len(self.executable_lines())
@@ -45,13 +46,25 @@ class TargetMethod:
         return ''.join(self.get_code_lines())
 
     def get_code_lines(self):
-        return get_code_lines(self)
+        code_lines = self.ensure_code_lines_for_file()
+        return get_code_lines(self, code_lines)
+
+    def ensure_code_lines_for_file(self):
+        if self.filename not in TargetMethod._code_lines:
+            TargetMethod._code_lines[self.filename] = read_file_lines(self.filename)
+        return TargetMethod._code_lines[self.filename]
 
     def get_html_lines(self):
         return get_html_lines(self.get_code())
 
+    def get_code_line_at_lineno(self, n):
+        return self.get_code_lines()[n-1]
+
+    def get_html_line_at_lineno(self, n):
+        return self.get_html_lines()[n-1]
+
     def summary(self):
-        return f'{self.full_name()} (lines: {self.start_line}-{self.end_line})'
+        return f'{self.full_name} (lines: {self.start_line}-{self.end_line})'
 
     def full_name_escaped(self):
         return escape(self.full_name)

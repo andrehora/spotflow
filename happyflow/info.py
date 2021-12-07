@@ -51,13 +51,18 @@ class FlowInfo:
 
 class LineInfo:
 
-    def __init__(self, lineno, lineno_entity, run_status, code, html, state):
+    def __init__(self, lineno, lineno_entity, run_status, state, target_method):
         self.lineno = lineno
         self.lineno_entity = lineno_entity
         self.run_status = run_status
-        self.code = code
-        self.html = html
         self.state = state
+        self.target_method = target_method
+
+    def code(self):
+        return self.target_method.get_code_line_at_lineno(self.lineno)
+
+    def html(self):
+        return self.target_method.get_html_line_at_lineno(self.lineno)
 
     def is_run(self):
         return self.run_status == RunStatus.RUN

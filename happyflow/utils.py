@@ -171,14 +171,10 @@ def is_safe_map(obj):
     return False
 
 
-def get_code_lines(entity):
-    lines = read_file_lines(entity.filename)
+def get_code_lines(target_method, file_lines):
     code_lines = []
-    lineno = 0
-    for line in lines:
-        lineno += 1
-        if entity.has_lineno(lineno):
-            code_lines.append(line)
+    for lineno in range(target_method.start_line, target_method.end_line+1):
+        code_lines.append(file_lines[lineno-1])
     return code_lines
 
 

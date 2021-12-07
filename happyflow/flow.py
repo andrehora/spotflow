@@ -1,3 +1,4 @@
+import sys
 from happyflow.utils import obj_value
 from happyflow.info import *
 
@@ -103,7 +104,7 @@ class MethodTrace(CallContainer):
         return call
 
     def add_flow(self, flow_pos, distinct_run_lines, calls):
-        flow = MethodFlow(flow_pos, distinct_run_lines, calls)
+        flow = MethodFlow(flow_pos, distinct_run_lines, calls, self)
         self.flows.append(flow)
         return flow
 
@@ -119,34 +120,32 @@ class MethodTrace(CallContainer):
 
             call_container = self.group_by_distinct_run_lines(distinct_run_lines)
             flow = self.add_flow(flow_pos, distinct_run_lines, call_container.calls)
-            flow.update_flow_info(self)
+            flow.update_flow_info()
 
         self.info = TraceInfo(self)
 
 
 class MethodFlow(CallContainer):
 
-    def __init__(self, pos, distinct_run_lines, calls):
+    def __init__(self, pos, distinct_run_lines, calls, method_trace):
         super().__init__(calls)
         self.pos = pos
         self.distinct_run_lines = distinct_run_lines
+        self.method_trace = method_trace
         self.info = None
 
-    def update_flow_info(self, method_trace):
-
+    def update_flow_info(self):
         lineno = 0
-        lineno_entity = method_trace.target_method.start_line - 1
-        self.info = FlowInfo(self, method_trace)
-
+        target_method = self.method_trace.target_method
+        self.info = FlowInfo(self, self.method_trace)
         self._found_first_run_line = False
-        for code, html in zip(method_trace.target_method.get_code_lines(), method_trace.target_method.get_html_lines()):
 
+        for lineno_entity in range(target_method.start_line, target_method.end_line+1):
             lineno += 1
-            lineno_entity += 1
 
-            line_status = self.get_line_status(method_trace.target_method, lineno_entity)
-            line_state = self.get_line_state(method_trace.target_method, lineno_entity)
-            line_info = LineInfo(lineno, lineno_entity, line_status, code.rstrip(), html, line_state)
+            line_status = self.get_line_status(target_method, lineno_entity)
+            line_state = self.get_line_state(target_method, lineno_entity)
+            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, target_method)
 
             self.info.append(line_info)
             self.info.update_run_status(line_info)

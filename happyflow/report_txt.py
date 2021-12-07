@@ -23,7 +23,7 @@ class TextReport:
                 line_number_str = str(current_line).ljust(2)
                 is_run = is_run.ljust(3)
 
-                code_str = f'{line_number_str} {is_run} {line.code.rstrip()}'
+                code_str = f'{line_number_str} {is_run} {line.code().rstrip()}'
                 code_str = code_str.ljust(50)
                 print(code_str)
             print()
