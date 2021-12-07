@@ -16,6 +16,7 @@ class TargetMethod:
         self.start_line = None
         self.end_line = None
         self.info = None
+        self.code_lines = None
 
     def executable_lines(self):
         exec_lines = self.ensure_executable_lines_for_file()
@@ -46,10 +47,12 @@ class TargetMethod:
         return ''.join(self.get_code_lines())
 
     def get_code_lines(self):
-        code_lines = self.ensure_code_lines_for_file()
-        return get_code_lines(self, code_lines)
+        if not self.code_lines:
+            file_lines = self.ensure_file_lines()
+            self.code_lines = get_code_lines(self, file_lines)
+        return self.code_lines
 
-    def ensure_code_lines_for_file(self):
+    def ensure_file_lines(self):
         if self.filename not in TargetMethod._code_lines:
             TargetMethod._code_lines[self.filename] = read_file_lines(self.filename)
         return TargetMethod._code_lines[self.filename]

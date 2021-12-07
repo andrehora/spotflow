@@ -37,6 +37,7 @@ def read_file(filename):
 
 
 def read_file_lines(filename):
+    # print(filename)
     with open(filename) as f:
         return f.readlines()
 
