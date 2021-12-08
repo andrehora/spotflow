@@ -1,5 +1,5 @@
 from happyflow.utils import line_intersection, get_html_lines, find_executable_linenos, \
-    get_metadata, escape, read_file_lines
+    get_metadata, escape
 
 
 class TargetMethod:
@@ -17,14 +17,16 @@ class TargetMethod:
         self.start_line = None
         self.end_line = None
         self.info = None
+
+        self.code_lines = None
         self.html_lines = None
 
     def executable_lines(self):
-        exec_lines = self.ensure_executable_lines_for_file()
+        exec_lines = self._ensure_executable_lines_for_file()
         my_lines = range(self.start_line, self.end_line + 1)
         return line_intersection(exec_lines, my_lines)
 
-    def ensure_executable_lines_for_file(self):
+    def _ensure_executable_lines_for_file(self):
         if self.filename not in TargetMethod._executable_lines:
             TargetMethod._executable_lines[self.filename] = find_executable_linenos(self.filename)
         return TargetMethod._executable_lines[self.filename]
@@ -51,7 +53,9 @@ class TargetMethod:
         return self.end_line - self.start_line
 
     def get_code_lines(self):
-        return self.code.splitlines()
+        if not self.code_lines:
+            self.code_lines = self.code.splitlines()
+        return self.code_lines
 
     def get_html_lines(self):
         if not self.html_lines:
