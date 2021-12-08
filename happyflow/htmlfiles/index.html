@@ -29,6 +29,10 @@
             {# The title="" attr doesn"t work in Safari. #}
             <tr class="tablehead" title="Click to sort">
                 <th class="name left" aria-sort="none" data-shortcut="n">Function/Method</th>
+                <th aria-sort="none" data-default-sort-order="descending">has_return</th>
+                <th aria-sort="none" data-default-sort-order="descending">has_yield</th>
+                <th aria-sort="none" data-default-sort-order="descending">has_exception</th>
+                <th aria-sort="none" data-default-sort-order="descending">has_super</th>
                 <th aria-sort="none" data-default-sort-order="descending">statements</th>
                 <th aria-sort="none" data-default-sort-order="descending">flows</th>
                 <th aria-sort="none" data-default-sort-order="descending">tests</th>
@@ -41,6 +45,10 @@
             {% for method_run in flow_result %}
             <tr class="file">
                 <td class="name left"><a href="{{method_run.info.full_name}}.html">{{method_run.info.full_name_escaped}}</a></td>
+                <td>{{method_run.method_info.has_return}}</td>
+                <td>{{method_run.method_info.has_yield}}</td>
+                <td>{{method_run.method_info.has_exception}}</td>
+                <td>{{method_run.method_info.has_super}}</td>
                 <td>{{method_run.info.statements_count}}</td>
                 <td>{{method_run.info.total_flows}}</td>
                 <td>{{method_run.info.total_tests}}</td>
