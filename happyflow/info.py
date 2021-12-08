@@ -1,7 +1,7 @@
 from collections import Counter
 from happyflow.utils import line_intersection, get_html_lines, find_executable_linenos, get_metadata, escape, ratio
 
-executable_lines_per_file = {}
+executable_lines_for_file = {}
 
 
 class MethodInfo:
@@ -21,16 +21,22 @@ class MethodInfo:
         self.code_lines = None
         self.html_lines = None
 
+        # Updated in collector
+        self.has_return = False
+        self.has_yield = False
+        self.has_exception = False
+        self.has_super = False
+
     def executable_lines(self):
         exec_lines = self._ensure_executable_lines_for_file()
         my_lines = range(self.start_line, self.end_line + 1)
         return line_intersection(exec_lines, my_lines)
 
     def _ensure_executable_lines_for_file(self):
-        if self.filename not in executable_lines_per_file:
+        if self.filename not in executable_lines_for_file:
             print(self.filename)
-            executable_lines_per_file[self.filename] = find_executable_linenos(self.filename)
-        return executable_lines_per_file[self.filename]
+            executable_lines_for_file[self.filename] = find_executable_linenos(self.filename)
+        return executable_lines_for_file[self.filename]
 
     def executable_lines_count(self):
         return len(self.executable_lines())
@@ -102,8 +108,6 @@ class RunInfo:
         self.total_flows = len(method_run.flows)
         self.top_flow_calls = method_run.flows[0].info.call_count
         self.top_flow_ratio = method_run.flows[0].info.call_ratio
-
-        self.has_exception = method_run.has_exception
 
 
 class FlowInfo:

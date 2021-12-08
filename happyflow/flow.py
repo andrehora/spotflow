@@ -94,8 +94,6 @@ class MethodRun(CallContainer):
         self._calls = {}
         self.info = None
 
-        self.has_exception = False
-
     def add_call(self, run_lines, call_state, call_stack, call_id):
         call = MethodCall(run_lines, call_state, call_stack)
         self.calls.append(call)

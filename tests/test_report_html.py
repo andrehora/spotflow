@@ -17,12 +17,12 @@ class TestHTMLReport(unittest.TestCase):
 
         from test.test_email.test_email import TestMessageAPI
 
+        # Run code
         runner = unittest.TextTestRunner()
         suite = unittest.TestLoader().loadTestsFromTestCase(TestMessageAPI)
         runner.run(suite)
 
         flow.stop()
-
         result = flow.result()
         flow.html_report()
 
@@ -55,6 +55,7 @@ class TestHTMLReport(unittest.TestCase):
         flow.target_methods(['tests.stub_funcs.count_uppercase_words'])
         flow.start()
 
+        # Run code
         from tests.stub_funcs import inputs_count
         inputs_count()
 
@@ -74,6 +75,7 @@ class TestHTMLReport(unittest.TestCase):
         flow.target_methods(['tests.stub_funcs.parseparam'])
         flow.start()
 
+        # Run code
         from tests.stub_funcs import inputs_parseparam
         inputs_parseparam()
 
@@ -93,6 +95,7 @@ class TestHTMLReport(unittest.TestCase):
         flow.target_methods(['tests.stub_funcs.splitparam'])
         flow.start()
 
+        # Run code
         from tests.stub_funcs import inputs_splitparam
         inputs_splitparam()
 

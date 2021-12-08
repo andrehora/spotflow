@@ -57,6 +57,18 @@ def line_has_keyword(frame, keyword):
     return False
 
 
+def update_method_info(method_info, frame, event):
+    if event == 'return':
+        if line_has_return(frame):
+            method_info.has_return = True
+        elif line_has_yield(frame):
+            method_info.has_yield = True
+    elif event == 'exception':
+        method_info.has_exception = True
+    if method_has_super_call(frame):
+        method_info.has_super = True
+
+
 class Collector:
 
     IGNORE_FILES = ['site-packages', 'unittest', 'pytest']
@@ -106,6 +118,8 @@ class Collector:
                 method_info = self.ensure_target_method(current_method_name, method_name, frame)
 
                 if method_info and current_method_name == method_info.full_name:
+                    update_method_info(method_info, frame, event)
+
                     if current_method_name not in self.last_frame_lineno:
                         self.last_frame_lineno[current_method_name] = -1
 
