@@ -1,5 +1,7 @@
-from happyflow.utils import *
+import os
 from happyflow.libs.templite import Templite
+from happyflow.utils import full_filename, ensure_dir, copy_files, read_file, write_html
+
 
 LOCAL_DIR = 'htmlfiles'
 INDEX_FILE = 'index.html'
@@ -15,8 +17,8 @@ REPORT_DIR = 'report_html'
 
 class HTMLCodeReport:
 
-    def __init__(self, method_trace, report_dir=None):
-        self.method_trace = method_trace
+    def __init__(self, method_run, report_dir=None):
+        self.method_run = method_run
 
         self.report_dir = report_dir
         if not self.report_dir:
@@ -31,7 +33,7 @@ class HTMLCodeReport:
 
     def report(self):
 
-        # for flow in self.method_trace.flows:
+        # for flow in self.method_run.flows:
         #     for line in flow.info.lines:
         #         if line.is_run():
         #             line.html = f'<span class="full run">{line.html()}</span>'
@@ -39,10 +41,10 @@ class HTMLCodeReport:
         #             line.html = f'<span class="full not_run">{line.html()}</span>'
 
         html = self.source_tmpl.render({
-            'method_trace': self.method_trace
+            'method_run': self.method_run
         })
 
-        pyfile = os.path.join(self.report_dir, self.method_trace.target_method.full_name + '.html')
+        pyfile = os.path.join(self.report_dir, self.method_run.method_info.full_name + '.html')
         write_html(pyfile, html)
 
 

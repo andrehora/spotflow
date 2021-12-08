@@ -1,4 +1,5 @@
-from happyflow.utils import *
+import os
+from happyflow.utils import write_csv, ensure_dir
 
 REPORT_DIR = 'report_csv'
 INDEX_FILE = 'index.csv'
@@ -6,8 +7,8 @@ INDEX_FILE = 'index.csv'
 
 class CSVCodeReport:
 
-    def __init__(self, method_trace, report_dir=None):
-        self.method_trace = method_trace
+    def __init__(self, method_run, report_dir=None):
+        self.method_run = method_run
         # self.trace_info = trace_info
 
         self.report_dir = report_dir
@@ -21,12 +22,12 @@ class CSVCodeReport:
         line = ['pos', 'call_count', 'call_ratio', 'run_count', 'not_run_count']
         content.append(line)
 
-        for flow in self.method_trace.flows:
+        for flow in self.method_run.flows:
             line = [flow.pos, flow.info.call_count, flow.info.call_ratio,
                     flow.info.run_count, flow.info.not_run_count]
             content.append(line)
 
-        pyfile = os.path.join(self.report_dir, self.method_trace.target_method.full_name + '.csv')
+        pyfile = os.path.join(self.report_dir, self.method_run.method_info.full_name + '.csv')
         write_csv(pyfile, content)
 
 
@@ -48,9 +49,9 @@ class CSVIndexReport:
                 'top_flow_calls', 'top_flow_ratio']
         content.append(line)
 
-        for method_trace in self.flow_result:
+        for method_run in self.flow_result:
 
-            method_info = method_trace.info
+            method_info = method_run.info
 
             line = [method_info.full_name, method_info.statements_count, method_info.total_flows,
                     method_info.total_tests, method_info.total_calls, method_info.top_flow_calls,

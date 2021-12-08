@@ -1,11 +1,11 @@
 import unittest
-from happyflow.target import TargetMethod
+from happyflow.info import MethodInfo
 
 
 class TestTarget(unittest.TestCase):
 
     def test_is_method(self):
-        f = TargetMethod(module_name='m', class_name='c', name='foo', full_name='m.c.foo', filename='')
+        f = MethodInfo(module_name='m', class_name='c', name='foo', full_name='m.c.foo', filename='')
         self.assertEqual(f.module_name, 'm')
         self.assertEqual(f.class_name, 'c')
         self.assertEqual(f.name, 'foo')
@@ -16,7 +16,7 @@ class TestTarget(unittest.TestCase):
         self.assertFalse(f.is_func())
 
     def test_is_function(self):
-        f = TargetMethod(module_name='m', class_name=None, name='foo', full_name='m.foo', filename='')
+        f = MethodInfo(module_name='m', class_name=None, name='foo', full_name='m.foo', filename='')
         self.assertEqual(f.module_name, 'm')
         self.assertEqual(f.class_name, None)
         self.assertEqual(f.name, 'foo')

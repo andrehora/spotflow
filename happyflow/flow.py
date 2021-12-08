@@ -5,51 +5,42 @@ from happyflow.info import *
 class FlowResult:
 
     def __init__(self):
-        self.method_traces = {}
+        self.method_run = {}
 
     def compute_flows(self):
-        for method_trace in self.method_traces.values():
-            method_trace.compute_flows()
+        for method_run in self.method_run.values():
+            method_run.compute_flows()
 
     def filter(self, filter_func):
-        self.method_traces = {k: v for k, v in self.method_traces.items() if filter_func(k, v)}
+        self.method_run = {k: v for k, v in self.method_run.items() if filter_func(k, v)}
         return self
 
-    def has_calls(self, entity_name, method_trace):
-        return method_trace.calls
+    def has_calls(self, entity_name, method_run):
+        return method_run.calls
 
     def __getitem__(self, key):
-        return self.method_traces[key]
+        return self.method_run[key]
 
     def __setitem__(self, key, value):
-        self.method_traces[key] = value
+        self.method_run[key] = value
 
     def __contains__(self, key):
-        return key in self.method_traces
+        return key in self.method_run
 
     def __len__(self):
-        return len(self.method_traces)
+        return len(self.method_run)
 
     def __repr__(self):
-        return repr(self.method_traces)
+        return repr(self.method_run)
 
     def __iter__(self):
-        return iter(self.method_traces.values())
+        return iter(self.method_run.values())
 
 
 class CallContainer:
 
     def __init__(self, calls):
         self.calls = calls
-
-    def group_by_distinct_run_lines(self, distinct_lines):
-        calls = []
-        for call in self.calls:
-            if tuple(call.distinct_run_lines()) == tuple(distinct_lines):
-                calls.append(call)
-        call_container = CallContainer(self.target_method)
-        call_container.calls = calls
-        return call_container
 
     def distinct_run_lines(self):
         lines = []
@@ -82,16 +73,23 @@ class CallContainer:
             cs.append(call.call_stack)
         return cs
 
-    def call_stack_tests(self):
+    def tests(self):
         return set(map(lambda each: each[0], self.call_stack()))
+
+    def select_calls_by_lines(self, distinct_lines):
+        calls = []
+        for call in self.calls:
+            if tuple(call.distinct_run_lines()) == tuple(distinct_lines):
+                calls.append(call)
+        return calls
 
 
 class MethodRun(CallContainer):
 
-    def __init__(self, target_method):
+    def __init__(self, method_info):
         super().__init__(calls=[])
-        self.target_method = target_method
-        self.target_method_name = target_method.name
+        self.method_info = method_info
+        self.method_name = method_info.name
         self.flows = []
         self._calls = {}
         self.info = None
@@ -119,8 +117,8 @@ class MethodRun(CallContainer):
             flow_pos += 1
             distinct_run_lines = run_lines[0]
 
-            call_container = self.group_by_distinct_run_lines(distinct_run_lines)
-            flow = self.add_flow(flow_pos, distinct_run_lines, call_container.calls)
+            calls = self.select_calls_by_lines(distinct_run_lines)
+            flow = self.add_flow(flow_pos, distinct_run_lines, calls)
             flow.update_flow_info()
 
         self.info = RunInfo(self)
@@ -128,30 +126,30 @@ class MethodRun(CallContainer):
 
 class MethodFlow(CallContainer):
 
-    def __init__(self, pos, distinct_run_lines, calls, method_trace):
+    def __init__(self, pos, distinct_run_lines, calls, method_run):
         super().__init__(calls)
         self.pos = pos
         self.distinct_run_lines = distinct_run_lines
-        self.method_trace = method_trace
+        self.method_run = method_run
         self.info = None
 
     def update_flow_info(self):
         lineno = 0
-        target_method = self.method_trace.target_method
-        self.info = FlowInfo(self, self.method_trace)
+        method_info = self.method_run.method_info
+        self.info = FlowInfo(self, self.method_run)
         self._found_first_run_line = False
 
-        for lineno_entity in range(target_method.start_line, target_method.end_line+1):
+        for lineno_entity in range(method_info.start_line, method_info.end_line+1):
             lineno += 1
 
-            line_status = self.get_line_status(target_method, lineno_entity)
-            line_state = self.get_line_state(target_method, lineno_entity)
-            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, target_method)
+            line_status = self.get_line_status(method_info, lineno_entity)
+            line_state = self.get_line_state(method_info, lineno_entity)
+            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, method_info)
 
             self.info.append(line_info)
             self.info.update_run_status(line_info)
 
-    def get_line_status(self, target_method, current_line):
+    def get_line_status(self, method_info, current_line):
 
         if current_line in self.distinct_run_lines:
             self._found_first_run_line = True
@@ -165,16 +163,16 @@ class MethodFlow(CallContainer):
             return RunStatus.NOT_EXEC
 
         if current_line not in self.distinct_run_lines:
-            if not target_method.line_is_executable(current_line):
+            if not method_info.line_is_executable(current_line):
                 return RunStatus.NOT_EXEC
             return RunStatus.NOT_RUN
 
-    def get_line_state(self, target_method, lineno_entity, n=0):
+    def get_line_state(self, method_info, lineno_entity, n=0):
 
         call = self.calls[n]
         states = call.call_state.states_for_line(lineno_entity)
 
-        if target_method.line_is_entity_definition(lineno_entity):
+        if method_info.line_is_entity_definition(lineno_entity):
             return self.arg_state(call)
         elif call.call_state.line_has_return_value(lineno_entity):
             return self.return_state(call)

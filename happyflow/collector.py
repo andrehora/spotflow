@@ -2,7 +2,7 @@ import inspect
 import types
 from happyflow.utils import obj_value, find_full_name
 from happyflow.flow import CallState, MethodRun, FlowResult
-from happyflow.target import TargetMethod
+from happyflow.info import MethodInfo
 from happyflow.tracer import PyTracer
 
 
@@ -63,7 +63,7 @@ class Collector:
 
     def __init__(self):
         self.flow_result = FlowResult()
-        self.target_method_names = None
+        self.method_names = None
         self.ignore_files = None
 
         self.last_frame_lineno = {}
@@ -85,9 +85,9 @@ class Collector:
         self.py_tracer.stop_tracer()
 
     def init_target(self):
-        if not self.target_method_names:
+        if not self.method_names:
             self.try_all_possible_targets = True
-            self.target_method_names = ['__ALL__']
+            self.method_names = ['__ALL__']
 
     def init_ignore(self):
         if not self.ignore_files:
@@ -95,17 +95,17 @@ class Collector:
 
     def collect_flow(self, frame, event, arg):
 
-        # if not self.is_valid_frame(frame):
-        #     return
+        if not self.is_valid_frame(frame):
+            return
 
         current_method_name = self.get_full_entity_name(frame)
 
         if current_method_name:
-            for target_method_name in self.target_method_names:
+            for method_name in self.method_names:
 
-                target_method = self.ensure_target_method(current_method_name, target_method_name, frame)
+                method_info = self.ensure_target_method(current_method_name, method_name, frame)
 
-                if target_method and current_method_name == target_method.full_name:
+                if method_info and current_method_name == method_info.full_name:
                     if current_method_name not in self.last_frame_lineno:
                         self.last_frame_lineno[current_method_name] = -1
 
@@ -116,7 +116,7 @@ class Collector:
                     # line number for calls, and the real line number for generators.
                     if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not is_comprehension(frame):
                         if current_method_name not in self.flow_result:
-                            self.flow_result[current_method_name] = MethodRun(target_method)
+                            self.flow_result[current_method_name] = MethodRun(method_info)
 
                         run_lines = []
                         call_state = CallState()
@@ -124,17 +124,17 @@ class Collector:
                         callers = find_call_stack(frame)
                         frame_id = get_frame_id(frame)
 
-                        method_trace = self.flow_result[current_method_name]
-                        method_trace.add_call(run_lines, call_state, callers, frame_id)
+                        method_run = self.flow_result[current_method_name]
+                        method_run.add_call(run_lines, call_state, callers, frame_id)
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
                         lineno = frame.f_lineno
                         if current_method_name in self.flow_result:
-                            method_trace = self.flow_result[current_method_name]
-                            if method_trace.calls:
+                            method_run = self.flow_result[current_method_name]
+                            if method_run.calls:
                                 frame_id = get_frame_id(frame)
-                                method_call = method_trace._get_call_from_id(frame_id)
+                                method_call = method_run._get_call_from_id(frame_id)
                                 if method_call:
                                     current_run_lines = method_call.run_lines
                                     current_call_state = method_call.call_state
@@ -149,7 +149,7 @@ class Collector:
                                             current_call_state.save_yield_state(obj_value(arg), lineno)
 
                                     elif event == 'exception':
-                                        # method_trace.has_exception = True
+                                        # method_run.has_exception = True
                                         current_call_state.save_exception_state(arg[0], lineno)
                                         # if current_method_name == 'ast.literal_eval':
                                         # print(current_method_name, arg[0], inspect.getframeinfo(frame).code_context)
@@ -173,9 +173,9 @@ class Collector:
         if self.try_all_possible_targets:
             return self.check_tests_started(frame)
 
-        for target_method_name in self.target_method_names:
-            if isinstance(target_method_name, str):
-                module_name = target_method_name.split('.')[0]
+        for method_name in self.method_names:
+            if isinstance(method_name, str):
+                module_name = method_name.split('.')[0]
                 if module_name not in frame.f_code.co_filename:
                     return False
         return True
@@ -201,13 +201,13 @@ class Collector:
 
         return None
 
-    def ensure_target_method(self, current_entity_name, target_method_name, frame):
+    def ensure_target_method(self, current_entity_name, method_name, frame):
 
-        if isinstance(target_method_name, types.FunctionType) or isinstance(target_method_name, types.MethodType):
-            return TargetMethod.build(target_method_name)
+        if isinstance(method_name, types.FunctionType) or isinstance(method_name, types.MethodType):
+            return MethodInfo.build(method_name)
 
         if not self.try_all_possible_targets:
-            if not current_entity_name.startswith(target_method_name):
+            if not current_entity_name.startswith(method_name):
                 return None
 
         if self.try_all_possible_targets:
@@ -218,7 +218,7 @@ class Collector:
             return self.target_methods_cache[current_entity_name]
 
         func_or_method = self.ensure_func_or_method(frame)
-        entity = TargetMethod.build(func_or_method)
+        entity = MethodInfo.build(func_or_method)
         if not entity:
             return None
 

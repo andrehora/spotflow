@@ -6,10 +6,10 @@ from happyflow.api import run_and_flow_func
 class TestSuperFlow(unittest.TestCase):
 
     def test_super_init_a(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestSuper().test_super_init_a
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
@@ -18,10 +18,10 @@ class TestSuperFlow(unittest.TestCase):
         self.assertEqual(flows[0].run_lines, [428, 429])
 
     def test_super_init_b(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestSuper().test_super_init_b
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 2)
 
@@ -34,10 +34,10 @@ class TestSuperFlow(unittest.TestCase):
         self.assertEqual(flows[0].run_lines, [428, 429])
 
     def test_super_init_c(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestSuper().test_super_init_c
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 3)
 
@@ -54,10 +54,10 @@ class TestSuperFlow(unittest.TestCase):
         self.assertEqual(flows[0].run_lines, [428, 429])
 
     def test_super_init_d(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestSuper().test_super_init_d
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 3)
 
@@ -74,22 +74,22 @@ class TestSuperFlow(unittest.TestCase):
         self.assertEqual(flows[0].run_lines, [428, 429])
 
     def test_super_foobar_a(self):
-        target_method_name = 'tests.stub_sut.ClassA.foobar'
+        method_name = 'tests.stub_sut.ClassA.foobar'
         func = TestSuper().test_super_foobar_a
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
         self.assertEqual(flows[0].run_lines, [432])
 
     def test_super_foobar_b(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestSuper().test_super_foobar_b
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 4)
 
@@ -110,10 +110,10 @@ class TestSuperFlow(unittest.TestCase):
         self.assertEqual(flows[0].run_lines, [428, 429])
 
     def test_super_foobar_c(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestSuper().test_super_foobar_c
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 6)
 
@@ -145,10 +145,10 @@ class TestSuperFlow(unittest.TestCase):
 class TestMoreSuperFlow(unittest.TestCase):
 
     def test_super_1(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestMoreSuper().test_super_1
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 2)
 
@@ -161,10 +161,10 @@ class TestMoreSuperFlow(unittest.TestCase):
         self.assertEqual(flows[0].run_lines, [510, 511])
 
     def test_super_2(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestMoreSuper().test_super_2
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 3)
 
@@ -181,10 +181,10 @@ class TestMoreSuperFlow(unittest.TestCase):
         self.assertEqual(flows[0].run_lines, [510, 511])
 
     def test_super_3(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestMoreSuper().test_super_3
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 4)
 
@@ -208,46 +208,46 @@ class TestMoreSuperFlow(unittest.TestCase):
 class TestOverrideFlow(unittest.TestCase):
 
     def test_base_class_main(self):
-        target_method_name = 'tests.stub_sut.BaseClass.main'
+        method_name = 'tests.stub_sut.BaseClass.main'
         func = TestOverride().test_base_class_main
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
         self.assertEqual(flows[0].run_lines, [472])
 
     def test_base_class_show(self):
-        target_method_name = 'tests.stub_sut.BaseClass.show'
+        method_name = 'tests.stub_sut.BaseClass.show'
         func = TestOverride().test_base_class_show
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
         self.assertEqual(flows[0].run_lines, [475])
 
     def test_base_class_report(self):
-        target_method_name = 'tests.stub_sut.BaseClass.report'
+        method_name = 'tests.stub_sut.BaseClass.report'
         func = TestOverride().test_base_class_report
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
         self.assertEqual(flows[0].run_lines, [478])
 
     def test_override_show(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestOverride().test_override_show
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 2)
 
@@ -260,10 +260,10 @@ class TestOverrideFlow(unittest.TestCase):
         self.assertEqual(flows[0].run_lines, [472])
 
     def test_override_main(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestOverride().test_override_main
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 2)
 
@@ -276,10 +276,10 @@ class TestOverrideFlow(unittest.TestCase):
         self.assertEqual(flows[0].run_lines, [478])
 
     def test_override_main_and_report(self):
-        target_method_name = 'tests.stub_sut'
+        method_name = 'tests.stub_sut'
         func = TestOverride().test_override_main_and_report
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 3)
 

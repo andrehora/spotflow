@@ -7,12 +7,12 @@ from happyflow.api import run_and_flow_func
 class TestException(unittest.TestCase):
 
     def test_zero_division(self):
-        target_method_name = 'tests.stub_sut.Exceptions.zero_division'
+        method_name = 'tests.stub_sut.Exceptions.zero_division'
         func = TestExceptions().test_zero_division
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
 
         call_state = flows[0].call_state
@@ -21,12 +21,12 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value, ZeroDivisionError)
 
     def test_raise_generic_exception(self):
-        target_method_name = 'tests.stub_sut.Exceptions.raise_generic_exception'
+        method_name = 'tests.stub_sut.Exceptions.raise_generic_exception'
         func = TestExceptions().test_raise_generic_exception
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
 
         call_state = flows[0].call_state
@@ -35,12 +35,12 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value, Exception)
 
     def test_raise_specific_exception(self):
-        target_method_name = 'tests.stub_sut.Exceptions.raise_specific_exception'
+        method_name = 'tests.stub_sut.Exceptions.raise_specific_exception'
         func = TestExceptions().test_raise_specific_exception
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
 
         call_state = flows[0].call_state
@@ -50,12 +50,12 @@ class TestException(unittest.TestCase):
 
 
     def test_raise_exception_line_1(self):
-        target_method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
+        method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_exception_line_1
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
 
         run_lines = flows[0].run_lines
@@ -67,12 +67,12 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value, Exception)
 
     def test_raise_exception_line_2(self):
-        target_method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
+        method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_exception_line_2
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
 
         run_lines = flows[0].run_lines
@@ -84,12 +84,12 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value, Exception)
 
     def test_raise_exception_line_3(self):
-        target_method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
+        method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_exception_line_3
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
 
         run_lines = flows[0].run_lines
@@ -101,24 +101,24 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value, Exception)
 
     def test_raise_no_exception(self):
-        target_method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
+        method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_no_exception
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
 
         run_lines = flows[0].run_lines
         self.assertEqual(run_lines, [246, 247, 248])
 
     def test_flows_with_exceptions(self):
-        target_method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
+        method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_flows_with_exceptions
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 3)
 
         # Flow 1

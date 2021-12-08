@@ -6,22 +6,22 @@ from happyflow.api import run_and_flow_func
 class TestLocalMethodFlow(unittest.TestCase):
 
     def test_has_local_method_1(self):
-        target_method_name = 'tests.stub_sut.LocalMethod.has_local_method_1'
+        method_name = 'tests.stub_sut.LocalMethod.has_local_method_1'
         func = TestLocalMethod().test_has_local_method_1
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 1)
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
 
         self.assertEqual(flows[0].run_lines, [333, 334, 336])
 
     def test_has_local_method_2(self):
-        target_method_name = 'tests.stub_sut.LocalMethod.has_local_method_2'
+        method_name = 'tests.stub_sut.LocalMethod.has_local_method_2'
         func = TestLocalMethod().test_has_local_method_2
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
         self.assertEqual(len(result), 2)
 
         flows = result['tests.stub_sut.LocalMethod.has_local_method_2'].calls
@@ -34,10 +34,10 @@ class TestLocalMethodFlow(unittest.TestCase):
         self.assertEqual(flows[1].run_lines, [344])
 
     def test_has_local_method_3(self):
-        target_method_name = 'tests.stub_sut.LocalMethod.has_local_method_3'
+        method_name = 'tests.stub_sut.LocalMethod.has_local_method_3'
         func = TestLocalMethod().test_has_local_method_3
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
         self.assertEqual(len(result), 3)
 
         flows = result['tests.stub_sut.LocalMethod.has_local_method_3'].calls
@@ -53,10 +53,10 @@ class TestLocalMethodFlow(unittest.TestCase):
         self.assertEqual(flows[0].run_lines, [357])
 
     def test_has_local_method_4(self):
-        target_method_name = 'tests.stub_sut.LocalMethod.has_local_method_4'
+        method_name = 'tests.stub_sut.LocalMethod.has_local_method_4'
         func = TestLocalMethod().test_has_local_method_4
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
         self.assertEqual(len(result), 3)
 
         flows = result['tests.stub_sut.LocalMethod.has_local_method_4'].calls
@@ -76,22 +76,22 @@ class TestLocalMethodFlow(unittest.TestCase):
 class TestLocalFunctionFlow(unittest.TestCase):
 
     def test_has_local_method_1(self):
-        target_method_name = 'tests.stub_sut.has_local_function_1'
+        method_name = 'tests.stub_sut.has_local_function_1'
         func = TestLocalFunction().test_has_local_function_1
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
 
         self.assertEqual(len(result), 1)
-        flows = result[target_method_name].calls
+        flows = result[method_name].calls
         self.assertEqual(len(flows), 1)
 
         self.assertEqual(flows[0].run_lines, [378, 379, 381])
 
     def test_has_local_function_2(self):
-        target_method_name = 'tests.stub_sut.has_local_function_2'
+        method_name = 'tests.stub_sut.has_local_function_2'
         func = TestLocalFunction().test_has_local_function_2
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
         self.assertEqual(len(result), 2)
 
         flows = result['tests.stub_sut.has_local_function_2'].calls
@@ -104,10 +104,10 @@ class TestLocalFunctionFlow(unittest.TestCase):
         self.assertEqual(flows[1].run_lines, [390])
 
     def test_has_local_function_3(self):
-        target_method_name = 'tests.stub_sut.has_local_function_3'
+        method_name = 'tests.stub_sut.has_local_function_3'
         func = TestLocalFunction().test_has_local_function_3
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
         self.assertEqual(len(result), 3)
 
         flows = result['tests.stub_sut.has_local_function_3'].calls
@@ -123,10 +123,10 @@ class TestLocalFunctionFlow(unittest.TestCase):
         self.assertEqual(flows[0].run_lines, [404])
 
     def test_has_local_function_4(self):
-        target_method_name = 'tests.stub_sut.has_local_function_4'
+        method_name = 'tests.stub_sut.has_local_function_4'
         func = TestLocalFunction().test_has_local_function_4
 
-        result = run_and_flow_func(func, [target_method_name])
+        result = run_and_flow_func(func, [method_name])
         self.assertEqual(len(result), 3)
 
         flows = result['tests.stub_sut.has_local_function_4'].calls

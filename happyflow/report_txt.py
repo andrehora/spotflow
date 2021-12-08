@@ -1,7 +1,7 @@
 class TextReport:
 
-    def __init__(self, method_trace):
-        self.method_trace = method_trace
+    def __init__(self, method_run):
+        self.method_run = method_run
 
     def report(self):
 
@@ -10,7 +10,7 @@ class TextReport:
         # print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
 
         current_line = 0
-        for flow in self.method_trace.flows:
+        for flow in self.method_run.flows:
             for line in flow.info.lines:
                 current_line += 1
                 if line.is_run():

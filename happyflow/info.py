@@ -1,26 +1,114 @@
 from collections import Counter
-from happyflow.utils import ratio
+from happyflow.utils import line_intersection, get_html_lines, find_executable_linenos, get_metadata, escape, ratio
+
+
+class MethodInfo:
+
+    _executable_lines = {}
+
+    def __init__(self, module_name, class_name, name, full_name, filename, code=''):
+        self.module_name = module_name
+        self.class_name = class_name
+        self.name = name
+        self.full_name = full_name
+        self.filename = filename
+        self.code = code
+
+        self.start_line = None
+        self.end_line = None
+        self.info = None
+
+        self.code_lines = None
+        self.html_lines = None
+
+    def executable_lines(self):
+        exec_lines = self._ensure_executable_lines_for_file()
+        my_lines = range(self.start_line, self.end_line + 1)
+        return line_intersection(exec_lines, my_lines)
+
+    def _ensure_executable_lines_for_file(self):
+        if self.filename not in MethodInfo._executable_lines:
+            MethodInfo._executable_lines[self.filename] = find_executable_linenos(self.filename)
+        return MethodInfo._executable_lines[self.filename]
+
+    def executable_lines_count(self):
+        return len(self.executable_lines())
+
+    def line_is_executable(self, lineno):
+        return lineno in self.executable_lines()
+
+    def line_is_entity_definition(self, lineno):
+        return lineno == self.start_line
+
+    def has_lineno(self, lineno):
+        return lineno in range(self.start_line, self.end_line + 1)
+
+    def is_method(self):
+        return self.class_name is not None
+
+    def is_func(self):
+        return not self.is_method()
+
+    def loc(self):
+        return self.end_line - self.start_line
+
+    def get_code_lines(self):
+        if not self.code_lines:
+            self.code_lines = self.code.splitlines()
+        return self.code_lines
+
+    def get_html_lines(self):
+        if not self.html_lines:
+            self.html_lines = get_html_lines(self.code)
+        return self.html_lines
+
+    def get_code_line_at_lineno(self, n):
+        return self.get_code_lines()[n-1]
+
+    def get_html_line_at_lineno(self, n):
+        return self.get_html_lines()[n-1]
+
+    def full_name_escaped(self):
+        return escape(self.full_name)
+
+    def summary(self):
+        return f'{self.full_name} (lines: {self.start_line}-{self.end_line})'
+
+    def __str__(self):
+        return self.full_name
+
+    def __iter__(self):
+        return iter([self])
+
+    @staticmethod
+    def build(func_or_method):
+        module_name, class_name, name, filename, start_line, end_line, full_name, code = get_metadata(func_or_method)
+        method_info = MethodInfo(module_name, class_name, name, full_name, filename, code)
+        method_info.start_line = start_line
+        method_info.end_line = end_line
+        return method_info
+
 
 
 class RunInfo:
 
-    def __init__(self, method_trace):
-        self.full_name = method_trace.target_method.full_name
-        self.full_name_escaped = method_trace.target_method.full_name_escaped()
-        self.total_calls = len(method_trace.calls)
-        self.total_tests = len(method_trace.call_stack_tests())
-        self.statements_count = method_trace.target_method.executable_lines_count()
+    def __init__(self, method_run):
+        self.full_name = method_run.method_info.full_name
+        self.full_name_escaped = method_run.method_info.full_name_escaped()
+        self.total_calls = len(method_run.calls)
+        self.total_tests = len(method_run.tests())
+        self.statements_count = method_run.method_info.executable_lines_count()
 
-        self.total_flows = len(method_trace.flows)
-        self.top_flow_calls = method_trace.flows[0].info.call_count
-        self.top_flow_ratio = method_trace.flows[0].info.call_ratio
+        self.total_flows = len(method_run.flows)
+        self.top_flow_calls = method_run.flows[0].info.call_count
+        self.top_flow_ratio = method_run.flows[0].info.call_ratio
 
-        self.has_exception = method_trace.has_exception
+        self.has_exception = method_run.has_exception
 
 
 class FlowInfo:
 
-    def __init__(self, method_flow, method_trace):
+    def __init__(self, method_flow, method_run):
         self.lines = []
 
         self.run_count = 0
@@ -28,7 +116,7 @@ class FlowInfo:
         self.not_exec_count = 0
 
         self.call_count = len(method_flow.calls)
-        self.call_ratio = ratio(self.call_count, len(method_trace.calls))
+        self.call_ratio = ratio(self.call_count, len(method_run.calls))
 
         self.arg_values = Analysis(method_flow).most_common_args_pretty()
         self.return_values = Analysis(method_flow).most_common_return_values_pretty()
@@ -53,18 +141,18 @@ class FlowInfo:
 
 class LineInfo:
 
-    def __init__(self, lineno, lineno_entity, run_status, state, target_method):
+    def __init__(self, lineno, lineno_entity, run_status, state, method_info):
         self.lineno = lineno
         self.lineno_entity = lineno_entity
         self.run_status = run_status
         self.state = state
-        self.target_method = target_method
+        self.method_info = method_info
 
     def code(self):
-        return self.target_method.get_code_line_at_lineno(self.lineno)
+        return self.method_info.get_code_line_at_lineno(self.lineno)
 
     def html(self):
-        return self.target_method.get_html_line_at_lineno(self.lineno)
+        return self.method_info.get_html_line_at_lineno(self.lineno)
 
     def is_run(self):
         return self.run_status == RunStatus.RUN

@@ -7,8 +7,8 @@ class HappyFlow:
     def __init__(self):
         self.collector = Collector()
 
-    def target_methods(self, target_method_names):
-        self.collector.target_method_names = target_method_names
+    def target_methods(self, method_names):
+        self.collector.method_names = method_names
 
     def ignore_files(self, ignore):
         self.collector.ignore = ignore
