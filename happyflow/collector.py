@@ -1,7 +1,7 @@
 import inspect
 import types
 from happyflow.utils import obj_value, find_full_name
-from happyflow.flow import CallState, MethodTrace, FlowResult
+from happyflow.flow import CallState, MethodRun, FlowResult
 from happyflow.target import TargetMethod
 from happyflow.tracer import PyTracer
 
@@ -116,7 +116,7 @@ class Collector:
                     # line number for calls, and the real line number for generators.
                     if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not is_comprehension(frame):
                         if current_method_name not in self.flow_result:
-                            self.flow_result[current_method_name] = MethodTrace(target_method)
+                            self.flow_result[current_method_name] = MethodRun(target_method)
 
                         run_lines = []
                         call_state = CallState()
@@ -149,7 +149,10 @@ class Collector:
                                             current_call_state.save_yield_state(obj_value(arg), lineno)
 
                                     elif event == 'exception':
+                                        # method_trace.has_exception = True
                                         current_call_state.save_exception_state(arg[0], lineno)
+                                        # if current_method_name == 'ast.literal_eval':
+                                        # print(current_method_name, arg[0], inspect.getframeinfo(frame).code_context)
 
                                     if current_call_state:
                                         argvalues = inspect.getargvalues(frame)

@@ -1,4 +1,3 @@
-import sys
 from happyflow.utils import obj_value
 from happyflow.info import *
 
@@ -87,7 +86,7 @@ class CallContainer:
         return set(map(lambda each: each[0], self.call_stack()))
 
 
-class MethodTrace(CallContainer):
+class MethodRun(CallContainer):
 
     def __init__(self, target_method):
         super().__init__(calls=[])
@@ -96,6 +95,8 @@ class MethodTrace(CallContainer):
         self.flows = []
         self._calls = {}
         self.info = None
+
+        self.has_exception = False
 
     def add_call(self, run_lines, call_state, call_stack, call_id):
         call = MethodCall(run_lines, call_state, call_stack)
@@ -122,7 +123,7 @@ class MethodTrace(CallContainer):
             flow = self.add_flow(flow_pos, distinct_run_lines, call_container.calls)
             flow.update_flow_info()
 
-        self.info = TraceInfo(self)
+        self.info = RunInfo(self)
 
 
 class MethodFlow(CallContainer):
@@ -171,7 +172,6 @@ class MethodFlow(CallContainer):
     def get_line_state(self, target_method, lineno_entity, n=0):
 
         call = self.calls[n]
-
         states = call.call_state.states_for_line(lineno_entity)
 
         if target_method.line_is_entity_definition(lineno_entity):

@@ -61,26 +61,15 @@ def find_module_name(filename):
     return filename.split('/')[-1].split('.')[0]
 
 
-def build_from_func_or_method(func_or_method, target_class):
-    try:
-        module_name, class_name, name, filename, start_line, end_line, full_name = func_or_method_metadata(func_or_method)
-        target_method = target_class(module_name, class_name, name, full_name, filename)
-        target_method.start_line = start_line
-        target_method.end_line = end_line
-        return target_method
-    except Exception as e:
-        return None
-
-
-def func_or_method_metadata(func_or_method):
+def get_metadata(func_or_method):
     func = func_or_method
     class_name = None
     if isinstance(func_or_method, types.MethodType):
         func = func_or_method.__func__
         class_name = func_or_method.__self__.__class__.__name__
 
-    module_name, name, filename, start_line, end_line, full_name = function_metadata(func)
-    return module_name, class_name, name, filename, start_line, end_line, full_name
+    module_name, name, filename, start_line, end_line, full_name, code = function_metadata(func)
+    return module_name, class_name, name, filename, start_line, end_line, full_name, code
 
 
 def function_metadata(func):
@@ -89,11 +78,10 @@ def function_metadata(func):
     filename = func.__code__.co_filename
     full_name = find_full_name(func)
 
-    source = inspect.getsource(func)
-
+    code = inspect.getsource(func)
     start_line = func.__code__.co_firstlineno
-    end_line = get_end_line(start_line, source)
-    return module_name, name, filename, start_line, end_line, full_name
+    end_line = get_end_line(start_line, code)
+    return module_name, name, filename, start_line, end_line, full_name, code
 
 
 def find_full_name(func_or_method):
@@ -170,13 +158,6 @@ def is_safe_map(obj):
                 return True
             return False
     return False
-
-
-def get_code_lines(target_method, file_lines):
-    code_lines = []
-    for lineno in range(target_method.start_line, target_method.end_line+1):
-        code_lines.append(file_lines[lineno-1])
-    return code_lines
 
 
 def get_html_lines(code):

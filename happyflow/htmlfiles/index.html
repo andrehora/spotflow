@@ -29,6 +29,7 @@
             {# The title="" attr doesn"t work in Safari. #}
             <tr class="tablehead" title="Click to sort">
                 <th class="name left" aria-sort="none" data-shortcut="n">Function/Method</th>
+                <th aria-sort="none" data-default-sort-order="descending">has_exception</th>
                 <th aria-sort="none" data-default-sort-order="descending">statements</th>
                 <th aria-sort="none" data-default-sort-order="descending">flows</th>
                 <th aria-sort="none" data-default-sort-order="descending">tests</th>
@@ -41,6 +42,7 @@
             {% for trace_method in flow_result %}
             <tr class="file">
                 <td class="name left"><a href="{{trace_method.info.full_name}}.html">{{trace_method.info.full_name_escaped}}</a></td>
+                <td>{{trace_method.info.has_exception}}</td>
                 <td>{{trace_method.info.statements_count}}</td>
                 <td>{{trace_method.info.total_flows}}</td>
                 <td>{{trace_method.info.total_tests}}</td>

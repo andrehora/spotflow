@@ -1,25 +1,23 @@
-from happyflow.utils import line_intersection, get_code_lines, get_html_lines, find_executable_linenos, \
-    build_from_func_or_method, escape, read_file_lines
+from happyflow.utils import line_intersection, get_html_lines, find_executable_linenos, \
+    get_metadata, escape, read_file_lines
 
 
 class TargetMethod:
 
     _executable_lines = {}
-    _code_lines = {}
 
-    def __init__(self, module_name, class_name, name, full_name, filename):
+    def __init__(self, module_name, class_name, name, full_name, filename, code=''):
         self.module_name = module_name
         self.class_name = class_name
         self.name = name
         self.full_name = full_name
         self.filename = filename
+        self.code = code
+
         self.start_line = None
         self.end_line = None
         self.info = None
-
-        self.code_lines = None
         self.html_lines = None
-        self.plain_code = None
 
     def executable_lines(self):
         exec_lines = self.ensure_executable_lines_for_file()
@@ -52,20 +50,12 @@ class TargetMethod:
     def loc(self):
         return self.end_line - self.start_line
 
-    def get_code(self):
-        if not self.plain_code:
-            self.plain_code = ''.join(self.get_code_lines())
-        return self.plain_code
-
     def get_code_lines(self):
-        if not self.code_lines:
-            file_lines = self.ensure_file_lines()
-            self.code_lines = get_code_lines(self, file_lines)
-        return self.code_lines
+        return self.code.splitlines()
 
     def get_html_lines(self):
         if not self.html_lines:
-            self.html_lines = get_html_lines(self.get_code())
+            self.html_lines = get_html_lines(self.code)
         return self.html_lines
 
     def get_code_line_at_lineno(self, n):
@@ -73,11 +63,6 @@ class TargetMethod:
 
     def get_html_line_at_lineno(self, n):
         return self.get_html_lines()[n-1]
-
-    def ensure_file_lines(self):
-        if self.filename not in TargetMethod._code_lines:
-            TargetMethod._code_lines[self.filename] = read_file_lines(self.filename)
-        return TargetMethod._code_lines[self.filename]
 
     def full_name_escaped(self):
         return escape(self.full_name)
@@ -93,4 +78,8 @@ class TargetMethod:
 
     @staticmethod
     def build(func_or_method):
-        return build_from_func_or_method(func_or_method, TargetMethod)
+        module_name, class_name, name, filename, start_line, end_line, full_name, code = get_metadata(func_or_method)
+        target_method = TargetMethod(module_name, class_name, name, full_name, filename, code)
+        target_method.start_line = start_line
+        target_method.end_line = end_line
+        return target_method

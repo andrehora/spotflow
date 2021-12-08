@@ -47,7 +47,7 @@ class TestHTMLReport(unittest.TestCase):
         self.assertTrue(os.path.isfile('./report_html/style.css'))
         self.assertTrue(os.path.isfile('./report_html/highlight.css'))
         self.assertTrue(os.path.isfile('./report_html/coverage_html.js'))
-        shutil.rmtree('./report_html')
+        # shutil.rmtree('./report_html')
 
     def test_generate_html_report_count_uppercase_words(self):
 

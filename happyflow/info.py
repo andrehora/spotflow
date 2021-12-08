@@ -2,7 +2,7 @@ from collections import Counter
 from happyflow.utils import ratio
 
 
-class TraceInfo:
+class RunInfo:
 
     def __init__(self, method_trace):
         self.full_name = method_trace.target_method.full_name
@@ -14,6 +14,8 @@ class TraceInfo:
         self.total_flows = len(method_trace.flows)
         self.top_flow_calls = method_trace.flows[0].info.call_count
         self.top_flow_ratio = method_trace.flows[0].info.call_ratio
+
+        self.has_exception = method_trace.has_exception
 
 
 class FlowInfo:
