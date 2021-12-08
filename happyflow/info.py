@@ -1,10 +1,10 @@
 from collections import Counter
 from happyflow.utils import line_intersection, get_html_lines, find_executable_linenos, get_metadata, escape, ratio
 
+executable_lines_per_file = {}
+
 
 class MethodInfo:
-
-    _executable_lines = {}
 
     def __init__(self, module_name, class_name, name, full_name, filename, code=''):
         self.module_name = module_name
@@ -27,9 +27,10 @@ class MethodInfo:
         return line_intersection(exec_lines, my_lines)
 
     def _ensure_executable_lines_for_file(self):
-        if self.filename not in MethodInfo._executable_lines:
-            MethodInfo._executable_lines[self.filename] = find_executable_linenos(self.filename)
-        return MethodInfo._executable_lines[self.filename]
+        if self.filename not in executable_lines_per_file:
+            print(self.filename)
+            executable_lines_per_file[self.filename] = find_executable_linenos(self.filename)
+        return executable_lines_per_file[self.filename]
 
     def executable_lines_count(self):
         return len(self.executable_lines())
@@ -89,7 +90,6 @@ class MethodInfo:
         return method_info
 
 
-
 class RunInfo:
 
     def __init__(self, method_run):
@@ -108,7 +108,7 @@ class RunInfo:
 
 class FlowInfo:
 
-    def __init__(self, method_flow, method_run):
+    def __init__(self, method_flow, total_calls):
         self.lines = []
 
         self.run_count = 0
@@ -116,7 +116,7 @@ class FlowInfo:
         self.not_exec_count = 0
 
         self.call_count = len(method_flow.calls)
-        self.call_ratio = ratio(self.call_count, len(method_run.calls))
+        self.call_ratio = ratio(self.call_count, total_calls)
 
         self.arg_values = Analysis(method_flow).most_common_args_pretty()
         self.return_values = Analysis(method_flow).most_common_return_values_pretty()

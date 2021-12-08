@@ -149,10 +149,7 @@ class Collector:
                                             current_call_state.save_yield_state(obj_value(arg), lineno)
 
                                     elif event == 'exception':
-                                        # method_run.has_exception = True
                                         current_call_state.save_exception_state(arg[0], lineno)
-                                        # if current_method_name == 'ast.literal_eval':
-                                        # print(current_method_name, arg[0], inspect.getframeinfo(frame).code_context)
 
                                     if current_call_state:
                                         argvalues = inspect.getargvalues(frame)

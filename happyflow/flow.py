@@ -102,8 +102,8 @@ class MethodRun(CallContainer):
         self._calls[call_id] = call
         return call
 
-    def add_flow(self, flow_pos, distinct_run_lines, calls):
-        flow = MethodFlow(flow_pos, distinct_run_lines, calls, self)
+    def add_flow(self, flow_pos, distinct_run_lines, flow_calls):
+        flow = MethodFlow(flow_pos, distinct_run_lines, flow_calls, self)
         self.flows.append(flow)
         return flow
 
@@ -117,8 +117,8 @@ class MethodRun(CallContainer):
             flow_pos += 1
             distinct_run_lines = run_lines[0]
 
-            calls = self.select_calls_by_lines(distinct_run_lines)
-            flow = self.add_flow(flow_pos, distinct_run_lines, calls)
+            flow_calls = self.select_calls_by_lines(distinct_run_lines)
+            flow = self.add_flow(flow_pos, distinct_run_lines, flow_calls)
             flow.update_flow_info()
 
         self.info = RunInfo(self)
@@ -132,11 +132,14 @@ class MethodFlow(CallContainer):
         self.distinct_run_lines = distinct_run_lines
         self.method_run = method_run
         self.info = None
+        self._found_first_run_line = False
 
     def update_flow_info(self):
+
         lineno = 0
         method_info = self.method_run.method_info
-        self.info = FlowInfo(self, self.method_run)
+
+        self.info = FlowInfo(self, len(self.method_run.calls))
         self._found_first_run_line = False
 
         for lineno_entity in range(method_info.start_line, method_info.end_line+1):
