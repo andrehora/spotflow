@@ -213,8 +213,8 @@ class MethodCall:
 class CallState:
 
     def __init__(self):
-        self.arg_states = []
         self.var_states = {}
+        self.arg_states = []
         self.yield_states = []
         self.return_state = None
         self.exception_state = None
