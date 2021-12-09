@@ -44,7 +44,7 @@
         <tbody>
             {% for method_run in flow_result %}
             <tr class="file">
-                <td class="name left"><a href="{{method_run.info.full_name}}.html">{{method_run.info.full_name_escaped}}</a></td>
+                <td class="name left"><a href="{{method_run.method_info.full_name}}.html">{{method_run.method_info.full_name_escaped}}</a></td>
                 <td>{{method_run.method_info.has_return}}</td>
                 <td>{{method_run.method_info.has_yield}}</td>
                 <td>{{method_run.method_info.has_exception}}</td>

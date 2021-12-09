@@ -51,11 +51,9 @@ class CSVIndexReport:
 
         for method_run in self.flow_result:
 
-            method_info = method_run.info
-
-            line = [method_info.full_name, method_info.statements_count, method_info.total_flows,
-                    method_info.total_tests, method_info.total_calls, method_info.top_flow_calls,
-                    method_info.top_flow_ratio]
+            line = [method_run.method_info.full_name, method_run.info.statements_count, method_run.info.total_flows,
+                    method_run.info.total_tests, method_run.info.total_calls, method_run.info.top_flow_calls,
+                    method_run.info.top_flow_ratio]
             content.append(line)
 
         index_file = os.path.join(self.report_dir, INDEX_FILE)

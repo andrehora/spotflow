@@ -99,8 +99,8 @@ class MethodInfo:
 class RunInfo:
 
     def __init__(self, method_run):
-        self.full_name = method_run.method_info.full_name
-        self.full_name_escaped = method_run.method_info.full_name_escaped()
+        # self.full_name = method_run.method_info.full_name
+        # self.full_name_escaped = method_run.method_info.full_name_escaped()
         self.total_calls = len(method_run.calls)
         self.total_tests = len(method_run.tests())
         self.statements_count = method_run.method_info.executable_lines_count()
