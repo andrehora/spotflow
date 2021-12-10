@@ -118,7 +118,8 @@ button { font-family: inherit; font-size: inherit; border: 1px solid; border-rad
 
 .calls { background-color: #bbebff }
 .input { background-color: #f6f8fa; }
-.output { background-color: #f6f8fa; }
+.output { background-color: #e2e4e6; }
+.warning { background-color: #FFFFAA; }
 
 .truncate {
   width: 250px;

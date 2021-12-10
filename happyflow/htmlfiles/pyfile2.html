@@ -38,15 +38,15 @@
             {% endfor %}
 
             {% if flow.info.yield_values %}
-                <p><button class="output"><span>&#8592; yield</span></button> {{flow.info.yield_values}}</p>
+                <p><button class="output"><span>&#8647; yield</span></button> {{flow.info.yield_values}}</p>
             {% endif %}
 
             {% if flow.info.return_values %}
-                <p><button class="output"><span>&#8592; return</span></button> {{flow.info.return_values}}</p>
+                <p><button class="output"><span>&#8617; return</span></button> {{flow.info.return_values}}</p>
             {% endif %}
 
             {% if flow.info.exception_values %}
-                <p><button class="output"><span>&#9888; exception</span></button> {{flow.info.exception_values}}</p>
+                <p><button class="warning"><span>&#9888; exception</span></button> {{flow.info.exception_values}}</p>
             {% endif %}
 
             <button class="run" title="lines run...">{{flow.info.run_count}} run</button>
