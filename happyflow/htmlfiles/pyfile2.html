@@ -24,20 +24,29 @@
                 <h1>Method: {{traced_method.info.full_name_escaped}}</h1>
                 <span>{{traced_method.info.total_flows}} flows,</span>
                 <span>{{traced_method.info.total_tests}} tests, </span>
-                <span>{{traced_method.info.total_calls}} calls </span>
-<!--                <span>{{traced_method.info.executable_lines_count}} statements</span>-->
+                <span>{{traced_method.info.total_calls}} calls, </span>
+                <span>{{traced_method.info.total_exceptions}} exceptions </span>
+                <br><a href="./index.html">Back</a>
             </div>
         </div>
 
         {% for flow in traced_method.flows %}
-            <p><b>Flow {{flow.pos}}</b>: {{flow.info.call_count}} calls ({{flow.info.call_ratio}})</p>
+            <p><b>Flow {{flow.pos}}</b>: {{flow.info.call_count}} calls ({{flow.info.call_ratio}}%)</p>
 
             {% for each in flow.info.arg_values %}
-            <p><button class="input"><span>&#8594;</span> {{each.name}}</button> {{each.value}}</p>
+                <p><button class="input"><span>&#8594;</span> {{each.name}}</button> {{each.value}}</p>
             {% endfor %}
 
+            {% if flow.info.yield_values %}
+                <p><button class="output"><span>&#8592; yield</span></button> {{flow.info.yield_values}}</p>
+            {% endif %}
+
             {% if flow.info.return_values %}
-                <p><button class="output"><span>&#8592;</span></button> {{flow.info.return_values}}</p>
+                <p><button class="output"><span>&#8592; return</span></button> {{flow.info.return_values}}</p>
+            {% endif %}
+
+            {% if flow.info.exception_values %}
+                <p><button class="output"><span>&#9888; exception</span></button> {{flow.info.exception_values}}</p>
             {% endif %}
 
             <button class="run" title="lines run...">{{flow.info.run_count}} run</button>

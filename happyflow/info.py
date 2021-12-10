@@ -36,6 +36,8 @@ class MethodInfo:
         self.top_flow_calls = traced_method.flows[0].info.call_count
         self.top_flow_ratio = traced_method.flows[0].info.call_ratio
 
+        self.total_exceptions = len(traced_method.exception_states())
+
     def executable_lines(self):
         exec_lines = self._ensure_executable_lines_for_file()
         my_lines = range(self.start_line, self.end_line + 1)
@@ -119,6 +121,8 @@ class FlowInfo:
 
         self.arg_values = Analysis(method_flow).most_common_args_pretty()
         self.return_values = Analysis(method_flow).most_common_return_values_pretty()
+        self.yield_values = Analysis(method_flow).most_common_yield_values_pretty()
+        self.exception_values = Analysis(method_flow).most_common_exception_values_pretty()
 
     def append(self, other):
         self.lines.append(other)
@@ -208,6 +212,20 @@ class Analysis:
 
     def most_common_return_values_pretty(self):
         return self.pretty_return_values(self.most_common_return_values())
+
+    def most_common_yield_values(self):
+        values = self.call_container.yield_states()
+        return self._most_common(values)
+
+    def most_common_yield_values_pretty(self):
+        return self.pretty_return_values(self.most_common_yield_values())
+
+    def most_common_exception_values(self):
+        values = self.call_container.exception_states()
+        return self._most_common(values)
+
+    def most_common_exception_values_pretty(self):
+        return self.pretty_return_values(self.most_common_exception_values())
 
     def _most_common(self, elements, n=10):
         try:

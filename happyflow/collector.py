@@ -12,18 +12,6 @@ def get_next_mro_class(current_class):
     return mro_classes[current_class_index+1]
 
 
-def find_call_stack(frame):
-    call_stack = []
-    call_stack.append(frame.f_code.co_name)
-    while 'test' not in frame.f_code.co_name:
-        if not frame.f_back:
-            break
-        frame = frame.f_back
-        call_stack.append(frame.f_code.co_name)
-    call_stack.reverse()
-    return tuple(call_stack)
-
-
 def get_frame_id(frame):
     # If we are dealing with comprehensions and generator expressions
     # then we should get the enclosing frame id, not the current one.
@@ -135,7 +123,7 @@ class Collector:
                         run_lines = []
                         call_state = CallState()
                         call_state.save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
-                        callers = find_call_stack(frame)
+                        callers = self.find_call_stack(frame)
                         frame_id = get_frame_id(frame)
 
                         traced_method = self.traced_system[current_method_name]
@@ -163,7 +151,8 @@ class Collector:
                                             current_call_state.save_yield_state(obj_value(arg), lineno)
 
                                     elif event == 'exception':
-                                        current_call_state.save_exception_state(arg[0], lineno)
+                                        exception_name = arg[0].__name__
+                                        current_call_state.save_exception_state(exception_name, lineno)
 
                                     if current_call_state:
                                         argvalues = inspect.getargvalues(frame)
@@ -190,6 +179,18 @@ class Collector:
                 if module_name not in frame.f_code.co_filename:
                     return False
         return True
+
+    def find_call_stack(self, frame):
+        call_stack = []
+        call_stack.append(frame.f_code.co_name)
+        while 'test' not in frame.f_code.co_name:
+            if not frame.f_back:
+                break
+            frame = frame.f_back
+            full_name = self.get_full_entity_name(frame)
+            call_stack.append(full_name)
+        call_stack.reverse()
+        return tuple(call_stack)
 
     def check_tests_started(self, frame):
 

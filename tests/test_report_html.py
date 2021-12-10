@@ -93,7 +93,7 @@ class TestHTMLReport(unittest.TestCase):
         self.assert_exists('./report_html/style.css')
         self.assert_exists('./report_html/highlight.css')
         self.assert_exists('./report_html/coverage_html.js')
-        shutil.rmtree('./report_html')
+        # shutil.rmtree('./report_html')
 
     def test_generate_html_report_count_uppercase_words(self):
 

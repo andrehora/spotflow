@@ -59,11 +59,27 @@ class CallContainer:
                         args_and_values[arg.name].append(value)
         return args_and_values
 
+    def yield_states(self):
+        values = []
+        for call in self.calls:
+            if call.call_state:
+                for yield_state in call.call_state.yield_states:
+                    values.append(yield_state.value)
+        return values
+
     def return_states(self):
         values = []
         for call in self.calls:
             if call.call_state and call.call_state.has_return():
                 value = call.call_state.return_state.value
+                values.append(value)
+        return values
+
+    def exception_states(self):
+        values = []
+        for call in self.calls:
+            if call.call_state and call.call_state.has_exception():
+                value = call.call_state.exception_state.value
                 values.append(value)
         return values
 
@@ -73,8 +89,11 @@ class CallContainer:
             cs.append(call.call_stack)
         return cs
 
+    def callers(self):
+        return sorted(set(map(lambda each: each[-2], self.call_stack())))
+
     def tests(self):
-        return set(map(lambda each: each[0], self.call_stack()))
+        return sorted(set(map(lambda each: each[0], self.call_stack())))
 
     def select_calls_by_lines(self, distinct_lines):
         calls = []
@@ -173,25 +192,25 @@ class MethodFlow(CallContainer):
         states = call.call_state.states_for_line(lineno_entity)
 
         if method_info.line_is_entity_definition(lineno_entity):
-            return self.arg_state(call)
+            return self.line_arg_state(call)
         elif call.call_state.line_has_return_value(lineno_entity):
-            return self.return_state(call)
+            return self.line_return_state(call)
         elif states:
-            return self.var_states(states)
+            return self.line_var_states(states)
         return ''
 
-    def arg_state(self, call):
+    def line_arg_state(self, call):
         arg_str = ''
         for arg in call.call_state.arg_states:
             if arg.name != 'self':
                 arg_str += str(arg)
         return StateStatus.ARG, arg_str
 
-    def return_state(self, call):
+    def line_return_state(self, call):
         return_state = call.call_state.return_state
         return StateStatus.RETURN, str(return_state)
 
-    def var_states(self, states):
+    def line_var_states(self, states):
         return StateStatus.VAR, states
 
 
@@ -279,6 +298,12 @@ class CallState:
 
     def has_return(self):
         return self.return_state is not None
+
+    def has_exception(self):
+        return self.exception_state is not None
+
+    def has_yield(self):
+        return self.yield_states
 
 
 class VarStateHistory:
