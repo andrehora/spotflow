@@ -6,6 +6,9 @@ from happyflow.api import HappyFlow
 
 class TestHTMLReport(unittest.TestCase):
 
+    def assert_exists(self, filename):
+        self.assertTrue(os.path.exists(filename))
+
     # @unittest.skip
     def test_generate_html_report_from_test_class(self):
         flow = HappyFlow()
@@ -38,15 +41,58 @@ class TestHTMLReport(unittest.TestCase):
         self.assertEqual(len(result['email.message._splitparam'].flows), 2)
         self.assertEqual(len(result['email.message._unquotevalue'].flows), 1)
 
-        self.assertTrue(os.path.isdir('./report_html'))
-        self.assertTrue(os.path.isfile('./report_html/email.message._parseparam.html'))
-        self.assertTrue(os.path.isfile('./report_html/email.message._formatparam.html'))
-        self.assertTrue(os.path.isfile('./report_html/email.message._splitparam.html'))
-        self.assertTrue(os.path.isfile('./report_html/email.message._unquotevalue.html'))
-        self.assertTrue(os.path.isfile('./report_html/index.html'))
-        self.assertTrue(os.path.isfile('./report_html/style.css'))
-        self.assertTrue(os.path.isfile('./report_html/highlight.css'))
-        self.assertTrue(os.path.isfile('./report_html/coverage_html.js'))
+        flow1 = result['email.message._parseparam'].flows[0]
+        self.assertEqual(len(flow1.info.lines), 18)
+        self.assertEqual(flow1.info.run_count, 15)
+        self.assertEqual(flow1.info.not_run_count, 1)
+        self.assertEqual(flow1.info.not_exec_count, 2)
+        self.assertEqual(flow1.info.call_count, 83)
+        self.assertEqual(flow1.info.call_ratio, 88.3)
+        self.assertEqual(flow1.info.lines[0].code(), 'def _parseparam(s):')
+        self.assertEqual(flow1.info.lines[0].html(), '<span class="k">def</span> <span class="nf">_parseparam</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>')
+        self.assertTrue(flow1.info.lines[0].is_not_exec())
+        self.assertTrue(flow1.info.lines[1].is_not_exec())
+        self.assertTrue(flow1.info.lines[2].is_run())
+        self.assertTrue(flow1.info.lines[8].is_not_run())
+
+        flow2 = result['email.message._parseparam'].flows[1]
+        self.assertEqual(len(flow2.info.lines), 18)
+        self.assertEqual(flow2.info.run_count, 13)
+        self.assertEqual(flow2.info.not_run_count, 3)
+        self.assertEqual(flow2.info.not_exec_count, 2)
+        self.assertEqual(flow2.info.call_count, 9)
+        self.assertEqual(flow2.info.call_ratio, 9.6)
+        self.assertEqual(flow2.info.lines[0].code(), 'def _parseparam(s):')
+        self.assertEqual(flow2.info.lines[0].html(), '<span class="k">def</span> <span class="nf">_parseparam</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>')
+        self.assertTrue(flow2.info.lines[0].is_not_exec())
+        self.assertTrue(flow2.info.lines[1].is_not_exec())
+        self.assertTrue(flow2.info.lines[2].is_run())
+        self.assertTrue(flow2.info.lines[8].is_not_run())
+        self.assertTrue(flow2.info.lines[13].is_not_run())
+        self.assertTrue(flow2.info.lines[14].is_not_run())
+
+        flow3 = result['email.message._parseparam'].flows[2]
+        self.assertEqual(len(flow3.info.lines), 18)
+        self.assertEqual(flow3.info.run_count, 16)
+        self.assertEqual(flow3.info.not_run_count, 0)
+        self.assertEqual(flow3.info.not_exec_count, 2)
+        self.assertEqual(flow3.info.call_count, 2)
+        self.assertEqual(flow3.info.call_ratio, 2.1)
+        self.assertEqual(flow3.info.lines[0].code(), 'def _parseparam(s):')
+        self.assertEqual(flow3.info.lines[0].html(), '<span class="k">def</span> <span class="nf">_parseparam</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>')
+        self.assertTrue(flow3.info.lines[0].is_not_exec())
+        self.assertTrue(flow3.info.lines[1].is_not_exec())
+        self.assertTrue(flow3.info.lines[2].is_run())
+
+        self.assert_exists('./report_html')
+        self.assert_exists('./report_html/email.message._parseparam.html')
+        self.assert_exists('./report_html/email.message._formatparam.html')
+        self.assert_exists('./report_html/email.message._splitparam.html')
+        self.assert_exists('./report_html/email.message._unquotevalue.html')
+        self.assert_exists('./report_html/index.html')
+        self.assert_exists('./report_html/style.css')
+        self.assert_exists('./report_html/highlight.css')
+        self.assert_exists('./report_html/coverage_html.js')
         shutil.rmtree('./report_html')
 
     def test_generate_html_report_count_uppercase_words(self):
@@ -62,12 +108,12 @@ class TestHTMLReport(unittest.TestCase):
         flow.stop()
         flow.html_report()
 
-        self.assertTrue(os.path.isdir('./report_html'))
-        self.assertTrue(os.path.isfile('./report_html/tests.stub_funcs.count_uppercase_words.html'))
-        self.assertTrue(os.path.isfile('./report_html/index.html'))
-        self.assertTrue(os.path.isfile('./report_html/style.css'))
-        self.assertTrue(os.path.isfile('./report_html/highlight.css'))
-        self.assertTrue(os.path.isfile('./report_html/coverage_html.js'))
+        self.assert_exists('./report_html')
+        self.assert_exists('./report_html/tests.stub_funcs.count_uppercase_words.html')
+        self.assert_exists('./report_html/index.html')
+        self.assert_exists('./report_html/style.css')
+        self.assert_exists('./report_html/highlight.css')
+        self.assert_exists('./report_html/coverage_html.js')
         shutil.rmtree('./report_html')
 
     def test_generate_html_report_parseparam(self):
@@ -82,12 +128,12 @@ class TestHTMLReport(unittest.TestCase):
         flow.stop()
         flow.html_report()
 
-        self.assertTrue(os.path.isdir('./report_html'))
-        self.assertTrue(os.path.isfile('./report_html/tests.stub_funcs.parseparam.html'))
-        self.assertTrue(os.path.isfile('./report_html/index.html'))
-        self.assertTrue(os.path.isfile('./report_html/style.css'))
-        self.assertTrue(os.path.isfile('./report_html/highlight.css'))
-        self.assertTrue(os.path.isfile('./report_html/coverage_html.js'))
+        self.assert_exists('./report_html')
+        self.assert_exists('./report_html/tests.stub_funcs.parseparam.html')
+        self.assert_exists('./report_html/index.html')
+        self.assert_exists('./report_html/style.css')
+        self.assert_exists('./report_html/highlight.css')
+        self.assert_exists('./report_html/coverage_html.js')
         shutil.rmtree('./report_html')
 
     def test_generate_html_report_splitparam(self):
@@ -102,12 +148,12 @@ class TestHTMLReport(unittest.TestCase):
         flow.stop()
         flow.html_report()
 
-        self.assertTrue(os.path.isdir('./report_html'))
-        self.assertTrue(os.path.isfile('./report_html/tests.stub_funcs.splitparam.html'))
-        self.assertTrue(os.path.isfile('./report_html/index.html'))
-        self.assertTrue(os.path.isfile('./report_html/style.css'))
-        self.assertTrue(os.path.isfile('./report_html/highlight.css'))
-        self.assertTrue(os.path.isfile('./report_html/coverage_html.js'))
+        self.assert_exists('./report_html')
+        self.assert_exists('./report_html/tests.stub_funcs.splitparam.html')
+        self.assert_exists('./report_html/index.html')
+        self.assert_exists('./report_html/style.css')
+        self.assert_exists('./report_html/highlight.css')
+        self.assert_exists('./report_html/coverage_html.js')
         shutil.rmtree('./report_html')
 
 

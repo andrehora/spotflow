@@ -27,6 +27,15 @@ class MethodInfo:
         self.has_exception = False
         self.has_super = False
 
+    def update_trace_data(self, traced_method):
+        self.total_calls = len(traced_method.calls)
+        self.total_tests = len(traced_method.tests())
+        self.statements_count = traced_method.info.executable_lines_count()
+
+        self.total_flows = len(traced_method.flows)
+        self.top_flow_calls = traced_method.flows[0].info.call_count
+        self.top_flow_ratio = traced_method.flows[0].info.call_ratio
+
     def executable_lines(self):
         exec_lines = self._ensure_executable_lines_for_file()
         my_lines = range(self.start_line, self.end_line + 1)
@@ -94,20 +103,6 @@ class MethodInfo:
         method_info.start_line = start_line
         method_info.end_line = end_line
         return method_info
-
-
-class RunInfo:
-
-    def __init__(self, method_run):
-        # self.full_name = method_run.method_info.full_name
-        # self.full_name_escaped = method_run.method_info.full_name_escaped()
-        self.total_calls = len(method_run.calls)
-        self.total_tests = len(method_run.tests())
-        self.statements_count = method_run.method_info.executable_lines_count()
-
-        self.total_flows = len(method_run.flows)
-        self.top_flow_calls = method_run.flows[0].info.call_count
-        self.top_flow_ratio = method_run.flows[0].info.call_ratio
 
 
 class FlowInfo:

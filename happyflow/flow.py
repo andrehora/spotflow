@@ -2,39 +2,39 @@ from happyflow.utils import obj_value
 from happyflow.info import *
 
 
-class FlowResult:
+class TracedSystem:
 
     def __init__(self):
-        self.method_run = {}
+        self.traced_methods = {}
 
     def compute_flows(self):
-        for method_run in self.method_run.values():
-            method_run.compute_flows()
+        for traced_method in self.traced_methods.values():
+            traced_method.compute_flows()
 
     def filter(self, filter_func):
-        self.method_run = {k: v for k, v in self.method_run.items() if filter_func(k, v)}
+        self.traced_methods = {k: v for k, v in self.traced_methods.items() if filter_func(k, v)}
         return self
 
-    def has_calls(self, entity_name, method_run):
-        return method_run.calls
+    def has_calls(self, method_name, traced_method):
+        return traced_method.calls
 
     def __getitem__(self, key):
-        return self.method_run[key]
+        return self.traced_methods[key]
 
     def __setitem__(self, key, value):
-        self.method_run[key] = value
+        self.traced_methods[key] = value
 
     def __contains__(self, key):
-        return key in self.method_run
+        return key in self.traced_methods
 
     def __len__(self):
-        return len(self.method_run)
+        return len(self.traced_methods)
 
     def __repr__(self):
-        return repr(self.method_run)
+        return repr(self.traced_methods)
 
     def __iter__(self):
-        return iter(self.method_run.values())
+        return iter(self.traced_methods.values())
 
 
 class CallContainer:
@@ -84,15 +84,14 @@ class CallContainer:
         return calls
 
 
-class MethodRun(CallContainer):
+class TracedMethod(CallContainer):
 
     def __init__(self, method_info):
         super().__init__(calls=[])
-        self.method_info = method_info
+        self.info = method_info
         self.method_name = method_info.name
         self.flows = []
         self._calls = {}
-        self.info = None
 
     def add_call(self, run_lines, call_state, call_stack, call_id):
         call = MethodCall(run_lines, call_state, call_stack)
@@ -119,25 +118,25 @@ class MethodRun(CallContainer):
             flow = self.add_flow(flow_pos, distinct_run_lines, flow_calls)
             flow.update_flow_info()
 
-        self.info = RunInfo(self)
+        self.info.update_trace_data(self)
 
 
 class MethodFlow(CallContainer):
 
-    def __init__(self, pos, distinct_run_lines, calls, method_run):
+    def __init__(self, pos, distinct_run_lines, calls, traced_method):
         super().__init__(calls)
         self.pos = pos
         self.distinct_run_lines = distinct_run_lines
-        self.method_run = method_run
+        self.traced_method = traced_method
         self.info = None
         self._found_first_run_line = False
 
     def update_flow_info(self):
 
         lineno = 0
-        method_info = self.method_run.method_info
+        method_info = self.traced_method.info
 
-        self.info = FlowInfo(self, len(self.method_run.calls))
+        self.info = FlowInfo(self, len(self.traced_method.calls))
         self._found_first_run_line = False
 
         for lineno_entity in range(method_info.start_line, method_info.end_line+1):
@@ -200,8 +199,8 @@ class MethodCall:
 
     def __init__(self, run_lines, call_state, call_stack):
         self.run_lines = run_lines
-        self.call_stack = call_stack
         self.call_state = call_state
+        self.call_stack = call_stack
 
     def __eq__(self, other):
         return other == self.run_lines

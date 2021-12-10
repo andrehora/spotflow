@@ -1,7 +1,7 @@
 import inspect
 import types
 from happyflow.utils import obj_value, find_full_name
-from happyflow.flow import CallState, MethodRun, FlowResult
+from happyflow.flow import CallState, TracedMethod, TracedSystem
 from happyflow.info import MethodInfo
 from happyflow.tracer import PyTracer
 
@@ -74,7 +74,7 @@ class Collector:
     IGNORE_FILES = ['site-packages', 'unittest', 'pytest']
 
     def __init__(self):
-        self.flow_result = FlowResult()
+        self.traced_system = TracedSystem()
         self.method_names = None
         self.ignore_files = None
 
@@ -129,8 +129,8 @@ class Collector:
                     # -1 for calls, and a real offset for generators.  Use < 0 as the
                     # line number for calls, and the real line number for generators.
                     if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not is_comprehension(frame):
-                        if current_method_name not in self.flow_result:
-                            self.flow_result[current_method_name] = MethodRun(method_info)
+                        if current_method_name not in self.traced_system:
+                            self.traced_system[current_method_name] = TracedMethod(method_info)
 
                         run_lines = []
                         call_state = CallState()
@@ -138,17 +138,17 @@ class Collector:
                         callers = find_call_stack(frame)
                         frame_id = get_frame_id(frame)
 
-                        method_run = self.flow_result[current_method_name]
-                        method_run.add_call(run_lines, call_state, callers, frame_id)
+                        traced_method = self.traced_system[current_method_name]
+                        traced_method.add_call(run_lines, call_state, callers, frame_id)
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
                         lineno = frame.f_lineno
-                        if current_method_name in self.flow_result:
-                            method_run = self.flow_result[current_method_name]
-                            if method_run.calls:
+                        if current_method_name in self.traced_system:
+                            traced_method = self.traced_system[current_method_name]
+                            if traced_method.calls:
                                 frame_id = get_frame_id(frame)
-                                method_call = method_run._get_call_from_id(frame_id)
+                                method_call = traced_method._get_call_from_id(frame_id)
                                 if method_call:
                                     current_run_lines = method_call.run_lines
                                     current_call_state = method_call.call_state

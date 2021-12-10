@@ -20,23 +20,23 @@ class HappyFlow:
         self.collector.stop()
 
     def result(self):
-        return self.collector.flow_result
+        return self.collector.traced_system
 
     def html_report(self, directory=None):
         # try:
-        Report(self.collector.flow_result).html_report(directory)
+        Report(self.collector.traced_system).html_report(directory)
         # except Exception as e:
         #     print(e)
 
     def csv_report(self, directory=None):
         # try:
-        Report(self.collector.flow_result).csv_report(directory)
+        Report(self.collector.traced_system).csv_report(directory)
         # except Exception as e:
         #     print(e)
 
     def txt_report(self):
         try:
-            Report(self.collector.flow_result).txt_report()
+            Report(self.collector.traced_system).txt_report()
             return True
         except Exception as e:
             print(e)
