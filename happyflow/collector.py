@@ -69,6 +69,7 @@ class Collector:
         self.last_frame_lineno = {}
         self.target_methods_cache = {}
         self.frame_cache = {}
+        self.funcs_cache = {}
 
         self.py_tracer = PyTracer(self)
 
@@ -99,6 +100,13 @@ class Collector:
             return
 
         current_method_name = self.get_full_entity_name(frame)
+
+        # if not current_method_name and frame.f_code.co_name == '_iterencode':
+        #     print(frame.f_code.co_name)
+
+        # if frame.f_code.co_name == '_iterencode':
+        #     print(event, id(frame), frame.f_lineno,  getattr(frame, 'f_lasti', -1), inspect.getframeinfo(frame).code_context)
+            # print('==>Back', self.get_full_entity_name(frame.f_back), event, id(frame.f_back), frame.f_back.f_lineno, getattr(frame, 'f_lasti', -1), inspect.getframeinfo(frame.f_back).code_context)
 
         if current_method_name:
             for method_name in self.method_names:
@@ -131,6 +139,7 @@ class Collector:
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
+
                         lineno = frame.f_lineno
                         if current_method_name in self.traced_system:
                             traced_method = self.traced_system[current_method_name]
@@ -163,7 +172,7 @@ class Collector:
 
     def is_valid_frame(self, frame):
 
-        if frame.f_code.co_filename.startswith('<'):
+        if frame.f_code.co_filename.startswith('<') or frame.f_code.co_name == '<module>':
             return False
 
         for ignore in self.ignore_files:
@@ -241,10 +250,13 @@ class Collector:
 
         filename = frame.f_code.co_filename
         lineno = frame.f_lineno
-        name = frame.f_code.co_name
+        entity_name = frame.f_code.co_name
         if is_comprehension(frame):
-            name = frame.f_back.f_code.co_name
-        key = filename, lineno, name
+            entity_name = frame.f_back.f_code.co_name
+        key = filename, lineno, entity_name
+
+        self.update_funcs_cache(frame, frame.f_locals.values())
+        self.update_funcs_cache(frame, frame.f_globals.values())
 
         if key in self.frame_cache:
             return self.frame_cache[key]
@@ -256,7 +268,19 @@ class Collector:
         self.frame_cache[key] = entity
         return self.frame_cache[key]
 
+    def update_funcs_cache(self, frame, elements):
+        for func in elements:
+            if isinstance(func, types.FunctionType) or isinstance(func, types.MethodType):
+                filename = frame.f_code.co_filename
+                lineno = func.__code__.co_firstlineno
+                entity_name = func.__name__
+                key = filename, lineno, entity_name
+                if key not in self.frame_cache:
+                    # print(key, func)
+                    self.frame_cache[key] = func
+
     def get_func_or_method(self, frame):
+
         try:
             entity_name = frame.f_code.co_name
 
@@ -282,7 +306,7 @@ class Collector:
                 func = frame.f_globals[entity_name]
                 return func
 
-            # Local function or method
+            # Local function or method: first try
             if entity_name in frame.f_back.f_locals:
                 func_or_method = frame.f_back.f_locals[entity_name]
                 # Check if 'entity_name' is local in frame.f_back
@@ -290,6 +314,22 @@ class Collector:
                         frame.f_back.f_code.co_name in func_or_method.__qualname__:
                     return func_or_method
 
+            # Local function or method: second try
+            if entity_name in frame.f_locals:
+                func_or_method = frame.f_locals[entity_name]
+                if '<locals>' in func_or_method.__qualname__ and \
+                        frame.f_code.co_name in func_or_method.__qualname__:
+                    return func_or_method
+
+            # if entity_name == 'scan_once':
+            #     print(frame.f_code.co_name, frame.f_code.co_filename)
+            #     print(inspect.getframeinfo(frame).code_context)
+            #     print(entity_name in frame.f_back.f_locals)
+            #     print(entity_name in frame.f_locals)
+            #     print(entity_name in frame.f_back.f_globals)
+            #     print(entity_name in frame.f_globals)
+
+
         except Exception as e:
-            # print(e)
+            print(e)
             return None
