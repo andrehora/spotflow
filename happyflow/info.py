@@ -45,7 +45,6 @@ class MethodInfo:
 
     def _ensure_executable_lines_for_file(self):
         if self.filename not in executable_lines_for_file:
-            print(self.filename)
             executable_lines_for_file[self.filename] = find_executable_linenos(self.filename)
         return executable_lines_for_file[self.filename]
 

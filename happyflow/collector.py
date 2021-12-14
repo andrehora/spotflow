@@ -255,9 +255,6 @@ class Collector:
             entity_name = frame.f_back.f_code.co_name
         key = filename, lineno, entity_name
 
-        self.update_funcs_cache(frame, frame.f_locals.values())
-        self.update_funcs_cache(frame, frame.f_globals.values())
-
         if key in self.frame_cache:
             return self.frame_cache[key]
 
@@ -267,17 +264,6 @@ class Collector:
 
         self.frame_cache[key] = entity
         return self.frame_cache[key]
-
-    def update_funcs_cache(self, frame, elements):
-        for func in elements:
-            if isinstance(func, types.FunctionType) or isinstance(func, types.MethodType):
-                filename = frame.f_code.co_filename
-                lineno = func.__code__.co_firstlineno
-                entity_name = func.__name__
-                key = filename, lineno, entity_name
-                if key not in self.frame_cache:
-                    # print(key, func)
-                    self.frame_cache[key] = func
 
     def get_func_or_method(self, frame):
 
@@ -306,30 +292,54 @@ class Collector:
                 func = frame.f_globals[entity_name]
                 return func
 
-            # Local function or method: first try
-            if entity_name in frame.f_back.f_locals:
-                func_or_method = frame.f_back.f_locals[entity_name]
-                # Check if 'entity_name' is local in frame.f_back
-                if '<locals>' in func_or_method.__qualname__ and \
-                        frame.f_back.f_code.co_name in func_or_method.__qualname__:
-                    return func_or_method
+            # Local function
+            local_func = self.find_local_func(entity_name, frame.f_back.f_locals)
+            if local_func:
+                return local_func
 
-            # Local function or method: second try
-            if entity_name in frame.f_locals:
-                func_or_method = frame.f_locals[entity_name]
-                if '<locals>' in func_or_method.__qualname__ and \
-                        frame.f_code.co_name in func_or_method.__qualname__:
-                    return func_or_method
+            local_func = self.find_local_func(entity_name, frame.f_locals)
+            if local_func:
+                return local_func
 
             # if entity_name == 'scan_once':
-            #     print(frame.f_code.co_name, frame.f_code.co_filename)
-            #     print(inspect.getframeinfo(frame).code_context)
-            #     print(entity_name in frame.f_back.f_locals)
-            #     print(entity_name in frame.f_locals)
-            #     print(entity_name in frame.f_back.f_globals)
-            #     print(entity_name in frame.f_globals)
-
+            # print(frame.f_code.co_name, frame.f_code.co_filename, inspect.getframeinfo(frame).code_context)
+            # print(frame.f_locals)
 
         except Exception as e:
             print(e)
             return None
+
+    def find_local_func(self, entity_name, local_elements):
+        # 1st: check the back locals
+        if entity_name in local_elements:
+            func = local_elements[entity_name]
+            if inspect.isfunction(func) and entity_name == func.__name__:
+                if '<locals>' in func.__qualname__:
+                    return func
+
+        # 2nd: check the back local values
+        for func in local_elements.values():
+            if inspect.isfunction(func) and entity_name == func.__name__:
+                if '<locals>' in func.__qualname__:
+                    return func
+
+        # 3rd: check the back self, if any
+        if 'self' in local_elements:
+            obj = local_elements['self']
+            obj_funcs = dict(inspect.getmembers(obj, predicate=inspect.isfunction))
+            if entity_name in obj_funcs:
+                func = obj_funcs[entity_name]
+                if '<locals>' in func.__qualname__:
+                    return func
+
+        return None
+
+        # # 4th: check the generators
+        # for gen in frame.f_back.f_locals.values():
+        #     if inspect.isgenerator(gen):
+        #         if entity_name == gen.__name__:
+        #             gen_locals = inspect.getgeneratorlocals(gen)
+        #             if entity_name in gen_locals:
+        #                 func = gen_locals[entity_name]
+        #                 if '<locals>' in func.__qualname__:
+        #                     return func
