@@ -101,13 +101,6 @@ class Collector:
 
         current_method_name = self.get_full_entity_name(frame)
 
-        # if not current_method_name and frame.f_code.co_name == '_iterencode':
-        #     print(frame.f_code.co_name)
-
-        # if frame.f_code.co_name == '_iterencode':
-        #     print(event, id(frame), frame.f_lineno,  getattr(frame, 'f_lasti', -1), inspect.getframeinfo(frame).code_context)
-            # print('==>Back', self.get_full_entity_name(frame.f_back), event, id(frame.f_back), frame.f_back.f_lineno, getattr(frame, 'f_lasti', -1), inspect.getframeinfo(frame.f_back).code_context)
-
         if current_method_name:
             for method_name in self.method_names:
 
@@ -272,7 +265,6 @@ class Collector:
 
             # Method
             if 'self' in frame.f_locals:
-
                 # In methods with super, use the free variable, __class__, not self
                 if method_has_super_call(frame):
                     obj_class = frame.f_locals['__class__']
@@ -284,6 +276,11 @@ class Collector:
                 # The most common case: simply get self class
                 else:
                     obj_class = frame.f_locals['self'].__class__
+                method = getattr(obj_class, entity_name, None)
+                return method
+
+            if 'cls' in frame.f_locals:
+                obj_class = frame.f_locals['cls']
                 method = getattr(obj_class, entity_name, None)
                 return method
 
@@ -301,9 +298,7 @@ class Collector:
             if local_func:
                 return local_func
 
-            # if entity_name == 'scan_once':
             # print(frame.f_code.co_name, frame.f_code.co_filename, inspect.getframeinfo(frame).code_context)
-            # print(frame.f_locals)
 
         except Exception as e:
             print(e)
