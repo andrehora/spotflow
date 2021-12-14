@@ -132,7 +132,6 @@ class Collector:
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
-
                         lineno = frame.f_lineno
                         if current_method_name in self.traced_system:
                             traced_method = self.traced_system[current_method_name]
