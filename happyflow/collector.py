@@ -59,7 +59,7 @@ def update_method_info(method_info, frame, event):
 
 class Collector:
 
-    IGNORE_FILES = ['site-packages', 'unittest', 'pytest']
+    IGNORE_FILES = ['site-packages', 'unittest', 'pytest', 'argparse', 'sysconfig']
 
     def __init__(self):
         self.traced_system = TracedSystem()
@@ -75,7 +75,7 @@ class Collector:
 
         # Flags used when target is not set
         self.try_all_possible_targets = False
-        self.tests_started = False
+        # self.tests_started = False
 
     def start(self):
         self.init_target()
@@ -94,85 +94,18 @@ class Collector:
         if not self.ignore_files:
             self.ignore_files = self.IGNORE_FILES
 
-    def collect_flow(self, frame, event, arg):
-
-        if not self.is_valid_frame(frame):
-            return
-
-        current_method_name = self.get_full_entity_name(frame)
-
-        if current_method_name:
-            for method_name in self.method_names:
-
-                method_info = self.ensure_target_method(current_method_name, method_name, frame)
-
-                if method_info and current_method_name == method_info.full_name:
-                    update_method_info(method_info, frame, event)
-
-                    if current_method_name not in self.last_frame_lineno:
-                        self.last_frame_lineno[current_method_name] = -1
-
-                    # Tip from Coverage.py
-                    # The call event is really a "start frame" event, and happens for
-                    # function calls and re-entering generators.  The f_lasti field is
-                    # -1 for calls, and a real offset for generators.  Use < 0 as the
-                    # line number for calls, and the real line number for generators.
-                    if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not is_comprehension(frame):
-                        if current_method_name not in self.traced_system:
-                            self.traced_system[current_method_name] = TracedMethod(method_info)
-
-                        run_lines = []
-                        call_state = CallState()
-                        call_state.save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
-                        callers = self.find_call_stack(frame)
-                        frame_id = get_frame_id(frame)
-
-                        traced_method = self.traced_system[current_method_name]
-                        traced_method.add_call(run_lines, call_state, callers, frame_id)
-
-                    # Event is line, return, exception or call for re-entering generators
-                    else:
-                        lineno = frame.f_lineno
-                        if current_method_name in self.traced_system:
-                            traced_method = self.traced_system[current_method_name]
-                            if traced_method.calls:
-                                frame_id = get_frame_id(frame)
-                                method_call = traced_method._get_call_from_id(frame_id)
-                                if method_call:
-                                    current_run_lines = method_call.run_lines
-                                    current_call_state = method_call.call_state
-
-                                    if event == 'line':
-                                        current_run_lines.append(lineno)
-
-                                    elif event == 'return':
-                                        if line_has_return(frame):
-                                            current_call_state.save_return_state(obj_value(arg), lineno)
-                                        elif line_has_yield(frame):
-                                            current_call_state.save_yield_state(obj_value(arg), lineno)
-
-                                    elif event == 'exception':
-                                        exception_name = arg[0].__name__
-                                        current_call_state.save_exception_state(exception_name, lineno)
-
-                                    if current_call_state:
-                                        argvalues = inspect.getargvalues(frame)
-                                        inline = self.last_frame_lineno[current_method_name]
-                                        current_call_state.save_var_states(argvalues, lineno, inline)
-
-                        self.last_frame_lineno[current_method_name] = lineno
-
     def is_valid_frame(self, frame):
 
         if frame.f_code.co_filename.startswith('<') or frame.f_code.co_name == '<module>':
             return False
 
-        for ignore in self.ignore_files:
-            if ignore in frame.f_code.co_filename:
-                return False
+        if self.ignore_files:
+            for ignore in self.ignore_files:
+                if ignore in frame.f_code.co_filename:
+                    return False
 
         if self.try_all_possible_targets:
-            return self.check_tests_started(frame)
+            return True
 
         for method_name in self.method_names:
             if isinstance(method_name, str):
@@ -193,18 +126,6 @@ class Collector:
         call_stack.reverse()
         return tuple(call_stack)
 
-    def check_tests_started(self, frame):
-
-        if self.tests_started:
-            return True
-
-        filename = frame.f_code.co_filename
-
-        if 'test_' in filename:
-            self.tests_started = True
-            return True
-        return False
-
     def get_full_entity_name(self, frame):
 
         func_or_method = self.ensure_func_or_method(frame)
@@ -221,10 +142,6 @@ class Collector:
 
         if not self.try_all_possible_targets:
             if not current_entity_name.startswith(method_name):
-                return None
-
-        if self.try_all_possible_targets:
-            if 'test_' in current_entity_name:
                 return None
 
         if current_entity_name in self.target_methods_cache:
@@ -250,15 +167,14 @@ class Collector:
         if key in self.frame_cache:
             return self.frame_cache[key]
 
-        entity = self.get_func_or_method(frame)
-        if not entity:
+        func_or_method = self.get_func_or_method(frame)
+        if not func_or_method or inspect.isbuiltin(func_or_method):
             return None
 
-        self.frame_cache[key] = entity
+        self.frame_cache[key] = func_or_method
         return self.frame_cache[key]
 
     def get_func_or_method(self, frame):
-
         try:
             entity_name = frame.f_code.co_name
 
@@ -328,12 +244,72 @@ class Collector:
 
         return None
 
-        # # 4th: check the generators
-        # for gen in frame.f_back.f_locals.values():
-        #     if inspect.isgenerator(gen):
-        #         if entity_name == gen.__name__:
-        #             gen_locals = inspect.getgeneratorlocals(gen)
-        #             if entity_name in gen_locals:
-        #                 func = gen_locals[entity_name]
-        #                 if '<locals>' in func.__qualname__:
-        #                     return func
+    def collect_flow(self, frame, event, arg):
+
+        # print(frame.f_code.co_name, frame.f_code.co_filename)
+        if not self.is_valid_frame(frame):
+            return
+
+        current_method_name = self.get_full_entity_name(frame)
+
+        if current_method_name:
+            for method_name in self.method_names:
+
+                method_info = self.ensure_target_method(current_method_name, method_name, frame)
+
+                if method_info and current_method_name == method_info.full_name:
+                    update_method_info(method_info, frame, event)
+
+                    if current_method_name not in self.last_frame_lineno:
+                        self.last_frame_lineno[current_method_name] = -1
+
+                    # Tip from Coverage.py
+                    # The call event is really a "start frame" event, and happens for
+                    # function calls and re-entering generators.  The f_lasti field is
+                    # -1 for calls, and a real offset for generators.  Use < 0 as the
+                    # line number for calls, and the real line number for generators.
+                    if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not is_comprehension(frame):
+                        if current_method_name not in self.traced_system:
+                            self.traced_system[current_method_name] = TracedMethod(method_info)
+
+                        run_lines = []
+                        call_state = CallState()
+                        call_state.save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
+                        callers = self.find_call_stack(frame)
+                        frame_id = get_frame_id(frame)
+
+                        traced_method = self.traced_system[current_method_name]
+                        traced_method.add_call(run_lines, call_state, callers, frame_id)
+
+                    # Event is line, return, exception or call for re-entering generators
+                    else:
+                        lineno = frame.f_lineno
+                        if current_method_name in self.traced_system:
+                            traced_method = self.traced_system[current_method_name]
+                            if traced_method.calls:
+                                frame_id = get_frame_id(frame)
+                                method_call = traced_method._get_call_from_id(frame_id)
+                                if method_call:
+                                    current_run_lines = method_call.run_lines
+                                    current_call_state = method_call.call_state
+
+                                    if event == 'line':
+                                        current_run_lines.append(lineno)
+
+                                    elif event == 'return':
+                                        if line_has_return(frame):
+                                            current_call_state.save_return_state(obj_value(arg), lineno)
+                                        elif line_has_yield(frame):
+                                            current_call_state.save_yield_state(obj_value(arg), lineno)
+
+                                    elif event == 'exception':
+                                        exception_name = arg[0].__name__
+                                        current_call_state.save_exception_state(exception_name, lineno)
+
+                                    if current_call_state:
+                                        argvalues = inspect.getargvalues(frame)
+                                        inline = self.last_frame_lineno[current_method_name]
+                                        current_call_state.save_var_states(argvalues, lineno, inline)
+
+                        self.last_frame_lineno[current_method_name] = lineno
+
