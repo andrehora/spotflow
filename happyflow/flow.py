@@ -113,7 +113,7 @@ class TracedMethod(CallContainer):
         self._calls = {}
 
     def add_call(self, run_lines, call_state, call_stack, call_id):
-        call = MethodCall(run_lines, call_state, call_stack)
+        call = MethodCall(run_lines, call_state, call_stack, self)
         self.calls.append(call)
         self._calls[call_id] = call
         return call
@@ -150,25 +150,25 @@ class MethodFlow(CallContainer):
         self.info = None
         self._found_first_run_line = False
 
+
     def update_flow_info(self):
 
         lineno = 0
-        method_info = self.traced_method.info
 
         self.info = FlowInfo(self, len(self.traced_method.calls))
         self._found_first_run_line = False
 
-        for lineno_entity in range(method_info.start_line, method_info.end_line+1):
+        for lineno_entity in range(self.traced_method.info.start_line, self.traced_method.info.end_line+1):
             lineno += 1
 
-            line_status = self.get_line_status(method_info, lineno_entity)
-            line_state = self.get_line_state(method_info, lineno_entity)
-            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, method_info)
+            line_status = self.get_line_status(lineno_entity)
+            line_state = self.get_line_state(lineno_entity)
+            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, self.traced_method.info)
 
             self.info.append(line_info)
             self.info.update_run_status(line_info)
 
-    def get_line_status(self, method_info, current_line):
+    def get_line_status(self, current_line):
 
         if current_line in self.distinct_run_lines:
             self._found_first_run_line = True
@@ -182,50 +182,57 @@ class MethodFlow(CallContainer):
             return RunStatus.NOT_EXEC
 
         if current_line not in self.distinct_run_lines:
-            if not method_info.line_is_executable(current_line):
+            if not self.traced_method.info.line_is_executable(current_line):
                 return RunStatus.NOT_EXEC
-            return RunStatus.NOT_RUN
 
-    def get_line_state(self, method_info, lineno_entity, n=0):
+        return RunStatus.NOT_RUN
 
+    def get_line_state(self, lineno, n=0):
         call = self.calls[n]
-        states = call.call_state.states_for_line(lineno_entity)
-
-        if method_info.line_is_entity_definition(lineno_entity):
-            return self.line_arg_state(call)
-        elif call.call_state.line_has_return_value(lineno_entity):
-            return self.line_return_state(call)
-        elif states:
-            return self.line_var_states(states)
-        return ''
-
-    def line_arg_state(self, call):
-        arg_str = ''
-        for arg in call.call_state.arg_states:
-            if arg.name != 'self':
-                arg_str += str(arg)
-        return StateStatus.ARG, arg_str
-
-    def line_return_state(self, call):
-        return_state = call.call_state.return_state
-        return StateStatus.RETURN, str(return_state)
-
-    def line_var_states(self, states):
-        return StateStatus.VAR, states
+        return call.get_line_state(lineno)
 
 
 class MethodCall:
 
-    def __init__(self, run_lines, call_state, call_stack):
+    def __init__(self, run_lines, call_state, call_stack, traced_method):
         self.run_lines = run_lines
         self.call_state = call_state
         self.call_stack = call_stack
+        self.traced_method = traced_method
 
     def __eq__(self, other):
         return other == self.run_lines
 
     def distinct_run_lines(self):
         return sorted(list(set(self.run_lines)))
+
+    def get_line_state(self, lineno):
+
+        if self.traced_method.info.line_is_entity_definition(lineno):
+            return self.line_arg_state()
+
+        if self.call_state.line_has_return_value(lineno):
+            return self.line_return_state()
+
+        states = self.call_state.states_for_line(lineno)
+        if states:
+            return self.line_var_states(states)
+
+        return ''
+
+    def line_arg_state(self):
+        arg_str = ''
+        for arg in self.call_state.arg_states:
+            if arg.name != 'self':
+                arg_str += str(arg)
+        return StateStatus.ARG, arg_str
+
+    def line_return_state(self):
+        return_state = self.call_state.return_state
+        return StateStatus.RETURN, str(return_state)
+
+    def line_var_states(self, states):
+        return StateStatus.VAR, states
 
 
 class CallState:
