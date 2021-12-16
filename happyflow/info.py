@@ -27,24 +27,13 @@ class MethodInfo:
         self.exception_lines = set()
 
     def has_return(self):
-        return len(self.return_lines) != 0
+        return len(self.return_lines) > 0
 
     def has_yield(self):
-        return len(self.yield_lines) != 0
+        return len(self.yield_lines) > 0
 
     def has_exception(self):
-        return len(self.exception_lines) != 0
-
-    def _update_trace_data(self, traced_method):
-        self.total_calls = len(traced_method.calls)
-        self.total_tests = len(traced_method.tests())
-        self.statements_count = traced_method.info.executable_lines_count()
-
-        self.total_flows = len(traced_method.flows)
-        self.top_flow_calls = traced_method.flows[0].info.call_count
-        self.top_flow_ratio = traced_method.flows[0].info.call_ratio
-
-        self.total_exceptions = len(traced_method.exception_states())
+        return len(self.exception_lines) > 0
 
     def executable_lines(self):
         exec_lines = self._ensure_executable_lines_for_file()
@@ -95,6 +84,17 @@ class MethodInfo:
 
     def summary(self):
         return f'{self.full_name} (lines: {self.start_line}-{self.end_line})'
+
+    def _update_trace_data(self, traced_method):
+        self.total_calls = len(traced_method.calls)
+        self.total_tests = len(traced_method.tests())
+        self.statements_count = traced_method.info.executable_lines_count()
+
+        self.total_flows = len(traced_method.flows)
+        self.top_flow_calls = traced_method.flows[0].info.call_count
+        self.top_flow_ratio = traced_method.flows[0].info.call_ratio
+
+        self.total_exceptions = len(traced_method.exception_states())
 
     def __str__(self):
         return self.full_name

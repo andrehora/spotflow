@@ -150,7 +150,22 @@ class MethodFlow(CallContainer):
         self.info = None
         self._found_first_run_line = False
 
-    def get_line_status(self, current_line):
+    def _update_flow_info(self):
+        lineno = 0
+        self.info = FlowInfo(self, len(self.traced_method.calls))
+        self._found_first_run_line = False
+
+        for lineno_entity in range(self.traced_method.info.start_line, self.traced_method.info.end_line+1):
+            lineno += 1
+
+            line_status = self._get_line_status(lineno_entity)
+            line_state = self._get_line_state(lineno_entity)
+            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, self.traced_method.info)
+
+            self.info.append(line_info)
+            self.info.update_run_status(line_info)
+
+    def _get_line_status(self, current_line):
 
         if current_line in self.distinct_run_lines:
             self._found_first_run_line = True
@@ -169,24 +184,9 @@ class MethodFlow(CallContainer):
 
         return RunStatus.NOT_RUN
 
-    def get_line_state(self, lineno, n=0):
+    def _get_line_state(self, current_line, n=0):
         call = self.calls[n]
-        return call.get_line_state(lineno)
-
-    def _update_flow_info(self):
-        lineno = 0
-        self.info = FlowInfo(self, len(self.traced_method.calls))
-        self._found_first_run_line = False
-
-        for lineno_entity in range(self.traced_method.info.start_line, self.traced_method.info.end_line+1):
-            lineno += 1
-
-            line_status = self.get_line_status(lineno_entity)
-            line_state = self.get_line_state(lineno_entity)
-            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, self.traced_method.info)
-
-            self.info.append(line_info)
-            self.info.update_run_status(line_info)
+        return call.get_line_state(current_line)
 
 
 class MethodCall:
@@ -268,7 +268,7 @@ class CallState:
         return self.exception_state is not None
 
     def has_yield(self):
-        return self.yield_states
+        return len(self.yield_states) > 0
 
     def _save_arg_states(self, argvalues, lineno):
         for arg in argvalues.args:
