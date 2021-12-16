@@ -428,3 +428,15 @@ class TestMoreSuper:
 
     def test_super_3(self):
         ClassSuper3()
+
+
+class TestFuncRunner:
+
+    def test_run_decorator_once(self):
+        FuncRunner().run_decorator_once()
+
+    def test_run_decorator_twice(self):
+        FuncRunner().run_decorator_twice()
+
+    def test_run_call_func(self):
+        FuncRunner().run_call_func()

@@ -546,3 +546,31 @@ def has_local_class():
             return 'me 3'
 
     return LocalClass3().local()
+
+
+class FuncRunner:
+
+    def decorator(self, func):
+        def inner():
+            func()
+        return inner
+
+    def func_to_be_run(self):
+        return
+
+    def run_decorator_once(self):
+        run_func = self.decorator(self.func_to_be_run)
+        run_func()
+
+    def run_decorator_twice(self):
+        run_func = self.decorator(self.func_to_be_run)
+        run_func()
+        run_func()
+
+    def call_func_three_times(self, func):
+        func()
+        func()
+        func()
+
+    def run_call_func(self):
+        self.call_func_three_times(self.func_to_be_run)
