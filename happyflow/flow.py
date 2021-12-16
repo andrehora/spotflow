@@ -9,7 +9,7 @@ class TracedSystem:
 
     def compute_flows(self):
         for traced_method in self.traced_methods.values():
-            traced_method.compute_flows()
+            traced_method._compute_flows()
 
     def filter(self, filter_func):
         self.traced_methods = {k: v for k, v in self.traced_methods.items() if filter_func(k, v)}
@@ -95,7 +95,7 @@ class CallContainer:
     def tests(self):
         return sorted(set(map(lambda each: each[0], self.call_stack())))
 
-    def select_calls_by_lines(self, distinct_lines):
+    def _select_calls_by_lines(self, distinct_lines):
         calls = []
         for call in self.calls:
             if tuple(call.distinct_run_lines()) == tuple(distinct_lines):
@@ -112,32 +112,32 @@ class TracedMethod(CallContainer):
         self.flows = []
         self._calls = {}
 
-    def add_call(self, run_lines, call_state, call_stack, call_id):
+    def _add_call(self, run_lines, call_state, call_stack, call_id):
         call = MethodCall(run_lines, call_state, call_stack, self)
         self.calls.append(call)
         self._calls[call_id] = call
         return call
 
-    def add_flow(self, flow_pos, distinct_run_lines, flow_calls):
+    def _add_flow(self, flow_pos, distinct_run_lines, flow_calls):
         flow = MethodFlow(flow_pos, distinct_run_lines, flow_calls, self)
         self.flows.append(flow)
         return flow
 
-    def _get_call_from_id(self, call_id):
-        return self._calls.get(call_id, None)
-
-    def compute_flows(self):
+    def _compute_flows(self):
         most_common_run_lines = Analysis(self).most_common_run_lines()
         flow_pos = 0
         for run_lines in most_common_run_lines:
             flow_pos += 1
             distinct_run_lines = run_lines[0]
 
-            flow_calls = self.select_calls_by_lines(distinct_run_lines)
-            flow = self.add_flow(flow_pos, distinct_run_lines, flow_calls)
-            flow.update_flow_info()
+            flow_calls = self._select_calls_by_lines(distinct_run_lines)
+            flow = self._add_flow(flow_pos, distinct_run_lines, flow_calls)
+            flow._update_flow_info()
 
-        self.info.update_trace_data(self)
+        self.info._update_trace_data(self)
+
+    def _get_call_from_id(self, call_id):
+        return self._calls.get(call_id, None)
 
 
 class MethodFlow(CallContainer):
@@ -149,24 +149,6 @@ class MethodFlow(CallContainer):
         self.traced_method = traced_method
         self.info = None
         self._found_first_run_line = False
-
-
-    def update_flow_info(self):
-
-        lineno = 0
-
-        self.info = FlowInfo(self, len(self.traced_method.calls))
-        self._found_first_run_line = False
-
-        for lineno_entity in range(self.traced_method.info.start_line, self.traced_method.info.end_line+1):
-            lineno += 1
-
-            line_status = self.get_line_status(lineno_entity)
-            line_state = self.get_line_state(lineno_entity)
-            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, self.traced_method.info)
-
-            self.info.append(line_info)
-            self.info.update_run_status(line_info)
 
     def get_line_status(self, current_line):
 
@@ -191,6 +173,21 @@ class MethodFlow(CallContainer):
         call = self.calls[n]
         return call.get_line_state(lineno)
 
+    def _update_flow_info(self):
+        lineno = 0
+        self.info = FlowInfo(self, len(self.traced_method.calls))
+        self._found_first_run_line = False
+
+        for lineno_entity in range(self.traced_method.info.start_line, self.traced_method.info.end_line+1):
+            lineno += 1
+
+            line_status = self.get_line_status(lineno_entity)
+            line_state = self.get_line_state(lineno_entity)
+            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, self.traced_method.info)
+
+            self.info.append(line_info)
+            self.info.update_run_status(line_info)
+
 
 class MethodCall:
 
@@ -208,10 +205,10 @@ class MethodCall:
 
     def get_line_state(self, lineno):
 
-        if self.traced_method.info.line_is_entity_definition(lineno):
+        if self.traced_method.info.start_line == lineno:
             return self.line_arg_state()
 
-        if self.call_state.line_has_return_value(lineno):
+        if lineno in self.traced_method.info.return_lines:
             return self.line_return_state()
 
         states = self.call_state.states_for_line(lineno)
@@ -244,7 +241,36 @@ class CallState:
         self.return_state = None
         self.exception_state = None
 
-    def save_arg_states(self, argvalues, lineno):
+    def states_for_line(self, lineno):
+        states = []
+        for var in self.var_states:
+            var_states = ''
+            if var != 'self':
+                call_state = self.var_states[var]
+                for state in call_state.states:
+                    if state.inline == lineno:
+                        if str(state) not in var_states and state.value_has_changed:
+                            var_states += str(state) + ' '
+            if var_states:
+                states.append(var_states.strip())
+        return states
+
+    def get_yield_states(self):
+        if len(self.yield_states) <= 1:
+            return self.yield_states
+        # Remove the last element. This one is saved as an implicit return
+        return self.yield_states[:-1]
+
+    def has_return(self):
+        return self.return_state is not None
+
+    def has_exception(self):
+        return self.exception_state is not None
+
+    def has_yield(self):
+        return self.yield_states
+
+    def _save_arg_states(self, argvalues, lineno):
         for arg in argvalues.args:
             value = obj_value(argvalues.locals[arg])
             arg_state = ArgState(arg, value, lineno)
@@ -260,7 +286,7 @@ class CallState:
             arg_state = ArgState(argvalues.keywords, value, lineno)
             self.arg_states.append(arg_state)
 
-    def save_var_states(self, argvalues, lineno, inline):
+    def _save_var_states(self, argvalues, lineno, inline):
         for arg in argvalues.locals:
             value = obj_value(argvalues.locals[arg])
             self._save_var_state(name=arg, value=value, lineno=lineno, inline=inline)
@@ -269,48 +295,14 @@ class CallState:
         self.var_states[name] = self.var_states.get(name, VarStateHistory(name, []))
         self.var_states[name].add_var_state(name, value, lineno, inline)
 
-    def save_yield_state(self, value, lineno):
+    def _save_yield_state(self, value, lineno):
         self.yield_states.append(YieldState(value, lineno))
 
-    def save_return_state(self, value, lineno):
+    def _save_return_state(self, value, lineno):
         self.return_state = ReturnState(value, lineno)
 
-    def save_exception_state(self, value, lineno):
+    def _save_exception_state(self, value, lineno):
         self.exception_state = ExceptionState(value, lineno)
-
-    def get_yield_states(self):
-        if len(self.yield_states) <= 1:
-            return self.yield_states
-        # Remove the last element. This one is saved as an implicit return
-        return self.yield_states[:-1]
-
-    def states_for_line(self, lineno):
-        states = []
-        for var in self.var_states:
-            var_states = ''
-            if var != 'self':
-                call_state = self.var_states[var]
-                for state in call_state.states:
-                    if state.inline == lineno:
-                        if str(state) not in var_states and state.value_has_changed:
-                            var_states += str(state) + ' '
-            if var_states:
-                states.append(var_states.strip())
-        return states
-
-    def line_has_return_value(self, lineno):
-        if self.has_return():
-            return lineno == self.return_state.lineno
-        return False
-
-    def has_return(self):
-        return self.return_state is not None
-
-    def has_exception(self):
-        return self.exception_state is not None
-
-    def has_yield(self):
-        return self.yield_states
 
 
 class VarStateHistory:

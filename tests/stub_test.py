@@ -440,3 +440,12 @@ class TestFuncRunner:
 
     def test_run_call_func(self):
         FuncRunner().run_call_func()
+
+
+class TestRecursion:
+
+    def test_basic_recursion(self):
+        Recursion().run_basic_recursion()
+
+    def test_fib_recursive_3(self):
+        Recursion().fib_recursive(3)

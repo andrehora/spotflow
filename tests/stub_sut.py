@@ -574,3 +574,26 @@ class FuncRunner:
 
     def run_call_func(self):
         self.call_func_three_times(self.func_to_be_run)
+
+
+class Recursion:
+
+    def basic_recursion(self, n):
+        if n == 1:
+            return
+        self.basic_recursion(n-1)
+
+    def run_basic_recursion(self):
+        self.basic_recursion(3)
+
+    def fib_recursive(self, n):
+        def fib_recursive_term(i):
+            if i < 0:
+                raise Exception("n is negative")
+            if i < 2:
+                return i
+            return fib_recursive_term(i - 1) + fib_recursive_term(i - 2)
+
+        if n < 0:
+            raise Exception("n is negative")
+        return [fib_recursive_term(i) for i in range(n + 1)]

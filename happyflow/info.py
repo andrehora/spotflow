@@ -22,12 +22,20 @@ class MethodInfo:
         self.html_lines = None
 
         # Updated in collector
-        self.has_return = False
-        self.has_yield = False
-        self.has_exception = False
-        self.has_super = False
+        self.return_lines = set()
+        self.yield_lines = set()
+        self.exception_lines = set()
 
-    def update_trace_data(self, traced_method):
+    def has_return(self):
+        return len(self.return_lines) != 0
+
+    def has_yield(self):
+        return len(self.yield_lines) != 0
+
+    def has_exception(self):
+        return len(self.exception_lines) != 0
+
+    def _update_trace_data(self, traced_method):
         self.total_calls = len(traced_method.calls)
         self.total_tests = len(traced_method.tests())
         self.statements_count = traced_method.info.executable_lines_count()
@@ -53,9 +61,6 @@ class MethodInfo:
 
     def line_is_executable(self, lineno):
         return lineno in self.executable_lines()
-
-    def line_is_entity_definition(self, lineno):
-        return lineno == self.start_line
 
     def has_lineno(self, lineno):
         return lineno in range(self.start_line, self.end_line + 1)

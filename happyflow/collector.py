@@ -46,15 +46,14 @@ def line_has_keyword(frame, keyword):
 
 
 def update_method_info(method_info, frame, event):
+    lineno = frame.f_lineno
     if event == 'return':
         if line_has_return(frame):
-            method_info.has_return = True
+            method_info.return_lines.add(lineno)
         elif line_has_yield(frame):
-            method_info.has_yield = True
+            method_info.yield_lines.add(lineno)
     elif event == 'exception':
-        method_info.has_exception = True
-    if method_has_super_call(frame):
-        method_info.has_super = True
+        method_info.exception_lines.add(lineno)
 
 
 class Collector:
@@ -274,12 +273,12 @@ class Collector:
 
                         run_lines = []
                         call_state = CallState()
-                        call_state.save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
+                        call_state._save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
                         callers = self.find_call_stack(frame)
                         frame_id = get_frame_id(frame)
 
                         traced_method = self.traced_system[current_method_name]
-                        traced_method.add_call(run_lines, call_state, callers, frame_id)
+                        traced_method._add_call(run_lines, call_state, callers, frame_id)
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
@@ -298,18 +297,18 @@ class Collector:
 
                                     elif event == 'return':
                                         if line_has_return(frame):
-                                            current_call_state.save_return_state(obj_value(arg), lineno)
+                                            current_call_state._save_return_state(obj_value(arg), lineno)
                                         elif line_has_yield(frame):
-                                            current_call_state.save_yield_state(obj_value(arg), lineno)
+                                            current_call_state._save_yield_state(obj_value(arg), lineno)
 
                                     elif event == 'exception':
                                         exception_name = arg[0].__name__
-                                        current_call_state.save_exception_state(exception_name, lineno)
+                                        current_call_state._save_exception_state(exception_name, lineno)
 
                                     if current_call_state:
                                         argvalues = inspect.getargvalues(frame)
                                         inline = self.last_frame_lineno[current_method_name]
-                                        current_call_state.save_var_states(argvalues, lineno, inline)
+                                        current_call_state._save_var_states(argvalues, lineno, inline)
 
                         self.last_frame_lineno[current_method_name] = lineno
 
