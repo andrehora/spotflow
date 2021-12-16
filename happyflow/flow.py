@@ -152,7 +152,7 @@ class MethodFlow(CallContainer):
 
     def _update_flow_info(self):
         lineno = 0
-        self.info = FlowInfo(self, len(self.traced_method.calls))
+        self.info = FlowInfo(self)
         self._found_first_run_line = False
 
         for lineno_entity in range(self.traced_method.info.start_line, self.traced_method.info.end_line+1):
