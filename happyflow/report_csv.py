@@ -33,8 +33,8 @@ class CSVCodeReport:
 
 class CSVIndexReport:
 
-    def __init__(self, traced_system, report_dir=None):
-        self.traced_system = traced_system
+    def __init__(self, monitored_system, report_dir=None):
+        self.monitored_system = monitored_system
 
         self.report_dir = report_dir
         if not self.report_dir:
@@ -49,7 +49,7 @@ class CSVIndexReport:
                 'top_flow_calls', 'top_flow_ratio']
         content.append(line)
 
-        for traced_method in self.traced_system:
+        for traced_method in self.monitored_system:
 
             line = [traced_method.info.full_name, traced_method.info.statements_count, traced_method.info.total_flows,
                     traced_method.info.total_tests, traced_method.info.total_calls, traced_method.info.top_flow_calls,

@@ -6,39 +6,39 @@ class TestTXTReport(unittest.TestCase):
 
     def test_generate_txt_report_count_uppercase_words(self):
 
-        flow = HappyFlow()
-        flow.target_methods(['tests.stub_funcs.count_uppercase_words'])
-        flow.start()
+        call = HappyFlow()
+        call.target_methods(['tests.stub_funcs.count_uppercase_words'])
+        call.start()
 
         from tests.stub_funcs import inputs_count
         inputs_count()
 
-        flow.stop()
-        is_exported = flow.txt_report()
+        call.stop()
+        is_exported = call.txt_report()
         self.assertTrue(is_exported)
 
     def test_generate_txt_report_parseparam(self):
-        flow = HappyFlow()
-        flow.target_methods(['tests.stub_funcs.parseparam'])
-        flow.start()
+        hp = HappyFlow()
+        hp.target_methods(['tests.stub_funcs.parseparam'])
+        hp.start()
 
         from tests.stub_funcs import inputs_parseparam
         inputs_parseparam()
 
-        flow.stop()
-        is_exported = flow.txt_report()
+        hp.stop()
+        is_exported = hp.txt_report()
         self.assertTrue(is_exported)
 
     def test_generate_txt_report_splitparam(self):
-        flow = HappyFlow()
-        flow.target_methods(['tests.stub_funcs.splitparam'])
-        flow.start()
+        hp = HappyFlow()
+        hp.target_methods(['tests.stub_funcs.splitparam'])
+        hp.start()
 
         from tests.stub_funcs import inputs_splitparam
         inputs_splitparam()
 
-        flow.stop()
-        is_exported = flow.txt_report()
+        hp.stop()
+        is_exported = hp.txt_report()
         self.assertTrue(is_exported)
 
 

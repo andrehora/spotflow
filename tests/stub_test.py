@@ -7,10 +7,10 @@ class TestFoo:
         pass
 
 
-class TestSimpleFlow:
+class TestSimpleCall:
 
     def __init__(self):
-        self.bs = SimpleFlow()
+        self.bs = SimpleCall()
 
     def test_simple_if_true(self):
         self.bs.simple_if(True)
@@ -48,10 +48,10 @@ class TestSimpleFlow:
         self.test_try_fail()
 
 
-class TestComplexFlow:
+class TestComplexCall:
 
     def __init__(self):
-        self.cs = ComplexFlow()
+        self.cs = ComplexCall()
 
     def test_single_call_to_sut_bom_dia(self):
         self.cs.hello(10)
@@ -234,7 +234,7 @@ class TestExceptions:
         except Exception:
             pass
 
-    def test_flows_with_exceptions(self):
+    def test_calls_with_exceptions(self):
         try:
             self.ex.raise_distinct_exception(first_line=True)
         except Exception:

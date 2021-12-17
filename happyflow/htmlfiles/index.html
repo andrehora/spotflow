@@ -41,7 +41,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for traced_method in traced_system %}
+            {% for traced_method in monitored_system %}
             <tr class="file">
                 <td class="name left"><a href="{{traced_method.info.full_name}}.html">{{traced_method.info.full_name_escaped}}</a></td>
                 <td>{{traced_method.info.has_return}}</td>

@@ -1,7 +1,7 @@
 import inspect
 import types
 from happyflow.utils import obj_value, find_full_name
-from happyflow.flow import CallState, TracedMethod, TracedSystem
+from happyflow.flow import CallState, MonitoredMethod, MonitoredSystem
 from happyflow.info import MethodInfo
 from happyflow.tracer import PyTracer
 
@@ -61,7 +61,7 @@ class Collector:
     IGNORE_FILES = ['site-packages', 'unittest', 'pytest', 'argparse', 'sysconfig']
 
     def __init__(self):
-        self.traced_system = TracedSystem()
+        self.monitored_system = MonitoredSystem()
         self.method_names = None
         self.ignore_files = None
 
@@ -268,8 +268,8 @@ class Collector:
                     # -1 for calls, and a real offset for generators.  Use < 0 as the
                     # line number for calls, and the real line number for generators.
                     if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not is_comprehension(frame):
-                        if current_method_name not in self.traced_system:
-                            self.traced_system[current_method_name] = TracedMethod(method_info)
+                        if current_method_name not in self.monitored_system:
+                            self.monitored_system[current_method_name] = MonitoredMethod(method_info)
 
                         run_lines = []
                         call_state = CallState()
@@ -277,14 +277,14 @@ class Collector:
                         callers = self.find_call_stack(frame)
                         frame_id = get_frame_id(frame)
 
-                        traced_method = self.traced_system[current_method_name]
+                        traced_method = self.monitored_system[current_method_name]
                         traced_method._add_call(run_lines, call_state, callers, frame_id)
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
                         lineno = frame.f_lineno
-                        if current_method_name in self.traced_system:
-                            traced_method = self.traced_system[current_method_name]
+                        if current_method_name in self.monitored_system:
+                            traced_method = self.monitored_system[current_method_name]
                             if traced_method.calls:
                                 frame_id = get_frame_id(frame)
                                 method_call = traced_method._get_call_from_id(frame_id)

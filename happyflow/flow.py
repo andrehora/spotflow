@@ -2,39 +2,39 @@ from happyflow.utils import obj_value
 from happyflow.info import *
 
 
-class TracedSystem:
+class MonitoredSystem:
 
     def __init__(self):
-        self.traced_methods = {}
+        self.monitored_methods = {}
 
     def compute_flows(self):
-        for traced_method in self.traced_methods.values():
+        for traced_method in self.monitored_methods.values():
             traced_method._compute_flows()
 
     def filter(self, filter_func):
-        self.traced_methods = {k: v for k, v in self.traced_methods.items() if filter_func(k, v)}
+        self.monitored_methods = {k: v for k, v in self.monitored_methods.items() if filter_func(k, v)}
         return self
 
     def has_calls(self, method_name, traced_method):
         return traced_method.calls
 
     def __getitem__(self, key):
-        return self.traced_methods[key]
+        return self.monitored_methods[key]
 
     def __setitem__(self, key, value):
-        self.traced_methods[key] = value
+        self.monitored_methods[key] = value
 
     def __contains__(self, key):
-        return key in self.traced_methods
+        return key in self.monitored_methods
 
     def __len__(self):
-        return len(self.traced_methods)
+        return len(self.monitored_methods)
 
     def __repr__(self):
-        return repr(self.traced_methods)
+        return repr(self.monitored_methods)
 
     def __iter__(self):
-        return iter(self.traced_methods.values())
+        return iter(self.monitored_methods.values())
 
 
 class CallContainer:
@@ -103,7 +103,7 @@ class CallContainer:
         return calls
 
 
-class TracedMethod(CallContainer):
+class MonitoredMethod(CallContainer):
 
     def __init__(self, method_info):
         super().__init__(calls=[])

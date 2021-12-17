@@ -20,48 +20,48 @@ class HappyFlow:
         self.collector.stop()
 
     def result(self):
-        return self.collector.traced_system
+        return self.collector.monitored_system
 
     def html_report(self, directory=None):
         # try:
-        Report(self.collector.traced_system).html_report(directory)
+        Report(self.collector.monitored_system).html_report(directory)
         # except Exception as e:
         #     print(e)
 
     def csv_report(self, directory=None):
         # try:
-        Report(self.collector.traced_system).csv_report(directory)
+        Report(self.collector.monitored_system).csv_report(directory)
         # except Exception as e:
         #     print(e)
 
     def txt_report(self):
         try:
-            Report(self.collector.traced_system).txt_report()
+            Report(self.collector.monitored_system).txt_report()
             return True
         except Exception as e:
             print(e)
             return False
 
 
-def run_and_flow_func(func, target_methods):
-    flow = HappyFlow()
-    flow.target_methods(target_methods)
-    flow.start()
+def run(func, target_methods):
+    hp = HappyFlow()
+    hp.target_methods(target_methods)
+    hp.start()
 
     func()
 
-    flow.stop()
-    return flow.result()
+    hp.stop()
+    return hp.result()
 
 
 def live(func, target_methods):
-    flow = HappyFlow()
-    flow.target_methods(target_methods)
-    flow.start()
+    hp = HappyFlow()
+    hp.target_methods(target_methods)
+    hp.start()
 
     func()
 
-    flow.stop()
-    flow.txt_report()
+    hp.stop()
+    hp.txt_report()
 
 

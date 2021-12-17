@@ -1,6 +1,6 @@
 import unittest
 from tests.stub_test import TestReturnValue
-from happyflow.api import run_and_flow_func
+from happyflow.api import run
 
 
 class TestArg(unittest.TestCase):
@@ -9,12 +9,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.simple_return'
         func = TestReturnValue().test_simple_return_local
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 1)
@@ -24,12 +24,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.simple_return'
         func = TestReturnValue().test_simple_return_global
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 1)
@@ -39,12 +39,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.simple_return_with_arg'
         func = TestReturnValue().test_simple_return_with_arg
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 3)
@@ -56,12 +56,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_0'
         func = TestReturnValue().test_change_return_0
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 3)
@@ -73,12 +73,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_1'
         func = TestReturnValue().test_change_return_1
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 1)
@@ -88,12 +88,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_2'
         func = TestReturnValue().test_change_return_2
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 1)
@@ -103,12 +103,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_3'
         func = TestReturnValue().test_change_return_3
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 1)
@@ -118,12 +118,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_4'
         func = TestReturnValue().test_change_return_4
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 1)
@@ -133,12 +133,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_5'
         func = TestReturnValue().test_change_return_5
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 1)
@@ -148,12 +148,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.multiple_return'
         func = TestReturnValue().test_multiple_return_true
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 2)
@@ -164,12 +164,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.multiple_return'
         func = TestReturnValue().test_multiple_return_false
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 2)
@@ -180,12 +180,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_attribute_0'
         func = TestReturnValue().test_change_attribute_0
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 2)
@@ -196,12 +196,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_attribute_1'
         func = TestReturnValue().test_change_attribute_1
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 1)
@@ -211,12 +211,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_attribute_2'
         func = TestReturnValue().test_change_attribute_2
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 1)
@@ -226,12 +226,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_attribute_3'
         func = TestReturnValue().test_change_attribute_3
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 1)
@@ -241,12 +241,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_obj_1'
         func = TestReturnValue().test_change_obj_1
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 1)
@@ -256,12 +256,12 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_obj_2'
         func = TestReturnValue().test_change_obj_2
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
 
         args = call_state.arg_states
         self.assertEqual(len(args), 4)

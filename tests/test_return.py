@@ -1,6 +1,6 @@
 import unittest
 from tests.stub_test import TestReturnValue
-from happyflow.api import run_and_flow_func
+from happyflow.api import run
 
 
 class TestReturn(unittest.TestCase):
@@ -9,12 +9,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.simple_return'
         func = TestReturnValue().test_simple_return_local
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '100')
 
@@ -22,12 +22,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.simple_return'
         func = TestReturnValue().test_simple_return_global
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '100')
 
@@ -35,12 +35,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.simple_return_with_arg'
         func = TestReturnValue().test_simple_return_with_arg
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, "'hello world'")
 
@@ -48,12 +48,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_0'
         func = TestReturnValue().test_change_return_0
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '300')
 
@@ -61,12 +61,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_1'
         func = TestReturnValue().test_change_return_1
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '3')
 
@@ -74,12 +74,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_2'
         func = TestReturnValue().test_change_return_2
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '4')
 
@@ -87,12 +87,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_3'
         func = TestReturnValue().test_change_return_3
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, "'a and l'")
 
@@ -100,12 +100,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_4'
         func = TestReturnValue().test_change_return_4
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '[1, 2, 3]')
 
@@ -113,12 +113,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_return_5'
         func = TestReturnValue().test_change_return_5
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '10')
 
@@ -126,12 +126,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.multiple_return'
         func = TestReturnValue().test_multiple_return_true
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, "'enter is true'")
 
@@ -139,12 +139,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.multiple_return'
         func = TestReturnValue().test_multiple_return_false
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, "'enter is false'")
 
@@ -152,12 +152,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_attribute_0'
         func = TestReturnValue().test_change_attribute_0
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '500')
 
@@ -165,12 +165,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_attribute_1'
         func = TestReturnValue().test_change_attribute_1
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '101')
 
@@ -178,12 +178,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_attribute_2'
         func = TestReturnValue().test_change_attribute_2
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, "'foo'")
 
@@ -191,12 +191,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_attribute_3'
         func = TestReturnValue().test_change_attribute_3
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '5')
 
@@ -204,12 +204,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_obj_1'
         func = TestReturnValue().test_change_obj_1
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '9')
 
@@ -217,12 +217,12 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.change_obj_2'
         func = TestReturnValue().test_change_obj_2
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        self.assertEqual(len(flows), 1)
+        calls = result[method_name].calls
+        self.assertEqual(len(calls), 1)
 
-        call_state = flows[0].call_state
+        call_state = calls[0].call_state
         return_state = call_state.return_state
         self.assertEqual(return_state, '19')
 
@@ -230,10 +230,10 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.explicit_return_state'
         func = TestReturnValue().test_explicit_return_state
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        return_state = flows[0].call_state.return_state
+        calls = result[method_name].calls
+        return_state = calls[0].call_state.return_state
 
         self.assertEqual(return_state.value, '123')
 
@@ -241,10 +241,10 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.explicit_return_none'
         func = TestReturnValue().test_explicit_return_none
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        return_state = flows[0].call_state.return_state
+        calls = result[method_name].calls
+        return_state = calls[0].call_state.return_state
 
         self.assertEqual(return_state.value, 'None')
 
@@ -252,10 +252,10 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.explicit_return'
         func = TestReturnValue().test_explicit_return
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        return_state = flows[0].call_state.return_state
+        calls = result[method_name].calls
+        return_state = calls[0].call_state.return_state
 
         self.assertEqual(return_state.value, 'None')
 
@@ -263,10 +263,10 @@ class TestReturn(unittest.TestCase):
         method_name = 'tests.stub_sut.ReturnValue.implicit_return'
         func = TestReturnValue().test_implicit_return
 
-        result = run_and_flow_func(func, [method_name])
+        result = run(func, [method_name])
 
-        flows = result[method_name].calls
-        return_state = flows[0].call_state.return_state
+        calls = result[method_name].calls
+        return_state = calls[0].call_state.return_state
 
         self.assertIsNone(return_state)
 

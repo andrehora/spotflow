@@ -1,4 +1,4 @@
-class SimpleFlow:
+class SimpleCall:
 
     def simple_if(self, enter=True):
         if enter:
@@ -28,7 +28,7 @@ class SimpleFlow:
             a = 123
 
 
-class ComplexFlow:
+class ComplexCall:
 
     def hello(self, hour):
         #intentional nested ifs
