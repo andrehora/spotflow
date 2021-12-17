@@ -1,7 +1,7 @@
 import inspect
 import types
 from happyflow.utils import obj_value, find_full_name
-from happyflow.flow import CallState, MonitoredMethod, MonitoredSystem
+from happyflow.model import CallState, MonitoredMethod, MonitoredSystem
 from happyflow.info import MethodInfo
 from happyflow.tracer import PyTracer
 
