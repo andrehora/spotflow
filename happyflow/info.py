@@ -129,10 +129,10 @@ class FlowInfo:
         self.yield_values = Analysis(method_flow).most_common_yield_values_pretty()
         self.exception_values = Analysis(method_flow).most_common_exception_values_pretty()
 
-    def append(self, other):
+    def _append(self, other):
         self.lines.append(other)
 
-    def update_run_status(self, line_info):
+    def _update_run_status(self, line_info):
         if line_info.is_run():
             self.run_count += 1
         if line_info.is_not_run():
@@ -189,14 +189,11 @@ class Analysis:
     def __init__(self, call_container):
         self.call_container = call_container
 
-    def number_of_distinct_flows(self):
-        return len(set(self.call_container.distinct_run_lines()))
-
     def number_of_calls(self):
         return len(self.call_container.calls)
 
     def most_common_run_lines(self):
-        lines = self.call_container.distinct_run_lines()
+        lines = self.call_container.all_distinct_run_lines()
         return self._most_common(lines)
 
     def most_common_args(self):

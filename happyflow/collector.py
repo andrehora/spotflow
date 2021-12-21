@@ -271,29 +271,29 @@ class Collector:
                         if current_method_name not in self.monitored_system:
                             self.monitored_system[current_method_name] = MonitoredMethod(method_info)
 
-                        run_lines = []
                         call_state = CallState()
                         call_state._save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
                         callers = self.find_call_stack(frame)
                         frame_id = get_frame_id(frame)
 
-                        traced_method = self.monitored_system[current_method_name]
-                        traced_method._add_call(run_lines, call_state, callers, frame_id)
+                        monitored_method = self.monitored_system[current_method_name]
+                        monitored_method._add_call(call_state, callers, frame_id)
 
                     # Event is line, return, exception or call for re-entering generators
                     else:
                         lineno = frame.f_lineno
                         if current_method_name in self.monitored_system:
-                            traced_method = self.monitored_system[current_method_name]
-                            if traced_method.calls:
+                            monitored_method = self.monitored_system[current_method_name]
+                            if monitored_method.calls:
                                 frame_id = get_frame_id(frame)
-                                method_call = traced_method._get_call_from_id(frame_id)
+                                method_call = monitored_method._get_call_from_id(frame_id)
                                 if method_call:
-                                    current_run_lines = method_call.run_lines
+
                                     current_call_state = method_call.call_state
 
                                     if event == 'line':
-                                        current_run_lines.append(lineno)
+                                        method_call._add_run_line(lineno)
+                                        monitored_method._add_run_line(lineno)
 
                                     elif event == 'return':
                                         if line_has_return(frame):
@@ -311,4 +311,3 @@ class Collector:
                                         current_call_state._save_var_states(argvalues, lineno, inline)
 
                         self.last_frame_lineno[current_method_name] = lineno
-

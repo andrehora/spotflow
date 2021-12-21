@@ -42,7 +42,7 @@ class CallContainer:
     def __init__(self, calls):
         self.calls = calls
 
-    def distinct_run_lines(self):
+    def all_distinct_run_lines(self):
         lines = []
         for call in self.calls:
             lines.append(tuple(call.distinct_run_lines()))
@@ -110,12 +110,23 @@ class MonitoredMethod(CallContainer):
         self.info = method_info
         self.method_name = method_info.name
         self.flows = []
-        self._calls = {}
+        self.run_lines = {}
+        self._calls_by_id = {}
 
-    def _add_call(self, run_lines, call_state, call_stack, call_id):
-        call = MethodCall(run_lines, call_state, call_stack, self)
+    def distinct_run_lines(self):
+        return self.run_lines.keys()
+
+    def _add_run_line(self, lineno):
+        line_freq = self.run_lines.get(lineno, 0)
+        self.run_lines[lineno] = line_freq + 1
+
+    def _get_call_from_id(self, call_id):
+        return self._calls_by_id.get(call_id, None)
+
+    def _add_call(self, call_state, call_stack, call_id):
+        call = MethodCall(call_state, call_stack, self)
         self.calls.append(call)
-        self._calls[call_id] = call
+        self._calls_by_id[call_id] = call
         return call
 
     def _add_flow(self, flow_pos, distinct_run_lines, flow_calls):
@@ -135,9 +146,6 @@ class MonitoredMethod(CallContainer):
             flow._update_flow_info()
 
         self.info._update_trace_data(self)
-
-    def _get_call_from_id(self, call_id):
-        return self._calls.get(call_id, None)
 
 
 class MethodFlow(CallContainer):
@@ -162,8 +170,8 @@ class MethodFlow(CallContainer):
             line_state = self._get_line_state(lineno_entity)
             line_info = LineInfo(lineno, lineno_entity, line_status, line_state, self.traced_method.info)
 
-            self.info.append(line_info)
-            self.info.update_run_status(line_info)
+            self.info._append(line_info)
+            self.info._update_run_status(line_info)
 
     def _get_line_status(self, current_line):
 
@@ -191,14 +199,11 @@ class MethodFlow(CallContainer):
 
 class MethodCall:
 
-    def __init__(self, run_lines, call_state, call_stack, traced_method):
-        self.run_lines = run_lines
+    def __init__(self, call_state, call_stack, traced_method):
         self.call_state = call_state
         self.call_stack = call_stack
         self.traced_method = traced_method
-
-    def __eq__(self, other):
-        return other == self.run_lines
+        self.run_lines = []
 
     def distinct_run_lines(self):
         return sorted(list(set(self.run_lines)))
@@ -214,7 +219,6 @@ class MethodCall:
         states = self.call_state.states_for_line(lineno)
         if states:
             return self.line_var_states(states)
-
         return ''
 
     def line_arg_state(self):
@@ -230,6 +234,12 @@ class MethodCall:
 
     def line_var_states(self, states):
         return StateStatus.VAR, states
+
+    def _add_run_line(self, lineno):
+        self.run_lines.append(lineno)
+
+    def __eq__(self, other):
+        return other == self.run_lines
 
 
 class CallState:
