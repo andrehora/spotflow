@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>{{traced_method.info.full_name}}</title>
+    <title>{{monitored_method.info.full_name}}</title>
     {# IE8 rounds line-height incorrectly, and adding this emulateIE7 line makes it right! #}
     {# http://social.msdn.microsoft.com/Forums/en-US/iewebdevelopment/thread/7684445e-f080-4d8f-8529-132763348e21 #}
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
@@ -21,16 +21,17 @@
     <div class="highlight">
         <div id="header">
             <div class="content">
-                <h1>Method: {{traced_method.info.full_name_escaped}}</h1>
-                <span>{{traced_method.info.total_flows}} flows,</span>
-                <span>{{traced_method.info.total_tests}} tests, </span>
-                <span>{{traced_method.info.total_calls}} calls, </span>
-                <span>{{traced_method.info.total_exceptions}} exceptions </span>
+                <h1>Method: {{monitored_method.info.full_name_escaped}}</h1>
+                <span>Coverage: {{monitored_method.info.coverage_ratio}}% ({{monitored_method.info.run_lines_count}}/{{monitored_method.info.executable_lines_count}}),</span>
+                <span>Tests: {{monitored_method.info.total_tests}}, </span>
+                <span>Calls: {{monitored_method.info.total_calls}}, </span>
+                <span>Exceptions: {{monitored_method.info.total_exceptions}}, </span>
+                <span>Flows: {{monitored_method.info.total_flows}}</span>
                 <br><a href="./index.html">Back</a>
             </div>
         </div>
 
-        {% for flow in traced_method.flows %}
+        {% for flow in monitored_method.flows %}
             <p><b>Flow {{flow.pos}}</b>: {{flow.info.call_count}} calls ({{flow.info.call_ratio}}%)</p>
 
             {% for each in flow.info.arg_values %}

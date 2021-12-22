@@ -7,9 +7,9 @@ class MonitoredSystem:
     def __init__(self):
         self.monitored_methods = {}
 
-    def compute_flows(self):
+    def update_runtime_info(self):
         for traced_method in self.monitored_methods.values():
-            traced_method._compute_flows()
+            traced_method._update_runtime_info()
 
     def filter(self, filter_func):
         self.monitored_methods = {k: v for k, v in self.monitored_methods.items() if filter_func(k, v)}
@@ -116,6 +116,9 @@ class MonitoredMethod(CallContainer):
     def distinct_run_lines(self):
         return self.run_lines.keys()
 
+    def first_run_line(self):
+        return self.calls[0].run_lines[0]
+
     def _add_run_line(self, lineno):
         line_freq = self.run_lines.get(lineno, 0)
         self.run_lines[lineno] = line_freq + 1
@@ -134,7 +137,7 @@ class MonitoredMethod(CallContainer):
         self.flows.append(flow)
         return flow
 
-    def _compute_flows(self):
+    def _update_runtime_info(self):
         most_common_run_lines = Analysis(self).most_common_run_lines()
         flow_pos = 0
         for run_lines in most_common_run_lines:
@@ -145,7 +148,7 @@ class MonitoredMethod(CallContainer):
             flow = self._add_flow(flow_pos, distinct_run_lines, flow_calls)
             flow._update_flow_info()
 
-        self.info._update_trace_data(self)
+        self.info._update_method_info(self)
 
 
 class MethodFlow(CallContainer):
@@ -180,9 +183,9 @@ class MethodFlow(CallContainer):
             return RunStatus.RUN
 
         # _find_executable_linenos of trace returns method/function definitions as executable lines (?).
-        # We should flag those definitions as not executable lines (NOT_EXEC). Otherwise, the definitions
-        # would impact on the flows. The solution for now is flagging all first lines as not executable
-        # until we find the first run line. This way, the definitions are flagged as not executable lines...
+        # We should flag those definitions as not executable lines (NOT_EXEC). Otherwise, the definitions would impact
+        # on the flows, coverage, etc. The solution for now is flagging all first lines as not executable until we
+        # find the first run line. This way, the definitions are flagged as not executable lines...
         if not self._found_first_run_line:
             return RunStatus.NOT_EXEC
 

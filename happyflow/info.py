@@ -45,9 +45,6 @@ class MethodInfo:
             executable_lines_for_file[self.filename] = find_executable_linenos(self.filename)
         return executable_lines_for_file[self.filename]
 
-    def executable_lines_count(self):
-        return len(self.executable_lines())
-
     def line_is_executable(self, lineno):
         return lineno in self.executable_lines()
 
@@ -85,16 +82,25 @@ class MethodInfo:
     def summary(self):
         return f'{self.full_name} (lines: {self.start_line}-{self.end_line})'
 
-    def _update_trace_data(self, traced_method):
-        self.total_calls = len(traced_method.calls)
-        self.total_tests = len(traced_method.tests())
-        self.statements_count = traced_method.info.executable_lines_count()
+    def executable_lines_without_def(self, monitored_method):
+        exec_lines = self.executable_lines()
+        first_run_line = monitored_method.first_run_line()
+        first_run_line_index = exec_lines.index(first_run_line)
+        return exec_lines[first_run_line_index:]
 
-        self.total_flows = len(traced_method.flows)
-        self.top_flow_calls = traced_method.flows[0].info.call_count
-        self.top_flow_ratio = traced_method.flows[0].info.call_ratio
+    def _update_method_info(self, monitored_method):
 
-        self.total_exceptions = len(traced_method.exception_states())
+        self.run_lines_count = len(monitored_method.run_lines)
+        self.executable_lines_count = len(self.executable_lines_without_def(monitored_method))
+        self.coverage_ratio = ratio(self.run_lines_count, self.executable_lines_count)
+
+        self.total_calls = len(monitored_method.calls)
+        self.total_tests = len(monitored_method.tests())
+        self.total_exceptions = len(monitored_method.exception_states())
+
+        self.total_flows = len(monitored_method.flows)
+        self.top_flow_calls = monitored_method.flows[0].info.call_count
+        self.top_flow_ratio = monitored_method.flows[0].info.call_ratio
 
     def __str__(self):
         return self.full_name

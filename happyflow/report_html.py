@@ -17,8 +17,8 @@ REPORT_DIR = 'report_html'
 
 class HTMLCodeReport:
 
-    def __init__(self, traced_method, report_dir=None):
-        self.traced_method = traced_method
+    def __init__(self, monitored_method, report_dir=None):
+        self.monitored_method = monitored_method
 
         self.report_dir = report_dir
         if not self.report_dir:
@@ -33,7 +33,7 @@ class HTMLCodeReport:
 
     def report(self):
 
-        # for flow in self.traced_method.flows:
+        # for flow in self.monitored_method.flows:
         #     for line in flow.info.lines:
         #         if line.is_run():
         #             line.html = f'<span class="full run">{line.html()}</span>'
@@ -41,10 +41,10 @@ class HTMLCodeReport:
         #             line.html = f'<span class="full not_run">{line.html()}</span>'
 
         html = self.source_tmpl.render({
-            'traced_method': self.traced_method
+            'monitored_method': self.monitored_method
         })
 
-        pyfile = os.path.join(self.report_dir, self.traced_method.info.full_name + '.html')
+        pyfile = os.path.join(self.report_dir, self.monitored_method.info.full_name + '.html')
         write_html(pyfile, html)
 
 
