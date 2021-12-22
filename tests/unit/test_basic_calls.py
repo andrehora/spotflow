@@ -1,12 +1,12 @@
 import unittest
-from tests.stub_test import TestSimpleCall, TestComplexCall
+from tests.unit.stub_test import TestSimpleCall, TestComplexCall
 from happyflow.api import run
 
 
 class TestCallForFunctions(unittest.TestCase):
 
     def test_simple_if_true(self):
-        method_name = 'tests.stub_sut.SimpleCall.simple_if'
+        method_name = 'tests.unit.stub_sut.SimpleCall.simple_if'
         func = TestSimpleCall().test_simple_if_true
 
         result = run(func, [method_name])
@@ -15,7 +15,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'simple_if')
 
     def test_simple_if_false(self):
-        method_name = 'tests.stub_sut.SimpleCall.simple_if'
+        method_name = 'tests.unit.stub_sut.SimpleCall.simple_if'
         func = TestSimpleCall().test_simple_if_false
 
         result = run(func, [method_name])
@@ -24,7 +24,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'simple_if')
 
     def test_simple_if_else_true_and_false(self):
-        method_name = 'tests.stub_sut.SimpleCall.simple_if_else'
+        method_name = 'tests.unit.stub_sut.SimpleCall.simple_if_else'
         func = TestSimpleCall().test_simple_if_else_true_and_false
 
         result = run(func, [method_name])
@@ -34,7 +34,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'simple_if_else')
 
     def test_simple_if_else_true(self):
-        method_name = 'tests.stub_sut.SimpleCall.simple_if_else'
+        method_name = 'tests.unit.stub_sut.SimpleCall.simple_if_else'
         func = TestSimpleCall().test_simple_if_else_true
 
         result = run(func, [method_name])
@@ -43,7 +43,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'simple_if_else')
 
     def test_simple_if_else_false(self):
-        method_name = 'tests.stub_sut.SimpleCall.simple_if_else'
+        method_name = 'tests.unit.stub_sut.SimpleCall.simple_if_else'
         func = TestSimpleCall().test_simple_if_else_false
 
         result = run(func, [method_name])
@@ -52,7 +52,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'simple_if_else')
 
     def test_TestSimpleCall(self):
-        method_name = 'tests.stub_sut.SimpleCall.simple_if_else'
+        method_name = 'tests.unit.stub_sut.SimpleCall.simple_if_else'
         func = TestSimpleCall().test_simple_if_else_true_and_false
 
         result = run(func, [method_name])
@@ -62,7 +62,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'simple_if_else')
 
     def test_loop(self):
-        method_name = 'tests.stub_sut.SimpleCall.loop'
+        method_name = 'tests.unit.stub_sut.SimpleCall.loop'
         func = TestSimpleCall().test_loop
 
         result = run(func, [method_name])
@@ -72,7 +72,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'loop')
 
     def test_try_success(self):
-        method_name = 'tests.stub_sut.SimpleCall.try_success'
+        method_name = 'tests.unit.stub_sut.SimpleCall.try_success'
         func = TestSimpleCall().test_try_success
 
         result = run(func, [method_name])
@@ -81,7 +81,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'try_success')
 
     def test_try_fail(self):
-        method_name = 'tests.stub_sut.SimpleCall.try_fail'
+        method_name = 'tests.unit.stub_sut.SimpleCall.try_fail'
         func = TestSimpleCall().test_try_fail
 
         result = run(func, [method_name])
@@ -90,7 +90,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'try_fail')
 
     def test_single_call_to_sut_bom_dia(self):
-        method_name = 'tests.stub_sut.ComplexCall.hello'
+        method_name = 'tests.unit.stub_sut.ComplexCall.hello'
         func = TestComplexCall().test_single_call_to_sut_bom_dia
 
         result = run(func, [method_name])
@@ -99,7 +99,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'hello')
 
     def test_single_call_to_sut_boa_tarde(self):
-        method_name = 'tests.stub_sut.ComplexCall.hello'
+        method_name = 'tests.unit.stub_sut.ComplexCall.hello'
         func = TestComplexCall().test_single_call_to_sut_boa_tarde
 
         result = run(func, [method_name])
@@ -108,7 +108,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'hello')
 
     def test_single_call_to_sut_boa_noite(self):
-        method_name = 'tests.stub_sut.ComplexCall.hello'
+        method_name = 'tests.unit.stub_sut.ComplexCall.hello'
         func = TestComplexCall().test_single_call_to_sut_boa_noite
 
         result = run(func, [method_name])
@@ -117,7 +117,7 @@ class TestCallForFunctions(unittest.TestCase):
         self.assertEqual(result[method_name].method_name, 'hello')
 
     def test_multiple_call_to_sut(self):
-        method_name = 'tests.stub_sut.ComplexCall.hello'
+        method_name = 'tests.unit.stub_sut.ComplexCall.hello'
         func = TestComplexCall().test_multiple_call_to_sut
 
         result = run(func, [method_name])
@@ -132,14 +132,14 @@ class TestCallForFunctions(unittest.TestCase):
 class TestCallForContainers(unittest.TestCase):
 
     def test_TestSimpleCall(self):
-        method_name = 'tests.stub_sut.SimpleCall'
+        method_name = 'tests.unit.stub_sut.SimpleCall'
         func = TestSimpleCall().run_all
 
         result = run(func, [method_name])
 
         self.assertEqual(len(result), 5)
 
-        method_name = 'tests.stub_sut'
+        method_name = 'tests.unit.stub_sut'
         func = TestSimpleCall().run_all
 
         result = run(func, [method_name])
@@ -147,14 +147,14 @@ class TestCallForContainers(unittest.TestCase):
         self.assertEqual(len(result), 5)
 
     def test_TestComplexCall(self):
-        method_name = 'tests.stub_sut.ComplexCall'
+        method_name = 'tests.unit.stub_sut.ComplexCall'
         func = TestComplexCall().run_all
 
         result = run(func, [method_name])
 
         self.assertEqual(len(result), 5)
 
-        method_name = 'tests.stub_sut'
+        method_name = 'tests.unit.stub_sut'
         func = TestComplexCall().run_all
 
         result = run(func, [method_name])
@@ -162,24 +162,24 @@ class TestCallForContainers(unittest.TestCase):
         self.assertEqual(len(result), 5)
 
     def test_sut_call_sut(self):
-        method_name = 'tests.stub_sut'
+        method_name = 'tests.unit.stub_sut'
         func = TestComplexCall().test_sut_call_sut
 
         result = run(func, [method_name])
 
-        method_name = 'tests.stub_sut.ComplexCall.func'
+        method_name = 'tests.unit.stub_sut.ComplexCall.func'
         self.assertEqual(result[method_name].calls[0].run_lines, [42, 43, 44])
         self.assertEqual(result[method_name].method_name, 'func')
 
-        method_name = 'tests.stub_sut.ComplexCall.f1'
+        method_name = 'tests.unit.stub_sut.ComplexCall.f1'
         self.assertEqual(result[method_name].calls[0].run_lines, [47])
         self.assertEqual(result[method_name].method_name, 'f1')
 
-        method_name = 'tests.stub_sut.ComplexCall.f2'
+        method_name = 'tests.unit.stub_sut.ComplexCall.f2'
         self.assertEqual(result[method_name].calls[0].run_lines, [50])
         self.assertEqual(result[method_name].method_name, 'f2')
 
-        method_name = 'tests.stub_sut.ComplexCall.f3'
+        method_name = 'tests.unit.stub_sut.ComplexCall.f3'
         self.assertEqual(result[method_name].calls[0].run_lines, [53])
         self.assertEqual(result[method_name].method_name, 'f3')
 

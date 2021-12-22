@@ -33,7 +33,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(obj_value(self.test_obj_value), "TestUtils.test_obj_value def")
         self.assertEqual(obj_value(TestUtils), "TestUtils def")
 
-        from tests.stub_sut import Calculator
+        from tests.unit.stub_sut import Calculator
         self.assertEqual(obj_value(Calculator), 'Calculator def')
         self.assertEqual(obj_value(Calculator()), 'Calculator')
         self.assertEqual(obj_value(Calculator(100)), 'Calculator')

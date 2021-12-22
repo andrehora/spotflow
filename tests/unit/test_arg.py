@@ -1,12 +1,12 @@
 import unittest
-from tests.stub_test import TestReturnValue
+from tests.unit.stub_test import TestReturnValue
 from happyflow.api import run
 
 
 class TestArg(unittest.TestCase):
 
     def test_simple_return_local(self):
-        method_name = 'tests.stub_sut.ReturnValue.simple_return'
+        method_name = 'tests.unit.stub_sut.ReturnValue.simple_return'
         func = TestReturnValue().test_simple_return_local
 
         result = run(func, [method_name])
@@ -21,7 +21,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
 
     def test_simple_return_global(self):
-        method_name = 'tests.stub_sut.ReturnValue.simple_return'
+        method_name = 'tests.unit.stub_sut.ReturnValue.simple_return'
         func = TestReturnValue().test_simple_return_global
 
         result = run(func, [method_name])
@@ -36,7 +36,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
 
     def test_simple_return_with_arg(self):
-        method_name = 'tests.stub_sut.ReturnValue.simple_return_with_arg'
+        method_name = 'tests.unit.stub_sut.ReturnValue.simple_return_with_arg'
         func = TestReturnValue().test_simple_return_with_arg
 
         result = run(func, [method_name])
@@ -53,7 +53,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[2].name, 'name')
 
     def test_change_return_0(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_return_0'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_return_0'
         func = TestReturnValue().test_change_return_0
 
         result = run(func, [method_name])
@@ -70,7 +70,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[2].name, 'b')
 
     def test_change_return_1(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_return_1'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_return_1'
         func = TestReturnValue().test_change_return_1
 
         result = run(func, [method_name])
@@ -85,7 +85,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
 
     def test_change_return_2(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_return_2'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_return_2'
         func = TestReturnValue().test_change_return_2
 
         result = run(func, [method_name])
@@ -100,7 +100,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
 
     def test_change_return_3(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_return_3'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_return_3'
         func = TestReturnValue().test_change_return_3
 
         result = run(func, [method_name])
@@ -115,7 +115,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
 
     def test_change_return_4(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_return_4'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_return_4'
         func = TestReturnValue().test_change_return_4
 
         result = run(func, [method_name])
@@ -130,7 +130,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
 
     def test_change_return_5(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_return_5'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_return_5'
         func = TestReturnValue().test_change_return_5
 
         result = run(func, [method_name])
@@ -145,7 +145,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
 
     def test_multiple_return_true(self):
-        method_name = 'tests.stub_sut.ReturnValue.multiple_return'
+        method_name = 'tests.unit.stub_sut.ReturnValue.multiple_return'
         func = TestReturnValue().test_multiple_return_true
 
         result = run(func, [method_name])
@@ -161,7 +161,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[1].name, 'enter')
 
     def test_multiple_return_false(self):
-        method_name = 'tests.stub_sut.ReturnValue.multiple_return'
+        method_name = 'tests.unit.stub_sut.ReturnValue.multiple_return'
         func = TestReturnValue().test_multiple_return_false
 
         result = run(func, [method_name])
@@ -177,7 +177,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[1].name, 'enter')
 
     def test_change_attribute_0(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_attribute_0'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_attribute_0'
         func = TestReturnValue().test_change_attribute_0
 
         result = run(func, [method_name])
@@ -193,7 +193,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[1].name, 'new_n')
 
     def test_change_attribute_1(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_attribute_1'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_attribute_1'
         func = TestReturnValue().test_change_attribute_1
 
         result = run(func, [method_name])
@@ -208,7 +208,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
 
     def test_change_attribute_2(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_attribute_2'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_attribute_2'
         func = TestReturnValue().test_change_attribute_2
 
         result = run(func, [method_name])
@@ -223,7 +223,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
 
     def test_change_attribute_3(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_attribute_3'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_attribute_3'
         func = TestReturnValue().test_change_attribute_3
 
         result = run(func, [method_name])
@@ -238,7 +238,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
 
     def test_change_obj_1(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_obj_1'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_obj_1'
         func = TestReturnValue().test_change_obj_1
 
         result = run(func, [method_name])
@@ -253,7 +253,7 @@ class TestArg(unittest.TestCase):
         self.assertEqual(args[0].name, 'self')
 
     def test_change_obj_2(self):
-        method_name = 'tests.stub_sut.ReturnValue.change_obj_2'
+        method_name = 'tests.unit.stub_sut.ReturnValue.change_obj_2'
         func = TestReturnValue().test_change_obj_2
 
         result = run(func, [method_name])

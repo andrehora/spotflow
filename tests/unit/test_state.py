@@ -1,12 +1,12 @@
 import unittest
-from tests.stub_test import TestChangeState
+from tests.unit.stub_test import TestChangeState
 from happyflow.api import run
 
 
 class TestState(unittest.TestCase):
 
     def test_change_var_state(self):
-        method_name = 'tests.stub_sut.ChangeState.change_var_state'
+        method_name = 'tests.unit.stub_sut.ChangeState.change_var_state'
         func = TestChangeState().test_change_var_state
 
         result = run(func, [method_name])
@@ -26,7 +26,7 @@ class TestState(unittest.TestCase):
 
 
     def test_change_arg_state(self):
-        method_name = 'tests.stub_sut.ChangeState.change_arg_state'
+        method_name = 'tests.unit.stub_sut.ChangeState.change_arg_state'
         func = TestChangeState().test_change_arg_state
 
         result = run(func, [method_name])
@@ -42,7 +42,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(a[3].value, '3')
 
     def test_change_var_state_with_conditional_true(self):
-        method_name = 'tests.stub_sut.ChangeState.change_var_state_with_conditional'
+        method_name = 'tests.unit.stub_sut.ChangeState.change_var_state_with_conditional'
         func = TestChangeState().test_change_var_state_with_conditional_true
 
         result = run(func, [method_name])
@@ -60,7 +60,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(last.value, '100')
 
     def test_change_var_state_with_conditional_false(self):
-        method_name = 'tests.stub_sut.ChangeState.change_var_state_with_conditional'
+        method_name = 'tests.unit.stub_sut.ChangeState.change_var_state_with_conditional'
         func = TestChangeState().test_change_var_state_with_conditional_false
 
         result = run(func, [method_name])
@@ -78,7 +78,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(last.value, '200')
 
     def test_change_multiple_vars_states(self):
-        method_name = 'tests.stub_sut.ChangeState.change_multiple_vars_states'
+        method_name = 'tests.unit.stub_sut.ChangeState.change_multiple_vars_states'
         func = TestChangeState().test_change_multiple_vars_states
 
         result = run(func, [method_name])
@@ -97,7 +97,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(last.value, '110')
 
     def test_change_list_state(self):
-        method_name = 'tests.stub_sut.ChangeState.change_list_state'
+        method_name = 'tests.unit.stub_sut.ChangeState.change_list_state'
         func = TestChangeState().test_change_list_state
 
         result = run(func, [method_name])
@@ -116,7 +116,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(a_list[6].value, '[]')
 
     def test_change_var_state_with_loop(self):
-        method_name = 'tests.stub_sut.ChangeState.change_var_state_with_loop'
+        method_name = 'tests.unit.stub_sut.ChangeState.change_var_state_with_loop'
         func = TestChangeState().test_change_var_state_with_loop
 
         result = run(func, [method_name])
@@ -145,7 +145,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(a[9].value, '4')
 
     def test_change_instance_var(self):
-        method_name = 'tests.stub_sut.ChangeState.change_instance_var'
+        method_name = 'tests.unit.stub_sut.ChangeState.change_instance_var'
         func = TestChangeState().test_change_instance_var
 
         result = run(func, [method_name])
@@ -164,7 +164,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(obj[2].lineno, 101)
 
     def test_init_with_instance_var(self):
-        method_name = 'tests.stub_sut.ChangeState.__init__'
+        method_name = 'tests.unit.stub_sut.ChangeState.__init__'
         func = TestChangeState().test_init
 
         result = run(func, [method_name])
@@ -183,7 +183,7 @@ class TestState(unittest.TestCase):
         # self.assertEqual(obj[1].value.inst_var, 'default')
 
     def test_keep_var_state(self):
-        method_name = 'tests.stub_sut.ChangeState.keep_var_state'
+        method_name = 'tests.unit.stub_sut.ChangeState.keep_var_state'
         func = TestChangeState().test_keep_var_state
 
         result = run(func, [method_name])

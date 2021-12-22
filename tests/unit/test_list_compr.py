@@ -1,12 +1,12 @@
 import unittest
-from tests.stub_test import TestComprehension
+from tests.unit.stub_test import TestComprehension
 from happyflow.api import run
 
 
 class TestComprehensionCall(unittest.TestCase):
 
     def test_listcomp_1(self):
-        method_name = 'tests.stub_sut.Comprehension.listcomp_1'
+        method_name = 'tests.unit.stub_sut.Comprehension.listcomp_1'
         func = TestComprehension().test_listcomp_1
 
         result = run(func, [method_name])
@@ -18,7 +18,7 @@ class TestComprehensionCall(unittest.TestCase):
         self.assertEqual(calls[0].distinct_run_lines(), [315])
 
     def test_listcomp_2(self):
-        method_name = 'tests.stub_sut.Comprehension.listcomp_2'
+        method_name = 'tests.unit.stub_sut.Comprehension.listcomp_2'
         func = TestComprehension().test_listcomp_2
 
         result = run(func, [method_name])
@@ -30,7 +30,7 @@ class TestComprehensionCall(unittest.TestCase):
         self.assertEqual(calls[0].distinct_run_lines(), [318])
 
     def test_setcomp_1(self):
-        method_name = 'tests.stub_sut.Comprehension.setcomp_1'
+        method_name = 'tests.unit.stub_sut.Comprehension.setcomp_1'
         func = TestComprehension().test_setcomp_1
 
         result = run(func, [method_name])
@@ -42,7 +42,7 @@ class TestComprehensionCall(unittest.TestCase):
         self.assertEqual(calls[0].distinct_run_lines(), [321])
 
     def test_setcomp_2(self):
-        method_name = 'tests.stub_sut.Comprehension.setcomp_2'
+        method_name = 'tests.unit.stub_sut.Comprehension.setcomp_2'
         func = TestComprehension().test_setcomp_2
 
         result = run(func, [method_name])
@@ -54,7 +54,7 @@ class TestComprehensionCall(unittest.TestCase):
         self.assertEqual(calls[0].distinct_run_lines(), [324])
 
     def test_dictcomp(self):
-        method_name = 'tests.stub_sut.Comprehension.dictcomp'
+        method_name = 'tests.unit.stub_sut.Comprehension.dictcomp'
         func = TestComprehension().test_dictcomp
 
         result = run(func, [method_name])

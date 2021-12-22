@@ -1,12 +1,12 @@
 import unittest
-from tests.stub_test import TestRecursion
+from tests.unit.stub_test import TestRecursion
 from happyflow.api import run
 
 
 class TestRecursiveCalls(unittest.TestCase):
 
     def test_basic_recursion(self):
-        method_name = 'tests.stub_sut.Recursion.basic_recursion'
+        method_name = 'tests.unit.stub_sut.Recursion.basic_recursion'
         func = TestRecursion().test_basic_recursion
 
         result = run(func, [method_name])
@@ -20,16 +20,16 @@ class TestRecursiveCalls(unittest.TestCase):
         self.assertEqual(calls[2].run_lines, [582, 583])
 
     def test_fib_recursive(self):
-        method_name = 'tests.stub_sut.Recursion.fib_recursive'
+        method_name = 'tests.unit.stub_sut.Recursion.fib_recursive'
         func = TestRecursion().test_fib_recursive_3
 
         result = run(func, [method_name])
         self.assertEqual(len(result), 2)
 
-        calls = result['tests.stub_sut.Recursion.fib_recursive'].calls
+        calls = result['tests.unit.stub_sut.Recursion.fib_recursive'].calls
         self.assertEqual(len(calls), 1)
 
-        calls = result['tests.stub_sut.Recursion.fib_recursive.<locals>.fib_recursive_term'].calls
+        calls = result['tests.unit.stub_sut.Recursion.fib_recursive.<locals>.fib_recursive_term'].calls
         self.assertEqual(len(calls), 10)
 
 

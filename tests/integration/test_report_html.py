@@ -93,23 +93,23 @@ class TestHTMLReport(unittest.TestCase):
         self.assert_exists('./report_html/style.css')
         self.assert_exists('./report_html/highlight.css')
         self.assert_exists('./report_html/coverage_html.js')
-        # shutil.rmtree('./report_html')
+        shutil.rmtree('./report_html')
 
     def test_generate_html_report_count_uppercase_words(self):
 
         hp = HappyFlow()
-        hp.target_methods(['tests.stub_funcs.count_uppercase_words'])
+        hp.target_methods(['tests.integration.stub_funcs.count_uppercase_words'])
         hp.start()
 
         # Run code
-        from tests.stub_funcs import inputs_count
+        from tests.integration.stub_funcs import inputs_count
         inputs_count()
 
         hp.stop()
         hp.html_report()
 
         self.assert_exists('./report_html')
-        self.assert_exists('./report_html/tests.stub_funcs.count_uppercase_words.html')
+        self.assert_exists('./report_html/tests.integration.stub_funcs.count_uppercase_words.html')
         self.assert_exists('./report_html/index.html')
         self.assert_exists('./report_html/style.css')
         self.assert_exists('./report_html/highlight.css')
@@ -118,18 +118,18 @@ class TestHTMLReport(unittest.TestCase):
 
     def test_generate_html_report_parseparam(self):
         call = HappyFlow()
-        call.target_methods(['tests.stub_funcs.parseparam'])
+        call.target_methods(['tests.integration.stub_funcs.parseparam'])
         call.start()
 
         # Run code
-        from tests.stub_funcs import inputs_parseparam
+        from tests.integration.stub_funcs import inputs_parseparam
         inputs_parseparam()
 
         call.stop()
         call.html_report()
 
         self.assert_exists('./report_html')
-        self.assert_exists('./report_html/tests.stub_funcs.parseparam.html')
+        self.assert_exists('./report_html/tests.integration.stub_funcs.parseparam.html')
         self.assert_exists('./report_html/index.html')
         self.assert_exists('./report_html/style.css')
         self.assert_exists('./report_html/highlight.css')
@@ -138,18 +138,18 @@ class TestHTMLReport(unittest.TestCase):
 
     def test_generate_html_report_splitparam(self):
         call = HappyFlow()
-        call.target_methods(['tests.stub_funcs.splitparam'])
+        call.target_methods(['tests.integration.stub_funcs.splitparam'])
         call.start()
 
         # Run code
-        from tests.stub_funcs import inputs_splitparam
+        from tests.integration.stub_funcs import inputs_splitparam
         inputs_splitparam()
 
         call.stop()
         call.html_report()
 
         self.assert_exists('./report_html')
-        self.assert_exists('./report_html/tests.stub_funcs.splitparam.html')
+        self.assert_exists('./report_html/tests.integration.stub_funcs.splitparam.html')
         self.assert_exists('./report_html/index.html')
         self.assert_exists('./report_html/style.css')
         self.assert_exists('./report_html/highlight.css')

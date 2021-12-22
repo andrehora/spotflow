@@ -1,4 +1,4 @@
-from tests.stub_sut import *
+from tests.unit.stub_sut import *
 
 
 class TestFoo:

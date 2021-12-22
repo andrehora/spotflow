@@ -1,12 +1,12 @@
 import unittest
-from tests.stub_test import TestExceptions
+from tests.unit.stub_test import TestExceptions
 from happyflow.api import run
 
 
 class TestException(unittest.TestCase):
 
     def test_zero_division(self):
-        method_name = 'tests.stub_sut.Exceptions.zero_division'
+        method_name = 'tests.unit.stub_sut.Exceptions.zero_division'
         func = TestExceptions().test_zero_division
 
         result = run(func, [method_name])
@@ -20,7 +20,7 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value, 'ZeroDivisionError')
 
     def test_raise_generic_exception(self):
-        method_name = 'tests.stub_sut.Exceptions.raise_generic_exception'
+        method_name = 'tests.unit.stub_sut.Exceptions.raise_generic_exception'
         func = TestExceptions().test_raise_generic_exception
 
         result = run(func, [method_name])
@@ -34,7 +34,7 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value, 'Exception')
 
     def test_raise_specific_exception(self):
-        method_name = 'tests.stub_sut.Exceptions.raise_specific_exception'
+        method_name = 'tests.unit.stub_sut.Exceptions.raise_specific_exception'
         func = TestExceptions().test_raise_specific_exception
 
         result = run(func, [method_name])
@@ -49,7 +49,7 @@ class TestException(unittest.TestCase):
 
 
     def test_raise_exception_line_1(self):
-        method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
+        method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_exception_line_1
 
         result = run(func, [method_name])
@@ -66,7 +66,7 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value, 'Exception')
 
     def test_raise_exception_line_2(self):
-        method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
+        method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_exception_line_2
 
         result = run(func, [method_name])
@@ -83,7 +83,7 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value, 'Exception')
 
     def test_raise_exception_line_3(self):
-        method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
+        method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_exception_line_3
 
         result = run(func, [method_name])
@@ -100,7 +100,7 @@ class TestException(unittest.TestCase):
         self.assertEqual(exception_state.value, 'Exception')
 
     def test_raise_no_exception(self):
-        method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
+        method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_no_exception
 
         result = run(func, [method_name])
@@ -112,7 +112,7 @@ class TestException(unittest.TestCase):
         self.assertEqual(run_lines, [246, 247, 248])
 
     def test_calls_with_exceptions(self):
-        method_name = 'tests.stub_sut.Exceptions.raise_distinct_exception'
+        method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_calls_with_exceptions
 
         result = run(func, [method_name])
