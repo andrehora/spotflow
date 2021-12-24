@@ -127,7 +127,7 @@ class FlowInfo:
         self.not_exec_count = 0
 
         self.call_count = len(method_flow.calls)
-        total_calls = len(method_flow.traced_method.calls)
+        total_calls = len(method_flow.monitored_method.calls)
         self.call_ratio = ratio(self.call_count, total_calls)
 
         self.arg_values = Analysis(method_flow).most_common_args_pretty()

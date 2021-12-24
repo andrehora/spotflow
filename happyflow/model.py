@@ -8,15 +8,15 @@ class MonitoredSystem:
         self.monitored_methods = {}
 
     def update_runtime_info(self):
-        for traced_method in self.monitored_methods.values():
-            traced_method._update_runtime_info()
+        for monitored_method in self.monitored_methods.values():
+            monitored_method._update_runtime_info()
 
     def filter(self, filter_func):
         self.monitored_methods = {k: v for k, v in self.monitored_methods.items() if filter_func(k, v)}
         return self
 
-    def has_calls(self, method_name, traced_method):
-        return traced_method.calls
+    def has_calls(self, method_name, monitored_method):
+        return monitored_method.calls
 
     def __getitem__(self, key):
         return self.monitored_methods[key]
@@ -153,11 +153,11 @@ class MonitoredMethod(CallContainer):
 
 class MethodFlow(CallContainer):
 
-    def __init__(self, pos, distinct_run_lines, calls, traced_method):
+    def __init__(self, pos, distinct_run_lines, calls, monitored_method):
         super().__init__(calls)
         self.pos = pos
         self.distinct_run_lines = distinct_run_lines
-        self.traced_method = traced_method
+        self.monitored_method = monitored_method
         self.info = None
         self._found_first_run_line = False
 
@@ -166,12 +166,12 @@ class MethodFlow(CallContainer):
         self.info = FlowInfo(self)
         self._found_first_run_line = False
 
-        for lineno_entity in range(self.traced_method.info.start_line, self.traced_method.info.end_line+1):
+        for lineno_entity in range(self.monitored_method.info.start_line, self.monitored_method.info.end_line+1):
             lineno += 1
 
             line_status = self._get_line_status(lineno_entity)
             line_state = self._get_line_state(lineno_entity)
-            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, self.traced_method.info)
+            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, self.monitored_method.info)
 
             self.info._append(line_info)
             self.info._update_run_status(line_info)
@@ -190,7 +190,7 @@ class MethodFlow(CallContainer):
             return RunStatus.NOT_EXEC
 
         if current_line not in self.distinct_run_lines:
-            if not self.traced_method.info.line_is_executable(current_line):
+            if not self.monitored_method.info.line_is_executable(current_line):
                 return RunStatus.NOT_EXEC
 
         return RunStatus.NOT_RUN
@@ -202,10 +202,10 @@ class MethodFlow(CallContainer):
 
 class MethodCall:
 
-    def __init__(self, call_state, call_stack, traced_method):
+    def __init__(self, call_state, call_stack, monitored_method):
         self.call_state = call_state
         self.call_stack = call_stack
-        self.traced_method = traced_method
+        self.monitored_method = monitored_method
         self.run_lines = []
 
     def distinct_run_lines(self):
@@ -213,10 +213,10 @@ class MethodCall:
 
     def get_line_state(self, lineno):
 
-        if self.traced_method.info.start_line == lineno:
+        if self.monitored_method.info.start_line == lineno:
             return self.line_arg_state()
 
-        if lineno in self.traced_method.info.return_lines:
+        if lineno in self.monitored_method.info.return_lines:
             return self.line_return_state()
 
         states = self.call_state.states_for_line(lineno)
