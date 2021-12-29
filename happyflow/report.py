@@ -2,7 +2,6 @@ class Report:
 
     def __init__(self, monitored_system):
         self.monitored_system = monitored_system
-        # self.monitored_system._update_flows_and_info()
 
     def html_report(self, report_dir):
         from happyflow.report_html import HTMLCodeReport, HTMLIndexReport

@@ -597,3 +597,30 @@ class Recursion:
         if n < 0:
             raise Exception("n is negative")
         return [fib_recursive_term(i) for i in range(n + 1)]
+
+
+class ClassWithManyCalls:
+
+    def call_method_many_times(self):
+        for index in range(1, 101):
+            self.method_called_many_times(index)
+
+    def method_called_many_times(self, index):
+        return index
+
+    def call_methods(self):
+        self.with_arg_123(123)
+        self.return_123()
+        try:
+            self.with_exception()
+        except ZeroDivisionError:
+            pass
+
+    def with_arg_123(self, arg1):
+        pass
+
+    def return_123(self):
+        return 123
+
+    def with_exception(self):
+        1/0

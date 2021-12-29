@@ -449,3 +449,13 @@ class TestRecursion:
 
     def test_fib_recursive_3(self):
         Recursion().fib_recursive(3)
+
+
+class TestClassWithManyCalls:
+
+    def test_method_called_many_times(self):
+        ClassWithManyCalls().call_method_many_times()
+
+    def test_call_methods(self):
+        ClassWithManyCalls().call_methods()
+

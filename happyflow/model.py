@@ -8,11 +8,19 @@ class MonitoredSystem:
         self.monitored_methods = {}
 
     def filter_methods(self, filter_func):
-        self.monitored_methods = {k: v for k, v in self.monitored_methods.items() if filter_func(k, v)}
-        return self
+        return (mth for mth in self.all_methods() if filter_func(mth))
 
-    def has_calls(self, method_name, monitored_method):
-        return monitored_method.calls
+    def filter_calls(self, filter_func):
+        return (call for call in self.all_calls() if filter_func(call))
+
+    def all_methods(self):
+        return list(self.monitored_methods.values())
+
+    def all_calls(self):
+        calls = []
+        for mth in self.all_methods():
+            calls.extend(mth.calls)
+        return calls
 
     def _update_flows_and_info(self):
         for mth in self.monitored_methods.values():
