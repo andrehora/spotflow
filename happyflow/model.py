@@ -7,16 +7,17 @@ class MonitoredSystem:
     def __init__(self):
         self.monitored_methods = {}
 
-    def update_runtime_info(self):
-        for monitored_method in self.monitored_methods.values():
-            monitored_method._update_runtime_info()
-
-    def filter(self, filter_func):
+    def filter_methods(self, filter_func):
         self.monitored_methods = {k: v for k, v in self.monitored_methods.items() if filter_func(k, v)}
         return self
 
     def has_calls(self, method_name, monitored_method):
         return monitored_method.calls
+
+    def _update_flows_and_info(self):
+        for mth in self.monitored_methods.values():
+            mth._compute_flows()
+            mth._update_call_info()
 
     def __getitem__(self, key):
         return self.monitored_methods[key]
@@ -41,6 +42,9 @@ class CallContainer:
 
     def __init__(self, calls):
         self.calls = calls
+
+    def add_call(self, call):
+        self.calls.append(call)
 
     def all_distinct_run_lines(self):
         lines = []
@@ -128,7 +132,7 @@ class MonitoredMethod(CallContainer):
 
     def _add_call(self, call_state, call_stack, call_id):
         call = MethodCall(call_state, call_stack, self)
-        self.calls.append(call)
+        super().add_call(call)
         self._calls_by_id[call_id] = call
         return call
 
@@ -137,7 +141,7 @@ class MonitoredMethod(CallContainer):
         self.flows.append(flow)
         return flow
 
-    def _update_runtime_info(self):
+    def _compute_flows(self):
         most_common_run_lines = Analysis(self).most_common_run_lines()
         flow_pos = 0
         for run_lines in most_common_run_lines:
@@ -148,7 +152,8 @@ class MonitoredMethod(CallContainer):
             flow = self._add_flow(flow_pos, distinct_run_lines, flow_calls)
             flow._update_flow_info()
 
-        self.info._update_method_info(self)
+    def _update_call_info(self):
+        self.info._update_call_info(self)
 
 
 class MethodFlow(CallContainer):

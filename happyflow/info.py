@@ -82,16 +82,16 @@ class MethodInfo:
     def summary(self):
         return f'{self.full_name} (lines: {self.start_line}-{self.end_line})'
 
-    def executable_lines_without_def(self, monitored_method):
+    def _executable_lines_without_def(self, monitored_method):
         exec_lines = self.executable_lines()
         first_run_line = monitored_method.first_run_line()
         first_run_line_index = exec_lines.index(first_run_line)
         return exec_lines[first_run_line_index:]
 
-    def _update_method_info(self, monitored_method):
-
+    def _update_call_info(self, monitored_method):
         self.run_lines_count = len(monitored_method.run_lines)
-        self.executable_lines_count = len(self.executable_lines_without_def(monitored_method))
+        # self.executable_lines_count = len(self._executable_lines_without_def(monitored_method))
+        self.executable_lines_count = len(self.executable_lines()) - 1
         self.coverage_ratio = ratio(self.run_lines_count, self.executable_lines_count)
 
         self.total_calls = len(monitored_method.calls)
