@@ -122,7 +122,10 @@ class Collector:
                 break
             frame = frame.f_back
             full_name = self.get_full_entity_name(frame)
-            call_stack.append(full_name)
+            if full_name:
+                call_stack.append(full_name)
+            else:
+                break
         call_stack.reverse()
         return tuple(call_stack)
 
@@ -213,10 +216,8 @@ class Collector:
             if local_func:
                 return local_func
 
-            # print(frame.f_code.co_name, frame.f_code.co_filename, inspect.getframeinfo(frame).code_context)
-
         except Exception as e:
-            print(e)
+            # print(e)
             return None
 
     def find_local_func(self, entity_name, local_elements):
@@ -275,6 +276,7 @@ class Collector:
                         call_state = CallState()
                         call_state._save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
                         callers = self.find_call_stack(frame)
+                        # callers = []
                         frame_id = get_frame_id(frame)
 
                         monitored_method = self.monitored_system[current_method_name]
