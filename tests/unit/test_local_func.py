@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestLocalMethod, TestLocalFunction
-from happyflow.api import run
+from happyflow.api import run_and_monitor
 
 
 class TestLocalMethodCall(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestLocalMethodCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.LocalMethod.has_local_method_1'
         func = TestLocalMethod().test_has_local_method_1
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
@@ -21,7 +21,7 @@ class TestLocalMethodCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.LocalMethod.has_local_method_2'
         func = TestLocalMethod().test_has_local_method_2
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
         self.assertEqual(len(result), 2)
 
         calls = result['tests.unit.stub_sut.LocalMethod.has_local_method_2'].calls
@@ -37,7 +37,7 @@ class TestLocalMethodCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.LocalMethod.has_local_method_3'
         func = TestLocalMethod().test_has_local_method_3
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
         self.assertEqual(len(result), 3)
 
         calls = result['tests.unit.stub_sut.LocalMethod.has_local_method_3'].calls
@@ -56,7 +56,7 @@ class TestLocalMethodCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.LocalMethod.has_local_method_4'
         func = TestLocalMethod().test_has_local_method_4
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
         self.assertEqual(len(result), 3)
 
         calls = result['tests.unit.stub_sut.LocalMethod.has_local_method_4'].calls
@@ -79,7 +79,7 @@ class TestLocalFunctionCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.has_local_function_1'
         func = TestLocalFunction().test_has_local_function_1
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
@@ -91,7 +91,7 @@ class TestLocalFunctionCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.has_local_function_2'
         func = TestLocalFunction().test_has_local_function_2
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
         self.assertEqual(len(result), 2)
 
         calls = result['tests.unit.stub_sut.has_local_function_2'].calls
@@ -107,7 +107,7 @@ class TestLocalFunctionCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.has_local_function_3'
         func = TestLocalFunction().test_has_local_function_3
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
         self.assertEqual(len(result), 3)
 
         calls = result['tests.unit.stub_sut.has_local_function_3'].calls
@@ -126,7 +126,7 @@ class TestLocalFunctionCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.has_local_function_4'
         func = TestLocalFunction().test_has_local_function_4
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
         self.assertEqual(len(result), 3)
 
         calls = result['tests.unit.stub_sut.has_local_function_4'].calls

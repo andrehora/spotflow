@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestChangeState
-from happyflow.api import run
+from happyflow.api import run_and_monitor
 
 
 class TestState(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestState(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ChangeState.change_var_state'
         func = TestChangeState().test_change_var_state
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [59, 60, 61])
         self.assertEqual(result[method_name].method_name, 'change_var_state')
@@ -29,7 +29,7 @@ class TestState(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ChangeState.change_arg_state'
         func = TestChangeState().test_change_arg_state
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [64, 65, 66])
         self.assertEqual(result[method_name].method_name, 'change_arg_state')
@@ -45,7 +45,7 @@ class TestState(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ChangeState.change_var_state_with_conditional'
         func = TestChangeState().test_change_var_state_with_conditional_true
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [69, 70, 71])
         self.assertEqual(result[method_name].method_name, 'change_var_state_with_conditional')
@@ -63,7 +63,7 @@ class TestState(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ChangeState.change_var_state_with_conditional'
         func = TestChangeState().test_change_var_state_with_conditional_false
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [69, 70, 73])
         self.assertEqual(result[method_name].method_name, 'change_var_state_with_conditional')
@@ -81,7 +81,7 @@ class TestState(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ChangeState.change_multiple_vars_states'
         func = TestChangeState().test_change_multiple_vars_states
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [76, 77, 79, 80])
         self.assertEqual(result[method_name].method_name, 'change_multiple_vars_states')
@@ -100,7 +100,7 @@ class TestState(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ChangeState.change_list_state'
         func = TestChangeState().test_change_list_state
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [83, 84, 85, 86, 87, 88, 89])
         self.assertEqual(result[method_name].method_name, 'change_list_state')
@@ -119,7 +119,7 @@ class TestState(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ChangeState.change_var_state_with_loop'
         func = TestChangeState().test_change_var_state_with_loop
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [92, 93, 94, 93, 94, 93, 94, 93, 94, 93])
         self.assertEqual(result[method_name].calls[0].distinct_run_lines(), [92, 93, 94])
@@ -148,7 +148,7 @@ class TestState(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ChangeState.change_instance_var'
         func = TestChangeState().test_change_instance_var
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [100, 101])
         self.assertEqual(result[method_name].method_name, 'change_instance_var')
@@ -167,7 +167,7 @@ class TestState(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ChangeState.__init__'
         func = TestChangeState().test_init
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [97])
         self.assertEqual(result[method_name].method_name, '__init__')
@@ -186,7 +186,7 @@ class TestState(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ChangeState.keep_var_state'
         func = TestChangeState().test_keep_var_state
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [104, 105, 106])
         self.assertEqual(result[method_name].method_name, 'keep_var_state')

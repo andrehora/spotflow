@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestSuper, TestMoreSuper, TestOverride
-from happyflow.api import run
+from happyflow.api import run_and_monitor
 
 
 class TestSuperCall(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestSuperCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestSuper().test_super_init_a
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
@@ -21,7 +21,7 @@ class TestSuperCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestSuper().test_super_init_b
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 2)
 
@@ -37,7 +37,7 @@ class TestSuperCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestSuper().test_super_init_c
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 3)
 
@@ -57,7 +57,7 @@ class TestSuperCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestSuper().test_super_init_d
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 3)
 
@@ -77,7 +77,7 @@ class TestSuperCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ClassA.foobar'
         func = TestSuper().test_super_foobar_a
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
@@ -89,7 +89,7 @@ class TestSuperCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestSuper().test_super_foobar_b
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 4)
 
@@ -113,7 +113,7 @@ class TestSuperCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestSuper().test_super_foobar_c
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 6)
 
@@ -148,7 +148,7 @@ class TestMoreSuperCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestMoreSuper().test_super_1
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 2)
 
@@ -164,7 +164,7 @@ class TestMoreSuperCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestMoreSuper().test_super_2
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 3)
 
@@ -184,7 +184,7 @@ class TestMoreSuperCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestMoreSuper().test_super_3
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 4)
 
@@ -211,7 +211,7 @@ class TestOverrideCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.BaseClass.main'
         func = TestOverride().test_base_class_main
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
@@ -223,7 +223,7 @@ class TestOverrideCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.BaseClass.show'
         func = TestOverride().test_base_class_show
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
@@ -235,7 +235,7 @@ class TestOverrideCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.BaseClass.report'
         func = TestOverride().test_base_class_report
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
@@ -247,7 +247,7 @@ class TestOverrideCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestOverride().test_override_show
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 2)
 
@@ -263,7 +263,7 @@ class TestOverrideCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestOverride().test_override_main
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 2)
 
@@ -279,7 +279,7 @@ class TestOverrideCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestOverride().test_override_main_and_report
 
-        result = run(func, [method_name])
+        result = run_and_monitor(func, [method_name])
 
         self.assertEqual(len(result), 3)
 

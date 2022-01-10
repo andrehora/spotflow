@@ -1,6 +1,6 @@
 import inspect
 import types
-from happyflow.utils import obj_value, find_full_name
+from happyflow.utils import obj_value, obj_type, find_full_name
 from happyflow.model import CallState, MonitoredMethod, MonitoredSystem
 from happyflow.info import MethodInfo
 from happyflow.tracer import PyTracer
@@ -300,13 +300,14 @@ class Collector:
 
                                     elif event == 'return':
                                         if line_has_return(frame):
-                                            current_call_state._save_return_state(obj_value(arg), lineno)
+                                            current_call_state._save_return_state(obj_value(arg), obj_type(arg), lineno)
                                         elif line_has_yield(frame):
-                                            current_call_state._save_yield_state(obj_value(arg), lineno)
+                                            current_call_state._save_yield_state(obj_value(arg), obj_type(arg), lineno)
 
                                     elif event == 'exception':
                                         exception_name = arg[0].__name__
-                                        current_call_state._save_exception_state(exception_name, lineno)
+                                        exception_type = obj_type(arg[0])
+                                        current_call_state._save_exception_state(exception_name, exception_type, lineno)
 
                                     if current_call_state:
                                         argvalues = inspect.getargvalues(frame)

@@ -1,29 +1,27 @@
 from collections import Counter
-from happyflow.api import run
+from happyflow.api import run_and_monitor
 from happyflow.unittest_utils import loadTestsFromModule, suite_runner
 
 
-def called_methods():
-
-    from test import test_gzip
-    suite = loadTestsFromModule(test_gzip)
+def load_module_and_run(module):
+    suite = loadTestsFromModule(module)
     suite = suite_runner(suite)
-    result = run(suite, ['gzip'])
-
-    print(len(result.all_methods()))
-    print(len(result.all_calls()))
-    print(result.all_methods())
+    return run_and_monitor(suite, ['gzip'])
 
 
-def tests_that_execute_specific_method():
+def called_methods(monitored_system):
 
-    from test import test_gzip
-    suite = loadTestsFromModule(test_gzip)
-    suite = suite_runner(suite)
-    result = run(suite, ['gzip._PaddedFile.read'])
+    print(len(monitored_system.all_methods()))
+    print(len(monitored_system.all_calls()))
+    print(monitored_system.all_methods())
+
+
+def tests_that_execute_specific_method(monitored_system):
+
+    method = monitored_system['gzip._PaddedFile.read']
 
     tests = set()
-    for call in result.all_calls():
+    for call in method.calls:
         for caller in call.call_stack:
             if caller.startswith('test'):
                 tests.add(caller)
@@ -32,15 +30,10 @@ def tests_that_execute_specific_method():
     print(tests)
 
 
-def methods_executed_by_specific_test():
-
-    from test import test_gzip
-    suite = loadTestsFromModule(test_gzip)
-    suite = suite_runner(suite)
-    result = run(suite, ['gzip'])
+def methods_executed_by_specific_test(monitored_system):
 
     methods = set()
-    for call in result.all_calls():
+    for call in monitored_system.all_calls():
         for caller in call.call_stack:
             if caller == 'test.test_gzip.TestGzip.test_zero_padded_file':
                 methods.add(call.monitored_method.method_name)
@@ -49,15 +42,10 @@ def methods_executed_by_specific_test():
     print(methods)
 
 
-def thrown_exceptions():
-
-    from test import test_gzip
-    suite = loadTestsFromModule(test_gzip)
-    suite = suite_runner(suite)
-    result = run(suite, ['gzip'])
+def thrown_exceptions(monitored_system):
 
     exceptions = []
-    for call in result.all_calls():
+    for call in monitored_system.all_calls():
         call_state = call.call_state
         if call_state.has_exception():
             exceptions.append(call_state.exception_state.value)
@@ -66,31 +54,21 @@ def thrown_exceptions():
     print(most_common)
 
 
-def methods_that_return_value():
+def calls_that_return_value(monitored_system):
 
-    from test import test_gzip
-    suite = loadTestsFromModule(test_gzip)
-    suite = suite_runner(suite)
-    result = run(suite, ['gzip'])
-
-    has_return = []
-    for call in result.all_calls():
+    counter = 0
+    for call in monitored_system.all_calls():
         call_state = call.call_state
         if call_state.has_return():
-            has_return.append(True)
+            counter += 1
 
-    print(len(has_return))
+    print(counter)
 
 
-def methods_that_return_specific_value():
-
-    from test import test_gzip
-    suite = loadTestsFromModule(test_gzip)
-    suite = suite_runner(suite)
-    result = run(suite, ['gzip'])
+def calls_that_return_specific_value(monitored_system):
 
     return_values = []
-    for call in result.all_calls():
+    for call in monitored_system.all_calls():
         call_state = call.call_state
         if call_state.has_return():
             return_state = call_state.return_state
@@ -101,15 +79,37 @@ def methods_that_return_specific_value():
     print(most_common)
 
 
+def argument_values_and_types(monitored_system):
+    arg_values = []
+    arg_types = []
+    for call in monitored_system.all_calls():
+        call_state = call.call_state
+        for arg in call_state.arg_states:
+            arg_values.append(arg.value)
+            arg_types.append(arg.type)
+
+    most_common_values = Counter(arg_values).most_common()
+    most_common_types = Counter(arg_types).most_common()
+    print(most_common_values)
+    print(most_common_types)
+
+
 def main():
-    # called_methods()
+    from test import test_gzip
+    monitored_system = load_module_and_run(test_gzip)
 
-    # tests_that_execute_specific_method()
-    # methods_executed_by_specific_test()
+    # called_methods(monitored_system)
+    #
+    # tests_that_execute_specific_method(monitored_system)
+    # methods_executed_by_specific_test(monitored_system)
+    #
+    # thrown_exceptions(monitored_system)
+    #
+    # calls_that_return_value(monitored_system)
+    # calls_that_return_specific_value(monitored_system)
 
-    # thrown_exceptions()
+    argument_values_and_types(monitored_system)
 
-    methods_that_return_value()
-    methods_that_return_specific_value()
+
 
 main()

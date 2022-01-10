@@ -43,7 +43,7 @@ class HappyFlow:
             return False
 
 
-def run(func, target_methods):
+def run_and_monitor(func, target_methods):
     hp = HappyFlow()
     hp.target_methods(target_methods)
     hp.start()

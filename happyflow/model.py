@@ -1,4 +1,4 @@
-from happyflow.utils import obj_value
+from happyflow.utils import obj_value, obj_type
 from happyflow.info import *
 
 
@@ -287,6 +287,9 @@ class CallState:
         # Remove the last element. This one is saved as an implicit return
         return self.yield_states[:-1]
 
+    def has_argument(self):
+        return len(self.arg_states) > 0
+
     def has_return(self):
         return self.return_state is not None
 
@@ -298,37 +301,39 @@ class CallState:
 
     def _save_arg_states(self, argvalues, lineno):
         for arg in argvalues.args:
-            value = obj_value(argvalues.locals[arg])
-            arg_state = ArgState(arg, value, lineno)
+            obj = argvalues.locals[arg]
+            arg_state = ArgState(arg, obj_value(obj), obj_type(obj), lineno)
             self.arg_states.append(arg_state)
 
         if argvalues.varargs:
-            value = obj_value(argvalues.locals[argvalues.varargs])
-            arg_state = ArgState(argvalues.varargs, value, lineno)
+            obj = argvalues.locals[argvalues.varargs]
+            arg_state = ArgState(argvalues.varargs, obj_value(obj), obj_type(obj), lineno)
             self.arg_states.append(arg_state)
 
         if argvalues.keywords:
-            value = obj_value(argvalues.locals[argvalues.keywords])
-            arg_state = ArgState(argvalues.keywords, value, lineno)
+            obj = argvalues.locals[argvalues.keywords]
+            arg_state = ArgState(argvalues.keywords, obj_value(obj), obj_type(obj), lineno)
             self.arg_states.append(arg_state)
 
     def _save_var_states(self, argvalues, lineno, inline):
         for arg in argvalues.locals:
-            value = obj_value(argvalues.locals[arg])
-            self._save_var_state(name=arg, value=value, lineno=lineno, inline=inline)
+            obj = argvalues.locals[arg]
+            value = obj_value(obj)
+            type = obj_type(obj)
+            self._save_var_state(name=arg, value=value, type=type, lineno=lineno, inline=inline)
 
-    def _save_var_state(self, name, value, lineno, inline):
+    def _save_var_state(self, name, value, type, lineno, inline):
         self.var_states[name] = self.var_states.get(name, VarStateHistory(name, []))
-        self.var_states[name].add_var_state(name, value, lineno, inline)
+        self.var_states[name].add_var_state(name, value, type, lineno, inline)
 
-    def _save_yield_state(self, value, lineno):
-        self.yield_states.append(YieldState(value, lineno))
+    def _save_yield_state(self, value, type, lineno):
+        self.yield_states.append(YieldState(value, type, lineno))
 
-    def _save_return_state(self, value, lineno):
-        self.return_state = ReturnState(value, lineno)
+    def _save_return_state(self, value, type, lineno):
+        self.return_state = ReturnState(value, type, lineno)
 
-    def _save_exception_state(self, value, lineno):
-        self.exception_state = ExceptionState(value, lineno)
+    def _save_exception_state(self, value, type, lineno):
+        self.exception_state = ExceptionState(value, type, lineno)
 
 
 class VarStateHistory:
@@ -337,9 +342,9 @@ class VarStateHistory:
         self.name = name
         self.states = states
 
-    def add_var_state(self, name, value, lineno, inline):
+    def add_var_state(self, name, value, type, lineno, inline):
         value_has_changed = self.detect_value_has_changed(value)
-        new_state = VarState(name, value, lineno, inline, value_has_changed)
+        new_state = VarState(name, value, type, lineno, inline, value_has_changed)
         self.states.append(new_state)
 
     def detect_value_has_changed(self, new_value):
@@ -381,12 +386,19 @@ class VarStateHistory:
         return f'name: {self.name}, values: {len(self.states)}'
 
 
-class VarState:
+class State:
 
-    def __init__(self, name, value, lineno, inline, value_has_changed=False):
-        self.name = name
+    def __init__(self, value, type, lineno):
         self.value = value
+        self.type = type
         self.lineno = lineno
+
+
+class VarState(State):
+
+    def __init__(self, name, value, type, lineno, inline, value_has_changed=False):
+        super().__init__(value, type, lineno)
+        self.name = name
         self.inline = inline
         self.value_has_changed = value_has_changed
 
@@ -394,35 +406,21 @@ class VarState:
         return f'{self.name}={self.value}'
 
 
-class ArgState:
+class ArgState(State):
 
-    def __init__(self, name, value, lineno):
+    def __init__(self, name, value, type, lineno):
+        super().__init__(value, type, lineno)
         self.name = name
-        self.value = value
         self.lineno = lineno
 
     def __str__(self):
         return f'{self.name}={self.value}'
 
 
-class ReturnState:
+class ReturnState(State):
 
-    def __init__(self, value, lineno=0):
-        self.value = value
-        self.lineno = lineno
-
-    def __str__(self):
-        return f'{self.value}'
-
-    def __eq__(self, other):
-        return self.value == other
-
-
-class YieldState:
-
-    def __init__(self, value, lineno=0):
-        self.value = value
-        self.lineno = lineno
+    def __init__(self, value, type, lineno=0):
+        super().__init__(value, type, lineno)
 
     def __str__(self):
         return f'{self.value}'
@@ -431,11 +429,22 @@ class YieldState:
         return self.value == other
 
 
-class ExceptionState:
+class YieldState(State):
 
-    def __init__(self, value, line=0):
-        self.value = value
-        self.line = line
+    def __init__(self, value, type, lineno=0):
+        super().__init__(value, type, lineno)
+
+    def __str__(self):
+        return f'{self.value}'
+
+    def __eq__(self, other):
+        return self.value == other
+
+
+class ExceptionState(State):
+
+    def __init__(self, value, type, lineno=0):
+        super().__init__(value, type, lineno)
 
     def __str__(self):
         return f'{self.value}'

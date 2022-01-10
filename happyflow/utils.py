@@ -120,6 +120,10 @@ def obj_value(obj):
         return type(obj).__qualname__
 
 
+def obj_type(obj):
+    return type(obj).__qualname__
+
+
 def is_definition(obj):
     return obj.__class__.__name__ in ['type', 'module', 'function', 'method',
                                       'code', 'traceback', 'frame', 'generator', 'coroutine']
