@@ -94,8 +94,25 @@ def argument_values_and_types(monitored_system):
     print(most_common_types)
 
 
+def argument_values_for_specific_type(monitored_system):
+    int_values = []
+    str_values = []
+    for call in monitored_system.all_calls():
+        call_state = call.call_state
+        for arg in call_state.arg_states:
+            if arg.type == 'int':
+                int_values.append(arg.value)
+            if arg.type == 'str':
+                str_values.append(arg.value)
+
+    most_common_int_values = Counter(int_values).most_common()
+    most_common_str_values = Counter(str_values).most_common()
+    print(most_common_int_values)
+    print(most_common_str_values)
+
+
 def main():
-    from test import test_gzip
+    from test import test_gzip, test_os
     monitored_system = load_module_and_run(test_gzip)
 
     # called_methods(monitored_system)
@@ -108,7 +125,8 @@ def main():
     # calls_that_return_value(monitored_system)
     # calls_that_return_specific_value(monitored_system)
 
-    argument_values_and_types(monitored_system)
+    # argument_values_and_types(monitored_system)
+    argument_values_for_specific_type(monitored_system)
 
 
 

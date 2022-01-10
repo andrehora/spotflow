@@ -35,6 +35,12 @@ class MethodInfo:
     def has_exception(self):
         return len(self.exception_lines) > 0
 
+    def line_is_entity_definition(self, lineno):
+        return lineno == self.start_line
+
+    def line_is_return_value(self, lineno):
+        return lineno in self.return_lines
+
     def executable_lines(self):
         exec_lines = self._ensure_executable_lines_for_file()
         my_lines = range(self.start_line, self.end_line + 1)
