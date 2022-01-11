@@ -45,17 +45,6 @@ def line_has_keyword(frame, keyword):
     return False
 
 
-def update_method_info(method_info, frame, event):
-    lineno = frame.f_lineno
-    if event == 'return':
-        if line_has_return(frame):
-            method_info.return_lines.add(lineno)
-        elif line_has_yield(frame):
-            method_info.yield_lines.add(lineno)
-    elif event == 'exception':
-        method_info.exception_lines.add(lineno)
-
-
 class Collector:
 
     IGNORE_FILES = ['site-packages', 'unittest', 'pytest', 'argparse', 'sysconfig']
@@ -138,13 +127,18 @@ class Collector:
 
         return None
 
-    def ensure_target_method(self, current_entity_name, method_name, frame):
+    def ensure_target_method(self, current_entity_name, method_or_name, frame):
 
-        if isinstance(method_name, types.FunctionType) or isinstance(method_name, types.MethodType):
-            return MethodInfo.build(method_name)
+        # Handle cases in which 'method' is already a method or function object
+        if isinstance(method_or_name, types.FunctionType) or isinstance(method_or_name, types.MethodType):
+            if current_entity_name in self.target_methods_cache:
+                return self.target_methods_cache[current_entity_name]
+            entity = MethodInfo.build(method_or_name)
+            self.target_methods_cache[current_entity_name] = entity
+            return entity
 
         if not self.try_all_possible_targets:
-            if not current_entity_name.startswith(method_name):
+            if not current_entity_name.startswith(method_or_name):
                 return None
 
         if current_entity_name in self.target_methods_cache:
@@ -245,9 +239,18 @@ class Collector:
 
         return None
 
+    def update_method_info(self, method_info, frame, event):
+        lineno = frame.f_lineno
+        if event == 'return':
+            if line_has_return(frame):
+                method_info.return_lines.add(lineno)
+            elif line_has_yield(frame):
+                method_info.yield_lines.add(lineno)
+        elif event == 'exception':
+            method_info.exception_lines.add(lineno)
+
     def collect_flow(self, frame, event, arg):
 
-        # print(frame.f_code.co_name, frame.f_code.co_filename)
         if not self.is_valid_frame(frame):
             return
 
@@ -257,9 +260,8 @@ class Collector:
             for method_name in self.method_names:
 
                 method_info = self.ensure_target_method(current_method_name, method_name, frame)
-
                 if method_info and current_method_name == method_info.full_name:
-                    update_method_info(method_info, frame, event)
+                    self.update_method_info(method_info, frame, event)
 
                     if current_method_name not in self.last_frame_lineno:
                         self.last_frame_lineno[current_method_name] = -1
@@ -276,7 +278,6 @@ class Collector:
                         call_state = CallState()
                         call_state._save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
                         callers = self.find_call_stack(frame)
-                        # callers = []
                         frame_id = get_frame_id(frame)
 
                         monitored_method = self.monitored_system[current_method_name]
@@ -293,7 +294,6 @@ class Collector:
                                 if method_call:
 
                                     current_call_state = method_call.call_state
-
                                     if event == 'line':
                                         method_call._add_run_line(lineno)
                                         monitored_method._add_run_line(lineno)

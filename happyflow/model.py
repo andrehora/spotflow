@@ -23,9 +23,9 @@ class MonitoredSystem:
         return calls
 
     def _update_flows_and_info(self):
-        for mth in self.monitored_methods.values():
-            mth._compute_flows()
-            mth._update_call_info()
+        for method in self.monitored_methods.values():
+            method._compute_flows()
+            method._update_call_info()
 
     def __getitem__(self, key):
         return self.monitored_methods[key]
@@ -183,8 +183,8 @@ class MethodFlow(CallContainer):
             lineno += 1
 
             line_status = self._get_line_status(lineno_entity)
-            line_state = self._get_line_state(lineno_entity)
-            line_info = LineInfo(lineno, lineno_entity, line_status, line_state, self.monitored_method.info)
+            line_type, line_state = self._get_line_state(lineno_entity)
+            line_info = LineInfo(lineno, lineno_entity, line_status, line_type, line_state, self.monitored_method.info)
 
             self.info._append(line_info)
             self.info._update_run_status(line_info)
@@ -235,21 +235,21 @@ class MethodCall:
         states = self.call_state.states_for_line(lineno)
         if states:
             return self.line_var_states(states)
-        return ''
+        return '', ''
 
     def line_arg_state(self):
         arg_str = ''
         for arg in self.call_state.arg_states:
             if arg.name != 'self':
                 arg_str += str(arg)
-        return StateStatus.ARG, arg_str
+        return LineType.ARG, arg_str
 
     def line_return_state(self):
         return_state = self.call_state.return_state
-        return StateStatus.RETURN, str(return_state)
+        return LineType.RETURN, str(return_state)
 
     def line_var_states(self, states):
-        return StateStatus.VAR, states
+        return LineType.VAR, states
 
     def _add_run_line(self, lineno):
         self.run_lines.append(lineno)

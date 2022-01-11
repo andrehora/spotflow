@@ -35,12 +35,6 @@ class MethodInfo:
     def has_exception(self):
         return len(self.exception_lines) > 0
 
-    def line_is_entity_definition(self, lineno):
-        return lineno == self.start_line
-
-    def line_is_return_value(self, lineno):
-        return lineno in self.return_lines
-
     def executable_lines(self):
         exec_lines = self._ensure_executable_lines_for_file()
         my_lines = range(self.start_line, self.end_line + 1)
@@ -161,10 +155,11 @@ class FlowInfo:
 
 class LineInfo:
 
-    def __init__(self, lineno, lineno_entity, run_status, state, method_info):
+    def __init__(self, lineno, lineno_entity, run_status, type, state, method_info):
         self.lineno = lineno
         self.lineno_entity = lineno_entity
         self.run_status = run_status
+        self.type = type
         self.state = state
         self.method_info = method_info
 
@@ -183,8 +178,17 @@ class LineInfo:
     def is_not_exec(self):
         return self.run_status == RunStatus.NOT_EXEC
 
+    def is_arg(self):
+        return self.type == LineType.ARG
 
-class StateStatus:
+    def is_return(self):
+        return self.type == LineType.RETURN
+
+    def is_var(self):
+        return self.type == LineType.VAR
+
+
+class LineType:
     ARG = 'arg'
     RETURN = 'return'
     VAR = 'var'

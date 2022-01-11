@@ -24,33 +24,26 @@ class TextReport:
                 is_run = is_run.ljust(3)
 
                 code_str = f'{line_number_str} {is_run} {line.code().rstrip()}'
-                code_str = code_str.ljust(50)
-                print(code_str)
+                code_str = code_str.ljust(40)
 
-                # state_history = flow.calls[0].call_state
-                # states = state_history.states_for_line(current_line)
-                #
-                # if self.monitored_method.info.line_is_entity_definition(current_line):
-                #     arg_summary = ''
-                #     separator = '🟢 '
-                #     for arg in state_history.arg_states:
-                #         if arg.name != 'self':
-                #             arg_summary += f'{separator}{arg} '
-                #     if arg_summary:
-                #         print(code_str, arg_summary)
-                #     else:
-                #         print(code_str)
-                # elif self.monitored_method.info.line_is_return_value(current_line):
-                #     separator = '🔴 '
-                #     return_state = state_history.return_state
-                #     return_str = f'{separator}{return_state}'
-                #     print(code_str, return_str)
-                # elif states:
-                #     separator = '🟡 '
-                #     states_str = f'{separator}{separator.join(states)}'
-                #     print(code_str, states_str)
-                # else:
-                #     print(code_str)
+                if line.is_arg():
+                    arg_summary = ''
+                    separator = '🟢 '
+                    arg_summary += f'{separator}{line.state} '
+                    if arg_summary:
+                        print(code_str, arg_summary)
+                    else:
+                        print(code_str)
+                elif line.is_return():
+                    separator = '🔴 '
+                    return_str = f'{separator}{line.state}'
+                    print(code_str, return_str)
+                elif line.is_var():
+                    separator = '🟡 '
+                    states_str = f'{separator}{separator.join(line.state)}'
+                    print(code_str, states_str)
+                else:
+                    print(code_str)
 
     def show_state_summary(self, state_result):
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
