@@ -12,7 +12,7 @@ def count_uppercase_words(text):
 def inputs_count():
     # count_uppercase_words('')
     count_uppercase_words('ABC DEF')
-    # count_uppercase_words('abc')
-
+    print()
+    count_uppercase_words('abc')
 
 live(inputs_count, [count_uppercase_words])

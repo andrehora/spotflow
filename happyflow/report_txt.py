@@ -9,8 +9,8 @@ class TextReport:
         # self.show_state_summary(state_history)
         # print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
 
-        current_line = 0
         for flow in self.monitored_method.flows:
+            current_line = 0
             for line in flow.info.lines:
                 current_line += 1
                 if line.is_run():
@@ -44,6 +44,7 @@ class TextReport:
                     print(code_str, states_str)
                 else:
                     print(code_str)
+            print()
 
     def show_state_summary(self, state_result):
         print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
