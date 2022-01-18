@@ -1,5 +1,6 @@
 from happyflow.report import Report
 from happyflow.collector import Collector
+from happyflow.unittest_utils import loadTestsFromModule, suite_runner
 
 
 class HappyFlow:
@@ -43,7 +44,7 @@ class HappyFlow:
             return False
 
 
-def run_and_monitor(func, target_methods):
+def monitor(func, target_methods=None):
     hp = HappyFlow()
     hp.target_methods(target_methods)
     hp.start()
@@ -63,5 +64,11 @@ def live(func, target_methods):
 
     hp.stop()
     hp.txt_report()
+
+
+def monitor_unittest_module(module, target):
+    suite = loadTestsFromModule(module)
+    suite = suite_runner(suite)
+    return monitor(suite, [target])
 
 

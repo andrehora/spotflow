@@ -1,6 +1,6 @@
 import inspect
 import types
-from happyflow.utils import obj_value, obj_type, find_full_name
+from happyflow.utils import obj_value, obj_type, find_full_name, is_method_or_func
 from happyflow.model import CallState, MonitoredMethod, MonitoredSystem
 from happyflow.info import MethodInfo
 from happyflow.tracer import PyTracer
@@ -127,24 +127,27 @@ class Collector:
 
         return None
 
-    def ensure_target_method(self, current_entity_name, method_or_name, frame):
+    def ensure_target_method(self, current_entity_name, method_name, frame):
 
         # Handle cases in which 'method' is already a method or function object
-        if isinstance(method_or_name, types.FunctionType) or isinstance(method_or_name, types.MethodType):
+        # if isinstance(method_or_name, types.FunctionType) or isinstance(method_or_name, types.MethodType):
+        if is_method_or_func(method_name):
             if current_entity_name in self.target_methods_cache:
                 return self.target_methods_cache[current_entity_name]
-            entity = MethodInfo.build(method_or_name)
+            entity = MethodInfo.build(method_name)
             self.target_methods_cache[current_entity_name] = entity
             return entity
 
         if not self.try_all_possible_targets:
-            if not current_entity_name.startswith(method_or_name):
+            if not current_entity_name.startswith(method_name):
                 return None
 
         if current_entity_name in self.target_methods_cache:
             return self.target_methods_cache[current_entity_name]
 
         func_or_method = self.ensure_func_or_method(frame)
+        if not func_or_method:
+            return None
         entity = MethodInfo.build(func_or_method)
         if not entity:
             return None
@@ -165,7 +168,7 @@ class Collector:
             return self.frame_cache[key]
 
         func_or_method = self.get_func_or_method(frame)
-        if not func_or_method or inspect.isbuiltin(func_or_method):
+        if not func_or_method or inspect.isbuiltin(func_or_method) or not is_method_or_func(func_or_method):
             return None
 
         self.frame_cache[key] = func_or_method
@@ -211,7 +214,6 @@ class Collector:
                 return local_func
 
         except Exception as e:
-            # print(e)
             return None
 
     def find_local_func(self, entity_name, local_elements):

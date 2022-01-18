@@ -93,7 +93,6 @@ def find_full_name(func_or_method):
 
         return f'{module}.{qualname}'
     except Exception as e:
-        # print(e)
         return None
 
 
@@ -203,10 +202,15 @@ def line_intersection(lines, other_lines):
 
 
 def ratio(a, b, dec=1):
+    if b == 0:
+        return 'NA'
     r = a / b * 100
-    # return f'{round(r, dec)}%'
     return round(r, dec)
 
 
 def find_executable_linenos(filename):
     return trace._find_executable_linenos(filename)
+
+
+def is_method_or_func(entity):
+    return inspect.ismethod(entity) or inspect.isfunction(entity)

@@ -110,11 +110,14 @@ class MethodInfo:
 
     @staticmethod
     def build(func_or_method):
-        module_name, class_name, name, filename, start_line, end_line, full_name, code = get_metadata(func_or_method)
-        method_info = MethodInfo(module_name, class_name, name, full_name, filename, code)
-        method_info.start_line = start_line
-        method_info.end_line = end_line
-        return method_info
+        try:
+            module_name, class_name, name, filename, start_line, end_line, full_name, code = get_metadata(func_or_method)
+            method_info = MethodInfo(module_name, class_name, name, full_name, filename, code)
+            method_info.start_line = start_line
+            method_info.end_line = end_line
+            return method_info
+        except Exception:
+            return None
 
 
 class FlowInfo:

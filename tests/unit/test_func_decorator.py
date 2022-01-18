@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestFuncRunner
-from happyflow.api import run_and_monitor
+from happyflow.api import monitor
 
 
 class TestFuncRunnerCalls(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestFuncRunnerCalls(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.FuncRunner'
         func = TestFuncRunner().test_run_decorator_once
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
         self.assertEqual(len(result), 4)
 
         calls = result['tests.unit.stub_sut.FuncRunner.decorator'].calls
@@ -32,7 +32,7 @@ class TestFuncRunnerCalls(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.FuncRunner'
         func = TestFuncRunner().test_run_decorator_twice
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
         self.assertEqual(len(result), 4)
 
         calls = result['tests.unit.stub_sut.FuncRunner.decorator'].calls
@@ -55,7 +55,7 @@ class TestFuncRunnerCalls(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.FuncRunner'
         func = TestFuncRunner().test_run_call_func
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
         self.assertEqual(len(result), 3)
 
         calls = result['tests.unit.stub_sut.FuncRunner.call_func_three_times'].calls

@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestLocalClass
-from happyflow.api import run_and_monitor
+from happyflow.api import monitor
 
 
 class TestLocalClassCall(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestLocalClassCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.HasLocalClass.LocalClass1.local'
         func = TestLocalClass().test_has_local_class_1
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
@@ -21,7 +21,7 @@ class TestLocalClassCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestLocalClass().test_has_local_class_2
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
 
         self.assertEqual(len(result), 2)
 
@@ -37,7 +37,7 @@ class TestLocalClassCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestLocalClass().test_has_local_class_3
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
 
         self.assertEqual(len(result), 2)
 

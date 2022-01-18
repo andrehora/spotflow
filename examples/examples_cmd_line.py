@@ -14,6 +14,10 @@
 # python -m happyflow -t os -d report/os unittest test.test_os
 # python -m happyflow -t math -d report/math unittest test.test_math
 
+# python -m happyflow -t tarfile -d report/tarfile unittest test.test_tarfile
+# python -m happyflow -t pathlib -d report/pathlib unittest test.test_pathlib
+
+
 # python -m happyflow -t rich -d report/rich pytest rich/tests
 # python -m happyflow -t dateutil -d report_dateutil pytest dateutil/test
 # python -m happyflow -t rest_framework -d report_rest_framework pytest tests

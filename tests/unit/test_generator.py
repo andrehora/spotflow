@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestGenerator, TestGeneratorExpression
-from happyflow.api import run_and_monitor
+from happyflow.api import monitor
 
 
 class TestGeneratorCall(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestGeneratorCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Generators.no_generator'
         func = TestGenerator().test_no_generator
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
@@ -18,7 +18,7 @@ class TestGeneratorCall(unittest.TestCase):
         method_name2 = 'tests.unit.stub_sut.Generators.has_generator_1'
         func = TestGenerator().test_call_generator_1
 
-        result = run_and_monitor(func, [method_name1, method_name2])
+        result = monitor(func, [method_name1, method_name2])
 
         self.assertEqual(len(result), 2)
 
@@ -40,7 +40,7 @@ class TestGeneratorCall(unittest.TestCase):
         method_name2 = 'tests.unit.stub_sut.Generators.has_generator_2'
         func = TestGenerator().test_call_generator_2
 
-        result = run_and_monitor(func, [method_name1, method_name2])
+        result = monitor(func, [method_name1, method_name2])
 
         self.assertEqual(len(result), 2)
 
@@ -63,7 +63,7 @@ class TestGeneratorCall(unittest.TestCase):
         method_name2 = 'tests.unit.stub_sut.Generators.has_generator_3'
         func = TestGenerator().test_call_generator_3
 
-        result = run_and_monitor(func, [method_name1, method_name2])
+        result = monitor(func, [method_name1, method_name2])
 
         self.assertEqual(len(result), 2)
 
@@ -81,7 +81,7 @@ class TestGeneratorCall(unittest.TestCase):
         method_name2 = 'tests.unit.stub_sut.Generators.has_generator_4'
         func = TestGenerator().test_call_generator_4
 
-        result = run_and_monitor(func, [method_name1, method_name2])
+        result = monitor(func, [method_name1, method_name2])
 
         self.assertEqual(len(result), 2)
 
@@ -102,7 +102,7 @@ class TestGeneratorCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Generators.has_generator_1'
         func = TestGenerator().test_has_generator_1
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
         self.assertEqual(len(result), 1)
 
         calls = result[method_name].calls
@@ -113,7 +113,7 @@ class TestGeneratorCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Generators.has_generator_2'
         func = TestGenerator().test_has_generator_2
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
         self.assertEqual(len(result), 1)
 
         calls = result[method_name].calls
@@ -124,7 +124,7 @@ class TestGeneratorCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Generators.has_generator_3'
         func = TestGenerator().test_has_generator_3
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
         self.assertEqual(len(result), 1)
 
         calls = result[method_name].calls
@@ -135,7 +135,7 @@ class TestGeneratorCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Generators.has_generator_4'
         func = TestGenerator().test_has_generator_4
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
         self.assertEqual(len(result), 1)
 
         calls = result[method_name].calls
@@ -146,7 +146,7 @@ class TestGeneratorCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Generators'
         func = TestGenerator().run_all
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
         self.assertEqual(len(result), 9)
 
 
@@ -156,7 +156,7 @@ class TestGeneratorExpressionCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.GeneratorExpression.generator_expression_1'
         func = TestGeneratorExpression().test_generator_expression_1
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
@@ -167,7 +167,7 @@ class TestGeneratorExpressionCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.GeneratorExpression.generator_expression_2'
         func = TestGeneratorExpression().test_generator_expression_2
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls

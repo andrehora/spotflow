@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestComprehension
-from happyflow.api import run_and_monitor
+from happyflow.api import monitor
 
 
 class TestComprehensionCall(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestComprehensionCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Comprehension.listcomp_1'
         func = TestComprehension().test_listcomp_1
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
@@ -21,7 +21,7 @@ class TestComprehensionCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Comprehension.listcomp_2'
         func = TestComprehension().test_listcomp_2
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
@@ -33,7 +33,7 @@ class TestComprehensionCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Comprehension.setcomp_1'
         func = TestComprehension().test_setcomp_1
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
@@ -45,7 +45,7 @@ class TestComprehensionCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Comprehension.setcomp_2'
         func = TestComprehension().test_setcomp_2
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
@@ -57,7 +57,7 @@ class TestComprehensionCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Comprehension.dictcomp'
         func = TestComprehension().test_dictcomp
 
-        result = run_and_monitor(func, [method_name])
+        result = monitor(func, [method_name])
 
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
