@@ -105,7 +105,7 @@ def argument_values_for_specific_type(monitored_system, type):
 def main():
     from test import test_gzip
 
-    monitored_system = monitor_unittest_module(test_gzip, 'gzip')
+    monitored_system = monitor_unittest_module(test_gzip, ['gzip'])
 
     called_methods(monitored_system)
 

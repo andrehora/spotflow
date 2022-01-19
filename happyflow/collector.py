@@ -1,6 +1,5 @@
 import inspect
-import types
-from happyflow.utils import obj_value, obj_type, find_full_name, is_method_or_func
+from happyflow.utils import obj_value, obj_type, find_full_name, is_method_or_func, get_module_names
 from happyflow.model import CallState, MonitoredMethod, MonitoredSystem
 from happyflow.info import MethodInfo
 from happyflow.tracer import PyTracer
@@ -47,7 +46,7 @@ def line_has_keyword(frame, keyword):
 
 class Collector:
 
-    IGNORE_FILES = ['site-packages', 'unittest', 'pytest', 'argparse', 'sysconfig']
+    IGNORE_FILES = ['site-packages', 'unittest', 'pytest', 'argparse', 'sysconfig', 'contextlib']
 
     def __init__(self):
         self.monitored_system = MonitoredSystem()
@@ -78,6 +77,8 @@ class Collector:
         if not self.method_names:
             self.try_all_possible_targets = True
             self.method_names = ['__ALL__']
+        if self.method_names:
+            self.module_names = get_module_names(self.method_names)
 
     def init_ignore(self):
         if not self.ignore_files:
@@ -96,12 +97,11 @@ class Collector:
         if self.try_all_possible_targets:
             return True
 
-        for method_name in self.method_names:
-            if isinstance(method_name, str):
-                module_name = method_name.split('.')[0]
-                if module_name not in frame.f_code.co_filename:
-                    return False
-        return True
+        for module_name in self.module_names:
+            if module_name in frame.f_code.co_filename:
+                return True
+
+        return False
 
     def find_call_stack(self, frame):
         call_stack = []

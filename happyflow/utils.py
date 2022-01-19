@@ -214,3 +214,12 @@ def find_executable_linenos(filename):
 
 def is_method_or_func(entity):
     return inspect.ismethod(entity) or inspect.isfunction(entity)
+
+
+def get_module_names(method_names):
+    module_names = []
+    for method_name in method_names:
+        if isinstance(method_name, str):
+            module_name = method_name.split('.')[0]
+            module_names.append(module_name)
+    return module_names

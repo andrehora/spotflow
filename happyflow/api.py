@@ -66,9 +66,9 @@ def live(func, target_methods):
     hp.txt_report()
 
 
-def monitor_unittest_module(module, target):
+def monitor_unittest_module(module, target_methods=None):
     suite = loadTestsFromModule(module)
     suite = suite_runner(suite)
-    return monitor(suite, [target])
+    return monitor(suite, target_methods)
 
 
