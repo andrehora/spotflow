@@ -315,9 +315,9 @@ class Collector:
                                 exception_type = obj_type(arg[0])
                                 current_call_state._save_exception_state(exception_name, exception_type, lineno)
 
-                            # if current_call_state:
-                            #     argvalues = inspect.getargvalues(frame)
-                            #     inline = self.last_frame_lineno[current_method_name]
-                            #     current_call_state._save_var_states(argvalues, lineno, inline)
+                            if current_call_state:
+                                argvalues = inspect.getargvalues(frame)
+                                inline = self.last_frame_lineno[current_method_name]
+                                current_call_state._save_var_states(argvalues, lineno, inline)
 
                 self.last_frame_lineno[current_method_name] = lineno

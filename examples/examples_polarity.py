@@ -95,6 +95,6 @@ def main():
 
 # main()
 
-from test import test_email as test
-monitor_test(test, target_files=['email'])
+from test import test_math as test
+monitor_test(test, target_files=['math.py'])
 
