@@ -54,9 +54,9 @@ def calls_that_return_true_or_false(monitored_system):
             print(method, tf[0][1], tf[1][1])
 
 
-def monitor_test(test, target=None):
+def monitor_test(test, target_methods=None, target_files=None):
     print('Test suite:', test.__name__)
-    monitored_system = monitor_unittest_module(test, target)
+    monitored_system = monitor_unittest_module(test, target_methods, target_files)
     calls_that_return_true_or_false(monitored_system)
 
 
@@ -95,7 +95,6 @@ def main():
 
 # main()
 
-from test import test_importlib as test
-
-monitor_test(test, ['importlib'])
+from test import test_email as test
+monitor_test(test, target_files=['email'])
 
