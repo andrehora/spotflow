@@ -45,13 +45,13 @@ class HappyFlowScript:
         except Exception as e:
             print(e)
             code_ran = False
-            return ERR
         finally:
             flow.stop()
             # if code_ran:
             #     flow.html_report(directory)
             #     flow.csv_report(directory)
-        return OK
+            #     return OK
+            # return ERR
 
 
 def main():

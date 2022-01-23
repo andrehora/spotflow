@@ -44,7 +44,14 @@ def calls_that_return_true_or_false(monitored_system):
     for method in method_values:
         counter = Counter(method_values[method]).most_common()
         tf = sorted(counter, reverse=True)
-        print(method, tf)
+        if len(tf) == 1:
+            element = tf[0]
+            if element[0] == 'True':
+                print(method, element[1], 0)
+            if element[0] == 'False':
+                print(method, 0, element[1])
+        if len(tf) == 2:
+            print(method, tf[0][1], tf[1][1])
 
 
 def monitor_test(test, target=None):
@@ -55,47 +62,17 @@ def monitor_test(test, target=None):
 
 def main():
 
-    # from test import test_ast as test
-    # monitor_test(test, ['ast'])
-
     from test import test_gzip as test
     monitor_test(test, ['gzip'])
-
-    # from test import test_urlparse as test
-    # monitor_test(test, ['urllib'])
-
-    # from test import test_json as test
-    # monitor_test(test, ['json'])
-
-    # from test import test_calendar as test
-    # monitor_test(test, ['calendar'])
 
     from test import test_collections as test
     monitor_test(test, ['collections'])
 
-    # from test import test_csv as test
-    # monitor_test(test, ['csv'])
-
-    # from test import test_ftplib as test
-    # monitor_test(test, ['ftplib'])
-    #
-    # from test import test_htmlparser as test
-    # monitor_test(test, ['html'])
-
     from test import test_httplib as test
     monitor_test(test, ['http'])
 
-    # from test import test_time as test
-    # monitor_test(test, ['time'])
-    #
-    # from test import test_zlib as test
-    # monitor_test(test, 'zlib')
-
     from test import test_zipfile as test
     monitor_test(test, ['zipfile'])
-
-    # from test import test_types as test
-    # monitor_test(test, ['types'])
 
     from test import test_tarfile as test
     monitor_test(test, ['tarfile'])
@@ -106,14 +83,19 @@ def main():
     from test import test_email as test
     monitor_test(test, ['email'])
 
-    # from test import test_os as test
-    # monitor_test(test, ['os'])
-    #
-    # from test import test_math as test
-    # monitor_test(test, ['math'])
+    from test import test_logging as test
+    monitor_test(test, ['logging'])
+
+    from test import test_difflib as test
+    monitor_test(test, ['difflib'])
+
+    from test import test_imaplib as test
+    monitor_test(test, ['imaplib'])
 
 
 # main()
 
-from test import test_gzip as test
-monitor_test(test, ['gzip', 'os'])
+from test import test_importlib as test
+
+monitor_test(test, ['importlib'])
+
