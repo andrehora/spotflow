@@ -11,10 +11,11 @@ class TestFilter(unittest.TestCase):
         result = monitor(func)
         methods = result.all_methods()
 
+        # This may vary according to the Python version
         self.assertGreaterEqual(len(methods), 15)
         self.assertGreaterEqual(len(result.all_calls()), 15)
 
-    def test_filter_by_method_name(self):
+    def test_filter_by_method(self):
         method_name = 'tests.unit.stub_sut'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
@@ -37,7 +38,7 @@ class TestFilter(unittest.TestCase):
         self.assertEqual(methods[5].info.full_name,
                          'tests.unit.stub_sut.ClassWithExternalDependency.inspect_ismethod')
 
-    def test_filter_by_multiple_method_names(self):
+    def test_filter_by_multiple_methods(self):
         method_name1 = 'tests.unit.stub_sut'
         method_name2 = 'inspect'
         func = TestClassWithExternalDependency().test_call_external_dependencies
@@ -63,7 +64,7 @@ class TestFilter(unittest.TestCase):
         self.assertEqual(methods[6].info.full_name,
                          'inspect.ismethod')
 
-    def test_filter_by_file_name(self):
+    def test_filter_by_file(self):
         file_name = 'stub_sut'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
@@ -92,8 +93,8 @@ class TestFilter(unittest.TestCase):
         self.assertEqual(methods[8].info.full_name,
                          'inspect.ismethod')
 
-    def test_filter_by_file_name_genericpath(self):
-        file_name = 'genericpath'
+    def test_filter_by_file_genericpath(self):
+        file_name = 'genericpath.py'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor(func, target_files=[file_name])
@@ -104,17 +105,18 @@ class TestFilter(unittest.TestCase):
 
         self.assertEqual(methods[0].info.full_name, 'genericpath.isdir')
 
-    def test_filter_by_file_name_posixpath(self):
-        file_name = 'posixpath'
+    def test_filter_by_file_posixpath(self):
+        file_name = 'posixpath.py'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor(func, target_files=[file_name])
         methods = result.all_methods()
 
+        # This may vary according to the Python version
         self.assertGreaterEqual(len(methods), 5)
 
-    def test_filter_by_file_name_inspect(self):
-        file_name = 'inspect'
+    def test_filter_by_file_inspect(self):
+        file_name = 'inspect.py'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor(func, target_files=[file_name])
@@ -125,7 +127,7 @@ class TestFilter(unittest.TestCase):
 
         self.assertEqual(methods[0].info.full_name, 'inspect.ismethod')
 
-    def test_filter_by_multiple_file_names(self):
+    def test_filter_by_multiple_files(self):
         file_name1 = 'genericpath'
         file_name2 = 'inspect'
         func = TestClassWithExternalDependency().test_call_external_dependencies
@@ -138,6 +140,58 @@ class TestFilter(unittest.TestCase):
 
         self.assertEqual(methods[0].info.full_name, 'genericpath.isdir')
         self.assertEqual(methods[1].info.full_name, 'inspect.ismethod')
+
+    def test_filter_by_ignore_file_genericpath(self):
+        ignore_file_name = 'genericpath.py'
+        func = TestClassWithExternalDependency().test_call_external_dependencies
+
+        result = monitor(func, ignore_files=[ignore_file_name])
+        methods = result.all_methods()
+
+        for method in methods:
+            self.assertNotIn(ignore_file_name, method.info.full_name)
+
+    def test_filter_by_ignore_file_posixpath(self):
+        ignore_file_name = 'posixpath.py'
+        func = TestClassWithExternalDependency().test_call_external_dependencies
+
+        result = monitor(func, ignore_files=[ignore_file_name])
+        methods = result.all_methods()
+
+        for method in methods:
+            self.assertNotIn(ignore_file_name, method.info.full_name)
+
+    def test_filter_by_ignore_file_inspect(self):
+        ignore_file_name = 'inspect.py'
+        func = TestClassWithExternalDependency().test_call_external_dependencies
+
+        result = monitor(func, ignore_files=[ignore_file_name])
+        methods = result.all_methods()
+
+        for method in methods:
+            self.assertNotIn(ignore_file_name, method.info.full_name)
+
+    def test_filter_by_ignore_file_stub_sut(self):
+        ignore_file_name = 'stub_sut'
+        func = TestClassWithExternalDependency().test_call_external_dependencies
+
+        result = monitor(func, ignore_files=[ignore_file_name])
+        methods = result.all_methods()
+
+        for method in methods:
+            self.assertNotIn(ignore_file_name, method.info.full_name)
+
+    def test_filter_by_ignore_multiple_files(self):
+        ignore_file_name1 = 'posixpath.py'
+        ignore_file_name2 = 'stub_sut'
+        func = TestClassWithExternalDependency().test_call_external_dependencies
+
+        result = monitor(func, ignore_files=[ignore_file_name1, ignore_file_name2])
+        methods = result.all_methods()
+
+        for method in methods:
+            self.assertNotIn(ignore_file_name1, method.info.full_name)
+            self.assertNotIn(ignore_file_name2, method.info.full_name)
 
 
 if __name__ == '__main__':

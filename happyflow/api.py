@@ -47,10 +47,11 @@ class HappyFlow:
             return False
 
 
-def monitor(func, target_methods=None, target_files=None):
+def monitor(func, target_methods=None, target_files=None, ignore_files=None):
     hp = HappyFlow()
     hp.target_methods(target_methods)
     hp.target_files(target_files)
+    hp.ignore_files(ignore_files)
 
     hp.start()
     func()
@@ -70,9 +71,9 @@ def live(func, target_methods):
     hp.txt_report()
 
 
-def monitor_unittest_module(module, target_methods=None, target_files=None):
+def monitor_unittest_module(module, target_methods=None, target_files=None, ignore_files=None):
     suite = loadTestsFromModule(module)
     suite = suite_runner(suite)
-    return monitor(suite, target_methods, target_files)
+    return monitor(suite, target_methods, target_files, ignore_files)
 
 
