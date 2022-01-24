@@ -46,7 +46,7 @@ def line_has_keyword(frame, keyword):
 
 class Collector:
 
-    IGNORE_FILES = ['site-packages', 'unittest', 'pytest', 'argparse', 'sysconfig', 'contextlib']
+    # IGNORE_FILES = ['site-packages', 'unittest', 'pytest', 'argparse', 'sysconfig', 'contextlib']
 
     def __init__(self):
         self.monitored_system = MonitoredSystem()
@@ -64,7 +64,7 @@ class Collector:
 
     def start(self):
         self.init_target()
-        self.init_ignore()
+        # self.init_ignore()
         self.py_tracer.start_tracer()
 
     def stop(self):
@@ -75,9 +75,9 @@ class Collector:
         if self.method_names:
             self.module_names = get_module_names(self.method_names)
 
-    def init_ignore(self):
-        if not self.ignore_files:
-            self.ignore_files = self.IGNORE_FILES
+    # def init_ignore(self):
+    #     if not self.ignore_files:
+    #         self.ignore_files = self.IGNORE_FILES
 
     def is_valid_frame(self, frame):
 

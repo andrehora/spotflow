@@ -111,7 +111,7 @@ class TestFilter(unittest.TestCase):
         result = monitor(func, target_files=[file_name])
         methods = result.all_methods()
 
-        self.assertGreaterEqual(len(methods), 8)
+        self.assertGreaterEqual(len(methods), 5)
 
     def test_filter_by_file_name_inspect(self):
         file_name = 'inspect'
