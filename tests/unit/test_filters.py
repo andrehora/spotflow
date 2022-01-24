@@ -11,8 +11,8 @@ class TestFilter(unittest.TestCase):
         result = monitor(func)
         methods = result.all_methods()
 
-        self.assertGreaterEqual(len(methods), 20)
-        self.assertGreaterEqual(len(result.all_calls()), 20)
+        self.assertGreaterEqual(len(methods), 15)
+        self.assertGreaterEqual(len(result.all_calls()), 15)
 
     def test_filter_by_method_name(self):
         method_name = 'tests.unit.stub_sut'
