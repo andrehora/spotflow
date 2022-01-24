@@ -29,7 +29,11 @@ class TestFilter(unittest.TestCase):
                     return True
             return False
 
-        filtered_calls = result.filter_calls(with_arg_value_123)
+        filtered_calls = []
+        for call in result.all_calls():
+            if with_arg_value_123(call):
+                filtered_calls.append(call)
+
         self.assertEqual(len(list(filtered_calls)), 1)
         self.assertEqual(len(result.all_calls()), 4)
 
@@ -43,7 +47,11 @@ class TestFilter(unittest.TestCase):
             return_state = call.call_state.return_state
             return return_state and return_state.value == '123'
 
-        filtered_calls = result.filter_calls(with_return_value_123)
+        filtered_calls = []
+        for call in result.all_calls():
+            if with_return_value_123(call):
+                filtered_calls.append(call)
+
         self.assertEqual(len(list(filtered_calls)), 1)
         self.assertEqual(len(result.all_calls()), 4)
 
@@ -56,7 +64,11 @@ class TestFilter(unittest.TestCase):
         def with_exception(call):
             return call.call_state.has_exception()
 
-        filtered_calls = result.filter_calls(with_exception)
+        filtered_calls = []
+        for call in result.all_calls():
+            if with_exception(call):
+                filtered_calls.append(call)
+
         self.assertEqual(len(list(filtered_calls)), 2)
         self.assertEqual(len(result.all_calls()), 4)
 
@@ -70,7 +82,11 @@ class TestFilter(unittest.TestCase):
             exception_state = call.call_state.exception_state
             return exception_state and exception_state.value == 'ZeroDivisionError'
 
-        filtered_calls = result.filter_calls(with_ZeroDivisionError)
+        filtered_calls = []
+        for call in result.all_calls():
+            if with_ZeroDivisionError(call):
+                filtered_calls.append(call)
+
         self.assertEqual(len(list(filtered_calls)), 2)
         self.assertEqual(len(result.all_calls()), 4)
 
@@ -87,7 +103,11 @@ class TestFilter(unittest.TestCase):
                     return True
             return False
 
-        filtered_calls = result.filter_calls(with_arg_value_less_than_51)
+        filtered_calls = []
+        for call in result.all_calls():
+            if with_arg_value_less_than_51(call):
+                filtered_calls.append(call)
+
         self.assertEqual(len(list(filtered_calls)), 50)
         self.assertEqual(len(result.all_calls()), 100)
 
@@ -101,7 +121,11 @@ class TestFilter(unittest.TestCase):
             return_state = call.call_state.return_state
             return return_state and int(return_state.value) < 51
 
-        filtered_calls = result.filter_calls(with_return_value_less_than_51)
+        filtered_calls = []
+        for call in result.all_calls():
+            if with_return_value_less_than_51(call):
+                filtered_calls.append(call)
+
         self.assertEqual(len(list(filtered_calls)), 50)
         self.assertEqual(len(result.all_calls()), 100)
 

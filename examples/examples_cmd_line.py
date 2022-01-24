@@ -23,7 +23,6 @@
 # python -m happyflow -t imaplib -d report/imaplib unittest test.test_imaplib
 # python -m happyflow -t smtplib -d report/smtplib unittest test.test_smtplib
 # python -m happyflow -t xxx -d report/xxx unittest test.xxx
-# python -m happyflow -t xxx -d report/xxx unittest test.xxx
 
 
 # python -m happyflow -t rich -d report/rich pytest rich/tests

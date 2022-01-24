@@ -7,12 +7,6 @@ class MonitoredSystem:
     def __init__(self):
         self.monitored_methods = {}
 
-    def filter_methods(self, filter_func):
-        return (mth for mth in self.all_methods() if filter_func(mth))
-
-    def filter_calls(self, filter_func):
-        return (call for call in self.all_calls() if filter_func(call))
-
     def all_methods(self):
         return list(self.monitored_methods.values())
 

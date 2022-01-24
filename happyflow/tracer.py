@@ -17,7 +17,7 @@ class PyTracer:
 
         if event in ('call', 'line', 'return', 'exception'):
 
-            self.collector.monitor(frame, event, arg)
+            self.collector.monitor_event(frame, event, arg)
 
             return self._global_trace
 

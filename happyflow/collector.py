@@ -95,12 +95,18 @@ class Collector:
             for filename in self.file_names:
                 if filename in current_filename:
                     return True
+                if frame.f_back:
+                    back_filename = frame.f_back.f_code.co_filename
+                    if filename in back_filename:
+                        return True
             return False
 
-        for module_name in self.module_names:
-            if module_name in current_filename:
-                return True
-        return False
+        if self.module_names:
+            for module_name in self.module_names:
+                if module_name in current_filename:
+                    return True
+            return False
+        return True
 
     def find_call_stack(self, frame):
         call_stack = []
@@ -248,7 +254,7 @@ class Collector:
         elif event == 'exception':
             method_info.exception_lines.add(lineno)
 
-    def monitor(self, frame, event, arg):
+    def monitor_event(self, frame, event, arg):
 
         if not self.is_valid_frame(frame):
             return

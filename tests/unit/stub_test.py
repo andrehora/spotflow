@@ -459,3 +459,8 @@ class TestClassWithManyCalls:
     def test_call_methods(self):
         ClassWithManyCalls().call_methods()
 
+
+class TestClassWithExternalDependency:
+
+    def test_call_external_dependencies(self):
+        ClassWithExternalDependency().call_external_dependencies()

@@ -624,3 +624,34 @@ class ClassWithManyCalls:
 
     def with_exception(self):
         1/0
+
+
+class ClassWithExternalDependency:
+
+    def call_external_dependencies(self):
+        self.str_split('abc def')
+        self.time_time()
+        self.os_isdir()
+        self.os_realpath()
+        self.inspect_ismethod()
+
+    def str_split(self, txt):
+        # Built-in functions are not monitored
+        return txt.split()
+
+    def time_time(self):
+        # Built-in functions are not monitored
+        import time
+        return time.time()
+
+    def os_isdir(self):
+        import os
+        return os.path.isdir("dir")
+
+    def os_realpath(self):
+        import os
+        return os.path.realpath(__file__)
+
+    def inspect_ismethod(self):
+        import inspect
+        return inspect.ismethod(None)

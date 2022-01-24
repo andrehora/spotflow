@@ -10,7 +10,7 @@ class TestTXTReport(unittest.TestCase):
         call.target_methods(['tests.integration.stub_funcs.count_uppercase_words'])
         call.start()
 
-        from tests.integration.stub_funcs import inputs_count
+        from tests.e2e.stub_funcs import inputs_count
         inputs_count()
 
         call.stop()
@@ -22,7 +22,7 @@ class TestTXTReport(unittest.TestCase):
         hp.target_methods(['tests.integration.stub_funcs.parseparam'])
         hp.start()
 
-        from tests.integration.stub_funcs import inputs_parseparam
+        from tests.e2e.stub_funcs import inputs_parseparam
         inputs_parseparam()
 
         hp.stop()
@@ -34,7 +34,7 @@ class TestTXTReport(unittest.TestCase):
         hp.target_methods(['tests.integration.stub_funcs.splitparam'])
         hp.start()
 
-        from tests.integration.stub_funcs import inputs_splitparam
+        from tests.e2e.stub_funcs import inputs_splitparam
         inputs_splitparam()
 
         hp.stop()
