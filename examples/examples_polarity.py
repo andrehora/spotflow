@@ -54,9 +54,9 @@ def calls_that_return_true_or_false(monitored_system):
             print(method, tf[0][1], tf[1][1])
 
 
-def monitor_test(test, target_methods=None, target_files=None):
+def monitor_test(test, target_methods=None, target_files=None, ignore_files=None, collect_var_states=False):
     print('Test suite:', test.__name__)
-    monitored_system = monitor_unittest_module(test, target_methods, target_files)
+    monitored_system = monitor_unittest_module(test, target_methods, target_files, ignore_files, collect_var_states)
     calls_that_return_true_or_false(monitored_system)
 
 
@@ -95,6 +95,6 @@ def main():
 
 # main()
 
-from test import test_collections as test
-monitor_test(test, target_files=['collections'])
+from test import test_gzip as test
+monitor_test(test, target_files=['gzip'])
 

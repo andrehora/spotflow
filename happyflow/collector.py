@@ -46,13 +46,13 @@ def line_has_keyword(frame, keyword):
 
 class Collector:
 
-    # IGNORE_FILES = ['site-packages', 'unittest', 'pytest', 'argparse', 'sysconfig', 'contextlib']
-
     def __init__(self):
         self.monitored_system = MonitoredSystem()
         self.method_names = None
         self.file_names = None
         self.ignore_files = None
+        self.collect_var_states = True
+
         self.module_names = None
 
         self.last_frame_lineno = {}
@@ -64,7 +64,6 @@ class Collector:
 
     def start(self):
         self.init_target()
-        # self.init_ignore()
         self.py_tracer.start_tracer()
 
     def stop(self):
@@ -74,10 +73,6 @@ class Collector:
     def init_target(self):
         if self.method_names:
             self.module_names = get_module_names(self.method_names)
-
-    # def init_ignore(self):
-    #     if not self.ignore_files:
-    #         self.ignore_files = self.IGNORE_FILES
 
     def is_valid_frame(self, frame):
 
@@ -321,7 +316,7 @@ class Collector:
                                 exception_type = obj_type(arg[0])
                                 current_call_state._save_exception_state(exception_name, exception_type, lineno)
 
-                            if current_call_state:
+                            if self.collect_var_states and current_call_state:
                                 argvalues = inspect.getargvalues(frame)
                                 inline = self.last_frame_lineno[current_method_name]
                                 current_call_state._save_var_states(argvalues, lineno, inline)

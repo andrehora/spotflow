@@ -17,6 +17,9 @@ class HappyFlow:
     def ignore_files(self, ignore_files):
         self.collector.ignore_files = ignore_files
 
+    def collect_var_states(self, collect_var_states):
+        self.collector.collect_var_states = collect_var_states
+
     def start(self):
         self.collector.start()
 
@@ -47,11 +50,12 @@ class HappyFlow:
             return False
 
 
-def monitor(func, target_methods=None, target_files=None, ignore_files=None):
+def monitor(func, target_methods=None, target_files=None, ignore_files=None, collect_var_states=True):
     hp = HappyFlow()
     hp.target_methods(target_methods)
     hp.target_files(target_files)
     hp.ignore_files(ignore_files)
+    hp.collect_var_states(collect_var_states)
 
     hp.start()
     func()
@@ -71,9 +75,9 @@ def live(func, target_methods):
     hp.txt_report()
 
 
-def monitor_unittest_module(module, target_methods=None, target_files=None, ignore_files=None):
+def monitor_unittest_module(module, target_methods=None, target_files=None, ignore_files=None, collect_var_states=True):
     suite = loadTestsFromModule(module)
     suite = suite_runner(suite)
-    return monitor(suite, target_methods, target_files, ignore_files)
+    return monitor(suite, target_methods, target_files, ignore_files, collect_var_states)
 
 
