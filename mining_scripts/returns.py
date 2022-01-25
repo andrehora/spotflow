@@ -3,6 +3,8 @@ from collections import Counter
 
 def calls_that_return_value(monitored_system):
 
+    print('calls_that_return_value')
+
     counter = 0
     for call in monitored_system.all_calls():
         call_state = call.call_state
@@ -13,6 +15,8 @@ def calls_that_return_value(monitored_system):
 
 
 def calls_that_return_true_or_false(monitored_system):
+
+    print('calls_that_return_true_or_false')
 
     return_values = []
     for call in monitored_system.all_calls():

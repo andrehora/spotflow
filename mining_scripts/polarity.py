@@ -3,6 +3,9 @@ from happyflow.api import monitor_unittest_module
 
 
 def argument_values_and_types(monitored_system):
+
+    print('argument_values_and_types')
+
     arg_values = []
     arg_types = []
     for call in monitored_system.all_calls():
@@ -18,6 +21,9 @@ def argument_values_and_types(monitored_system):
 
 
 def calls_that_return_true_or_false(monitored_system):
+
+    print('calls_that_return_true_or_false')
+
     methods = []
     method_values = {}
     return_values = []

@@ -3,6 +3,8 @@ from collections import Counter
 
 def thrown_exceptions(monitored_system):
 
+    print('thrown_exceptions')
+
     exceptions = []
     for call in monitored_system.all_calls():
         call_state = call.call_state

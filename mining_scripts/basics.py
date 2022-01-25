@@ -1,5 +1,6 @@
-def called_methods(monitored_system):
+def monitored_methods_overview(monitored_system):
 
-    print(len(monitored_system.all_methods()))
-    print(len(monitored_system.all_calls()))
-    print(monitored_system.all_methods())
+    print('monitored_methods_overview')
+
+    print('all_methods', len(monitored_system.all_methods()))
+    print('all_calls', len(monitored_system.all_calls()))

@@ -1,7 +1,8 @@
 def tests_that_execute_specific_method(monitored_system, method_name):
 
-    method = monitored_system[method_name]
+    print('tests_that_execute_specific_method')
 
+    method = monitored_system[method_name]
     tests = set()
     for call in method.calls:
         for caller in call.call_stack:
@@ -13,6 +14,8 @@ def tests_that_execute_specific_method(monitored_system, method_name):
 
 
 def methods_executed_by_specific_test(monitored_system, test_name):
+
+    print('methods_executed_by_specific_test')
 
     methods = set()
     for call in monitored_system.all_calls():

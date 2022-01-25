@@ -8,7 +8,7 @@ def miner():
 
     monitored_system = monitor_unittest_module(test_gzip, ['gzip'])
 
-    basics.called_methods(monitored_system)
+    basics.monitored_methods_overview(monitored_system)
 
     tests.tests_that_execute_specific_method(monitored_system, 'gzip._PaddedFile.read')
     tests.methods_executed_by_specific_test(monitored_system, 'test.test_gzip.TestGzip.test_zero_padded_file')

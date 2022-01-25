@@ -2,6 +2,9 @@ from collections import Counter
 
 
 def argument_values_for_specific_type(monitored_system, type):
+
+    print('argument_values_for_specific_type')
+
     int_values = []
     str_values = []
     for call in monitored_system.all_calls():
@@ -17,6 +20,9 @@ def argument_values_for_specific_type(monitored_system, type):
 
 
 def argument_values_and_types(monitored_system):
+
+    print('argument_values_and_types')
+
     arg_values = []
     arg_types = []
     for call in monitored_system.all_calls():
