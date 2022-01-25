@@ -1,5 +1,3 @@
-# python -m happyflow -t XXX -d report/XXX unittest XXX
-
 # python -m happyflow -t email -d report/email unittest test.test_email.test_email
 # python -m happyflow -t ast -d report/ast unittest test.test_ast
 # python -m happyflow -t gzip -d report/gzip unittest test.test_gzip
@@ -22,9 +20,8 @@
 # python -m happyflow -t difflib -d report/difflib unittest test.test_difflib
 # python -m happyflow -t imaplib -d report/imaplib unittest test.test_imaplib
 # python -m happyflow -t smtplib -d report/smtplib unittest test.test_smtplib
-# python -m happyflow -t xxx -d report/xxx unittest test.xxx
 
 
 # python -m happyflow -tm rich -d report/rich pytest rich/tests
-# python -m happyflow -t dateutil -d report_dateutil pytest dateutil/test
-# python -m happyflow -t rest_framework -d report_rest_framework pytest tests
+# python -m happyflow -tm dateutil -d report_dateutil pytest dateutil/test
+# python -m happyflow -tm rest_framework -d report_rest_framework pytest tests
