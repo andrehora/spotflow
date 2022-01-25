@@ -95,6 +95,6 @@ def main():
 
 # main()
 
-from test import test_gzip as test
-monitor_test(test, target_files=['gzip'])
+# from test import test_gzip as test
+# monitor_test(test, target_files=['gzip'])
 

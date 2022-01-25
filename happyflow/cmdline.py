@@ -68,10 +68,10 @@ class HappyFlowScript:
             return ERR
 
     def handle_result(self, result):
-        spec = importlib.util.spec_from_file_location("spotflow_mining", "./examples/spotflow_mining.py")
+        spec = importlib.util.spec_from_file_location("spotflow_miner", "./mining_scripts/spotflow_miner.py")
         spotflow_mining = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(spotflow_mining)
-        spotflow_mining.mine(result)
+        spotflow_mining.runtime_miner(result)
 
 
 def main():
