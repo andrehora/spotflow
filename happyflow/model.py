@@ -114,7 +114,8 @@ class MonitoredMethod(CallContainer):
     def __init__(self, method_info):
         super().__init__(calls=[])
         self.info = method_info
-        self.method_name = method_info.name
+        self.name = method_info.name
+        self.full_name = method_info.full_name
         self.flows = []
         self.run_lines = {}
         self._calls_by_id = {}

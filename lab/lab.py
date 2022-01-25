@@ -32,4 +32,10 @@ def handle_bytecode():
         print(instr)
 
 
+def runpy():
+    import runpy
+    msg = {'msg': [1,2,3]}
+    runpy.run_path("./etc2.py", init_globals=msg)
+
+
 handle_bytecode()

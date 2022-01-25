@@ -12,7 +12,7 @@ class TestState(unittest.TestCase):
         result = monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [59, 60, 61])
-        self.assertEqual(result[method_name].method_name, 'change_var_state')
+        self.assertEqual(result[method_name].name, 'change_var_state')
 
         call_state = result[method_name].calls[0].call_state
         a = call_state.var_states['a'].states
@@ -32,7 +32,7 @@ class TestState(unittest.TestCase):
         result = monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [64, 65, 66])
-        self.assertEqual(result[method_name].method_name, 'change_arg_state')
+        self.assertEqual(result[method_name].name, 'change_arg_state')
 
         call_state = result[method_name].calls[0].call_state
         a = call_state.var_states['a'].states
@@ -48,7 +48,7 @@ class TestState(unittest.TestCase):
         result = monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [69, 70, 71])
-        self.assertEqual(result[method_name].method_name, 'change_var_state_with_conditional')
+        self.assertEqual(result[method_name].name, 'change_var_state_with_conditional')
 
         call_state = result[method_name].calls[0].call_state
         a = call_state.var_states['a'].states
@@ -66,7 +66,7 @@ class TestState(unittest.TestCase):
         result = monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [69, 70, 73])
-        self.assertEqual(result[method_name].method_name, 'change_var_state_with_conditional')
+        self.assertEqual(result[method_name].name, 'change_var_state_with_conditional')
 
         call_state = result[method_name].calls[0].call_state
         a = call_state.var_states['a'].states
@@ -84,7 +84,7 @@ class TestState(unittest.TestCase):
         result = monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [76, 77, 79, 80])
-        self.assertEqual(result[method_name].method_name, 'change_multiple_vars_states')
+        self.assertEqual(result[method_name].name, 'change_multiple_vars_states')
 
         call_state = result[method_name].calls[0].call_state
 
@@ -103,7 +103,7 @@ class TestState(unittest.TestCase):
         result = monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [83, 84, 85, 86, 87, 88, 89])
-        self.assertEqual(result[method_name].method_name, 'change_list_state')
+        self.assertEqual(result[method_name].name, 'change_list_state')
 
         call_state = result[method_name].calls[0].call_state
         a_list = call_state.var_states['a'].states
@@ -123,7 +123,7 @@ class TestState(unittest.TestCase):
 
         self.assertEqual(result[method_name].calls[0].run_lines, [92, 93, 94, 93, 94, 93, 94, 93, 94, 93])
         self.assertEqual(result[method_name].calls[0].distinct_run_lines(), [92, 93, 94])
-        self.assertEqual(result[method_name].method_name, 'change_var_state_with_loop')
+        self.assertEqual(result[method_name].name, 'change_var_state_with_loop')
 
         call_state = result[method_name].calls[0].call_state
         a = call_state.var_states['a'].states
@@ -151,7 +151,7 @@ class TestState(unittest.TestCase):
         result = monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [100, 101])
-        self.assertEqual(result[method_name].method_name, 'change_instance_var')
+        self.assertEqual(result[method_name].name, 'change_instance_var')
 
         call_state = result[method_name].calls[0].call_state
         obj = call_state.var_states['self'].states
@@ -170,7 +170,7 @@ class TestState(unittest.TestCase):
         result = monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [97])
-        self.assertEqual(result[method_name].method_name, '__init__')
+        self.assertEqual(result[method_name].name, '__init__')
 
         call_state = result[method_name].calls[0].call_state
         obj = call_state.var_states['self'].states
@@ -189,7 +189,7 @@ class TestState(unittest.TestCase):
         result = monitor(func, [method_name])
 
         self.assertEqual(result[method_name].calls[0].run_lines, [104, 105, 106])
-        self.assertEqual(result[method_name].method_name, 'keep_var_state')
+        self.assertEqual(result[method_name].name, 'keep_var_state')
 
         call_state = result[method_name].calls[0].call_state
         a = call_state.var_states['a'].states

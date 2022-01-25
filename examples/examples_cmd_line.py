@@ -25,6 +25,6 @@
 # python -m happyflow -t xxx -d report/xxx unittest test.xxx
 
 
-# python -m happyflow -t rich -d report/rich pytest rich/tests
+# python -m happyflow -tm rich -d report/rich pytest rich/tests
 # python -m happyflow -t dateutil -d report_dateutil pytest dateutil/test
 # python -m happyflow -t rest_framework -d report_rest_framework pytest tests
