@@ -7,23 +7,45 @@ from happyflow.libs.execfile import PyRunner
 OK, ERR = 0, 1
 
 parser = argparse.ArgumentParser(description='Command line for HappyFlow')
-parser.add_argument('-tm', '--target-method', type=str, action='append', help='One or more target methods')
-parser.add_argument('-tf', '--target-file', type=str, action='append', help='One or more target files')
-parser.add_argument('-if', '--ignore-file', type=str, action='append', help='One or more files to ignore')
-# parser.add_argument('-d', '--dir', type=str, help='Write the output files to dir')
-parser.add_argument('-s', '--run-script', type=str, help='Python script to be run')
-parser.add_argument('run',  type=str, nargs=argparse.REMAINDER, help='Command line to run, for example: pytest tests')
+
+parser.add_argument('-a', '--action', type=str,
+                    help='Action to be performed after monitoring the program. '
+                         'It can be "mine", "html-report", or "csv-report". '
+                         'Default is "mine".')
+
+parser.add_argument('-tm', '--target-method', type=str, action='append',
+                    help='Target method full name (in the format module.Class.method) or prefix. '
+                         'For example, "parser.StringParser.count" or simply "parse". '
+                         'To monitor multiple methods, use multiple arguments, like -tm name1 -tm name2 -tm ...')
+
+parser.add_argument('-tf', '--target-file', type=str, action='append',
+                    help='Target file. It can be a substring of the file full path. '
+                         'For example, "path/to/my_program.py" or simply "my_program". '
+                         'To monitor multiple files, use multiple arguments, like -tf file1 -tf file2 -tf ...')
+
+parser.add_argument('-if', '--ignore-file', type=str, action='append',
+                    help='File to ignore. It can be a substring of the file full path. '
+                         'To ignore multiple files, use multiple arguments, like -if file1 -if file2 -if ...')
+
+parser.add_argument('-d', '--dir', type=str, help='Write the output files to dir.')
+
+parser.add_argument('run',  type=str, nargs=argparse.REMAINDER,
+                    help='Command line to run, for example: "my_program.py", "pytest tests", "unittest discover", etc.')
+
 args = parser.parse_args()
 
 
 class HappyFlowScript:
 
     def __init__(self):
-        self.run_args = args.run
+        self.action = args.action
         self.target_methods = args.target_method
         self.target_files = args.target_file
         self.ignore_files = args.ignore_file
-        self.run_script = args.run_script
+        self.directory = args.dir
+        self.run_args = args.run
+
+        print(self.action)
 
     def command_line(self):
         if not self.run_args:
@@ -56,10 +78,7 @@ class HappyFlowScript:
         finally:
             hp.stop()
             if code_ran:
-                pass
-                # self.handle_result(hp.result())
-                # hp.html_report(directory)
-                # hp.csv_report(directory)
+                self.handle_action(hp)
                 return OK
             return ERR
 
@@ -78,7 +97,18 @@ class HappyFlowScript:
                 return states
         return None
 
-    def handle_result(self, result):
+    def handle_action(self, spotter):
+
+        if not self.action or self.action.lower() == 'mine':
+            self.handle_mine(spotter.result())
+
+        if self.action.lower() == 'html-report':
+            spotter.html_report(self.directory)
+
+        if self.action.lower() == 'csv-report':
+            spotter.csv_report(self.directory)
+
+    def handle_mine(self, result):
         spec = importlib.util.spec_from_file_location("spotflow_miner", "./mining_scripts/spotflow_miner.py")
         spotflow_mining = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(spotflow_mining)

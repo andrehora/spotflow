@@ -1,7 +1,7 @@
 import os
 from happyflow.utils import write_csv, ensure_dir
 
-REPORT_DIR = 'report_csv'
+REPORT_DIR = 'spotflow_csv_report'
 INDEX_FILE = 'index.csv'
 
 

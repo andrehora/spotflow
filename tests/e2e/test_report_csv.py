@@ -26,10 +26,10 @@ class TestCSVReport(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result['email.message._parseparam'].calls), 94)
 
-        self.assertTrue(os.path.isdir('./report_csv'))
-        self.assertTrue(os.path.isfile('./report_csv/email.message._parseparam.csv'))
-        self.assertTrue(os.path.isfile('./report_csv/index.csv'))
-        shutil.rmtree('./report_csv')
+        self.assertTrue(os.path.isdir('./spotflow_csv_report'))
+        self.assertTrue(os.path.isfile('./spotflow_csv_report/email.message._parseparam.csv'))
+        self.assertTrue(os.path.isfile('./spotflow_csv_report/index.csv'))
+        shutil.rmtree('./spotflow_csv_report')
 
     def test_generate_csv_report_count_uppercase_words(self):
 
@@ -43,10 +43,10 @@ class TestCSVReport(unittest.TestCase):
         hp.stop()
         hp.csv_report()
 
-        self.assertTrue(os.path.isdir('./report_csv'))
-        self.assertTrue(os.path.isfile('./report_csv/tests.e2e.stub_funcs.count_uppercase_words.csv'))
-        self.assertTrue(os.path.isfile('./report_csv/index.csv'))
-        shutil.rmtree('./report_csv')
+        self.assertTrue(os.path.isdir('./spotflow_csv_report'))
+        self.assertTrue(os.path.isfile('./spotflow_csv_report/tests.e2e.stub_funcs.count_uppercase_words.csv'))
+        self.assertTrue(os.path.isfile('./spotflow_csv_report/index.csv'))
+        shutil.rmtree('./spotflow_csv_report')
 
     def test_generate_csv_report_parseparam(self):
         hp = HappyFlow()
@@ -59,10 +59,10 @@ class TestCSVReport(unittest.TestCase):
         hp.stop()
         hp.csv_report()
 
-        self.assertTrue(os.path.isdir('./report_csv'))
-        self.assertTrue(os.path.isfile('./report_csv/tests.e2e.stub_funcs.parseparam.csv'))
-        self.assertTrue(os.path.isfile('./report_csv/index.csv'))
-        shutil.rmtree('./report_csv')
+        self.assertTrue(os.path.isdir('./spotflow_csv_report'))
+        self.assertTrue(os.path.isfile('./spotflow_csv_report/tests.e2e.stub_funcs.parseparam.csv'))
+        self.assertTrue(os.path.isfile('./spotflow_csv_report/index.csv'))
+        shutil.rmtree('./spotflow_csv_report')
 
     def test_generate_csv_report_splitparam(self):
         hp = HappyFlow()
@@ -75,10 +75,10 @@ class TestCSVReport(unittest.TestCase):
         hp.stop()
         hp.csv_report()
 
-        self.assertTrue(os.path.isdir('./report_csv'))
-        self.assertTrue(os.path.isfile('./report_csv/tests.e2e.stub_funcs.splitparam.csv'))
-        self.assertTrue(os.path.isfile('./report_csv/index.csv'))
-        shutil.rmtree('./report_csv')
+        self.assertTrue(os.path.isdir('./spotflow_csv_report'))
+        self.assertTrue(os.path.isfile('./spotflow_csv_report/tests.e2e.stub_funcs.splitparam.csv'))
+        self.assertTrue(os.path.isfile('./spotflow_csv_report/index.csv'))
+        shutil.rmtree('./spotflow_csv_report')
 
 
 if __name__ == '__main__':

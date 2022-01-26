@@ -3,6 +3,7 @@ from happyflow.libs.templite import Templite
 from happyflow.utils import full_filename, ensure_dir, copy_files, read_file, write_html
 
 
+REPORT_DIR = 'spotflow_html_report'
 LOCAL_DIR = 'htmlfiles'
 INDEX_FILE = 'index.html'
 PY_FILE = 'pyfile2.html'
@@ -12,7 +13,6 @@ STATIC_FILES = [
     "style.css",
     "coverage_html.js"
 ]
-REPORT_DIR = 'report_html'
 
 
 class HTMLCodeReport:

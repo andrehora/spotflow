@@ -84,16 +84,16 @@ class TestHTMLReport(unittest.TestCase):
         self.assertTrue(call3.info.lines[1].is_not_exec())
         self.assertTrue(call3.info.lines[2].is_run())
 
-        self.assert_exists('./report_html')
-        self.assert_exists('./report_html/email.message._parseparam.html')
-        self.assert_exists('./report_html/email.message._formatparam.html')
-        self.assert_exists('./report_html/email.message._splitparam.html')
-        self.assert_exists('./report_html/email.message._unquotevalue.html')
-        self.assert_exists('./report_html/index.html')
-        self.assert_exists('./report_html/style.css')
-        self.assert_exists('./report_html/highlight.css')
-        self.assert_exists('./report_html/coverage_html.js')
-        shutil.rmtree('./report_html')
+        self.assert_exists('./spotflow_html_report')
+        self.assert_exists('./spotflow_html_report/email.message._parseparam.html')
+        self.assert_exists('./spotflow_html_report/email.message._formatparam.html')
+        self.assert_exists('./spotflow_html_report/email.message._splitparam.html')
+        self.assert_exists('./spotflow_html_report/email.message._unquotevalue.html')
+        self.assert_exists('./spotflow_html_report/index.html')
+        self.assert_exists('./spotflow_html_report/style.css')
+        self.assert_exists('./spotflow_html_report/highlight.css')
+        self.assert_exists('./spotflow_html_report/coverage_html.js')
+        shutil.rmtree('./spotflow_html_report')
 
     def test_generate_html_report_count_uppercase_words(self):
 
@@ -108,13 +108,13 @@ class TestHTMLReport(unittest.TestCase):
         hp.stop()
         hp.html_report()
 
-        self.assert_exists('./report_html')
-        self.assert_exists('./report_html/tests.e2e.stub_funcs.count_uppercase_words.html')
-        self.assert_exists('./report_html/index.html')
-        self.assert_exists('./report_html/style.css')
-        self.assert_exists('./report_html/highlight.css')
-        self.assert_exists('./report_html/coverage_html.js')
-        shutil.rmtree('./report_html')
+        self.assert_exists('./spotflow_html_report')
+        self.assert_exists('./spotflow_html_report/tests.e2e.stub_funcs.count_uppercase_words.html')
+        self.assert_exists('./spotflow_html_report/index.html')
+        self.assert_exists('./spotflow_html_report/style.css')
+        self.assert_exists('./spotflow_html_report/highlight.css')
+        self.assert_exists('./spotflow_html_report/coverage_html.js')
+        shutil.rmtree('./spotflow_html_report')
 
     def test_generate_html_report_parseparam(self):
         call = HappyFlow()
@@ -128,13 +128,13 @@ class TestHTMLReport(unittest.TestCase):
         call.stop()
         call.html_report()
 
-        self.assert_exists('./report_html')
-        self.assert_exists('./report_html/tests.e2e.stub_funcs.parseparam.html')
-        self.assert_exists('./report_html/index.html')
-        self.assert_exists('./report_html/style.css')
-        self.assert_exists('./report_html/highlight.css')
-        self.assert_exists('./report_html/coverage_html.js')
-        shutil.rmtree('./report_html')
+        self.assert_exists('./spotflow_html_report')
+        self.assert_exists('./spotflow_html_report/tests.e2e.stub_funcs.parseparam.html')
+        self.assert_exists('./spotflow_html_report/index.html')
+        self.assert_exists('./spotflow_html_report/style.css')
+        self.assert_exists('./spotflow_html_report/highlight.css')
+        self.assert_exists('./spotflow_html_report/coverage_html.js')
+        shutil.rmtree('./spotflow_html_report')
 
     def test_generate_html_report_splitparam(self):
         call = HappyFlow()
@@ -148,13 +148,13 @@ class TestHTMLReport(unittest.TestCase):
         call.stop()
         call.html_report()
 
-        self.assert_exists('./report_html')
-        self.assert_exists('./report_html/tests.e2e.stub_funcs.splitparam.html')
-        self.assert_exists('./report_html/index.html')
-        self.assert_exists('./report_html/style.css')
-        self.assert_exists('./report_html/highlight.css')
-        self.assert_exists('./report_html/coverage_html.js')
-        shutil.rmtree('./report_html')
+        self.assert_exists('./spotflow_html_report')
+        self.assert_exists('./spotflow_html_report/tests.e2e.stub_funcs.splitparam.html')
+        self.assert_exists('./spotflow_html_report/index.html')
+        self.assert_exists('./spotflow_html_report/style.css')
+        self.assert_exists('./spotflow_html_report/highlight.css')
+        self.assert_exists('./spotflow_html_report/coverage_html.js')
+        shutil.rmtree('./spotflow_html_report')
 
 
 if __name__ == '__main__':
