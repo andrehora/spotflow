@@ -51,9 +51,13 @@ class Collector:
         self.method_names = None
         self.file_names = None
         self.ignore_files = None
-        self.collect_var_states = True
-
         self.module_names = None
+
+        self.collect_arg_states = True
+        self.collect_return_states = True
+        self.collect_yield_states = True
+        self.collect_exception_states = True
+        self.collect_var_states = True
 
         self.last_frame_lineno = {}
         self.target_methods_cache = {}
@@ -283,10 +287,12 @@ class Collector:
                     self.monitored_system[current_method_name] = MonitoredMethod(method_info)
 
                 call_state = CallState()
-                call_state._save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
                 callers = self.find_call_stack(frame)
-                frame_id = get_frame_id(frame)
 
+                if self.collect_arg_states:
+                    call_state._save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
+
+                frame_id = get_frame_id(frame)
                 monitored_method = self.monitored_system[current_method_name]
                 monitored_method._add_call(call_state, callers, frame_id)
 
@@ -306,15 +312,16 @@ class Collector:
                                 monitored_method._add_run_line(lineno)
 
                             elif event == 'return':
-                                if line_has_return(frame):
+                                if self.collect_return_states and line_has_return(frame):
                                     current_call_state._save_return_state(obj_value(arg), obj_type(arg), lineno)
-                                elif line_has_yield(frame):
+                                elif self.collect_yield_states and line_has_yield(frame):
                                     current_call_state._save_yield_state(obj_value(arg), obj_type(arg), lineno)
 
                             elif event == 'exception':
-                                exception_name = arg[0].__name__
-                                exception_type = obj_type(arg[0])
-                                current_call_state._save_exception_state(exception_name, exception_type, lineno)
+                                if self.collect_exception_states:
+                                    exception_name = arg[0].__name__
+                                    exception_type = obj_type(arg[0])
+                                    current_call_state._save_exception_state(exception_name, exception_type, lineno)
 
                             if self.collect_var_states and current_call_state:
                                 argvalues = inspect.getargvalues(frame)
