@@ -1,21 +1,18 @@
 from collections import Counter
 
 
-def argument_values_for_specific_type(monitored_system, type):
+def argument_values_for_specific_type(monitored_system, target_type):
 
     print('argument_values_for_specific_type')
 
-    int_values = []
-    str_values = []
+    type_values = []
     for call in monitored_system.all_calls():
         call_state = call.call_state
         for arg in call_state.arg_states:
-            if arg.type == type:
-                str_values.append(arg.value)
+            if arg.type == target_type:
+                type_values.append(arg.value)
 
-    most_common_int_values = Counter(int_values).most_common()
-    most_common_str_values = Counter(str_values).most_common()
-    print(most_common_int_values)
+    most_common_str_values = Counter(type_values).most_common()
     print(most_common_str_values)
 
 

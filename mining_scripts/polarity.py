@@ -1,23 +1,4 @@
 from collections import Counter
-from happyflow.api import monitor_unittest_module
-
-
-def argument_values_and_types(monitored_system):
-
-    print('argument_values_and_types')
-
-    arg_values = []
-    arg_types = []
-    for call in monitored_system.all_calls():
-        call_state = call.call_state
-        for arg in call_state.arg_states:
-            arg_values.append(arg.value)
-            arg_types.append(arg.type)
-
-    most_common_values = Counter(arg_values).most_common()
-    most_common_types = Counter(arg_types).most_common()
-    print(most_common_values)
-    print(most_common_types)
 
 
 def calls_that_return_true_or_false(monitored_system):
@@ -58,49 +39,4 @@ def calls_that_return_true_or_false(monitored_system):
                 print(method, 0, element[1])
         if len(tf) == 2:
             print(method, tf[0][1], tf[1][1])
-
-
-def monitor_test(test, target_methods=None, target_files=None, ignore_files=None, collect_var_states=False):
-    print('Test suite:', test.__name__)
-    monitored_system = monitor_unittest_module(test, target_methods, target_files, ignore_files, collect_var_states)
-    calls_that_return_true_or_false(monitored_system)
-
-
-def main():
-
-    from test import test_gzip as test
-    monitor_test(test, ['gzip'])
-
-    from test import test_collections as test
-    monitor_test(test, ['collections'])
-
-    from test import test_httplib as test
-    monitor_test(test, ['http'])
-
-    from test import test_zipfile as test
-    monitor_test(test, ['zipfile'])
-
-    from test import test_tarfile as test
-    monitor_test(test, ['tarfile'])
-
-    from test import test_pathlib as test
-    monitor_test(test, ['pathlib'])
-
-    from test import test_email as test
-    monitor_test(test, ['email'])
-
-    from test import test_logging as test
-    monitor_test(test, ['logging'])
-
-    from test import test_difflib as test
-    monitor_test(test, ['difflib'])
-
-    from test import test_imaplib as test
-    monitor_test(test, ['imaplib'])
-
-
-# main()
-
-# from test import test_gzip as test
-# monitor_test(test, target_files=['gzip'])
 
