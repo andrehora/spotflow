@@ -2,10 +2,11 @@ from happyflow.api import monitor_unittest_module
 from mining_scripts import polarity
 
 
-def monitor_test(test, target_methods=None, target_files=None, ignore_files=None, collect_var_states=False):
+def monitor_test(test, target_methods=None, target_files=None, ignore_files=None):
     print('Test suite:', test.__name__)
-    monitored_system = monitor_unittest_module(test, target_methods, target_files, ignore_files, collect_var_states)
-    polarity.calls_that_return_true_or_false(monitored_system)
+    monitored_system = monitor_unittest_module(test, target_methods, target_files, ignore_files, var_states=False)
+    # polarity.method_calls_that_return_true_or_false(monitored_system)
+    polarity.test_calls_that_return_true_or_false(monitored_system)
 
 
 def main():
@@ -41,4 +42,7 @@ def main():
     monitor_test(test, ['imaplib'])
 
 
-main()
+# main()
+
+from test import test_pathlib as test
+monitor_test(test, ['pathlib'])

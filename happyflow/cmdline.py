@@ -45,8 +45,6 @@ class HappyFlowScript:
         self.directory = args.dir
         self.run_args = args.run
 
-        print(self.action)
-
     def command_line(self):
         if not self.run_args:
             print('Nothing to run...')
@@ -84,7 +82,7 @@ class HappyFlowScript:
 
     def handle_config(self):
         config = configparser.ConfigParser()
-        has_config = config.read('./.spotflow.ini')
+        has_config = config.read('./spotflow.cfg')
         if has_config:
             if 'state' in config:
                 state = config['state']
@@ -99,20 +97,20 @@ class HappyFlowScript:
 
     def handle_action(self, spotter):
 
-        if not self.action or self.action.lower() == 'mine':
+        if not self.action:
             self.handle_mine(spotter.result())
 
-        if self.action.lower() == 'html-report':
+        if self.action and self.action.lower() == 'html-report':
             spotter.html_report(self.directory)
 
-        if self.action.lower() == 'csv-report':
+        if self.action and self.action.lower() == 'csv-report':
             spotter.csv_report(self.directory)
 
     def handle_mine(self, result):
-        spec = importlib.util.spec_from_file_location("spotflow_miner", "./mining_scripts/spotflow_miner.py")
-        spotflow_mining = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(spotflow_mining)
-        spotflow_mining.runtime_miner(result)
+        spec = importlib.util.spec_from_file_location("spotflow_report", "./mining_scripts/spotflow_report.py")
+        spotflow_report = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(spotflow_report)
+        spotflow_report.process(result)
 
 
 def main():
