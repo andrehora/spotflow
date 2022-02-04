@@ -1,6 +1,6 @@
 from happyflow.report import Report
 from happyflow.collector import Collector
-from happyflow.unittest_utils import loadTestsFromModule, suite_runner
+from happyflow.unittest_utils import loadTestsFromModule, loadTestsFromTestCase, suite_runner
 
 
 class HappyFlow:
@@ -86,6 +86,16 @@ def monitor_unittest_module(module, target_methods=None, target_files=None, igno
             arg_states=True, return_states=True, yield_states=True, exception_states=True, var_states=True):
 
     suite = loadTestsFromModule(module)
+    suite = suite_runner(suite)
+
+    return monitor(suite, target_methods, target_files, ignore_files,
+                   arg_states, return_states, yield_states, exception_states, var_states)
+
+
+def monitor_unittest_testcase(test_case, target_methods=None, target_files=None, ignore_files=None,
+            arg_states=True, return_states=True, yield_states=True, exception_states=True, var_states=True):
+
+    suite = loadTestsFromTestCase(test_case)
     suite = suite_runner(suite)
 
     return monitor(suite, target_methods, target_files, ignore_files,

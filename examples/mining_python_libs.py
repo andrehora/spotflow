@@ -44,5 +44,5 @@ def main():
 
 # main()
 
-from test import test_pathlib as test
-monitor_test(test, ['pathlib'])
+from test.test_email import test_email as test
+monitor_test(test, ['email'])

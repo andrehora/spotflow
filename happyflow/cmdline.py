@@ -13,17 +13,17 @@ parser.add_argument('-a', '--action', type=str,
                          'It can be "mine", "html-report", or "csv-report". '
                          'Default is "mine".')
 
-parser.add_argument('-tm', '--target-method', type=str, action='append',
+parser.add_argument('-t', '--target-method', type=str, action='append',
                     help='Target method full name (in the format module.Class.method) or prefix. '
                          'For example, "parser.StringParser.count" or simply "parse". '
                          'To monitor multiple methods, use multiple arguments, like -tm name1 -tm name2 -tm ...')
 
-parser.add_argument('-tf', '--target-file', type=str, action='append',
+parser.add_argument('-f', '--target-file', type=str, action='append',
                     help='Target file. It can be a substring of the file full path. '
                          'For example, "path/to/my_program.py" or simply "my_program". '
                          'To monitor multiple files, use multiple arguments, like -tf file1 -tf file2 -tf ...')
 
-parser.add_argument('-if', '--ignore-file', type=str, action='append',
+parser.add_argument('-i', '--ignore-file', type=str, action='append',
                     help='File to ignore. It can be a substring of the file full path. '
                          'To ignore multiple files, use multiple arguments, like -if file1 -if file2 -if ...')
 

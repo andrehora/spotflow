@@ -25,3 +25,27 @@ def methods_executed_by_specific_test(monitored_system, test_name):
 
     print(len(methods))
     print(methods)
+
+
+def methods_executed_by_specific_test2(monitored_system, test_name):
+
+    print(test_name)
+
+    methods = []
+    cont = 0
+    for call in monitored_system.all_calls():
+        if test_name in call.call_stack:
+            # if call.call_state.return_boolean():
+
+            method_call = call.monitored_method
+            # value = call.call_state.return_state.value
+
+            cont += 1
+            print(cont, method_call.full_name)
+            if call.call_state.arg_states:
+                for arg in call.call_state.arg_states:
+                    print(arg)
+            # methods.append(call.monitored_method.full_name)
+
+    # print(len(methods))
+    # print(methods)

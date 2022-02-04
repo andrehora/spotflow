@@ -262,6 +262,9 @@ class CallState:
         self.return_state = None
         self.exception_state = None
 
+    def return_boolean(self):
+        return self.return_state and self.return_state.type == 'bool'
+
     def states_for_line(self, lineno):
         states = []
         for var in self.var_states:

@@ -110,7 +110,7 @@ class Collector:
     def find_call_stack(self, frame):
         call_stack = []
         call_stack.append(frame.f_code.co_name)
-        while 'test' not in frame.f_code.co_name:
+        while 'test_' not in frame.f_code.co_name:
             if not frame.f_back:
                 break
             frame = frame.f_back
