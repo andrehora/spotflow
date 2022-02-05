@@ -118,6 +118,7 @@ class MonitoredMethod(CallContainer):
         self.full_name = method_info.full_name
         self.flows = []
         self.run_lines = {}
+        self.control_flow_lines = set()
         self._calls_by_id = {}
 
     def distinct_run_lines(self):
@@ -125,6 +126,9 @@ class MonitoredMethod(CallContainer):
 
     def first_run_line(self):
         return self.calls[0].run_lines[0]
+
+    def _add_control_flow_line(self, lineno):
+        self.control_flow_lines.add(lineno)
 
     def _add_run_line(self, lineno):
         line_freq = self.run_lines.get(lineno, 0)
@@ -157,6 +161,9 @@ class MonitoredMethod(CallContainer):
 
     def _update_call_info(self):
         self.info._update_call_info(self)
+
+    def __str__(self):
+        return f'MonitoredMethod: {self.full_name} (calls: {len(self.calls)})'
 
 
 class MethodFlow(CallContainer):

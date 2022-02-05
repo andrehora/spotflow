@@ -20,6 +20,8 @@ def handle_bytecode():
 
     class Foo:
         def bar(self):
+            if 2 != 2:
+                print()
             return 'a,b,c'.split()
 
     print(dis.dis(Foo.bar))

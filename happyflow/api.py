@@ -65,6 +65,7 @@ def live(func, target_methods):
     hp.stop()
 
     hp.txt_report()
+    return hp.result()
 
 
 def monitor(func, target_methods=None, target_files=None, ignore_files=None,

@@ -36,11 +36,25 @@ def line_has_yield(frame):
     return line_has_keyword(frame, 'yield')
 
 
+def line_has_control_flow(frame):
+    return line_has_keywords(frame, ['if', 'elif', 'while', 'for'])
+
+
 def line_has_keyword(frame, keyword):
     traceback = inspect.getframeinfo(frame)
     if traceback.code_context and len(traceback.code_context) >= 1:
         code_line = traceback.code_context[0].strip()
         return code_line.startswith(keyword)
+    return False
+
+
+def line_has_keywords(frame, keywords):
+    traceback = inspect.getframeinfo(frame)
+    if traceback.code_context and len(traceback.code_context) >= 1:
+        code_line = traceback.code_context[0].strip()
+        for keyword in keywords:
+            if code_line.startswith(keyword):
+                return True
     return False
 
 
@@ -310,6 +324,8 @@ class Collector:
                             if event == 'line':
                                 method_call._add_run_line(lineno)
                                 monitored_method._add_run_line(lineno)
+                                if line_has_control_flow(frame):
+                                    monitored_method._add_control_flow_line(lineno)
 
                             elif event == 'return':
                                 if self.collect_return_states and line_has_return(frame):
