@@ -258,20 +258,22 @@ class MethodCall:
 
     def branch_values(self):
         control_flow_values = []
-        for control_flow_line in sorted(self.monitored_method.info.control_flow_lines):
-            value = self._check_control_flow(control_flow_line)
-            control_flow_values.append(value)
+        executable_lines = self.monitored_method.info.executable_lines()
+        for control_flow_lineno in sorted(self.monitored_method.info.control_flow_lines):
+            if control_flow_lineno in executable_lines:
+                value = self._check_control_flow(control_flow_lineno, executable_lines)
+                control_flow_values.append(value)
         return control_flow_values
 
-    def _check_control_flow(self, control_flow_line):
-        next_control_flow_line = self._find_next_executable_line(control_flow_line)
-        if control_flow_line in self.run_lines and next_control_flow_line in self.run_lines:
+    def _check_control_flow(self, control_flow_lineno, executable_lines):
+        next_control_flow_line = self._find_next_executable_line(control_flow_lineno, executable_lines)
+        if control_flow_lineno in self.run_lines and next_control_flow_line in self.run_lines:
             return True
         return False
 
-    def _find_next_executable_line(self, n):
-        executable_lines = self.monitored_method.info.executable_lines()
-        index = executable_lines.index(n)
+    def _find_next_executable_line(self, lineno, executable_lines):
+        print(self.monitored_method.full_name, lineno, executable_lines)
+        index = executable_lines.index(lineno)
         return executable_lines[index + 1]
 
     def _add_run_line(self, lineno):
