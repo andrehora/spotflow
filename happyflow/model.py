@@ -118,7 +118,6 @@ class MonitoredMethod(CallContainer):
         self.full_name = method_info.full_name
         self.flows = []
         self.run_lines = {}
-        self.control_flow_lines = set()
         self._calls_by_id = {}
 
     def distinct_run_lines(self):
@@ -127,8 +126,12 @@ class MonitoredMethod(CallContainer):
     def first_run_line(self):
         return self.calls[0].run_lines[0]
 
-    def _add_control_flow_line(self, lineno):
-        self.control_flow_lines.add(lineno)
+    def branch_values(self):
+        values = []
+        for call in self.calls:
+            v = call.branch_values()
+            values.extend(v)
+        return values
 
     def _add_run_line(self, lineno):
         line_freq = self.run_lines.get(lineno, 0)
@@ -252,6 +255,24 @@ class MethodCall:
 
     def line_var_states(self, states):
         return LineType.VAR, states
+
+    def branch_values(self):
+        control_flow_values = []
+        for control_flow_line in sorted(self.monitored_method.info.control_flow_lines):
+            value = self._check_control_flow(control_flow_line)
+            control_flow_values.append(value)
+        return control_flow_values
+
+    def _check_control_flow(self, control_flow_line):
+        next_control_flow_line = self._find_next_executable_line(control_flow_line)
+        if control_flow_line in self.run_lines and next_control_flow_line in self.run_lines:
+            return True
+        return False
+
+    def _find_next_executable_line(self, n):
+        executable_lines = self.monitored_method.info.executable_lines()
+        index = executable_lines.index(n)
+        return executable_lines[index + 1]
 
     def _add_run_line(self, lineno):
         self.run_lines.append(lineno)

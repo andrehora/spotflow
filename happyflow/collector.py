@@ -259,12 +259,17 @@ class Collector:
 
     def update_method_info(self, method_info, frame, event):
         lineno = frame.f_lineno
+
+        if event == 'line' and line_has_control_flow(frame):
+            method_info.control_flow_lines.add(lineno)
+
         if event == 'return':
             if line_has_return(frame):
                 method_info.return_lines.add(lineno)
             elif line_has_yield(frame):
                 method_info.yield_lines.add(lineno)
-        elif event == 'exception':
+
+        if event == 'exception':
             method_info.exception_lines.add(lineno)
 
     def monitor_event(self, frame, event, arg):
@@ -324,8 +329,6 @@ class Collector:
                             if event == 'line':
                                 method_call._add_run_line(lineno)
                                 monitored_method._add_run_line(lineno)
-                                if line_has_control_flow(frame):
-                                    monitored_method._add_control_flow_line(lineno)
 
                             elif event == 'return':
                                 if self.collect_return_states and line_has_return(frame):

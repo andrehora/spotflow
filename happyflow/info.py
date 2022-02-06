@@ -25,6 +25,7 @@ class MethodInfo:
         self.return_lines = set()
         self.yield_lines = set()
         self.exception_lines = set()
+        self.control_flow_lines = set()
 
     def has_return(self):
         return len(self.return_lines) > 0

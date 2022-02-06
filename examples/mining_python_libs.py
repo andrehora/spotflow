@@ -6,8 +6,8 @@ def monitor_test(test, target_methods=None, target_files=None, ignore_files=None
     print('Test suite:', test.__name__)
     monitored_system = monitor_unittest_module(test, target_methods, target_files, ignore_files, var_states=False)
     # polarity.method_calls_that_return_true_or_false(monitored_system)
-    polarity.test_calls_that_return_true_or_false(monitored_system)
-
+    # polarity.test_calls_that_return_true_or_false(monitored_system)
+    polarity.test_calls_brach_values(monitored_system)
 
 def main():
 
@@ -44,5 +44,5 @@ def main():
 
 # main()
 
-from test.test_email import test_email as test
-monitor_test(test, ['email'])
+from test import test_gzip as test
+monitor_test(test, ['gzip'])
