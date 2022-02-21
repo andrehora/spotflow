@@ -1,4 +1,4 @@
-from happyflow.utils import obj_value, obj_type
+from happyflow.utils import obj_value, obj_type, count_values, ratio
 from happyflow.info import *
 
 
@@ -15,6 +15,47 @@ class MonitoredSystem:
         for mth in self.all_methods():
             calls.extend(mth.calls)
         return calls
+
+    def branch_track_values(self):
+
+        control_flow_values = {}
+        for call in self.all_calls():
+            call.branch_track_values(control_flow_values)
+
+        for key in control_flow_values:
+
+            tf_values = control_flow_values[key]
+            tf_counter = count_values(tf_values)
+
+            t = tf_counter[0]
+            f = tf_counter[1]
+
+            limit = ratio(max(t, f), t + f)
+            happy_path = (True if t > f else False)
+
+            control_flow_values[key] = t, f, limit, happy_path
+
+        return control_flow_values
+
+    def compute_polarity(self, common_paths_dataset):
+        test_values = {}
+        for call in self.all_calls():
+            result = call.check_happy_alternate_path(common_paths_dataset)
+            if result:
+                test_name = call.call_stack[0]
+                if '.test_' in test_name:
+                    test_values[test_name] = test_values.get(test_name, [])
+                    test_values[test_name].extend(result)
+
+        for key in test_values:
+            tf_values = test_values[key]
+            tf_counter = count_values(tf_values)
+            t = tf_counter[0]
+            f = tf_counter[1]
+            polarity = ratio(t, t + f)
+            test_values[key] = t, f, polarity
+
+        return test_values
 
     def _update_flows_and_info(self):
         for method in self.monitored_methods.values():
@@ -125,13 +166,6 @@ class MonitoredMethod(CallContainer):
 
     def first_run_line(self):
         return self.calls[0].run_lines[0]
-
-    def branch_values(self):
-        values = []
-        for call in self.calls:
-            v = call.branch_values()
-            values.extend(v)
-        return values
 
     def _add_run_line(self, lineno):
         line_freq = self.run_lines.get(lineno, 0)
@@ -256,25 +290,59 @@ class MethodCall:
     def line_var_states(self, states):
         return LineType.VAR, states
 
+    def check_happy_alternate_path(self, common_paths_dataset):
+        result = []
+        executable_lines = self.monitored_method.info.executable_lines()
+        for control_flow_lineno in sorted(self.monitored_method.info.control_flow_lines):
+            if control_flow_lineno in executable_lines:
+                control_flow_value = self._check_control_flow(control_flow_lineno, executable_lines)
+                if control_flow_value is not None:
+                    key = self.monitored_method.info.filename, control_flow_lineno
+                    t, f, limit, happy_path = common_paths_dataset[key]
+                    if limit >= 90:
+                        if control_flow_value == happy_path:
+                            result.append(True)
+                        else:
+                            result.append(False)
+        return result
+
+
     def branch_values(self):
         control_flow_values = []
         executable_lines = self.monitored_method.info.executable_lines()
         for control_flow_lineno in sorted(self.monitored_method.info.control_flow_lines):
             if control_flow_lineno in executable_lines:
-                value = self._check_control_flow(control_flow_lineno, executable_lines)
-                control_flow_values.append(value)
+                control_flow_value = self._check_control_flow(control_flow_lineno, executable_lines)
+                if control_flow_value is not None:
+                    control_flow_values.append(control_flow_value)
         return control_flow_values
 
+    def branch_track_values(self, control_flow_values):
+        executable_lines = self.monitored_method.info.executable_lines()
+        for control_flow_lineno in sorted(self.monitored_method.info.control_flow_lines):
+            key = self.monitored_method.info.filename, control_flow_lineno
+            if control_flow_lineno in executable_lines:
+                control_flow_value = self._check_control_flow(control_flow_lineno, executable_lines)
+                if control_flow_value is not None:
+                    control_flow_values[key] = control_flow_values.get(key, [])
+                    control_flow_values[key].append(control_flow_value)
+
     def _check_control_flow(self, control_flow_lineno, executable_lines):
+
         next_control_flow_line = self._find_next_executable_line(control_flow_lineno, executable_lines)
+        if not next_control_flow_line:
+            return None
+
         if control_flow_lineno in self.run_lines and next_control_flow_line in self.run_lines:
             return True
         return False
 
     def _find_next_executable_line(self, lineno, executable_lines):
-        print(self.monitored_method.full_name, lineno, executable_lines)
-        index = executable_lines.index(lineno)
-        return executable_lines[index + 1]
+        try:
+            index = executable_lines.index(lineno)
+            return executable_lines[index + 1]
+        except Exception:
+            return None
 
     def _add_run_line(self, lineno):
         self.run_lines.append(lineno)

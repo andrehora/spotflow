@@ -5,6 +5,7 @@ import shutil
 import trace
 import types
 import csv
+from collections import Counter
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import get_formatter_by_name
@@ -201,13 +202,6 @@ def line_intersection(lines, other_lines):
     return sorted(list(set(lines).intersection(other_lines)))
 
 
-def ratio(a, b, dec=1):
-    if b == 0:
-        return 'NA'
-    r = a / b * 100
-    return round(r, dec)
-
-
 def find_executable_linenos(filename):
     return trace._find_executable_linenos(filename)
 
@@ -223,3 +217,24 @@ def get_module_names(method_names):
             module_name = method_name.split('.')[0]
             module_names.append(module_name)
     return module_names
+
+
+def ratio(a, b, dec=1):
+    if b == 0:
+        return 'NA'
+    r = a / b * 100
+    return round(r, dec)
+
+
+def count_values(values, value1=True, value2=False):
+    counter = Counter(values).most_common()
+    counter_sorted = sorted(counter, reverse=True)
+    if len(counter_sorted) == 1:
+        element = counter_sorted[0]
+        frequency = element[1]
+        if element[0] == value1:
+            return frequency, 0
+        if element[0] == value2:
+            return 0, frequency
+    if len(counter_sorted) == 2:
+        return counter_sorted[0][1], counter_sorted[1][1]
