@@ -38,28 +38,29 @@ class MonitoredSystem:
         return control_flow_values
 
     def compute_polarity(self, branch_data, min_branch_frequency=95):
-        test_suite_data = {}
+        test_suite_branch_data = {}
         for call in self.all_calls():
-            result = call.check_branch_data(branch_data, min_branch_frequency)
-            if call.call_state.exception_state:
-                print(call.call_state.exception_state)
-            if result:
+            branch_value = call.check_branch_data(branch_data, min_branch_frequency)
+            if branch_value:
                 test_name = call.call_stack[0]
                 if '.test_' in test_name:
-                    test_suite_data[test_name] = test_suite_data.get(test_name, [])
-                    test_suite_data[test_name].extend(result)
+                    test_suite_branch_data[test_name] = test_suite_branch_data.get(test_name, [])
+                    test_suite_branch_data[test_name].extend(branch_value)
 
-        for test_name in test_suite_data:
-            tf_values = test_suite_data[test_name]
+            if call.call_state.has_exception():
+                print(call.call_state.exception_state)
+
+        for test_name in test_suite_branch_data:
+            tf_values = test_suite_branch_data[test_name]
             tf_counter = count_values(tf_values)
             t = tf_counter[0]
             f = tf_counter[1]
             total_tf = t + f
             positivity = ratio(t, t + f)
             negativity = ratio(f, t + f)
-            test_suite_data[test_name] = t, f, total_tf, positivity, negativity
+            test_suite_branch_data[test_name] = t, f, total_tf, positivity, negativity
 
-        return test_suite_data
+        return test_suite_branch_data
 
     def _update_flows_and_info(self):
         for method in self.monitored_methods.values():
