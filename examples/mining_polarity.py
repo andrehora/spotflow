@@ -1,17 +1,16 @@
-from happyflow.api import monitor_unittest_module, monitor_unittest_testcase
+from happyflow.api import monitor_unittest_module
 from mining_scripts import polarity
+from happyflow.utils import write_csv
 
 
-def monitor_test(test, target_methods=None, target_files=None, ignore_files=None):
+def monitor_test(test, target_methods):
     print('Test suite:', test.__name__)
-    monitored_system = monitor_unittest_module(test, target_methods, target_files, ignore_files, var_states=False)
-    # monitored_system = monitor_unittest_testcase(test, target_methods, target_files, ignore_files, var_states=False)
+    monitored_system = monitor_unittest_module(test, target_methods, var_states=False)
+    test_methods = polarity.for_test_methods(monitored_system)
 
-    # polarity.method_calls_that_return_true_or_false(monitored_system)
-    # polarity.test_calls_that_return_true_or_false(monitored_system)
-
-    # polarity.test_calls_branch_values(monitored_system)
-    polarity.test_calls_branch_track_values(monitored_system)
+    project_name = target_methods[0]
+    filename = '../report/' + project_name + '.csv'
+    write_csv(filename, test_methods)
 
 
 def main():
@@ -50,4 +49,4 @@ def main():
 # main()
 
 from test import test_gzip as test
-monitor_test(test, target_methods=['gzip'])
+monitor_test(test, ['gzip'])

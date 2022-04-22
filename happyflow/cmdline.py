@@ -76,7 +76,7 @@ class HappyFlowScript:
         finally:
             hp.stop()
             if code_ran:
-                self.handle_action(hp)
+                # self.handle_action(hp)
                 return OK
             return ERR
 

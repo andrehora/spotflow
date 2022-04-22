@@ -1,5 +1,4 @@
 from collections import Counter
-from happyflow.utils import count_values, ratio
 
 
 def method_calls_that_return_true_or_false(monitored_system):
@@ -173,17 +172,21 @@ def test_calls_branch_values(monitored_system):
             print(method, tf[0][1], tf[1][1])
 
 
-def test_calls_branch_track_values(monitored_system):
+def for_test_methods(monitored_system):
 
     print('test_calls_branch_track_values')
 
-    branch_track_values = monitored_system.branch_track_values()
-    test_paths = monitored_system.compute_polarity(branch_track_values)
+    branch_data = monitored_system.branch_data()
+    test_suite_data = monitored_system.compute_polarity(branch_data, min_branch_frequency=95)
 
     # for each in branch_track_values:
     #     tf_values = branch_track_values[each]
     #     print(each, tf_values)
 
-    for test in test_paths:
-        t, f, polarity = test_paths[test]
-        print(test, t, f, t+f, polarity)
+    to_export = []
+    for test_name in test_suite_data:
+        t, f, total_tf, positivity, negativity = test_suite_data[test_name]
+        to_export.append([test_name, t, f, total_tf, positivity, negativity])
+        print(test_name, t, f, total_tf, positivity, negativity)
+
+    return to_export

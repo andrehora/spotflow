@@ -1,4 +1,4 @@
-from happyflow.utils import obj_value, obj_type, count_values, ratio
+from happyflow.utils import obj_value, obj_type, count_values
 from happyflow.info import *
 
 
@@ -16,46 +16,50 @@ class MonitoredSystem:
             calls.extend(mth.calls)
         return calls
 
-    def branch_track_values(self):
+    def branch_data(self):
 
         control_flow_values = {}
         for call in self.all_calls():
-            call.branch_track_values(control_flow_values)
+            call.branch_data(control_flow_values)
 
         for key in control_flow_values:
 
             tf_values = control_flow_values[key]
             tf_counter = count_values(tf_values)
 
-            t = tf_counter[0]
-            f = tf_counter[1]
+            t_freq = tf_counter[0]
+            f_freq = tf_counter[1]
 
-            limit = ratio(max(t, f), t + f)
-            happy_path = (True if t > f else False)
+            branch_frequency = ratio(max(t_freq, f_freq), t_freq + f_freq)
+            branch_prevalence = (True if t_freq > f_freq else False)
 
-            control_flow_values[key] = t, f, limit, happy_path
+            control_flow_values[key] = t_freq, f_freq, branch_frequency, branch_prevalence
 
         return control_flow_values
 
-    def compute_polarity(self, common_paths_dataset):
-        test_values = {}
+    def compute_polarity(self, branch_data, min_branch_frequency=95):
+        test_suite_data = {}
         for call in self.all_calls():
-            result = call.check_happy_alternate_path(common_paths_dataset)
+            result = call.check_branch_data(branch_data, min_branch_frequency)
+            if call.call_state.exception_state:
+                print(call.call_state.exception_state)
             if result:
                 test_name = call.call_stack[0]
                 if '.test_' in test_name:
-                    test_values[test_name] = test_values.get(test_name, [])
-                    test_values[test_name].extend(result)
+                    test_suite_data[test_name] = test_suite_data.get(test_name, [])
+                    test_suite_data[test_name].extend(result)
 
-        for key in test_values:
-            tf_values = test_values[key]
+        for test_name in test_suite_data:
+            tf_values = test_suite_data[test_name]
             tf_counter = count_values(tf_values)
             t = tf_counter[0]
             f = tf_counter[1]
-            polarity = ratio(t, t + f)
-            test_values[key] = t, f, polarity
+            total_tf = t + f
+            positivity = ratio(t, t + f)
+            negativity = ratio(f, t + f)
+            test_suite_data[test_name] = t, f, total_tf, positivity, negativity
 
-        return test_values
+        return test_suite_data
 
     def _update_flows_and_info(self):
         for method in self.monitored_methods.values():
@@ -290,7 +294,7 @@ class MethodCall:
     def line_var_states(self, states):
         return LineType.VAR, states
 
-    def check_happy_alternate_path(self, common_paths_dataset):
+    def check_branch_data(self, branch_data, min_branch_frequency):
         result = []
         executable_lines = self.monitored_method.info.executable_lines()
         for control_flow_lineno in sorted(self.monitored_method.info.control_flow_lines):
@@ -298,14 +302,13 @@ class MethodCall:
                 control_flow_value = self._check_control_flow(control_flow_lineno, executable_lines)
                 if control_flow_value is not None:
                     key = self.monitored_method.info.filename, control_flow_lineno
-                    t, f, limit, happy_path = common_paths_dataset[key]
-                    if limit >= 90:
-                        if control_flow_value == happy_path:
+                    t, f, branch_frequency, branch_prevalence = branch_data[key]
+                    if branch_frequency >= min_branch_frequency:
+                        if control_flow_value == branch_prevalence:
                             result.append(True)
                         else:
                             result.append(False)
         return result
-
 
     def branch_values(self):
         control_flow_values = []
@@ -317,7 +320,7 @@ class MethodCall:
                     control_flow_values.append(control_flow_value)
         return control_flow_values
 
-    def branch_track_values(self, control_flow_values):
+    def branch_data(self, control_flow_values):
         executable_lines = self.monitored_method.info.executable_lines()
         for control_flow_lineno in sorted(self.monitored_method.info.control_flow_lines):
             key = self.monitored_method.info.filename, control_flow_lineno

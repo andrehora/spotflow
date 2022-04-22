@@ -71,7 +71,7 @@ class Collector:
         self.collect_return_states = True
         self.collect_yield_states = True
         self.collect_exception_states = True
-        self.collect_var_states = True
+        self.collect_var_states = False
 
         self.last_frame_lineno = {}
         self.target_methods_cache = {}
