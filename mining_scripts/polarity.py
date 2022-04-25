@@ -176,8 +176,7 @@ def for_test_methods(monitored_system):
 
     print('test_calls_branch_track_values')
 
-    branch_data = monitored_system.branch_data()
-    test_suite_data = monitored_system.compute_polarity(branch_data, min_branch_frequency=95)
+    test_suite_data = monitored_system.compute_polarity(min_branch_frequency=95)
 
     # for each in branch_track_values:
     #     tf_values = branch_track_values[each]
@@ -185,8 +184,8 @@ def for_test_methods(monitored_system):
 
     to_export = []
     for test_name in test_suite_data:
-        t, f, total_tf, positivity, negativity = test_suite_data[test_name]
-        to_export.append([test_name, t, f, total_tf, positivity, negativity])
-        print(test_name, t, f, total_tf, positivity, negativity)
+        t, f, total_tf, positivity, negativity, exception_freq = test_suite_data[test_name]
+        to_export.append([test_name, t, f, total_tf, positivity, negativity, exception_freq])
+        print(test_name, t, f, total_tf, positivity, negativity, exception_freq)
 
     return to_export

@@ -37,10 +37,15 @@ class MonitoredSystem:
 
         return control_flow_values
 
-    def compute_polarity(self, branch_data, min_branch_frequency=95):
+    def compute_polarity(self, min_branch_frequency=95):
+
+        all_branch_data = self.branch_data()
         test_suite_branch_data = {}
+        test_suite_exception_data = {}
+
         for call in self.all_calls():
-            branch_value = call.check_branch_data(branch_data, min_branch_frequency)
+
+            branch_value = call.check_branch_data(all_branch_data, min_branch_frequency)
             if branch_value:
                 test_name = call.call_stack[0]
                 if '.test_' in test_name:
@@ -48,8 +53,12 @@ class MonitoredSystem:
                     test_suite_branch_data[test_name].extend(branch_value)
 
             if call.call_state.has_exception():
-                print(call.call_state.exception_state)
+                test_name = call.call_stack[0]
+                if '.test_' in test_name:
+                    test_suite_exception_data[test_name] = test_suite_exception_data.get(test_name, [])
+                    test_suite_exception_data[test_name].append(call.call_state.exception_state.value)
 
+        test_suite_result = {}
         for test_name in test_suite_branch_data:
             tf_values = test_suite_branch_data[test_name]
             tf_counter = count_values(tf_values)
@@ -58,9 +67,15 @@ class MonitoredSystem:
             total_tf = t + f
             positivity = ratio(t, t + f)
             negativity = ratio(f, t + f)
-            test_suite_branch_data[test_name] = t, f, total_tf, positivity, negativity
+            test_suite_result[test_name] = t, f, total_tf, positivity, negativity, 0
 
-        return test_suite_branch_data
+        for test_name in test_suite_exception_data:
+            if test_name in test_suite_result:
+                exception_freq = len(test_suite_exception_data[test_name])
+                t, f, total_tf, positivity, negativity, _ = test_suite_result[test_name]
+                test_suite_result[test_name] = t, f, total_tf, positivity, negativity, exception_freq
+
+        return test_suite_result
 
     def _update_flows_and_info(self):
         for method in self.monitored_methods.values():
