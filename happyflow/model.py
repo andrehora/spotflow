@@ -47,14 +47,14 @@ class MonitoredSystem:
 
             branch_value = call.check_branch_data(all_branch_data, min_branch_frequency)
             if branch_value:
-                test_name = call.call_stack[0]
-                if '.test_' in test_name:
+                if call.is_started_in_test():
+                    test_name = call.call_stack[0]
                     test_suite_branch_data[test_name] = test_suite_branch_data.get(test_name, [])
                     test_suite_branch_data[test_name].extend(branch_value)
 
             if call.call_state.has_exception():
-                test_name = call.call_stack[0]
-                if '.test_' in test_name:
+                if call.is_started_in_test():
+                    test_name = call.call_stack[0]
                     test_suite_exception_data[test_name] = test_suite_exception_data.get(test_name, [])
                     test_suite_exception_data[test_name].append(call.call_state.exception_state.value)
 
@@ -70,10 +70,12 @@ class MonitoredSystem:
             test_suite_result[test_name] = t, f, total_tf, positivity, negativity, 0
 
         for test_name in test_suite_exception_data:
+            exception_freq = len(test_suite_exception_data[test_name])
             if test_name in test_suite_result:
-                exception_freq = len(test_suite_exception_data[test_name])
                 t, f, total_tf, positivity, negativity, _ = test_suite_result[test_name]
                 test_suite_result[test_name] = t, f, total_tf, positivity, negativity, exception_freq
+            else:
+                test_suite_result[test_name] = 0, 0, 0, 0, 0, exception_freq
 
         return test_suite_result
 
@@ -279,6 +281,10 @@ class MethodCall:
         self.call_stack = call_stack
         self.monitored_method = monitored_method
         self.run_lines = []
+
+    def is_started_in_test(self):
+        test_name = self.call_stack[0]
+        return '.test_' in test_name
 
     def distinct_run_lines(self):
         return sorted(list(set(self.run_lines)))
