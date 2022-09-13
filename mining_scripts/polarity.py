@@ -176,7 +176,7 @@ def for_test_methods(monitored_system):
 
     print('test_calls_branch_track_values')
 
-    test_suite_data = monitored_system.compute_polarity(min_branch_frequency=95)
+    test_suite_data = monitored_system.compute_polarity(min_branch_frequency=99)
 
     # for each in branch_track_values:
     #     tf_values = branch_track_values[each]

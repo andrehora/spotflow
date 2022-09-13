@@ -48,6 +48,6 @@ def main():
 
 # main()
 
-from test import test_zipfile as test
+from test import test_imaplib as test
 
-monitor_test(test, ['zipfile'])
+monitor_test(test, ['imaplib'])
