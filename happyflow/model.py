@@ -514,6 +514,9 @@ class State:
         self.type = type
         self.lineno = lineno
 
+    def is_primitive(self):
+        return self.type in ['int', 'float', 'complex', 'str', 'bool', 'NoneType']
+
 
 class VarState(State):
 

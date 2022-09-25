@@ -30,9 +30,9 @@ def calls_that_return_true_or_false(monitored_system):
     print(most_common)
 
 
-def calls_that_with_arg_and_return(monitored_system):
+def calls_with_arg_and_return(monitored_system):
 
-    print('calls_that_with_arg_and_return')
+    print('calls_with_arg_and_return')
 
     counter = 0
 
@@ -43,7 +43,7 @@ def calls_that_with_arg_and_return(monitored_system):
 
     print('all_methods', len(monitored_system.all_methods()))
     print('all_calls', len(monitored_system.all_calls()))
-    print('calls_that_with_arg_and_return', counter)
+    print('calls_with_arg_and_return', counter)
 
 
 def return_and_arg_values_and_types(monitored_system):
@@ -75,3 +75,63 @@ def return_and_arg_values_and_types(monitored_system):
     print(most_common_arg_types)
     print(most_common_return_values)
     print(most_common_return_types)
+
+
+def calls_with_primitive_types(monitored_system):
+
+    print('calls_with_primitive_types')
+
+    counter = 0
+    counter_all_primitive = 0
+    counter_primitive_returns = 0
+
+    for call in monitored_system.all_calls():
+        call_state = call.call_state
+        if call_state.has_return() and call_state.has_argument():
+            counter += 1
+
+            if call_state.return_state.is_primitive():
+                counter_primitive_returns += 1
+
+                all_primitive_args = True
+                for arg in call_state.arg_states:
+                    if not arg.is_primitive():
+                        all_primitive_args = False
+                        break
+
+                if all_primitive_args:
+                    counter_all_primitive += 1
+                    for arg in call_state.arg_states:
+                        print(arg)
+                    print(call_state.return_state)
+                    print('======================')
+
+    print('all_methods', len(monitored_system.all_methods()))
+    print('all_calls', len(monitored_system.all_calls()))
+    print('calls_with_arg_and_return', counter)
+    print('counter_primitive_returns', counter_primitive_returns)
+    print('counter_all_primitive', counter_all_primitive)
+
+
+def calls_with_return_and_args(monitored_system):
+
+    print('calls_with_return_and_args')
+
+    counter = 0
+
+    for call in monitored_system.all_calls():
+        call_state = call.call_state
+        if call_state.has_return() and call_state.has_argument():
+            counter += 1
+
+            for s in call.call_stack:
+                print(s)
+
+            for arg in call_state.arg_states:
+                print(arg)
+            print(call_state.return_state)
+            print('======================')
+
+    print('all_methods', len(monitored_system.all_methods()))
+    print('all_calls', len(monitored_system.all_calls()))
+    print('calls_with_return_and_args', counter)

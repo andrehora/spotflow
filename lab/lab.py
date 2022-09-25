@@ -37,7 +37,7 @@ def handle_bytecode():
 def runpy():
     import runpy
     msg = {'msg': [1,2,3]}
-    runpy.run_path("./etc2.py", init_globals=msg)
+    runpy.run_path("comparator.py", init_globals=msg)
 
 
-handle_bytecode()
+# handle_bytecode()
