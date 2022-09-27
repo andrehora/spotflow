@@ -1,5 +1,4 @@
 # import hashlib
-#
 # print(hashlib.md5(b"123").hexdigest())
 # print(hashlib.sha1(b"123").hexdigest())
 # print(hashlib.sha1(b"123").hexdigest())

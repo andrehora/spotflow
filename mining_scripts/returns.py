@@ -115,23 +115,38 @@ def calls_with_primitive_types(monitored_system):
 
 def calls_with_return_and_args(monitored_system):
 
+    from happyflow.utils import write_txt
+    import hashlib
+
     print('calls_with_return_and_args')
 
     counter = 0
+    test_calls = 0
+    internal_calls = 0
 
     for call in monitored_system.all_calls():
         call_state = call.call_state
         if call_state.has_return() and call_state.has_argument():
             counter += 1
+            values = ""
 
-            for s in call.call_stack:
-                print(s)
+            print(call.is_directly_called_from_test())
+            if call.is_directly_called_from_test():
+                test_calls += 1
+            else:
+                internal_calls += 1
 
             for arg in call_state.arg_states:
-                print(arg)
-            print(call_state.return_state)
+                values += arg.value + '\n'
+            values += call_state.return_state.value + '\n'
+            write_txt(str(counter) + '.txt', values)
+
+            print(values)
+            print(hashlib.sha1(values.encode()).hexdigest())
             print('======================')
 
     print('all_methods', len(monitored_system.all_methods()))
     print('all_calls', len(monitored_system.all_calls()))
     print('calls_with_return_and_args', counter)
+    print('test calls', test_calls)
+    print('internal calls', internal_calls)

@@ -282,6 +282,11 @@ class MethodCall:
         self.monitored_method = monitored_method
         self.run_lines = []
 
+    def is_directly_called_from_test(self):
+        caller = self.call_stack[-2]
+        return '.test_' in caller
+
+
     def is_started_in_test(self):
         test_name = self.call_stack[0]
         return '.test_' in test_name
@@ -409,7 +414,7 @@ class CallState:
         return self.yield_states[:-1]
 
     def has_argument(self):
-        return len(self.arg_states) > 0
+        return len(self.arg_states) > 0 and self.arg_states[0].name != 'self'
 
     def has_return(self):
         return self.return_state is not None
