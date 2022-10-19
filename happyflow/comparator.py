@@ -9,7 +9,7 @@ def find_distinct_in_file(old_file=OLD_FILE, new_file=NEW_FILE):
 
 
 def find_distinct_in_set(old, new):
-    return new - old
+    return new ^ old
 
 
 def _read_file_lines(filename):
