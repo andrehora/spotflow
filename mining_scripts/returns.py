@@ -20,10 +20,10 @@ def calls_that_return_true_or_false(monitored_system):
 
     return_values = []
     for call in monitored_system.all_calls():
-        call_state = call.call_state
-        if call_state.has_return():
-            return_state = call_state.return_state
-            if return_state.value == 'True' or return_state.value == 'False':
+        cs = call.call_state
+        if cs.has_return():
+            return_state = cs.return_state
+            if return_state.type == 'bool':
                 return_values.append(return_state.value)
 
     most_common = Counter(return_values).most_common()
@@ -139,10 +139,12 @@ def calls_with_return_and_args(monitored_system):
             for arg in call_state.arg_states:
                 values += arg.value + '\n'
             values += call_state.return_state.value + '\n'
-            write_txt(str(counter) + '.txt', values)
+
+            hash_id = hashlib.sha1(values.encode()).hexdigest()
+            write_txt('hash38/' + str(hash_id) + '.txt', values)
 
             print(values)
-            print(hashlib.sha1(values.encode()).hexdigest())
+            print(hash_id)
             print('======================')
 
     print('all_methods', len(monitored_system.all_methods()))
