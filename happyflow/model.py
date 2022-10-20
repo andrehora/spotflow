@@ -548,7 +548,7 @@ class VarStateHistory:
     def __str__(self):
         values = self.distinct_sequential_values()
         values_str = ', '.join(map(str, values))
-        return f'name: {self.name} | values: {values_str}'
+        return f'{self.name}: {values_str}'
 
 
 class State:
@@ -571,7 +571,7 @@ class VarState(State):
         self.value_has_changed = value_has_changed
 
     def __str__(self):
-        return f'{self.name}={self.value}'
+        return f'{self.name}: {self.value}'
 
 
 class ArgState(State):
