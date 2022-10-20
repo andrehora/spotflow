@@ -61,7 +61,7 @@ def line_has_keywords(frame, keywords):
 class Collector:
 
     def __init__(self):
-        self.monitored_system = MonitoredProgram()
+        self.monitored_program = MonitoredProgram()
         self.method_names = None
         self.file_names = None
         self.ignore_files = None
@@ -86,11 +86,12 @@ class Collector:
 
     def stop(self):
         self.py_tracer.stop_tracer()
-        self.monitored_system._update_flows_and_info()
+        self.monitored_program._update_flows_and_info()
 
     def init_target(self):
         if self.method_names:
-            self.module_names = get_module_names(self.method_names)
+            pass
+            # self.module_names = get_module_names(self.method_names)
 
     def is_valid_frame(self, frame):
 
@@ -114,11 +115,12 @@ class Collector:
                         return True
             return False
 
-        if self.module_names:
-            for module_name in self.module_names:
-                if module_name in current_filename:
-                    return True
-            return False
+        # if self.module_names:
+        #     for module_name in self.module_names:
+        #         if module_name in current_filename:
+        #             return True
+        #     return False
+
         return True
 
     def find_call_stack(self, frame):
@@ -155,7 +157,8 @@ class Collector:
             self.target_methods_cache[current_entity_name] = entity
             return entity
 
-        if method_name and not current_entity_name.startswith(method_name):
+        if method_name and not current_entity_name.startswith(method_name) and \
+                not current_entity_name.endswith(method_name):
             return None
 
         if current_entity_name in self.target_methods_cache:
@@ -302,8 +305,8 @@ class Collector:
             # -1 for calls, and a real offset for generators.  Use < 0 as the
             # line number for calls, and the real line number for generators.
             if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not is_comprehension(frame):
-                if current_method_name not in self.monitored_system:
-                    self.monitored_system[current_method_name] = MonitoredMethod(method_info)
+                if current_method_name not in self.monitored_program:
+                    self.monitored_program[current_method_name] = MonitoredMethod(method_info)
 
                 call_state = CallState()
                 callers = self.find_call_stack(frame)
@@ -312,14 +315,14 @@ class Collector:
                     call_state._save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
 
                 frame_id = get_frame_id(frame)
-                monitored_method = self.monitored_system[current_method_name]
+                monitored_method = self.monitored_program[current_method_name]
                 monitored_method._add_call(call_state, callers, frame_id)
 
             # Event is line, return, exception or call for re-entering generators
             else:
                 lineno = frame.f_lineno
-                if current_method_name in self.monitored_system:
-                    monitored_method = self.monitored_system[current_method_name]
+                if current_method_name in self.monitored_program:
+                    monitored_method = self.monitored_program[current_method_name]
                     if monitored_method.calls:
                         frame_id = get_frame_id(frame)
                         method_call = monitored_method._get_call_from_id(frame_id)

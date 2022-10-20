@@ -8,9 +8,9 @@ class TestCSVReport(unittest.TestCase):
 
     # @unittest.skip
     def test_generate_csv_report_from_test_class(self):
-        hp = SpotFlow()
-        hp.target_methods(['email.message._parseparam'])
-        hp.start()
+        flow = SpotFlow()
+        flow.target_methods(['email.message._parseparam'])
+        flow.start()
 
         from test.test_email.test_email import TestMessageAPI
 
@@ -18,10 +18,10 @@ class TestCSVReport(unittest.TestCase):
         suite = unittest.TestLoader().loadTestsFromTestCase(TestMessageAPI)
         runner.run(suite)
 
-        hp.stop()
+        flow.stop()
 
-        result = hp.result()
-        hp.csv_report()
+        result = flow.result()
+        flow.csv_report()
 
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result['email.message._parseparam'].calls), 94)
@@ -33,15 +33,15 @@ class TestCSVReport(unittest.TestCase):
 
     def test_generate_csv_report_count_uppercase_words(self):
 
-        hp = SpotFlow()
-        hp.target_methods(['tests.e2e.stub_funcs.count_uppercase_words'])
-        hp.start()
+        flow = SpotFlow()
+        flow.target_methods(['tests.e2e.stub_funcs.count_uppercase_words'])
+        flow.start()
 
         from tests.e2e.stub_funcs import inputs_count
         inputs_count()
 
-        hp.stop()
-        hp.csv_report()
+        flow.stop()
+        flow.csv_report()
 
         self.assertTrue(os.path.isdir('./spotflow_csv_report'))
         self.assertTrue(os.path.isfile('./spotflow_csv_report/tests.e2e.stub_funcs.count_uppercase_words.csv'))
@@ -49,15 +49,15 @@ class TestCSVReport(unittest.TestCase):
         shutil.rmtree('./spotflow_csv_report')
 
     def test_generate_csv_report_parseparam(self):
-        hp = SpotFlow()
-        hp.target_methods(['tests.e2e.stub_funcs.parseparam'])
-        hp.start()
+        flow = SpotFlow()
+        flow.target_methods(['tests.e2e.stub_funcs.parseparam'])
+        flow.start()
 
         from tests.e2e.stub_funcs import inputs_parseparam
         inputs_parseparam()
 
-        hp.stop()
-        hp.csv_report()
+        flow.stop()
+        flow.csv_report()
 
         self.assertTrue(os.path.isdir('./spotflow_csv_report'))
         self.assertTrue(os.path.isfile('./spotflow_csv_report/tests.e2e.stub_funcs.parseparam.csv'))
@@ -65,15 +65,15 @@ class TestCSVReport(unittest.TestCase):
         shutil.rmtree('./spotflow_csv_report')
 
     def test_generate_csv_report_splitparam(self):
-        hp = SpotFlow()
-        hp.target_methods(['tests.e2e.stub_funcs.splitparam'])
-        hp.start()
+        flow = SpotFlow()
+        flow.target_methods(['tests.e2e.stub_funcs.splitparam'])
+        flow.start()
 
         from tests.e2e.stub_funcs import inputs_splitparam
         inputs_splitparam()
 
-        hp.stop()
-        hp.csv_report()
+        flow.stop()
+        flow.csv_report()
 
         self.assertTrue(os.path.isdir('./spotflow_csv_report'))
         self.assertTrue(os.path.isfile('./spotflow_csv_report/tests.e2e.stub_funcs.splitparam.csv'))

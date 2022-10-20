@@ -17,16 +17,16 @@ parser.add_argument('-a', '--action', type=str,
 parser.add_argument('-t', '--target-method', type=str, action='append',
                     help='Target method full name (in the format module.Class.method) or prefix. '
                          'For example, "parser.StringParser.count" or simply "parse". '
-                         'To monitor multiple methods, use multiple arguments, like -tm name1 -tm name2 -tm ...')
+                         'To monitor multiple methods, use multiple arguments, like -t name1 -t name2 -t ...')
 
 parser.add_argument('-f', '--target-file', type=str, action='append',
                     help='Target file. It can be a substring of the file full path. '
                          'For example, "path/to/my_program.py" or simply "my_program". '
-                         'To monitor multiple files, use multiple arguments, like -tf file1 -tf file2 -tf ...')
+                         'To monitor multiple files, use multiple arguments, like -f file1 -f file2 -f ...')
 
 parser.add_argument('-i', '--ignore-file', type=str, action='append',
                     help='File to ignore. It can be a substring of the file full path. '
-                         'To ignore multiple files, use multiple arguments, like -if file1 -if file2 -if ...')
+                         'To ignore multiple files, use multiple arguments, like -i file1 -i file2 -i ...')
 
 parser.add_argument('-d', '--dir', type=str, help='Write the output files to dir.')
 
@@ -36,7 +36,7 @@ parser.add_argument('run',  type=str, nargs=argparse.REMAINDER,
 args = parser.parse_args()
 
 
-class HappyFlowScript:
+class SpotFlowScript:
 
     def __init__(self):
         self.action = args.action
@@ -51,33 +51,33 @@ class HappyFlowScript:
             print('Nothing to run...')
             return OK
 
-        print(f"Running: {' '.join(self.run_args)}")
+        print(f"Running and monitoring: {' '.join(self.run_args)}")
         return self.run()
 
     def run(self):
 
-        hp = SpotFlow()
-        hp.target_methods(self.target_methods)
-        hp.target_files(self.target_files)
-        hp.ignore_files(self.ignore_files)
-        states = self.handle_config()
-        if states:
-            hp.collect_states(*states)
+        flow = SpotFlow()
+        flow.target_methods(self.target_methods)
+        flow.target_files(self.target_files)
+        flow.ignore_files(self.ignore_files)
+        # states = self.handle_config()
+        # if states:
+        #     flow.collect_states(*states)
 
         py_runner = PyRunner(self.run_args, as_module=True)
         py_runner.prepare()
 
-        hp.start()
+        flow.start()
         code_ran = True
         try:
             py_runner.run()
         except Exception as e:
-            print(e)
+            # print(e)
             code_ran = False
         finally:
-            hp.stop()
+            flow.stop()
             if code_ran:
-                self.handle_action(hp)
+                self.handle_action(flow)
                 return OK
             return ERR
 
@@ -96,19 +96,20 @@ class HappyFlowScript:
                 return states
         return None
 
-    def handle_action(self, spotter):
+    def handle_action(self, flow):
 
         if not self.action:
-            self.handle_mine(spotter.result())
+            # pass
+            flow.result().show_objects()
 
         if self.action and self.action.lower() == 'mine':
-            self.handle_mine(spotter.result())
+            self.handle_mine(flow.result())
 
         if self.action and self.action.lower() == 'html':
-            spotter.html_report(self.directory)
+            flow.html_report(self.directory)
 
         if self.action and self.action.lower() == 'csv':
-            spotter.csv_report(self.directory)
+            flow.csv_report(self.directory)
 
     def handle_mine(self, result):
         spec = importlib.util.spec_from_file_location("spotflow_report", "./scripts/spotflow_report.py")
@@ -119,7 +120,7 @@ class HappyFlowScript:
 
 def main():
     try:
-        status = HappyFlowScript().command_line()
+        status = SpotFlowScript().command_line()
     except Exception as e:
         print(e)
         status = ERR

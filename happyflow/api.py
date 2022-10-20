@@ -33,23 +33,23 @@ class SpotFlow:
         self.collector.stop()
 
     def result(self):
-        return self.collector.monitored_system
+        return self.collector.monitored_program
 
     def html_report(self, directory=None):
-        # try:
-        Report(self.collector.monitored_system).html_report(directory)
-        # except Exception as e:
-        #     print(e)
+        try:
+            Report(self.result()).html_report(directory)
+        except Exception as e:
+            print(e)
 
     def csv_report(self, directory=None):
-        # try:
-        Report(self.collector.monitored_system).csv_report(directory)
-        # except Exception as e:
-        #     print(e)
+        try:
+            Report(self.result()).csv_report(directory)
+        except Exception as e:
+            print(e)
 
     def txt_report(self):
         try:
-            Report(self.collector.monitored_system).txt_report()
+            Report(self.collector.monitored_program).txt_report()
             return True
         except Exception as e:
             print(e)

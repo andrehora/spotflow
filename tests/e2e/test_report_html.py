@@ -11,12 +11,12 @@ class TestHTMLReport(unittest.TestCase):
 
     # @unittest.skip
     def test_generate_html_report_from_test_class(self):
-        hp = SpotFlow()
-        hp.target_methods(['email.message._parseparam',
+        flow = SpotFlow()
+        flow.target_methods(['email.message._parseparam',
                              'email.message._formatparam',
                              'email.message._splitparam',
                              'email.message._unquotevalue'])
-        hp.start()
+        flow.start()
 
         from test.test_email.test_email import TestMessageAPI
 
@@ -25,9 +25,9 @@ class TestHTMLReport(unittest.TestCase):
         suite = unittest.TestLoader().loadTestsFromTestCase(TestMessageAPI)
         runner.run(suite)
 
-        hp.stop()
-        result = hp.result()
-        hp.html_report()
+        flow.stop()
+        result = flow.result()
+        flow.html_report()
 
         self.assertEqual(len(result), 4)
 
@@ -97,16 +97,16 @@ class TestHTMLReport(unittest.TestCase):
 
     def test_generate_html_report_count_uppercase_words(self):
 
-        hp = SpotFlow()
-        hp.target_methods(['tests.e2e.stub_funcs.count_uppercase_words'])
-        hp.start()
+        flow = SpotFlow()
+        flow.target_methods(['tests.e2e.stub_funcs.count_uppercase_words'])
+        flow.start()
 
         # Run code
         from tests.e2e.stub_funcs import inputs_count
         inputs_count()
 
-        hp.stop()
-        hp.html_report()
+        flow.stop()
+        flow.html_report()
 
         self.assert_exists('./spotflow_html_report')
         self.assert_exists('./spotflow_html_report/tests.e2e.stub_funcs.count_uppercase_words.html')
@@ -117,16 +117,16 @@ class TestHTMLReport(unittest.TestCase):
         shutil.rmtree('./spotflow_html_report')
 
     def test_generate_html_report_parseparam(self):
-        call = SpotFlow()
-        call.target_methods(['tests.e2e.stub_funcs.parseparam'])
-        call.start()
+        flow = SpotFlow()
+        flow.target_methods(['tests.e2e.stub_funcs.parseparam'])
+        flow.start()
 
         # Run code
         from tests.e2e.stub_funcs import inputs_parseparam
         inputs_parseparam()
 
-        call.stop()
-        call.html_report()
+        flow.stop()
+        flow.html_report()
 
         self.assert_exists('./spotflow_html_report')
         self.assert_exists('./spotflow_html_report/tests.e2e.stub_funcs.parseparam.html')
@@ -137,16 +137,16 @@ class TestHTMLReport(unittest.TestCase):
         shutil.rmtree('./spotflow_html_report')
 
     def test_generate_html_report_splitparam(self):
-        call = SpotFlow()
-        call.target_methods(['tests.e2e.stub_funcs.splitparam'])
-        call.start()
+        flow = SpotFlow()
+        flow.target_methods(['tests.e2e.stub_funcs.splitparam'])
+        flow.start()
 
         # Run code
         from tests.e2e.stub_funcs import inputs_splitparam
         inputs_splitparam()
 
-        call.stop()
-        call.html_report()
+        flow.stop()
+        flow.html_report()
 
         self.assert_exists('./spotflow_html_report')
         self.assert_exists('./spotflow_html_report/tests.e2e.stub_funcs.splitparam.html')

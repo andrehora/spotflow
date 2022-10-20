@@ -16,6 +16,16 @@ class MonitoredProgram:
             calls.extend(mth.calls)
         return calls
 
+    def show_objects(self):
+        print('==========================================')
+        print('MonitoredProgram')
+        print('- methods: ' + str(len(self.all_methods())))
+        print('- calls: ' + str(len(self.all_calls())))
+        for m in self.all_methods():
+            m.show_objects()
+            for call in m.calls:
+                call.show_objects()
+
     def branch_data(self):
 
         control_flow_values = {}
@@ -221,6 +231,11 @@ class MonitoredMethod(CallContainer):
     def _update_call_info(self):
         self.info._update_call_info(self)
 
+    def show_objects(self):
+        print('MonitoredMethod')
+        print('- name: ' + self.full_name)
+        print('- calls: ' + str(len(self.calls)))
+
     def __str__(self):
         return f'MonitoredMethod: {self.full_name} (calls: {len(self.calls)})'
 
@@ -285,7 +300,6 @@ class MethodCall:
     def is_directly_called_from_test(self):
         caller = self.call_stack[-2]
         return '.test_' in caller
-
 
     def is_started_in_test(self):
         test_name = self.call_stack[0]
@@ -380,6 +394,12 @@ class MethodCall:
     def __eq__(self, other):
         return other == self.run_lines
 
+    def show_objects(self):
+        print('MethodCall')
+        print('- distinct_run_lines: ' + str(self.distinct_run_lines()))
+        print('- run_lines: ' + str(self.run_lines))
+        self.call_state.show_objects()
+
 
 class CallState:
 
@@ -389,6 +409,20 @@ class CallState:
         self.yield_states = []
         self.return_state = None
         self.exception_state = None
+
+    def show_objects(self):
+        if self.has_argument():
+            print('ArgState')
+            for arg in self.arg_states:
+                print('- ' + str(arg))
+        if self.has_var():
+            print('VarStateHistory')
+            for var in self.var_states:
+                print('- ' + str(self.var_states[var]))
+        if self.has_return():
+            print('ReturnState: ' + str(self.return_state))
+        if self.has_exception():
+            print('ExceptionState: ' + str(self.exception_state))
 
     def return_boolean(self):
         return self.return_state and self.return_state.type == 'bool'
@@ -415,6 +449,9 @@ class CallState:
 
     def has_argument(self):
         return len(self.arg_states) > 0 and self.arg_states[0].name != 'self'
+
+    def has_var(self):
+        return len(self.var_states) > 0
 
     def has_return(self):
         return self.return_state is not None
@@ -509,7 +546,9 @@ class VarStateHistory:
         return values
 
     def __str__(self):
-        return f'name: {self.name}, values: {len(self.states)}'
+        values = self.distinct_sequential_values()
+        values_str = ', '.join(map(str, values))
+        return f'name: {self.name} | values: {values_str}'
 
 
 class State:
