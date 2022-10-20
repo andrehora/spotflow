@@ -1,6 +1,4 @@
-[![Tests](https://github.com/andrehora/happyflow/actions/workflows/main.yml/badge.svg)](https://github.com/andrehora/happyflow/actions/workflows/main.yml)
-
-# SpotFlow
+# Get started with SpotFlow
 SpotFlow is a tool to ease the runtime analysis of Python programs.
 SpotFlow runs and monitors a target Python program.
 With SpotFlow, you can easily extract information about executed lines, argument values, return values, variable states, and thrown exceptions.
@@ -60,6 +58,4 @@ VarStateHistory
 ReturnState: 7
 ```
 
-## Get started
-
-See [Get started](get-started.md) for a basic introduction and more examples.
+## todo
