@@ -23,8 +23,8 @@ def sum(iter, start=0):
 sum([1, 2]) # 3
 ```
 To run and monitor it:
-```
-$ python -m happyflow -t sum demo
+```shell
+$ python -m spotflow -t sum demo
 Running and monitoring: demo
 ================================
 MonitoredProgram
