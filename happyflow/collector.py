@@ -1,6 +1,6 @@
 import inspect
 from happyflow.utils import obj_value, obj_type, find_full_name, is_method_or_func, get_module_names
-from happyflow.model import CallState, MonitoredMethod, MonitoredSystem
+from happyflow.model import CallState, MonitoredMethod, MonitoredProgram
 from happyflow.info import MethodInfo
 from happyflow.tracer import PyTracer
 
@@ -61,7 +61,7 @@ def line_has_keywords(frame, keywords):
 class Collector:
 
     def __init__(self):
-        self.monitored_system = MonitoredSystem()
+        self.monitored_system = MonitoredProgram()
         self.method_names = None
         self.file_names = None
         self.ignore_files = None
@@ -71,7 +71,7 @@ class Collector:
         self.collect_return_states = True
         self.collect_yield_states = True
         self.collect_exception_states = True
-        self.collect_var_states = False
+        self.collect_var_states = True
 
         self.last_frame_lineno = {}
         self.target_methods_cache = {}

@@ -1,5 +1,5 @@
 from happyflow.api import monitor_unittest_module
-from mining_scripts import polarity
+from scripts import polarity
 from happyflow.utils import write_csv
 
 

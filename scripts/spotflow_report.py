@@ -1,4 +1,4 @@
-from mining_scripts import basics, exceptions, returns, arguments, polarity
+from scripts import basics, exceptions, returns, arguments, polarity
 
 
 def process(monitored_system):

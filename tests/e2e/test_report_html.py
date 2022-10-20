@@ -1,7 +1,7 @@
 import unittest
 import shutil
 import os.path
-from happyflow.api import HappyFlow
+from happyflow.api import SpotFlow
 
 
 class TestHTMLReport(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestHTMLReport(unittest.TestCase):
 
     # @unittest.skip
     def test_generate_html_report_from_test_class(self):
-        hp = HappyFlow()
+        hp = SpotFlow()
         hp.target_methods(['email.message._parseparam',
                              'email.message._formatparam',
                              'email.message._splitparam',
@@ -97,7 +97,7 @@ class TestHTMLReport(unittest.TestCase):
 
     def test_generate_html_report_count_uppercase_words(self):
 
-        hp = HappyFlow()
+        hp = SpotFlow()
         hp.target_methods(['tests.e2e.stub_funcs.count_uppercase_words'])
         hp.start()
 
@@ -117,7 +117,7 @@ class TestHTMLReport(unittest.TestCase):
         shutil.rmtree('./spotflow_html_report')
 
     def test_generate_html_report_parseparam(self):
-        call = HappyFlow()
+        call = SpotFlow()
         call.target_methods(['tests.e2e.stub_funcs.parseparam'])
         call.start()
 
@@ -137,7 +137,7 @@ class TestHTMLReport(unittest.TestCase):
         shutil.rmtree('./spotflow_html_report')
 
     def test_generate_html_report_splitparam(self):
-        call = HappyFlow()
+        call = SpotFlow()
         call.target_methods(['tests.e2e.stub_funcs.splitparam'])
         call.start()
 

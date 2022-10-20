@@ -1,13 +1,13 @@
 import unittest
-from happyflow.api import HappyFlow
+from happyflow.api import SpotFlow
 
 
 class TestTXTReport(unittest.TestCase):
 
     def test_generate_txt_report_count_uppercase_words(self):
 
-        call = HappyFlow()
-        call.target_methods(['tests.integration.stub_funcs.count_uppercase_words'])
+        call = SpotFlow()
+        call.target_methods(['tests.e2e.stub_funcs.count_uppercase_words'])
         call.start()
 
         from tests.e2e.stub_funcs import inputs_count
@@ -18,8 +18,8 @@ class TestTXTReport(unittest.TestCase):
         self.assertTrue(is_exported)
 
     def test_generate_txt_report_parseparam(self):
-        hp = HappyFlow()
-        hp.target_methods(['tests.integration.stub_funcs.parseparam'])
+        hp = SpotFlow()
+        hp.target_methods(['tests.e2e.stub_funcs.parseparam'])
         hp.start()
 
         from tests.e2e.stub_funcs import inputs_parseparam
@@ -30,8 +30,8 @@ class TestTXTReport(unittest.TestCase):
         self.assertTrue(is_exported)
 
     def test_generate_txt_report_splitparam(self):
-        hp = HappyFlow()
-        hp.target_methods(['tests.integration.stub_funcs.splitparam'])
+        hp = SpotFlow()
+        hp.target_methods(['tests.e2e.stub_funcs.splitparam'])
         hp.start()
 
         from tests.e2e.stub_funcs import inputs_splitparam

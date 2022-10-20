@@ -3,7 +3,7 @@ from happyflow.collector import Collector
 from happyflow.unittest_utils import loadTestsFromModule, loadTestsFromTestCase, suite_runner
 
 
-class HappyFlow:
+class SpotFlow:
 
     def __init__(self):
         self.collector = Collector()
@@ -57,20 +57,20 @@ class HappyFlow:
 
 
 def live(func, target_methods):
-    hp = HappyFlow()
-    hp.target_methods(target_methods)
+    sp = SpotFlow()
+    sp.target_methods(target_methods)
 
-    hp.start()
+    sp.start()
     func()
-    hp.stop()
+    sp.stop()
 
-    hp.txt_report()
-    return hp.result()
+    sp.txt_report()
+    return sp.result()
 
 
 def monitor(func, target_methods=None, target_files=None, ignore_files=None,
             arg_states=True, return_states=True, yield_states=True, exception_states=True, var_states=True):
-    hp = HappyFlow()
+    hp = SpotFlow()
     hp.target_methods(target_methods)
     hp.target_files(target_files)
     hp.ignore_files(ignore_files)

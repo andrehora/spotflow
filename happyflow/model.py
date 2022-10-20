@@ -2,7 +2,7 @@ from happyflow.utils import obj_value, obj_type, count_values
 from happyflow.info import *
 
 
-class MonitoredSystem:
+class MonitoredProgram:
 
     def __init__(self):
         self.monitored_methods = {}

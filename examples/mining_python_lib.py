@@ -1,5 +1,5 @@
 from happyflow.api import monitor_unittest_module
-from mining_scripts import basics, tests, exceptions, returns, arguments
+from scripts import basics, tests, exceptions, returns, arguments
 
 
 def main():

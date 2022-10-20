@@ -1,14 +1,14 @@
 import unittest
 import shutil
 import os.path
-from happyflow.api import HappyFlow
+from happyflow.api import SpotFlow
 
 
 class TestCSVReport(unittest.TestCase):
 
     # @unittest.skip
     def test_generate_csv_report_from_test_class(self):
-        hp = HappyFlow()
+        hp = SpotFlow()
         hp.target_methods(['email.message._parseparam'])
         hp.start()
 
@@ -33,7 +33,7 @@ class TestCSVReport(unittest.TestCase):
 
     def test_generate_csv_report_count_uppercase_words(self):
 
-        hp = HappyFlow()
+        hp = SpotFlow()
         hp.target_methods(['tests.e2e.stub_funcs.count_uppercase_words'])
         hp.start()
 
@@ -49,7 +49,7 @@ class TestCSVReport(unittest.TestCase):
         shutil.rmtree('./spotflow_csv_report')
 
     def test_generate_csv_report_parseparam(self):
-        hp = HappyFlow()
+        hp = SpotFlow()
         hp.target_methods(['tests.e2e.stub_funcs.parseparam'])
         hp.start()
 
@@ -65,7 +65,7 @@ class TestCSVReport(unittest.TestCase):
         shutil.rmtree('./spotflow_csv_report')
 
     def test_generate_csv_report_splitparam(self):
-        hp = HappyFlow()
+        hp = SpotFlow()
         hp.target_methods(['tests.e2e.stub_funcs.splitparam'])
         hp.start()
 

@@ -1,8 +1,9 @@
 import argparse
 import configparser
 import importlib.util
-from happyflow.api import HappyFlow
-from happyflow.libs.execfile import PyRunner
+from happyflow.api import SpotFlow
+# from happyflow.libs.execfile import PyRunner
+from coverage.cmdline import PyRunner
 
 OK, ERR = 0, 1
 
@@ -10,7 +11,7 @@ parser = argparse.ArgumentParser(description='Command line for HappyFlow')
 
 parser.add_argument('-a', '--action', type=str,
                     help='Action to be performed after monitoring the program. '
-                         'It can be "mine", "html-report", or "csv-report". '
+                         'It can be "mine", "html", or "csv". '
                          'Default is "mine".')
 
 parser.add_argument('-t', '--target-method', type=str, action='append',
@@ -55,7 +56,7 @@ class HappyFlowScript:
 
     def run(self):
 
-        hp = HappyFlow()
+        hp = SpotFlow()
         hp.target_methods(self.target_methods)
         hp.target_files(self.target_files)
         hp.ignore_files(self.ignore_files)
@@ -76,7 +77,7 @@ class HappyFlowScript:
         finally:
             hp.stop()
             if code_ran:
-                # self.handle_action(hp)
+                self.handle_action(hp)
                 return OK
             return ERR
 
@@ -100,14 +101,17 @@ class HappyFlowScript:
         if not self.action:
             self.handle_mine(spotter.result())
 
-        if self.action and self.action.lower() == 'html-report':
+        if self.action and self.action.lower() == 'mine':
+            self.handle_mine(spotter.result())
+
+        if self.action and self.action.lower() == 'html':
             spotter.html_report(self.directory)
 
-        if self.action and self.action.lower() == 'csv-report':
+        if self.action and self.action.lower() == 'csv':
             spotter.csv_report(self.directory)
 
     def handle_mine(self, result):
-        spec = importlib.util.spec_from_file_location("spotflow_report", "./mining_scripts/spotflow_report.py")
+        spec = importlib.util.spec_from_file_location("spotflow_report", "./scripts/spotflow_report.py")
         spotflow_report = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(spotflow_report)
         spotflow_report.process(result)

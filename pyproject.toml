@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "happyflow"
-version = "0.0.1"
+version = "0.0.3"
 authors = [
   { name="Andre Hora", email="andrehoraa@gmail.com" },
 ]
