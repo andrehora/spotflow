@@ -582,7 +582,7 @@ class ArgState(State):
         self.lineno = lineno
 
     def __str__(self):
-        return f'{self.name}={self.value}'
+        return f'{self.name}: {self.value}'
 
 
 class ReturnState(State):

@@ -36,8 +36,8 @@ MethodCall
 - distinct_run_lines: [2, 3, 4, 5]
 - run_lines: [2, 3, 4, 3, 4, 3, 5]
 ArgState
-- iter=[1, 2]
-- start=0
+- iter: [1, 2]
+- start: 0
 VarStateHistory
 - iter: [1, 2]
 - start: 0
@@ -48,14 +48,15 @@ MethodCall
 - distinct_run_lines: [2, 3, 4, 5]
 - run_lines: [2, 3, 4, 3, 4, 3, 4, 3, 5]
 ArgState
-- iter=[1, 2, 3]
-- start=1
+- iter: [1, 2, 3]
+- start: 1
 VarStateHistory
 - iter: [1, 2, 3]
 - start: 1
 - count: 1, 2, 4, 7
 - i: 1, 2, 3
 ReturnState: 7
+
 ```
 
 ## todo
