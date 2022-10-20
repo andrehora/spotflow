@@ -30,7 +30,7 @@ MonitoredProgram
 - methods: 1
 - calls: 2
 MonitoredMethod
-- name: __main__.sum
+- name: sum
 - calls: 2
 MethodCall
 - distinct_run_lines: [2, 3, 4, 5]
@@ -56,7 +56,6 @@ VarStateHistory
 - count: 1, 2, 4, 7
 - i: 1, 2, 3
 ReturnState: 7
-
 ```
 
 ## todo

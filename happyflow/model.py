@@ -233,7 +233,7 @@ class MonitoredMethod(CallContainer):
 
     def show_objects(self):
         print('MonitoredMethod')
-        print('- name: ' + self.full_name)
+        print('- name: ' + self.name)
         print('- calls: ' + str(len(self.calls)))
 
     def __str__(self):
