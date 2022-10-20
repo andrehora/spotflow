@@ -21,7 +21,7 @@ def sum(iter, start=0):
     return count
 
 sum([1, 2]) # 3
-sum([1, 2, 3]) # 7
+sum([1, 2, 3], 1) # 7
 ```
 To run and monitor it:
 ```shell
