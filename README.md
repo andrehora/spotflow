@@ -26,7 +26,7 @@ To run and monitor it:
 ```shell
 $ python -m spotflow -t sum demo
 Running and monitoring: demo
-================================
+====================== Result ======================
 MonitoredProgram
 - methods: 1
 - calls: 1
