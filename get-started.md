@@ -1,4 +1,4 @@
-# Get started with SpotFlow
+# Get Stated with SpotFlow
 SpotFlow is a tool to ease the runtime analysis of Python programs.
 SpotFlow runs and monitors a target Python program.
 With SpotFlow, you can easily extract information about executed lines, argument values, return values, variable states, and thrown exceptions.
@@ -11,7 +11,40 @@ pip install spotflow
 ## A quick example
 
 ```python
-# content of demo.py
+# content of sample1.py
+def absolute(x):
+    if x < 0:
+        x = -x
+    return x
+
+absolute(-10) # 10
+```
+
+To run and monitor `sample1.py`:
+```
+$ python -m happyflow -t absolute sample1
+Running and monitoring: sample1
+====================== Result ======================
+MonitoredProgram
+- methods: 1
+- calls: 1
+MonitoredMethod
+- name: absolute
+- calls: 1
+MethodCall
+- distinct_run_lines: [2, 3, 4]
+- run_lines: [2, 3, 4]
+ArgState
+- x: -10
+VarStateHistory
+- x: -10, 10
+ReturnState: 10
+```
+
+Another simple example, with two calls:
+
+```python
+# content of sample2.py
 def sum(iter, start=0):
     count = start
     for i in iter:
@@ -21,10 +54,11 @@ def sum(iter, start=0):
 sum([1, 2]) # 3
 sum([1, 2, 3], 1) # 7
 ```
-To run and monitor it:
-```shell
-$ python -m spotflow -t sum demo
-Running and monitoring: demo
+
+To run and monitor `sample2.py`:
+```
+$ python -m spotflow -t sum sample2
+Running and monitoring: sample2
 ====================== Result ======================
 MonitoredProgram
 - methods: 1
@@ -58,4 +92,4 @@ VarStateHistory
 ReturnState: 7
 ```
 
-## todo
+## TODO

@@ -102,6 +102,9 @@ class SpotFlowScript:
             # pass
             flow.result().show_objects()
 
+        if self.action and self.action.lower() == 'exec':
+            flow.txt_report()
+
         if self.action and self.action.lower() == 'mine':
             self.handle_mine(flow.result())
 

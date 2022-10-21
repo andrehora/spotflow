@@ -5,9 +5,8 @@ class TextReport:
 
     def report(self):
 
-        # print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
-        # self.show_state_summary(state_history)
-        # print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+        # self.show_state_summary(self.monitored_method.calls[0].call_state)
+        # print('============================================')
 
         for flow in self.monitored_method.flows:
             current_line = 0
@@ -29,7 +28,7 @@ class TextReport:
                 if line.is_arg():
                     arg_summary = ''
                     separator = '🟢 '
-                    arg_summary += f'{separator}{line.state} '
+                    arg_summary += f'{separator}{line.state}'
                     if arg_summary:
                         print(code_str, arg_summary)
                     else:
@@ -47,7 +46,7 @@ class TextReport:
             print()
 
     def show_state_summary(self, state_result):
-        print('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
+        print('============================================')
         for arg in state_result.arg_states:
             if arg.name != 'self':
                 arg_summary = f'🟢 IN {arg.name}: {str(arg.value)}'
