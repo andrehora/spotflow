@@ -11,8 +11,8 @@ parser = argparse.ArgumentParser(description='Command line for HappyFlow')
 
 parser.add_argument('-a', '--action', type=str,
                     help='Action to be performed after monitoring the program. '
-                         'It can be "mine", "html", or "csv". '
-                         'Default is "mine".')
+                         'It can be "mine", "html", "csv" or "code". '
+                         'Default shows major objects.')
 
 parser.add_argument('-t', '--target-method', type=str, action='append',
                     help='Target method full name (in the format module.Class.method) or prefix. '
@@ -99,10 +99,9 @@ class SpotFlowScript:
     def handle_action(self, flow):
 
         if not self.action:
-            # pass
             flow.result().show_objects()
 
-        if self.action and self.action.lower() == 'exec':
+        if self.action and self.action.lower() == 'code':
             flow.txt_report()
 
         if self.action and self.action.lower() == 'mine':

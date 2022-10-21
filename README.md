@@ -24,7 +24,7 @@ absolute(-10) # 10
 
 To run and monitor `sample1`:
 ```
-$ python -m happyflow -t absolute sample1
+$ python -m spotflow -t absolute sample1
 Running and monitoring: sample1
 ====================== Result ======================
 MonitoredProgram
