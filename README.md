@@ -18,7 +18,7 @@ An example of a simple code:
 
 
 ```python
-# content of sample1.py
+# content of sample.py
 def absolute(x):
     if x < 0:
         x = -x
@@ -27,10 +27,10 @@ def absolute(x):
 absolute(-10) # 10
 ```
 
-To run and monitor function `absolute` in `sample1.py`:
+To run and monitor function `absolute` in `sample.py`:
 ```
-$ python -m spotflow -t absolute sample1
-Running and monitoring: sample1
+$ python -m spotflow -t absolute sample
+Running and monitoring: sample
 ====================== Result ======================
 MonitoredProgram
 - methods: 1
@@ -51,7 +51,7 @@ ReturnState: 10
 Another simple code, with two calls:
 
 ```python
-# content of sample2.py
+# content of sample.py
 def sum(iter, start=0):
     count = start
     for i in iter:
@@ -62,10 +62,10 @@ sum([1, 2]) # 3
 sum([1, 2, 3], 1) # 7
 ```
 
-To run and monitor function `sum` in `sample2.py`:
+To run and monitor function `sum` in `sample.py`:
 ```
-$ python -m spotflow -t sum sample2
-Running and monitoring: sample2
+$ python -m spotflow -t sum sample
+Running and monitoring: sample
 ====================== Result ======================
 MonitoredProgram
 - methods: 1
