@@ -3,14 +3,21 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "happyflow"
-version = "0.0.4"
+name = "spotflow"
+version = "1.0.0"
+description = "Runtime analysis for Python programs"
 authors = [
   { name="Andre Hora", email="andrehoraa@gmail.com" },
 ]
-description = "A small example package"
+license = "MIT"
 readme = "README.md"
+keywords = ["dynamic-analysis", "testing"]
 requires-python = ">=3.8"
+dependencies = [
+  'coverage == 6.5.0',
+  'pytest',
+  'pygments'
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -18,5 +25,5 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/andrehora/happyflow"
-"Bug Tracker" = "https://github.com/andrehora/happyflow/issues"
+"Homepage" = "https://github.com/andrehora/spotflow"
+"Bug Tracker" = "https://github.com/andrehora/spotflow/issues"
