@@ -1,14 +1,19 @@
-# Get Stated with SpotFlow
+# Get Started with SpotFlow
+
 SpotFlow is a tool to ease the runtime analysis of Python programs.
 SpotFlow runs and monitors a target Python program.
 With SpotFlow, you can easily extract information about executed lines, argument values, return values, variable states, and thrown exceptions.
 
 ## Install
+
 ```
 pip install spotflow
 ```
 
 ## A quick example
+
+An example of a simple code:
+
 
 ```python
 # content of sample1.py
@@ -41,7 +46,7 @@ VarStateHistory
 ReturnState: 10
 ```
 
-Another simple example, with two calls:
+Another simple code, with two calls:
 
 ```python
 # content of sample2.py
