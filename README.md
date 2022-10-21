@@ -98,8 +98,3 @@ VarStateHistory
 - i: 1, 2, 3
 ReturnState: 7
 ```
-
-## Get started
-
-See [Get started](get-started.md) for a basic introduction and more examples.
-
