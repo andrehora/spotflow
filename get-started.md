@@ -1,4 +1,6 @@
-# Get Started with SpotFlow
+[![Tests](https://github.com/andrehora/happyflow/actions/workflows/main.yml/badge.svg)](https://github.com/andrehora/happyflow/actions/workflows/main.yml)
+
+# SpotFlow
 
 SpotFlow is a tool to ease the runtime analysis of Python programs.
 SpotFlow runs and monitors a target Python program.
@@ -25,7 +27,7 @@ def absolute(x):
 absolute(-10) # 10
 ```
 
-To run and monitor `sample1.py`:
+To run and monitor function `absolute` in `sample1.py`:
 ```
 $ python -m spotflow -t absolute sample1
 Running and monitoring: sample1
@@ -60,7 +62,7 @@ sum([1, 2]) # 3
 sum([1, 2, 3], 1) # 7
 ```
 
-To run and monitor `sample2.py`:
+To run and monitor function `sum` in `sample2.py`:
 ```
 $ python -m spotflow -t sum sample2
 Running and monitoring: sample2
@@ -97,4 +99,7 @@ VarStateHistory
 ReturnState: 7
 ```
 
-## TODO
+## Get started
+
+See [Get started](get-started.md) for a basic introduction and more examples.
+
