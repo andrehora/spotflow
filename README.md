@@ -22,7 +22,7 @@ def absolute(x):
 absolute(-10) # 10
 ```
 
-To run and monitor `sample1`:
+To run and monitor `sample1.py`:
 ```
 $ python -m spotflow -t absolute sample1
 Running and monitoring: sample1
@@ -57,7 +57,7 @@ sum([1, 2]) # 3
 sum([1, 2, 3], 1) # 7
 ```
 
-To run and monitor `sample2`:
+To run and monitor `sample2.py`:
 ```
 $ python -m spotflow -t sum sample2
 Running and monitoring: sample2
