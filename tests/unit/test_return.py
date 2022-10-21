@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestReturnValue
-from happyflow.api import monitor
+from spotflow.api import monitor
 
 
 class TestReturn(unittest.TestCase):

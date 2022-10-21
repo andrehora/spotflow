@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestSimpleCall, TestComplexCall
-from happyflow.api import monitor
+from spotflow.api import monitor
 
 
 class TestCallForFunctions(unittest.TestCase):

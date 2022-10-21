@@ -1,5 +1,5 @@
 import unittest
-from happyflow.comparator import find_distinct_in_file, find_distinct_in_set
+from spotflow.comparator import find_distinct_in_file, find_distinct_in_set
 
 
 class TestComparator(unittest.TestCase):

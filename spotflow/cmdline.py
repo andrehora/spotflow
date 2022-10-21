@@ -1,7 +1,7 @@
 import argparse
 import configparser
 import importlib.util
-from happyflow.api import SpotFlow
+from spotflow.api import SpotFlow
 # from happyflow.libs.execfile import PyRunner
 from coverage.cmdline import PyRunner
 

@@ -115,7 +115,7 @@ def calls_with_primitive_types(monitored_system):
 
 def calls_with_return_and_args(monitored_system):
 
-    from happyflow.utils import write_txt
+    from spotflow.utils import write_txt
     import hashlib
 
     print('calls_with_return_and_args')

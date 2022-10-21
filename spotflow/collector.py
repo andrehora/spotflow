@@ -1,8 +1,8 @@
 import inspect
-from happyflow.utils import obj_value, obj_type, find_full_name, is_method_or_func, get_module_names
-from happyflow.model import CallState, MonitoredMethod, MonitoredProgram
-from happyflow.info import MethodInfo
-from happyflow.tracer import PyTracer
+from spotflow.utils import obj_value, obj_type, find_full_name, is_method_or_func, get_module_names
+from spotflow.model import CallState, MonitoredMethod, MonitoredProgram
+from spotflow.info import MethodInfo
+from spotflow.tracer import PyTracer
 
 
 def get_next_mro_class(current_class):

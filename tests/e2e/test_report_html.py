@@ -1,7 +1,7 @@
 import unittest
 import shutil
 import os.path
-from happyflow.api import SpotFlow
+from spotflow.api import SpotFlow
 
 
 class TestHTMLReport(unittest.TestCase):

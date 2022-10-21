@@ -1,5 +1,5 @@
 import unittest
-from happyflow.info import MethodInfo
+from spotflow.info import MethodInfo
 
 
 class TestTarget(unittest.TestCase):

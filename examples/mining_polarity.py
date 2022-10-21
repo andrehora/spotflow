@@ -1,6 +1,6 @@
-from happyflow.api import monitor_unittest_module
+from spotflow.api import monitor_unittest_module
 from scripts import polarity
-from happyflow.utils import write_csv
+from spotflow.utils import write_csv
 
 
 def monitor_test(test, target_methods):

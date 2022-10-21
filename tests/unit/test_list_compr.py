@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestComprehension
-from happyflow.api import monitor
+from spotflow.api import monitor
 
 
 class TestComprehensionCall(unittest.TestCase):

@@ -1,5 +1,5 @@
 import unittest
-from happyflow.api import SpotFlow
+from spotflow.api import SpotFlow
 
 
 class TestTXTReport(unittest.TestCase):

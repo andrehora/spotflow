@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestRecursion
-from happyflow.api import monitor
+from spotflow.api import monitor
 
 
 class TestRecursiveCalls(unittest.TestCase):

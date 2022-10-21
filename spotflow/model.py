@@ -1,5 +1,5 @@
-from happyflow.utils import obj_value, obj_type, count_values
-from happyflow.info import *
+from spotflow.utils import obj_value, obj_type, count_values
+from spotflow.info import *
 
 
 class MonitoredProgram:

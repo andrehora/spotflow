@@ -1,6 +1,6 @@
-from happyflow.report import Report
-from happyflow.collector import Collector
-from happyflow.unittest_utils import loadTestsFromModule, loadTestsFromTestCase, suite_runner
+from spotflow.report import Report
+from spotflow.collector import Collector
+from spotflow.unittest_utils import loadTestsFromModule, loadTestsFromTestCase, suite_runner
 
 
 class SpotFlow:

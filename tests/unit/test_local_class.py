@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestLocalClass
-from happyflow.api import monitor
+from spotflow.api import monitor
 
 
 class TestLocalClassCall(unittest.TestCase):

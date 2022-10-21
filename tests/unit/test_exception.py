@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestExceptions
-from happyflow.api import monitor
+from spotflow.api import monitor
 
 
 class TestException(unittest.TestCase):

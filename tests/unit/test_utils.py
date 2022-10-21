@@ -1,5 +1,5 @@
 import unittest
-from happyflow.utils import *
+from spotflow.utils import *
 
 
 class TestUtils(unittest.TestCase):

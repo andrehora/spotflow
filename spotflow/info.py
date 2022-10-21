@@ -1,5 +1,5 @@
 from collections import Counter
-from happyflow.utils import line_intersection, get_html_lines, find_executable_linenos, get_metadata, escape, ratio
+from spotflow.utils import line_intersection, get_html_lines, find_executable_linenos, get_metadata, escape, ratio
 
 executable_lines_for_file = {}
 

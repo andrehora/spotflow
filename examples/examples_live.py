@@ -1,4 +1,4 @@
-from happyflow.api import live
+from spotflow.api import live
 
 
 def count_uppercase_words(text):
