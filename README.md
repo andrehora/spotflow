@@ -50,7 +50,9 @@ VarStateHistory
 ReturnState: 10
 ```
 
-Another code, with two calls:
+---
+
+Another code to be monitored, with two calls:
 
 ```python
 # content of sample.py
@@ -67,6 +69,10 @@ sum([1, 2, 3], 1) # 7
 To run and monitor function `sum` in `sample.py`:
 ```
 $ python -m spotflow -t sum sample
+```
+
+The result:
+```
 Running and monitoring: sample
 ====================== Result ======================
 MonitoredProgram
