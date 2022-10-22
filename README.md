@@ -13,8 +13,7 @@ pip install spotflow
 
 ## A quick example
 
-An example of a simple code:
-
+A simple code to be monitored:
 
 ```python
 # content of sample.py
@@ -29,6 +28,10 @@ absolute(-10) # 10
 To run and monitor function `absolute` in `sample.py`:
 ```
 $ python -m spotflow -t absolute sample
+```
+
+The result:
+```
 Running and monitoring: sample
 ====================== Result ======================
 MonitoredProgram
@@ -47,7 +50,7 @@ VarStateHistory
 ReturnState: 10
 ```
 
-Another simple code, with two calls:
+Another code, with two calls:
 
 ```python
 # content of sample.py
