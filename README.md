@@ -107,7 +107,7 @@ VarStateHistory
 ReturnState: 7
 ```
 
-## Get started
+## Usage
 
 SpotFlow can be run from the command-line or programmatically via API.
 
@@ -173,3 +173,20 @@ Method `start()` starts the monitoring.
 The monitoring only occurs in code called after `start()`, which is in this example `my_program()`.
 After calling `start()`, we must also call `stop()` to stop the monitoring.
 Lastly, method `result()` provides a `MonitoredProgram` object.
+
+## Monitored entities
+
+- `MonitoredProgram`: This class is a repository of monitored methods, which can be used to access all collected data.
+
+- `MonitoredMethod`: It represents a monitored method (or function). It has method calls and contains static information about the method/function, like name, full name, class name (for methods), file name, LOC, source code, etc.
+
+
+- `MethodCall`: This class represents a method call that happens at runtime. It includes data about the caller, call stack, and executed lines. A method call also has a call state, which records information like variable and argument states.
+
+- `CallState`: This class holds the state of a method call, with information about argument states (`ArgState`), return states (`ReturnState`), thrown exceptions (`ExceptionState`), and local variable states (`VarStateHistory`).
+
+- `State`: It represents a state at runtime, such as a variable, argument, return, or exception state.
+All states have information about its runtime value, runtime type, and line number in code.
+In addition, `VarState` and `ArgState` have information about its name.
+
+- `VarStateHistory`: This class holds all the states of a local variable in a method call. Notice that it is composed of variable states, representing the fact that a variable may change its value and therefore can have multiple states over time.
