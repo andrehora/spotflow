@@ -17,7 +17,7 @@ class MonitoredProgram:
         return calls
 
     def show_objects(self):
-        print('====================== Result ======================')
+        print('============= Result =============')
         print('MonitoredProgram')
         print('- methods: ' + str(len(self.all_methods())))
         print('- calls: ' + str(len(self.all_calls())))
