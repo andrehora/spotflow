@@ -33,7 +33,7 @@ $ python -m spotflow -t absolute sample
 The result:
 ```
 Running and monitoring: sample
-====================== Result ======================
+============= Result =============
 MonitoredProgram
 - methods: 1
 - calls: 1
@@ -74,7 +74,7 @@ $ python -m spotflow -t sum sample
 The result:
 ```
 Running and monitoring: sample
-====================== Result ======================
+============= Result =============
 MonitoredProgram
 - methods: 1
 - calls: 2
