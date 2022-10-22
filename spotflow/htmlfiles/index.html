@@ -39,7 +39,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for monitored_method in monitored_system %}
+            {% for monitored_method in monitored_program %}
             <tr class="file">
                 <td class="name left"><a href="{{monitored_method.info.full_name}}.html">{{monitored_method.info.full_name_escaped}}</a></td>
                 <td>{{monitored_method.info.coverage_ratio}}</td>

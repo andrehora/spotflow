@@ -5,8 +5,8 @@ from spotflow.utils import write_csv
 
 def monitor_test(test, target_methods):
     print('Test suite:', test.__name__)
-    monitored_system = monitor_unittest_module(test, target_methods, var_states=False)
-    test_methods = polarity.for_test_methods(monitored_system)
+    monitored_program = monitor_unittest_module(test, target_methods, var_states=False)
+    test_methods = polarity.for_test_methods(monitored_program)
 
     project_name = target_methods[0]
     filename = '../report/' + project_name + '.csv'

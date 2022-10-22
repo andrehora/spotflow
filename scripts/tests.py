@@ -1,8 +1,8 @@
-def tests_that_execute_specific_method(monitored_system, method_name):
+def tests_that_execute_specific_method(monitored_program, method_name):
 
     print('tests_that_execute_specific_method')
 
-    method = monitored_system[method_name]
+    method = monitored_program[method_name]
     tests = set()
     for call in method.calls:
         for caller in call.call_stack:
@@ -13,12 +13,12 @@ def tests_that_execute_specific_method(monitored_system, method_name):
     print(tests)
 
 
-def methods_executed_by_specific_test(monitored_system, test_name):
+def methods_executed_by_specific_test(monitored_program, test_name):
 
     print('methods_executed_by_specific_test')
 
     methods = set()
-    for call in monitored_system.all_calls():
+    for call in monitored_program.all_calls():
         for caller in call.call_stack:
             if caller == test_name:
                 methods.add(call.monitored_method.name)
@@ -27,13 +27,13 @@ def methods_executed_by_specific_test(monitored_system, test_name):
     print(methods)
 
 
-def methods_executed_by_specific_test2(monitored_system, test_name):
+def methods_executed_by_specific_test2(monitored_program, test_name):
 
     print(test_name)
 
     methods = []
     cont = 0
-    for call in monitored_system.all_calls():
+    for call in monitored_program.all_calls():
         if test_name in call.call_stack:
             # if call.call_state.return_boolean():
 

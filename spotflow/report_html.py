@@ -50,8 +50,8 @@ class HTMLCodeReport:
 
 class HTMLIndexReport:
 
-    def __init__(self, monitored_system, report_dir=None):
-        self.monitored_system = monitored_system
+    def __init__(self, monitored_program, report_dir=None):
+        self.monitored_program = monitored_program
 
         self.report_dir = report_dir
         if not self.report_dir:
@@ -67,7 +67,7 @@ class HTMLIndexReport:
     def report(self):
 
         html = self.source_tmpl.render({
-            'monitored_system': self.monitored_system
+            'monitored_program': self.monitored_program
         })
 
         index_file = os.path.join(self.report_dir, INDEX_FILE)

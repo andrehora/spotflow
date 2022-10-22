@@ -1,14 +1,14 @@
 from collections import Counter
 
 
-def method_calls_that_return_true_or_false(monitored_system):
+def method_calls_that_return_true_or_false(monitored_program):
 
     print('method_calls_that_return_true_or_false')
 
     methods = []
     method_values = {}
     return_values = []
-    for call in monitored_system.all_calls():
+    for call in monitored_program.all_calls():
         call_state = call.call_state
         if call_state.has_return():
             return_state = call_state.return_state
@@ -41,7 +41,7 @@ def method_calls_that_return_true_or_false(monitored_system):
             print(method, tf[0][1], tf[1][1])
 
 
-def test_calls_that_return_true_or_false(monitored_system):
+def test_calls_that_return_true_or_false(monitored_program):
 
     print('test_calls_that_return_true_or_false')
 
@@ -50,7 +50,7 @@ def test_calls_that_return_true_or_false(monitored_system):
     test_call_values = {}
     return_values = []
     # cont = 0
-    for call in monitored_system.all_calls():
+    for call in monitored_program.all_calls():
         call_state = call.call_state
         if call_state.has_return():
             return_state = call_state.return_state
@@ -133,14 +133,14 @@ def test_calls_that_return_true_or_false(monitored_system):
             print()
 
 
-def test_calls_branch_values(monitored_system):
+def test_calls_branch_values(monitored_program):
 
     print('test_calls_brach_values')
 
     tests = []
     method_values = {}
     return_values = []
-    for call in monitored_system.all_calls():
+    for call in monitored_program.all_calls():
 
         branch_values = call.branch_values()
         if branch_values:
@@ -172,11 +172,11 @@ def test_calls_branch_values(monitored_system):
             print(method, tf[0][1], tf[1][1])
 
 
-def for_test_methods(monitored_system):
+def for_test_methods(monitored_program):
 
     print('test_calls_branch_track_values')
 
-    test_suite_data = monitored_system.compute_polarity(min_branch_frequency=99)
+    test_suite_data = monitored_program.compute_polarity(min_branch_frequency=99)
 
     # for each in branch_track_values:
     #     tf_values = branch_track_values[each]
