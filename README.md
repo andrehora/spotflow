@@ -170,7 +170,7 @@ monitored_program = flow.result()
 Class `SpotFlow` represents the programmatic access to SpotFlow.
 In method `target_methods()`, we can pass the target entities to be monitored, which can be the full name of the target method or a prefix to monitor multiple methods, like in the command-line.
 Method `start()` starts the monitoring.
-The monitoring only occurs in code called after `start()`, which is in this example `my_program()`.
+The monitoring only occurs in code called after `start()`.
 After calling `start()`, we must also call `stop()` to stop the monitoring.
 Lastly, method `result()` provides a `MonitoredProgram` object.
 

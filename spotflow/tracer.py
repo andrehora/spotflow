@@ -1,4 +1,3 @@
-import trace
 import sys
 
 

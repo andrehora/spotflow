@@ -1,5 +1,5 @@
 import inspect
-from spotflow.utils import obj_value, obj_type, find_full_name, is_method_or_func, get_module_names
+from spotflow.utils import obj_value, obj_type, find_full_name, is_method_or_func
 from spotflow.model import CallState, MonitoredMethod, MonitoredProgram
 from spotflow.info import MethodInfo
 from spotflow.tracer import PyTracer
