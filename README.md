@@ -3,7 +3,7 @@
 # SpotFlow
 
 SpotFlow is a tool to ease the runtime analysis of Python programs.
-With SpotFlow, you can easily extract information about executed lines, argument values, return values, variable states, and thrown exceptions.
+With SpotFlow, you can easily extract information about executed methods, run lines, argument values, return values, variable states, and thrown exceptions.
 
 ## Install
 
