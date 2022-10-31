@@ -1,5 +1,5 @@
 # running python libs
-python -m spotflow -t email unittest test.test_email.test_email
+python -m spotflow -t email unittest test.test_email.test_email.TestMessageAPI
 python -m spotflow -t ast unittest test.test_ast
 python -m spotflow -t gzip unittest test.test_gzip
 python -m spotflow -t urllib unittest test.test_urlparse
