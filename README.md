@@ -111,7 +111,7 @@ ReturnState: 7
 
 You can also monitor tests.
 For example, to monitor the test case [`TestMessageAPI`](https://github.com/python/cpython/blob/4702552885811d0af8f0e4545f494336801ad4dd/Lib/test/test_email/test_email.py#L55
-) of the [`email`](https://docs.python.org/3/library/email.examples.html) Python Standard Library:
+) of the Python Standard Library [`email`](https://docs.python.org/3/library/email.examples.html):
 
 ```
 $ python -m spotflow -t email unittest test.test_email.test_email.TestMessageAPI
