@@ -1,5 +1,5 @@
 from spotflow.api import monitor_unittest_module
-from scripts import polarity
+from examples.scripts import polarity
 from spotflow.utils import write_csv
 
 
