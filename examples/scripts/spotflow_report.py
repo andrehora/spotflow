@@ -1,4 +1,4 @@
-from scripts import basics, exceptions, returns, arguments, polarity
+from scripts import polarity
 
 
 def process(monitored_program):

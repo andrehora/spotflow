@@ -6,7 +6,7 @@ from coverage.cmdline import PyRunner
 
 OK, ERR = 0, 1
 
-parser = argparse.ArgumentParser(description='Command line for HappyFlow')
+parser = argparse.ArgumentParser(description='Command line for SpotFlow')
 
 parser.add_argument('-a', '--action', type=str,
                     help='Action to be performed after monitoring the program. '

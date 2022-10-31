@@ -1,5 +1,5 @@
 from spotflow.api import monitor_unittest_module
-from scripts import basics, tests, exceptions, returns, arguments
+from examples.scripts import arguments
 
 
 def main():
