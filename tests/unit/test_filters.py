@@ -65,6 +65,9 @@ class TestFilter(unittest.TestCase):
                          'inspect.ismethod')
 
     def test_filter_by_file(self):
+
+        from sys import platform
+
         file_name = 'stub_sut'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
@@ -86,8 +89,12 @@ class TestFilter(unittest.TestCase):
                          'genericpath.isdir')
         self.assertEqual(methods[5].info.full_name,
                          'tests.unit.stub_sut.ClassWithExternalDependency.os_realpath')
-        self.assertEqual(methods[6].info.full_name,
-                         'posixpath.realpath')
+        # OS specific
+        if platform.startswith("linux") or platform == "darwin":
+            self.assertEqual(methods[6].info.full_name, 'posixpath.realpath')
+        if platform == "win32":
+            self.assertEqual(methods[6].info.full_name, 'ntpath.realpath')
+
         self.assertEqual(methods[7].info.full_name,
                          'tests.unit.stub_sut.ClassWithExternalDependency.inspect_ismethod')
         self.assertEqual(methods[8].info.full_name,
@@ -106,7 +113,14 @@ class TestFilter(unittest.TestCase):
         self.assertEqual(methods[0].info.full_name, 'genericpath.isdir')
 
     def test_filter_by_file_posixpath(self):
-        file_name = 'posixpath.py'
+        # OS specific
+        from sys import platform
+        file_name = ''
+        if platform.startswith("linux") or platform == "darwin":
+            file_name = 'posixpath.py'
+        if platform == "win32":
+            file_name = 'ntpath.py'
+
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor(func, target_files=[file_name])
@@ -152,7 +166,14 @@ class TestFilter(unittest.TestCase):
             self.assertNotIn(ignore_file_name, method.info.full_name)
 
     def test_filter_by_ignore_file_posixpath(self):
-        ignore_file_name = 'posixpath.py'
+        # OS specific
+        from sys import platform
+        ignore_file_name = ''
+        if platform.startswith("linux") or platform == "darwin":
+            ignore_file_name = 'posixpath.py'
+        if platform == "win32":
+            ignore_file_name = 'ntpath.py'
+
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor(func, ignore_files=[ignore_file_name])
