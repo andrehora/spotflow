@@ -6,7 +6,6 @@ from spotflow.api import SpotFlow
 
 class TestCSVReport(unittest.TestCase):
 
-    # @unittest.skip
     def test_generate_csv_report_from_test_class(self):
         flow = SpotFlow()
         flow.target_methods(['email.message._parseparam'])

@@ -47,8 +47,3 @@ def splitparam(param):
     if not sep:
         return a.strip(), None
     return a.strip(), b.strip()
-
-
-
-
-

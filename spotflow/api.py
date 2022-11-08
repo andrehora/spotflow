@@ -1,6 +1,6 @@
 from spotflow.report import Report
 from spotflow.collector import Collector
-from spotflow.unittest_utils import loadTestsFromModule, loadTestsFromTestCase, suite_runner
+from spotflow.utils_unittest import loadTestsFromModule, loadTestsFromTestCase, suite_runner
 
 
 class SpotFlow:
@@ -47,16 +47,16 @@ class SpotFlow:
         except Exception as e:
             print(e)
 
-    def txt_report(self):
+    def pprint_report(self):
         try:
-            Report(self.collector.monitored_program).txt_report()
+            Report(self.collector.monitored_program).pprint_report()
             return True
         except Exception as e:
             print(e)
             return False
 
 
-def live(func, target_methods):
+def pprint(func, target_methods):
     flow = SpotFlow()
     flow.target_methods(target_methods)
 
@@ -64,8 +64,7 @@ def live(func, target_methods):
     func()
     flow.stop()
 
-    flow.txt_report()
-    return flow.result()
+    return flow.pprint_report()
 
 
 def monitor(func, target_methods=None, target_files=None, ignore_files=None,

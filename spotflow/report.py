@@ -19,7 +19,7 @@ class Report:
             CSVCodeReport(monitored_method, report_dir).report()
         CSVIndexReport(self.monitored_program, report_dir).report()
 
-    def txt_report(self):
-        from spotflow.report_txt import TextReport
+    def pprint_report(self):
+        from spotflow.report_pprint import PrettyPrintReport
         for monitored_method in self.monitored_program:
-            TextReport(monitored_method).report()
+            PrettyPrintReport(monitored_method).report()

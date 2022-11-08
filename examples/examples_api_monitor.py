@@ -1,4 +1,4 @@
-from spotflow.api import live
+from spotflow.api import monitor
 
 
 def count_uppercase_words(text):
@@ -15,4 +15,6 @@ def inputs_count():
     count_uppercase_words('abc')
 
 
-live(inputs_count, [count_uppercase_words])
+monitored_program = monitor(inputs_count, [count_uppercase_words])
+monitored_program.show_objects()
+

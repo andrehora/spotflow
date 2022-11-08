@@ -9,7 +9,6 @@ class TestHTMLReport(unittest.TestCase):
     def assert_exists(self, filename):
         self.assertTrue(os.path.exists(filename))
 
-    # @unittest.skip
     def test_generate_html_report_from_test_class(self):
         flow = SpotFlow()
         flow.target_methods(['email.message._parseparam',

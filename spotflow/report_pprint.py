@@ -1,4 +1,4 @@
-class TextReport:
+class PrettyPrintReport:
 
     def __init__(self, monitored_method):
         self.monitored_method = monitored_method
@@ -33,7 +33,7 @@ class TextReport:
                         print(code_str, arg_summary)
                     else:
                         print(code_str)
-                elif line.is_return():
+                elif line.is_return() and line.is_run():
                     separator = '🔴 '
                     return_str = f'{separator}{line.state}'
                     print(code_str, return_str)

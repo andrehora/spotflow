@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description='Command line for SpotFlow')
 
 parser.add_argument('-a', '--action', type=str,
                     help='Action to be performed after monitoring the program. '
-                         'It can be "mine", "html", "csv" or "code". '
+                         'It can be "mine", "pprint", "html", "csv". '
                          'Default shows major objects.')
 
 parser.add_argument('-t', '--target-method', type=str, action='append',
@@ -100,11 +100,11 @@ class SpotFlowScript:
         if not self.action:
             flow.result().show_objects()
 
-        if self.action and self.action.lower() == 'code':
-            flow.txt_report()
-
         if self.action and self.action.lower() == 'mine':
             self.handle_mine(flow.result())
+
+        if self.action and self.action.lower() == 'pprint':
+            flow.pprint_report()
 
         if self.action and self.action.lower() == 'html':
             flow.html_report(self.directory)
@@ -113,10 +113,10 @@ class SpotFlowScript:
             flow.csv_report(self.directory)
 
     def handle_mine(self, result):
-        spec = importlib.util.spec_from_file_location("spotflow_report", "./scripts/spotflow_report.py")
-        spotflow_report = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(spotflow_report)
-        spotflow_report.process(result)
+        spec = importlib.util.spec_from_file_location("examples", "./examples/miner.py")
+        miner = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(miner)
+        miner.mine(result)
 
 
 def main():
