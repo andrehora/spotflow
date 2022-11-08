@@ -26,69 +26,6 @@ class MonitoredProgram:
             for call in m.calls:
                 call.show_objects()
 
-    def branch_data(self):
-
-        control_flow_values = {}
-        for call in self.all_calls():
-            call.branch_data(control_flow_values)
-
-        for key in control_flow_values:
-
-            tf_values = control_flow_values[key]
-            tf_counter = count_values(tf_values)
-
-            t_freq = tf_counter[0]
-            f_freq = tf_counter[1]
-
-            branch_frequency = ratio(max(t_freq, f_freq), t_freq + f_freq)
-            branch_prevalence = (True if t_freq > f_freq else False)
-
-            control_flow_values[key] = t_freq, f_freq, branch_frequency, branch_prevalence
-
-        return control_flow_values
-
-    def compute_polarity(self, min_branch_frequency=95):
-
-        all_branch_data = self.branch_data()
-        test_suite_branch_data = {}
-        test_suite_exception_data = {}
-
-        for call in self.all_calls():
-
-            branch_value = call.check_branch_data(all_branch_data, min_branch_frequency)
-            if branch_value:
-                if call.is_started_in_test():
-                    test_name = call.call_stack[0]
-                    test_suite_branch_data[test_name] = test_suite_branch_data.get(test_name, [])
-                    test_suite_branch_data[test_name].extend(branch_value)
-
-            if call.call_state.has_exception():
-                if call.is_started_in_test():
-                    test_name = call.call_stack[0]
-                    test_suite_exception_data[test_name] = test_suite_exception_data.get(test_name, [])
-                    test_suite_exception_data[test_name].append(call.call_state.exception_state.value)
-
-        test_suite_result = {}
-        for test_name in test_suite_branch_data:
-            tf_values = test_suite_branch_data[test_name]
-            tf_counter = count_values(tf_values)
-            t = tf_counter[0]
-            f = tf_counter[1]
-            total_tf = t + f
-            positivity = ratio(t, t + f)
-            negativity = ratio(f, t + f)
-            test_suite_result[test_name] = t, f, total_tf, positivity, negativity, 0
-
-        for test_name in test_suite_exception_data:
-            exception_freq = len(test_suite_exception_data[test_name])
-            if test_name in test_suite_result:
-                t, f, total_tf, positivity, negativity, _ = test_suite_result[test_name]
-                test_suite_result[test_name] = t, f, total_tf, positivity, negativity, exception_freq
-            else:
-                test_suite_result[test_name] = 0, 0, 0, 0, 0, exception_freq
-
-        return test_suite_result
-
     def _update_flows_and_info(self):
         for method in self.monitored_methods.values():
             method._compute_flows()
@@ -334,59 +271,6 @@ class MethodCall:
 
     def line_var_states(self, states):
         return LineType.VAR, states
-
-    def check_branch_data(self, branch_data, min_branch_frequency):
-        result = []
-        executable_lines = self.monitored_method.info.executable_lines()
-        for control_flow_lineno in sorted(self.monitored_method.info.control_flow_lines):
-            if control_flow_lineno in executable_lines:
-                control_flow_value = self._check_control_flow(control_flow_lineno, executable_lines)
-                if control_flow_value is not None:
-                    key = self.monitored_method.info.filename, control_flow_lineno
-                    t, f, branch_frequency, branch_prevalence = branch_data[key]
-                    if branch_frequency >= min_branch_frequency:
-                        if control_flow_value == branch_prevalence:
-                            result.append(True)
-                        else:
-                            result.append(False)
-        return result
-
-    def branch_values(self):
-        control_flow_values = []
-        executable_lines = self.monitored_method.info.executable_lines()
-        for control_flow_lineno in sorted(self.monitored_method.info.control_flow_lines):
-            if control_flow_lineno in executable_lines:
-                control_flow_value = self._check_control_flow(control_flow_lineno, executable_lines)
-                if control_flow_value is not None:
-                    control_flow_values.append(control_flow_value)
-        return control_flow_values
-
-    def branch_data(self, control_flow_values):
-        executable_lines = self.monitored_method.info.executable_lines()
-        for control_flow_lineno in sorted(self.monitored_method.info.control_flow_lines):
-            key = self.monitored_method.info.filename, control_flow_lineno
-            if control_flow_lineno in executable_lines:
-                control_flow_value = self._check_control_flow(control_flow_lineno, executable_lines)
-                if control_flow_value is not None:
-                    control_flow_values[key] = control_flow_values.get(key, [])
-                    control_flow_values[key].append(control_flow_value)
-
-    def _check_control_flow(self, control_flow_lineno, executable_lines):
-
-        next_control_flow_line = self._find_next_executable_line(control_flow_lineno, executable_lines)
-        if not next_control_flow_line:
-            return None
-
-        if control_flow_lineno in self.run_lines and next_control_flow_line in self.run_lines:
-            return True
-        return False
-
-    def _find_next_executable_line(self, lineno, executable_lines):
-        try:
-            index = executable_lines.index(lineno)
-            return executable_lines[index + 1]
-        except Exception:
-            return None
 
     def _add_run_line(self, lineno):
         self.run_lines.append(lineno)

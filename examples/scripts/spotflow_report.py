@@ -1,9 +1,9 @@
-from scripts import polarity
-
 
 def process(monitored_program):
 
-    polarity.test_calls_that_return_true_or_false(monitored_program)
+    pass
+
+    # polarity.test_calls_that_return_true_or_false(monitored_program)
 
     # basics.monitored_methods_overview(monitored_program)
     # exceptions.thrown_exceptions(monitored_program)

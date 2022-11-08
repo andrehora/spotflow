@@ -1,15 +1,15 @@
 from spotflow.api import monitor_unittest_module
-from examples.scripts import polarity
+from spotflow import polarity
 from spotflow.utils import write_csv
 
 
 def monitor_test(test, target_methods):
     print('Test suite:', test.__name__)
     monitored_program = monitor_unittest_module(test, target_methods, var_states=False)
-    test_methods = polarity.for_test_methods(monitored_program)
+    test_methods = polarity.compute_polarity_for_test_methods(monitored_program)
 
     project_name = target_methods[0]
-    filename = '../report/' + project_name + '.csv'
+    filename = project_name + '.csv'
     write_csv(filename, test_methods)
 
 
@@ -48,6 +48,5 @@ def main():
 
 # main()
 
-from test import test_imaplib as test
-
-monitor_test(test, ['imaplib'])
+# from test import test_gzip as test
+# monitor_test(test, ['gzip'])
