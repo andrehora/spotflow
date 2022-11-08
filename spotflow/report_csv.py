@@ -9,7 +9,6 @@ class CSVCodeReport:
 
     def __init__(self, monitored_method, report_dir=None):
         self.monitored_method = monitored_method
-        # self.trace_info = trace_info
 
         self.report_dir = report_dir
         if not self.report_dir:

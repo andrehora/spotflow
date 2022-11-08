@@ -249,3 +249,14 @@ def count_values(values, value1=True, value2=False):
             return 0, frequency
     if len(counter_sorted) == 2:
         return counter_sorted[0][1], counter_sorted[1][1]
+
+
+def find_distinct_in_file(old_file, new_file):
+    old = set(read_file_lines(old_file))
+    new = set(read_file_lines(new_file))
+    return find_distinct_in_set(old, new)
+
+
+def find_distinct_in_set(old, new):
+    return new ^ old
+
