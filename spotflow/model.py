@@ -1,4 +1,4 @@
-from spotflow.utils import obj_value, obj_type, count_values
+from spotflow.utils import obj_value, obj_type
 from spotflow.info import *
 
 
@@ -55,8 +55,17 @@ class CallContainer:
     def __init__(self, calls):
         self.calls = calls
 
-    def add_call(self, call):
-        self.calls.append(call)
+    def call_stack(self):
+        cs = []
+        for call in self.calls:
+            cs.append(call.call_stack)
+        return cs
+
+    def callers(self):
+        return sorted(set(map(lambda each: each[-2], self.call_stack())))
+
+    def tests(self):
+        return sorted(set(map(lambda each: each[0], self.call_stack())))
 
     def all_distinct_run_lines(self):
         lines = []
@@ -99,17 +108,8 @@ class CallContainer:
                 values.append(value)
         return values
 
-    def call_stack(self):
-        cs = []
-        for call in self.calls:
-            cs.append(call.call_stack)
-        return cs
-
-    def callers(self):
-        return sorted(set(map(lambda each: each[-2], self.call_stack())))
-
-    def tests(self):
-        return sorted(set(map(lambda each: each[0], self.call_stack())))
+    def _add_call(self, call):
+        self.calls.append(call)
 
     def _select_calls_by_lines(self, distinct_lines):
         calls = []
@@ -128,12 +128,17 @@ class MonitoredMethod(CallContainer):
         self.full_name = method_info.full_name
         self.flows = []
         self.run_lines = {}
-        self._calls_by_id = {}
+        self.calls_by_id = {}
 
     def distinct_run_lines(self):
         return self.run_lines.keys()
 
-    def first_run_line(self):
+    def show_objects(self):
+        print('MonitoredMethod')
+        print('- name: ' + self.name)
+        print('- calls: ' + str(len(self.calls)))
+
+    def _get_first_run_line(self):
         return self.calls[0].run_lines[0]
 
     def _add_run_line(self, lineno):
@@ -141,12 +146,12 @@ class MonitoredMethod(CallContainer):
         self.run_lines[lineno] = line_freq + 1
 
     def _get_call_from_id(self, call_id):
-        return self._calls_by_id.get(call_id, None)
+        return self.calls_by_id.get(call_id, None)
 
     def _add_call(self, call_state, call_stack, call_id):
         call = MethodCall(call_state, call_stack, self)
-        super().add_call(call)
-        self._calls_by_id[call_id] = call
+        super()._add_call(call)
+        self.calls_by_id[call_id] = call
         return call
 
     def _add_flow(self, flow_pos, distinct_run_lines, flow_calls):
@@ -168,11 +173,6 @@ class MonitoredMethod(CallContainer):
     def _update_call_info(self):
         self.info._update_call_info(self)
 
-    def show_objects(self):
-        print('MonitoredMethod')
-        print('- name: ' + self.name)
-        print('- calls: ' + str(len(self.calls)))
-
     def __str__(self):
         return f'MonitoredMethod: {self.full_name} (calls: {len(self.calls)})'
 
@@ -185,12 +185,12 @@ class MethodFlow(CallContainer):
         self.distinct_run_lines = distinct_run_lines
         self.monitored_method = monitored_method
         self.info = None
-        self._found_first_run_line = False
+        self.found_first_run_line = False
 
     def _update_flow_info(self):
         lineno = 0
         self.info = FlowInfo(self)
-        self._found_first_run_line = False
+        self.found_first_run_line = False
 
         for lineno_entity in range(self.monitored_method.info.start_line, self.monitored_method.info.end_line+1):
             lineno += 1
@@ -205,25 +205,25 @@ class MethodFlow(CallContainer):
     def _get_line_status(self, current_line):
 
         if current_line in self.distinct_run_lines:
-            self._found_first_run_line = True
+            self.found_first_run_line = True
             return RunStatus.RUN
 
         # _find_executable_linenos of trace returns method/function definitions as executable lines (?).
         # We should flag those definitions as not executable lines (NOT_EXEC). Otherwise, the definitions would impact
         # on the flows, coverage, etc. The solution for now is flagging all first lines as not executable until we
         # find the first run line. This way, the definitions are flagged as not executable lines...
-        if not self._found_first_run_line:
+        if not self.found_first_run_line:
             return RunStatus.NOT_EXEC
 
         if current_line not in self.distinct_run_lines:
-            if not self.monitored_method.info.line_is_executable(current_line):
+            if not self.monitored_method.info._line_is_executable(current_line):
                 return RunStatus.NOT_EXEC
 
         return RunStatus.NOT_RUN
 
     def _get_line_state(self, current_line, n=0):
         call = self.calls[n]
-        return call.get_line_state(current_line)
+        return call._get_line_state(current_line)
 
 
 class MethodCall:
@@ -245,31 +245,37 @@ class MethodCall:
     def distinct_run_lines(self):
         return sorted(list(set(self.run_lines)))
 
-    def get_line_state(self, lineno):
+    def show_objects(self):
+        print('MethodCall')
+        print('- distinct_run_lines: ' + str(self.distinct_run_lines()))
+        print('- run_lines: ' + str(self.run_lines))
+        self.call_state.show_objects()
+
+    def _get_line_state(self, lineno):
 
         if self.monitored_method.info.start_line == lineno:
-            return self.line_arg_state()
+            return self._line_arg_state()
 
         if lineno in self.monitored_method.info.return_lines:
-            return self.line_return_state()
+            return self._line_return_state()
 
-        states = self.call_state.states_for_line(lineno)
+        states = self.call_state._states_for_line(lineno)
         if states:
-            return self.line_var_states(states)
+            return self._line_var_states(states)
         return '', ''
 
-    def line_arg_state(self):
+    def _line_arg_state(self):
         arg_str = ''
         for arg in self.call_state.arg_states:
             if arg.name != 'self':
                 arg_str += str(arg)
         return LineType.ARG, arg_str
 
-    def line_return_state(self):
+    def _line_return_state(self):
         return_state = self.call_state.return_state
         return LineType.RETURN, str(return_state)
 
-    def line_var_states(self, states):
+    def _line_var_states(self, states):
         return LineType.VAR, states
 
     def _add_run_line(self, lineno):
@@ -277,12 +283,6 @@ class MethodCall:
 
     def __eq__(self, other):
         return other == self.run_lines
-
-    def show_objects(self):
-        print('MethodCall')
-        print('- distinct_run_lines: ' + str(self.distinct_run_lines()))
-        print('- run_lines: ' + str(self.run_lines))
-        self.call_state.show_objects()
 
 
 class CallState:
@@ -293,43 +293,6 @@ class CallState:
         self.yield_states = []
         self.return_state = None
         self.exception_state = None
-
-    def show_objects(self):
-        if self.has_argument():
-            print('ArgState')
-            for arg in self.arg_states:
-                print('- ' + str(arg))
-        if self.has_var():
-            print('VarStateHistory')
-            for var in self.var_states:
-                print('- ' + str(self.var_states[var]))
-        if self.has_return():
-            print('ReturnState: ' + str(self.return_state))
-        if self.has_exception():
-            print('ExceptionState: ' + str(self.exception_state))
-
-    def return_boolean(self):
-        return self.return_state and self.return_state.type == 'bool'
-
-    def states_for_line(self, lineno):
-        states = []
-        for var in self.var_states:
-            var_states = ''
-            if var != 'self':
-                call_state = self.var_states[var]
-                for state in call_state.states:
-                    if state.inline == lineno:
-                        if str(state) not in var_states and state.value_has_changed:
-                            var_states += str(state) + ' '
-            if var_states:
-                states.append(var_states.strip())
-        return states
-
-    def get_yield_states(self):
-        if len(self.yield_states) <= 1:
-            return self.yield_states
-        # Remove the last element. This one is saved as an implicit return
-        return self.yield_states[:-1]
 
     def has_argument(self):
         return len(self.arg_states) > 0 and self.arg_states[0].name != 'self'
@@ -345,6 +308,43 @@ class CallState:
 
     def has_yield(self):
         return len(self.yield_states) > 0
+
+    def return_type(self, t):
+        return self.return_state and self.return_state.type == t
+
+    def get_yield_states(self):
+        if len(self.yield_states) <= 1:
+            return self.yield_states
+        # Remove the last element. This one is saved as an implicit return
+        return self.yield_states[:-1]
+
+    def show_objects(self):
+        if self.has_argument():
+            print('ArgState')
+            for arg in self.arg_states:
+                print('- ' + str(arg))
+        if self.has_var():
+            print('VarStateHistory')
+            for var in self.var_states:
+                print('- ' + str(self.var_states[var]))
+        if self.has_return():
+            print('ReturnState: ' + str(self.return_state))
+        if self.has_exception():
+            print('ExceptionState: ' + str(self.exception_state))
+
+    def _states_for_line(self, lineno):
+        states = []
+        for var in self.var_states:
+            var_states = ''
+            if var != 'self':
+                call_state = self.var_states[var]
+                for state in call_state.states:
+                    if state.inline == lineno:
+                        if str(state) not in var_states and state.value_has_changed:
+                            var_states += str(state) + ' '
+            if var_states:
+                states.append(var_states.strip())
+        return states
 
     def _save_arg_states(self, argvalues, lineno):
         for arg in argvalues.args:
@@ -371,7 +371,7 @@ class CallState:
 
     def _save_var_state(self, name, value, type, lineno, inline):
         self.var_states[name] = self.var_states.get(name, VarStateHistory(name, []))
-        self.var_states[name].add_var_state(name, value, type, lineno, inline)
+        self.var_states[name]._add_var_state(name, value, type, lineno, inline)
 
     def _save_yield_state(self, value, type, lineno):
         self.yield_states.append(YieldState(value, type, lineno))
@@ -389,26 +389,10 @@ class VarStateHistory:
         self.name = name
         self.states = states
 
-    def add_var_state(self, name, value, type, lineno, inline):
-        value_has_changed = self.detect_value_has_changed(value)
-        new_state = VarState(name, value, type, lineno, inline, value_has_changed)
-        self.states.append(new_state)
-
-    def detect_value_has_changed(self, new_value):
-        if not self.states:
-            return True
-        last_state = self.get_last_state()
-        try:
-            if last_state.value != new_value:
-                return True
-            return False
-        except Exception as e:
-            return False
-
     def get_last_state(self):
         return self.states[-1]
 
-    def first_last(self):
+    def first_last_state(self):
         if len(self.states) == 1:
             return self.states[0], self.states[0]
         return self.states[0], self.states[-1]
@@ -428,6 +412,22 @@ class VarStateHistory:
                 values.append(state.value)
             b = state.value
         return values
+
+    def _add_var_state(self, name, value, type, lineno, inline):
+        value_has_changed = self._detect_value_has_changed(value)
+        new_state = VarState(name, value, type, lineno, inline, value_has_changed)
+        self.states.append(new_state)
+
+    def _detect_value_has_changed(self, new_value):
+        if not self.states:
+            return True
+        last_state = self.get_last_state()
+        try:
+            if last_state.value != new_value:
+                return True
+            return False
+        except Exception as e:
+            return False
 
     def __str__(self):
         values = self.distinct_sequential_values()

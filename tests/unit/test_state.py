@@ -55,7 +55,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(a[0].value, '1')
         self.assertEqual(a[-1].value, '100')
 
-        first, last = call_state.var_states['a'].first_last()
+        first, last = call_state.var_states['a'].first_last_state()
         self.assertEqual(first.value, '1')
         self.assertEqual(last.value, '100')
 
@@ -73,7 +73,7 @@ class TestState(unittest.TestCase):
         self.assertEqual(a[0].value, '1')
         self.assertEqual(a[-1].value, '200')
 
-        first, last = call_state.var_states['a'].first_last()
+        first, last = call_state.var_states['a'].first_last_state()
         self.assertEqual(first.value, '1')
         self.assertEqual(last.value, '200')
 
@@ -88,11 +88,11 @@ class TestState(unittest.TestCase):
 
         call_state = result[method_name].calls[0].call_state
 
-        first, last = call_state.var_states['a'].first_last()
+        first, last = call_state.var_states['a'].first_last_state()
         self.assertEqual(first.value, '1')
         self.assertEqual(last.value, '2')
 
-        first, last = call_state.var_states['b'].first_last()
+        first, last = call_state.var_states['b'].first_last_state()
         self.assertEqual(first.value, '10')
         self.assertEqual(last.value, '110')
 

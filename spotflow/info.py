@@ -27,6 +27,15 @@ class MethodInfo:
         self.exception_lines = set()
         self.control_flow_lines = set()
 
+    def is_method(self):
+        return self.class_name is not None
+
+    def is_func(self):
+        return not self.is_method()
+
+    def loc(self):
+        return self.end_line - self.start_line
+
     def has_return(self):
         return len(self.return_lines) > 0
 
@@ -40,26 +49,6 @@ class MethodInfo:
         exec_lines = self._ensure_executable_lines_for_file()
         my_lines = range(self.start_line, self.end_line + 1)
         return line_intersection(exec_lines, my_lines)
-
-    def _ensure_executable_lines_for_file(self):
-        if self.filename not in executable_lines_for_file:
-            executable_lines_for_file[self.filename] = find_executable_linenos(self.filename)
-        return executable_lines_for_file[self.filename]
-
-    def line_is_executable(self, lineno):
-        return lineno in self.executable_lines()
-
-    def has_lineno(self, lineno):
-        return lineno in range(self.start_line, self.end_line + 1)
-
-    def is_method(self):
-        return self.class_name is not None
-
-    def is_func(self):
-        return not self.is_method()
-
-    def loc(self):
-        return self.end_line - self.start_line
 
     def get_code_lines(self):
         if not self.code_lines:
@@ -83,9 +72,20 @@ class MethodInfo:
     def summary(self):
         return f'{self.full_name} (lines: {self.start_line}-{self.end_line})'
 
+    def _has_lineno(self, lineno):
+        return lineno in range(self.start_line, self.end_line + 1)
+
+    def _ensure_executable_lines_for_file(self):
+        if self.filename not in executable_lines_for_file:
+            executable_lines_for_file[self.filename] = find_executable_linenos(self.filename)
+        return executable_lines_for_file[self.filename]
+
+    def _line_is_executable(self, lineno):
+        return lineno in self.executable_lines()
+
     def _executable_lines_without_def(self, monitored_method):
         exec_lines = self.executable_lines()
-        first_run_line = monitored_method.first_run_line()
+        first_run_line = monitored_method._get_first_run_line()
         first_run_line_index = exec_lines.index(first_run_line)
         return exec_lines[first_run_line_index:]
 
@@ -216,7 +216,7 @@ class Analysis:
         lines = self.call_container.all_distinct_run_lines()
         return self._most_common(lines)
 
-    def most_common_args(self):
+    def most_common_arg_values(self):
         args = self.call_container.arg_states()
         args_count = {}
 
@@ -225,29 +225,29 @@ class Analysis:
 
         return args_count
 
-    def most_common_args_pretty(self):
-        return self.pretty_args(self.most_common_args())
-
     def most_common_return_values(self):
         values = self.call_container.return_states()
         return self._most_common(values)
-
-    def most_common_return_values_pretty(self):
-        return self.pretty_return_values(self.most_common_return_values())
 
     def most_common_yield_values(self):
         values = self.call_container.yield_states()
         return self._most_common(values)
 
-    def most_common_yield_values_pretty(self):
-        return self.pretty_return_values(self.most_common_yield_values())
-
     def most_common_exception_values(self):
         values = self.call_container.exception_states()
         return self._most_common(values)
 
+    def most_common_args_pretty(self):
+        return self._pretty_args(self.most_common_arg_values())
+
+    def most_common_return_values_pretty(self):
+        return self._pretty_return_values(self.most_common_return_values())
+
+    def most_common_yield_values_pretty(self):
+        return self._pretty_return_values(self.most_common_yield_values())
+
     def most_common_exception_values_pretty(self):
-        return self.pretty_return_values(self.most_common_exception_values())
+        return self._pretty_return_values(self.most_common_exception_values())
 
     def _most_common(self, elements, n=10):
         try:
@@ -255,7 +255,7 @@ class Analysis:
         except TypeError:
             return []
 
-    def pretty_args(self, args, max_len=150):
+    def _pretty_args(self, args, max_len=150):
         result = []
         for arg_name in args:
             arg_value = {}
@@ -265,19 +265,19 @@ class Analysis:
                 value_str = value[0]
                 count = value[1]
                 values += f'{value_str} ({count}) '
-            arg_value['value'] = self.clear_values(values, max_len)
+            arg_value['value'] = self._clear_values(values, max_len)
             result.append(arg_value)
         return result
 
-    def pretty_return_values(self, return_values, max_len=150):
+    def _pretty_return_values(self, return_values, max_len=150):
         values = ''
         for value in return_values:
             values += f'{value[0]} ({value[1]}) '
         if values:
-            return self.clear_values(values, max_len)
+            return self._clear_values(values, max_len)
         return None
 
-    def clear_values(self, values, max_len):
+    def _clear_values(self, values, max_len):
         # values = values.rstrip(', ')
         if len(values) >= max_len:
             values = f'{values[0:max_len]}...'
