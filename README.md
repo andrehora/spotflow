@@ -1,5 +1,5 @@
 [![Tests](https://github.com/andrehora/spotflow/actions/workflows/main.yml/badge.svg)](https://github.com/andrehora/spotflow/actions/workflows/main.yml)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/spotflow)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/spotflow)](https://pypi.org/project/spotflow/)
 
 # SpotFlow
 
