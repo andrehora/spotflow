@@ -1,7 +1,18 @@
-from spotflow.utils import count_values, ratio
+from spotflow.api import monitor_unittest_module
+from spotflow.utils import count_values, ratio, write_csv
 
 
-def compute_polarity_for_test_methods(monitored_program):
+def compute_polarity(test, target_methods):
+    print('Test suite:', test.__name__)
+    monitored_program = monitor_unittest_module(test, target_methods, var_states=False)
+    test_methods = polarity_for_program(monitored_program)
+
+    project_name = target_methods[0]
+    filename = project_name + '.csv'
+    write_csv(filename, test_methods)
+
+
+def polarity_for_program(monitored_program):
 
     print('compute_polarity_for_test_methods')
 

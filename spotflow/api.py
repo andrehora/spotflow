@@ -100,5 +100,3 @@ def monitor_unittest_testcase(test_case, target_methods=None, target_files=None,
 
     return monitor(suite, target_methods, target_files, ignore_files,
                    arg_states, return_states, yield_states, exception_states, var_states)
-
-
