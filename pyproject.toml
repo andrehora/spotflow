@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "spotflow"
-version = "1.0.0"
+version = "1.1.0"
 description = "Runtime analysis for Python programs"
 authors = [
   { name="Andre Hora", email="andrehoraa@gmail.com" },
@@ -12,7 +12,7 @@ authors = [
 license = "MIT"
 readme = "README.md"
 keywords = ["dynamic-analysis", "testing"]
-requires-python = ">=3.8"
+requires-python = ">=3.7"
 dependencies = [
   'coverage == 6.5.0',
   'pytest',
