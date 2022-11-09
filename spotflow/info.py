@@ -15,7 +15,7 @@ class MethodInfo:
         self.code = code
 
         self.start_line = None
-        self.end_line = None
+        self.spotflowline = None
         self.info = None
 
         self.code_lines = None

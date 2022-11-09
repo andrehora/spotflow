@@ -23,7 +23,7 @@ class TestCSVReport(unittest.TestCase):
         flow.csv_report()
 
         self.assertEqual(len(result), 1)
-        self.assertEqual(len(result['email.message._parseparam'].calls), 94)
+        self.assertGreaterEqual(len(result['email.message._parseparam'].calls), 90)
 
         self.assertTrue(os.path.isdir('./spotflow_csv_report'))
         self.assertTrue(os.path.isfile('./spotflow_csv_report/email.message._parseparam.csv'))
