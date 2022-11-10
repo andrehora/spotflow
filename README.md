@@ -12,7 +12,9 @@ With SpotFlow, you can easily extract information about executed methods, run li
 pip install spotflow
 ```
 
-## Quick usage
+## Quick examples
+
+### Monitoring a program
 
 A simple code to be monitored in `sample.py`:
 
@@ -108,20 +110,18 @@ VarStateHistory
 ReturnState: 7
 ```
 
----
+### Monitoring a test suite
 
 You can also monitor tests.
-For example, to monitor the test case [`TestMessageAPI`](https://github.com/python/cpython/blob/4702552885811d0af8f0e4545f494336801ad4dd/Lib/test/test_email/test_email.py#L55
-) of the Python Standard Library [`email`](https://docs.python.org/3/library/email.examples.html):
+For example, to monitor the test suite [`test_gzip`](https://github.com/python/cpython/blob/main/Lib/test/test_gzip.py) of the Python Standard Library:
 
 ```
-$ python -m spotflow -t email unittest test.test_email.test_email.TestMessageAPI
+$ python -m spotflow -t gzip unittest test.test_gzip
 ```
 
 Monitoring other tests of the Python Standard Library:
 ```
 $ python -m spotflow -t ast unittest test.test_ast
-$ python -m spotflow -t gzip unittest test.test_gzip
 $ python -m spotflow -t urllib unittest test.test_urlparse
 $ python -m spotflow -t json unittest test.test_json
 $ python -m spotflow -t calendar unittest test.test_calendar
