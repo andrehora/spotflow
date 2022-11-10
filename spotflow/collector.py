@@ -210,12 +210,12 @@ class Collector:
                 # The most common case: simply get self class
                 else:
                     obj_class = frame.f_locals['self'].__class__
-                method = getattr(obj_class, entity_name, None)
+                method = inspect.getattr_static(obj_class, entity_name, None)
                 return method
 
             if 'cls' in frame.f_locals:
                 obj_class = frame.f_locals['cls']
-                method = getattr(obj_class, entity_name, None)
+                method = inspect.getattr_static(obj_class, entity_name, None)
                 return method
 
             # Function
@@ -234,6 +234,33 @@ class Collector:
 
         except Exception as e:
             return None
+
+    def ensure_target_method(self, frame, current_entity_name, method_name):
+
+        # Handle special cases in which 'method' is already a method or function object
+        if is_method_or_func(method_name):
+            if current_entity_name in self.target_methods_cache:
+                return self.target_methods_cache[current_entity_name]
+            entity = MethodInfo.build(method_name)
+            self.target_methods_cache[current_entity_name] = entity
+            return entity
+
+        if method_name and not current_entity_name.startswith(method_name) and \
+                not current_entity_name.endswith(method_name):
+            return None
+
+        if current_entity_name in self.target_methods_cache:
+            return self.target_methods_cache[current_entity_name]
+
+        func_or_method = self.ensure_func_or_method(frame)
+        if not func_or_method:
+            return None
+        entity = MethodInfo.build(func_or_method)
+        if not entity:
+            return None
+
+        self.target_methods_cache[current_entity_name] = entity
+        return entity
 
     def find_local_func(self, entity_name, local_elements):
         # 1st: check the back locals

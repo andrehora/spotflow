@@ -22,7 +22,30 @@ python -m spotflow -t difflib unittest test.test_difflib
 python -m spotflow -t imaplib unittest test.test_imaplib
 python -m spotflow -t smtplib unittest test.test_smtplib
 
+python -m spotflow -a calls -t abc unittest test.test_abc
+python -m spotflow -a calls -t argparse unittest test.test_argparse
+python -m spotflow -a calls -t base64 unittest test.test_base64
+python -m spotflow -a calls -t bdb unittest test.test_bdb
+python -m spotflow -a calls -t binascii unittest test.test_binascii # check
+python -m spotflow -a calls -t cmd unittest test.test_cmd
+python -m spotflow -a calls -t codecs unittest test.test_codecs # slow
+python -m spotflow -a calls -t colorsys unittest test.test_colorsys
+python -m spotflow -a calls -t compileall unittest test.test_compileall
+python -m spotflow -a calls -t configparser unittest test.test_configparser # slow
+python -m spotflow -a calls -t copy unittest test.test_copy
+python -m spotflow -a calls -t copyreg unittest test.test_copyreg
+python -m spotflow -a calls -t dbm unittest test.test_dbm
+python -m spotflow -a calls -t dis unittest test.test_dis # slow
+python -m spotflow -a calls -t doctest unittest test.test_doctest
+python -m spotflow -a calls -t filecmp unittest test.test_filecmp
+python -m spotflow -a calls -t fileinput unittest test.test_fileinput
+python -m spotflow -a calls -t html unittest test.test_html
+python -m spotflow -a calls -t http unittest test.test_http_cookies
+python -m spotflow -a calls -t http unittest test.test_httpservers
+python -m spotflow -a calls -t inspect unittest test.test_inspect.TestGetattrStatic # fail
+python -m spotflow -a calls -t io unittest test.test_io
+
 # running other projects
-python -m spotflow -t rich -d pytest rich/tests
-python -m spotflow -t dateutil pytest dateutil/test
-python -m spotflow -t rest_framework pytest tests
+#python -m spotflow -t rich -d pytest rich/tests
+#python -m spotflow -t dateutil pytest dateutil/test
+#python -m spotflow -t rest_framework pytest tests

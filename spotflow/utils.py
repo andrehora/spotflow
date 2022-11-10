@@ -61,12 +61,22 @@ def find_module_name(filename):
     return filename.split('/')[-1].split('.')[0]
 
 
+def getattr_static(obj, attr1, attr2):
+    me = inspect.getattr_static(obj, attr1)
+    return inspect.getattr_static(me, attr2)
+
+
+def get_class_name(obj):
+    return getattr_static(obj, '__class__', '__name__')
+
+
 def get_metadata(func_or_method):
     func = func_or_method
     class_name = None
     if isinstance(func_or_method, types.MethodType):
         func = func_or_method.__func__
         class_name = func_or_method.__self__.__class__.__name__
+        # class_name = get_class_name(func_or_method.__self__)
 
     module_name, name, filename, start_line, end_line, full_name, code = function_metadata(func)
     return module_name, class_name, name, filename, start_line, end_line, full_name, code

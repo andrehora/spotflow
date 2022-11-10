@@ -32,12 +32,3 @@ def handle_bytecode():
     print(bytecode.dis())
     for instr in bytecode:
         print(instr)
-
-
-def runpy():
-    import runpy
-    msg = {'msg': [1,2,3]}
-    runpy.run_path("comparator.py", init_globals=msg)
-
-
-# handle_bytecode()
