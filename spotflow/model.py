@@ -243,6 +243,8 @@ class MethodCall:
         self.run_lines = []
 
     def is_directly_called_from_test(self):
+        if len(self.call_stack) <= 1:
+            return False
         caller = self.call_stack[-2]
         return '.test_' in caller
 

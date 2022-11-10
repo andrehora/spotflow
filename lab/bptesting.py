@@ -38,7 +38,7 @@ def calls_with_primitive_types(monitored_program):
     print('counter_all_primitive', counter_all_primitive)
 
 
-def calls_with_return_and_args(monitored_program):
+def calls_with_return_and_args(monitored_program, folder):
 
     print('calls_with_return_and_args')
 
@@ -63,8 +63,8 @@ def calls_with_return_and_args(monitored_program):
             values += call_state.return_state.value + '\n'
 
             hash_id = hashlib.sha1(values.encode()).hexdigest()
-            ensure_dir('hash38')
-            write_txt('hash38/' + str(hash_id) + '.txt', values)
+            ensure_dir(folder)
+            write_txt(folder + '/' + str(hash_id) + '.txt', values)
 
             print(values)
             print(hash_id)
