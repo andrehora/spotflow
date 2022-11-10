@@ -16,7 +16,7 @@ def polarity_for_program(monitored_program):
 
     print('compute_polarity_for_test_methods')
 
-    test_suite_data = compute_polarity(monitored_program, min_branch_frequency=99)
+    test_suite_data = run_polarity(monitored_program, min_branch_frequency=99)
 
     # for each in branch_track_values:
     #     tf_values = branch_track_values[each]
@@ -31,7 +31,7 @@ def polarity_for_program(monitored_program):
     return to_export
 
 
-def compute_polarity(monitored_program, min_branch_frequency=95):
+def run_polarity(monitored_program, min_branch_frequency=95):
 
     branch_data = branch_data_for_program(monitored_program)
     test_suite_branch_data = {}

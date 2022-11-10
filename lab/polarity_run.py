@@ -36,5 +36,5 @@ def main():
 
 # main()
 
-# from test import test_gzip as test
-# monitor_test(test, ['gzip'])
+from test import test_gzip as test
+compute_polarity(test, ['gzip'])
