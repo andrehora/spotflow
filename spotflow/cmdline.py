@@ -10,8 +10,8 @@ parser = argparse.ArgumentParser(description='Command line for SpotFlow')
 
 parser.add_argument('-a', '--action', type=str,
                     help='Action to be performed after monitoring the program. '
-                         'It can be "mine", "pprint", "html", "csv". '
-                         'Default shows major objects.')
+                         'It can be "summary", "calls", "mine", or "pprint". '
+                         'Default is "summary".')
 
 parser.add_argument('-t', '--target-method', type=str, action='append',
                     help='Target method full name (in the format module.Class.method) or prefix. '
@@ -97,8 +97,11 @@ class SpotFlowScript:
 
     def handle_action(self, flow):
 
-        if not self.action:
-            flow.result().show_objects()
+        if not self.action or (self.action and self.action.lower() == 'summary'):
+            flow.result().show_summary()
+
+        if self.action and self.action.lower() == 'calls':
+            flow.result().show_calls()
 
         if self.action and self.action.lower() == 'mine':
             self.handle_mine(flow.result())
@@ -106,11 +109,11 @@ class SpotFlowScript:
         if self.action and self.action.lower() == 'pprint':
             flow.pprint_report()
 
-        if self.action and self.action.lower() == 'html':
-            flow.html_report(self.directory)
-
-        if self.action and self.action.lower() == 'csv':
-            flow.csv_report(self.directory)
+        # if self.action and self.action.lower() == 'html':
+        #     flow.html_report(self.directory)
+        #
+        # if self.action and self.action.lower() == 'csv':
+        #     flow.csv_report(self.directory)
 
     def handle_mine(self, result):
         spec = importlib.util.spec_from_file_location("examples", "./examples/miner.py")

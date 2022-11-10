@@ -26,5 +26,5 @@ flow.stop()
 
 # the result is a MonitoredProgram object
 monitored_program = flow.result()
-monitored_program.show_objects()
+monitored_program.show_summary()
 

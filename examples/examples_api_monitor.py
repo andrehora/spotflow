@@ -16,5 +16,5 @@ def inputs_count():
 
 
 monitored_program = monitor(inputs_count, [count_uppercase_words])
-monitored_program.show_objects()
+monitored_program.show_summary()
 

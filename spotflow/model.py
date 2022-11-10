@@ -16,15 +16,23 @@ class MonitoredProgram:
             calls.extend(mth.calls)
         return calls
 
-    def show_objects(self):
+    def show_calls(self):
+        sorted_methods = sorted(self.all_methods(), key=lambda mth: len(mth.calls), reverse=True)
+        print('rank, method_name, number_of_calls')
+        count = 0
+        for method in sorted_methods:
+            count += 1
+            print(f'{count}, {method.full_name}, {len(method.calls)}')
+
+    def show_summary(self):
         print('============= Result =============')
         print('MonitoredProgram')
         print('- methods: ' + str(len(self.all_methods())))
         print('- calls: ' + str(len(self.all_calls())))
         for m in self.all_methods():
-            m.show_objects()
+            m.show_summary()
             for call in m.calls:
-                call.show_objects()
+                call.show_summary()
 
     def _update_flows_and_info(self):
         for method in self.monitored_methods.values():
@@ -133,7 +141,7 @@ class MonitoredMethod(CallContainer):
     def distinct_run_lines(self):
         return self.run_lines.keys()
 
-    def show_objects(self):
+    def show_summary(self):
         print('MonitoredMethod')
         print('- name: ' + self.name)
         print('- calls: ' + str(len(self.calls)))
@@ -245,11 +253,11 @@ class MethodCall:
     def distinct_run_lines(self):
         return sorted(list(set(self.run_lines)))
 
-    def show_objects(self):
+    def show_summary(self):
         print('MethodCall')
         print('- distinct_run_lines: ' + str(self.distinct_run_lines()))
         print('- run_lines: ' + str(self.run_lines))
-        self.call_state.show_objects()
+        self.call_state.show_summary()
 
     def _get_line_state(self, lineno):
 
@@ -318,7 +326,7 @@ class CallState:
         # Remove the last element. This one is saved as an implicit return
         return self.yield_states[:-1]
 
-    def show_objects(self):
+    def show_summary(self):
         if self.has_argument():
             print('ArgState')
             for arg in self.arg_states:
