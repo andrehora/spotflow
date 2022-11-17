@@ -42,6 +42,11 @@ def read_file_lines(filename):
         return f.readlines()
 
 
+def read_file_lines2(filename):
+    with open(filename, 'r', encoding="utf-8") as f:
+        return f.read().splitlines()
+
+
 def copy_files(local_dir, files, destination):
     for static in files:
         shutil.copyfile(full_filename(local_dir, static), os.path.join(destination, static))
@@ -270,3 +275,7 @@ def find_distinct_in_file(old_file, new_file):
 def find_distinct_in_set(old, new):
     return new ^ old
 
+
+def get_python_version():
+    from platform import python_version
+    return python_version()
