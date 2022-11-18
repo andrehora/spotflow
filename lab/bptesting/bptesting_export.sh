@@ -20,7 +20,7 @@ function run_on_docker() {
   docker build -t spotflow --build-arg VERSION=$python_version .
 
   docker create --name dummy spotflow
-  docker cp dummy:/app/v.txt .
+  docker cp dummy:/app/spotflow .
 
   docker rm -f dummy
   docker image rm -f spotflow
