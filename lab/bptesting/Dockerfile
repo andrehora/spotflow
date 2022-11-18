@@ -1,4 +1,8 @@
 ARG VERSION=latest
 FROM bitnami/python:$VERSION
+
 RUN pip install spotflow
-RUN python -V 2> v.txt
+RUN git clone https://github.com/andrehora/spotflow
+RUN cd spotflow/lab/bptesting
+RUN python bptesting_export.py
+

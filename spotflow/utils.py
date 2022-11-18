@@ -274,8 +274,3 @@ def find_distinct_in_file(old_file, new_file):
 
 def find_distinct_in_set(old, new):
     return new ^ old
-
-
-def get_python_version():
-    from platform import python_version
-    return python_version()
