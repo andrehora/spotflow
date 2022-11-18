@@ -4,5 +4,5 @@ FROM bitnami/python:$VERSION
 RUN pip install spotflow
 RUN git clone https://github.com/andrehora/spotflow
 RUN cd spotflow/lab/bptesting
-RUN python bptesting_export.py
+#RUN python bptesting_export.py
 
