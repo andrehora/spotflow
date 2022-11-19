@@ -4,9 +4,10 @@ from platform import python_version
 
 
 from test import test_gzip as test
+output_folder = python_version()
 project = 'gzip'
 python_version = python_version()
-folder = project + "-" + python_version
+save_folder = output_folder + "/" + project + "-" + python_version
 
 monitored_program = monitor_unittest_module(test, [project])
-calls_with_return_and_args(monitored_program, folder)
+calls_with_return_and_args(monitored_program, save_folder)
