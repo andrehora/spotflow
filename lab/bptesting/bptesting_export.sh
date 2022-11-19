@@ -22,8 +22,8 @@ function run_on_docker() {
   docker create --name dummy spotflow
   docker cp dummy:/app/spotflow/$python_version .
 
-#  docker rm -f dummy
-#  docker image rm -f spotflow
+  docker rm -f dummy
+  docker image rm -f spotflow
 
 }
 
