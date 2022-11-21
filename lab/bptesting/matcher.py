@@ -36,17 +36,28 @@ class ArgReturnValue:
 
 class ChangeRepository:
 
-    def __init__(self, project, old_version, new_version):
-        self.project = project
+    def __init__(self, old_version, new_version, projects):
+        # self.project = project
         self.old_version = old_version
         self.new_version = new_version
+        self.projects = projects
         self.arg_return_values = {}
-        self.create()
+        self.build()
 
-    def create(self):
+    def build(self):
+        for project in self.projects:
+            self.build_for_each(project)
 
-        old_files = list_files(self.project + self.old_version)
-        new_files = list_files(self.project + self.new_version)
+    def get_project_dir(self, project, version):
+        return version + '/' + project + '-' + version
+
+    def build_for_each(self, project):
+
+        old_dir = self.get_project_dir(project, self.old_version)
+        new_dir = self.get_project_dir(project, self.new_version)
+
+        old_files = list_files(old_dir)
+        new_files = list_files(new_dir)
 
         new_files_only = new_files - old_files
         old_files_only = old_files - new_files
@@ -54,14 +65,14 @@ class ChangeRepository:
         print('old_files_only', len(old_files_only))
 
         for each in new_files_only:
-            value = read_file_lines2(self.project + self.new_version + '/' + each)
+            value = read_file_lines2(new_dir + '/' + each)
             arg_value = get_key(value)
             return_value = get_value(value)
             v = ArgReturnValue(arg_value, return_value, is_new=True)
             self.add_new(v)
 
         for each in old_files_only:
-            value = read_file_lines2(self.project + self.old_version + '/' + each)
+            value = read_file_lines2(old_dir + '/' + each)
             arg_value = get_key(value)
             return_value = get_value(value)
             v = ArgReturnValue(arg_value, return_value, is_new=False)
@@ -86,14 +97,6 @@ class ChangeRepository:
     def add_old(self, v):
         if v.arg_value in self.arg_return_values:
             self.arg_return_values[v.arg_value].append(v)
-
-
-project = 'smtplib'
-old_version = '38'
-new_version = '39'
-
-repo = ChangeRepository(project, old_version, new_version)
-repo.find_changes()
 
 
 

@@ -1,5 +1,5 @@
 from spotflow.api import monitor_unittest_module
-from lab.bptesting.bptesting import calls_with_return_and_args
+from lab.bptesting.exporter import calls_with_return_and_args
 from platform import python_version
 
 
