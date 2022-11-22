@@ -4,13 +4,12 @@ from platform import python_version
 import importlib
 
 
-def export_bptesting(project_name):
+def export_bptesting(project):
 
-    test_suite = f'test.test_{project_name}'
+    test_suite = f'test.test_{project}'
     test = importlib.import_module(test_suite)
 
     output_folder = 'output'
-    project = 'gzip'
     version = python_version()
 
     save_folder = output_folder + "/" + version + "/" + project + "-" + version
@@ -23,4 +22,5 @@ def export_bptesting(project_name):
 projects = ['ast', 'gzip', 'json', 'calendar', 'collections', 'csv', 'ftplib', 'tarfile', 'locale', 'difflib']
 
 for project in projects:
+    print(project)
     export_bptesting(project)
