@@ -20,6 +20,7 @@ function run_on_docker() {
   docker build -t spotflow --no-cache --build-arg VERSION=$python_version .
 
   docker create --name dummy spotflow
+  mkdir output
   docker cp dummy:/app/spotflow/output/$python_version ./output/$python_version
 
   docker rm -f dummy
@@ -32,7 +33,7 @@ function run_on_docker() {
 # python 3.9.x: 1-15 - https://peps.python.org/pep-0596/
 # python 3.10.x: 1-8 - https://peps.python.org/pep-0619/
 
-run_bptesting 3.7 15
+run_bptesting 3.7 2
 #run_bptesting 3.8 15
 #run_bptesting 3.9 15
 #run_bptesting 3.10 8

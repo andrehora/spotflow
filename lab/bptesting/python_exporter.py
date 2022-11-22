@@ -20,7 +20,7 @@ def export_bptesting(project):
 
 
 # projects = ['ast', 'gzip', 'json', 'calendar', 'collections', 'csv', 'ftplib', 'tarfile', 'locale', 'difflib']
-projects = ['ast', 'gzip']
+projects = ['ast', 'gzip', 'json', 'csv', 'locale']
 
 for project in projects:
     print(project)
