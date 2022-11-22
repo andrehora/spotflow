@@ -19,7 +19,8 @@ def export_bptesting(project):
     calls_with_return_and_args(monitored_program, save_folder)
 
 
-projects = ['ast', 'gzip', 'json', 'calendar', 'collections', 'csv', 'ftplib', 'tarfile', 'locale', 'difflib']
+# projects = ['ast', 'gzip', 'json', 'calendar', 'collections', 'csv', 'ftplib', 'tarfile', 'locale', 'difflib']
+projects = ['ast', 'gzip']
 
 for project in projects:
     print(project)
