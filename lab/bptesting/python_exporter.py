@@ -20,7 +20,7 @@ def export_bptesting(project_name):
     calls_with_return_and_args(monitored_program, save_folder)
 
 
-projects = ['gzip']
+projects = ['ast', 'gzip', 'json', 'calendar', 'collections', 'csv', 'ftplib', 'tarfile', 'locale', 'difflib']
 
 for project in projects:
     export_bptesting(project)
