@@ -2,7 +2,7 @@ from spotflow.utils import write_txt, ensure_dir
 import hashlib
 
 
-def calls_with_return_and_args(monitored_program, folder):
+def calls_with_return_and_args(monitored_program, save_dir):
 
     print('calls_with_return_and_args')
 
@@ -27,8 +27,8 @@ def calls_with_return_and_args(monitored_program, folder):
             values += call_state.return_state.value + '\n'
 
             hash_id = hashlib.sha1(values.encode()).hexdigest()
-            ensure_dir(folder)
-            write_txt(folder + '/' + str(hash_id) + '.txt', values)
+            ensure_dir(save_dir)
+            write_txt(save_dir + '/' + str(hash_id) + '.txt', values)
 
             print(values)
             print(hash_id)

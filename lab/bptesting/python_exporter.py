@@ -4,19 +4,24 @@ from platform import python_version
 import importlib
 
 
+def get_output_dir(output_dir, project, version):
+    return output_dir + "/" + version + "/" + project + "-" + version
+
+
 def export_bptesting(project):
 
     test_suite = f'test.test_{project}'
     test = importlib.import_module(test_suite)
 
-    output_folder = 'output'
+    output_dir = 'output'
     version = python_version()
 
-    save_folder = output_folder + "/" + version + "/" + project + "-" + version
-    print(save_folder)
+    save_dir = get_output_dir(output_dir, project, version)
+    # save_dir = output_dir + "/" + version + "/" + project + "-" + version
+    print(save_dir)
 
     monitored_program = monitor_unittest_module(test, [project])
-    calls_with_return_and_args(monitored_program, save_folder)
+    calls_with_return_and_args(monitored_program, save_dir)
 
 
 # projects = ['ast', 'gzip', 'json', 'calendar', 'collections', 'csv', 'ftplib', 'tarfile', 'locale', 'difflib']
