@@ -17,10 +17,9 @@ def export_bptesting(project):
     version = python_version()
 
     save_dir = get_output_dir(output_dir, project, version)
-    # save_dir = output_dir + "/" + version + "/" + project + "-" + version
     print(save_dir)
 
-    monitored_program = monitor_unittest_module(test, [project])
+    monitored_program = monitor_unittest_module(test, [project], var_states=False)
     calls_with_return_and_args(monitored_program, save_dir)
 
 

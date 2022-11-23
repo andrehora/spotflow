@@ -30,9 +30,9 @@ def calls_with_return_and_args(monitored_program, save_dir):
             ensure_dir(save_dir)
             write_txt(save_dir + '/' + str(hash_id) + '.txt', values)
 
-            print(values)
-            print(hash_id)
-            print('======================')
+            # print(values)
+            # print(hash_id)
+            # print('======================')
 
     print('all_methods', len(monitored_program.all_methods()))
     print('all_calls', len(monitored_program.all_calls()))
