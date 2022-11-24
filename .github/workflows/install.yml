@@ -2,7 +2,7 @@ name: Install
 
 jobs:
 
-  tests:
+  install:
     name: "Python ${{ matrix.python-version }} on ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}"
 
