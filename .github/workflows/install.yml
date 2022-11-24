@@ -20,5 +20,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-      - name: Install and run SpotFlow
+      - name: Install SpotFlow
         run: sh tests/smoke/install.sh
+      - name: Run SpotFlow
+        run: sh tests/smoke/run.sh
