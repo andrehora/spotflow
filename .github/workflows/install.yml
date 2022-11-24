@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-      - name: Install SpotFlow
-        run: pip install spotflow
+#      - name: Install SpotFlow
+#        run: pip install spotflow
       - name: Run SpotFlow
         run: python -m spotflow
