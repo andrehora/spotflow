@@ -20,9 +20,5 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-      - name: Install SpotFlow
-        run: pip install spotflow
-      - name: Run SpotFlow
-        run: |
-          msg= $(python -m spotflow)
-          if [ $msg != "Syntax OK" ]; then
+      - name: Install and run SpotFlow
+        run: sh tests/smoke/install.sh
