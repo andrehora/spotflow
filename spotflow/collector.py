@@ -62,14 +62,26 @@ def update_method_info(method_info, frame, event):
 
     lineno = frame.f_lineno
 
-    if lineno in method_info.other_lines or method_info.control_flow_lines or \
-            lineno in method_info.return_lines or lineno in method_info.yield_lines or \
-            lineno in method_info.exception_lines:
+    if event == 'call':
+        return
+
+    if lineno in method_info.other_lines:
+        return
+
+    if lineno in method_info.control_flow_lines:
+        return
+
+    if lineno in method_info.return_lines or lineno in method_info.yield_lines:
+        return
+
+    if lineno in method_info.exception_lines:
         return
 
     if event == 'line':
         if line_has_control_flow(frame):
             method_info.control_flow_lines.add(lineno)
+        else:
+            method_info.other_lines.add(lineno)
 
     elif event == 'return':
         if line_has_return(frame):
@@ -80,8 +92,6 @@ def update_method_info(method_info, frame, event):
     elif event == 'exception':
         method_info.exception_lines.add(lineno)
 
-    else:
-        method_info.other_lines.add(lineno)
 
 
 def find_local_func(entity_name, local_elements):
