@@ -6,38 +6,42 @@ from coverage.cmdline import PyRunner
 
 OK, ERR = 0, 1
 
-parser = argparse.ArgumentParser(description='Command line for SpotFlow')
 
-parser.add_argument('-a', '--action', type=str,
-                    help='Action to be performed after monitoring the program. '
-                         'It can be "summary", "calls", "mine", or "pprint". '
-                         'Default is "summary".')
+def parse_args():
 
-parser.add_argument('-t', '--target-method', type=str, action='append',
-                    help='Target method full name (in the format module.Class.method) or prefix. '
-                         'For example, "parser.StringParser.count" or simply "parse". '
-                         'To monitor multiple methods, use multiple arguments, like -t name1 -t name2 -t ...')
+    parser = argparse.ArgumentParser(description='Command line for SpotFlow')
 
-parser.add_argument('-f', '--target-file', type=str, action='append',
-                    help='Target file. It can be a substring of the file full path. '
-                         'For example, "path/to/my_program.py" or simply "my_program". '
-                         'To monitor multiple files, use multiple arguments, like -f file1 -f file2 -f ...')
+    parser.add_argument('-a', '--action', type=str,
+                        help='Action to be performed after monitoring the program. '
+                             'It can be "summary", "calls", "mine", or "pprint". '
+                             'Default is "summary".')
 
-parser.add_argument('-i', '--ignore-file', type=str, action='append',
-                    help='File to ignore. It can be a substring of the file full path. '
-                         'To ignore multiple files, use multiple arguments, like -i file1 -i file2 -i ...')
+    parser.add_argument('-t', '--target-method', type=str, action='append',
+                        help='Target method full name (in the format module.Class.method) or prefix. '
+                             'For example, "parser.StringParser.count" or simply "parse". '
+                             'To monitor multiple methods, use multiple arguments, like -t name1 -t name2 -t ...')
 
-parser.add_argument('-d', '--dir', type=str, help='Write the output files to dir.')
+    parser.add_argument('-f', '--target-file', type=str, action='append',
+                        help='Target file. It can be a substring of the file full path. '
+                             'For example, "path/to/my_program.py" or simply "my_program". '
+                             'To monitor multiple files, use multiple arguments, like -f file1 -f file2 -f ...')
 
-parser.add_argument('run',  type=str, nargs=argparse.REMAINDER,
-                    help='Command line to run, for example: "my_program.py", "pytest tests", "unittest discover", etc.')
+    parser.add_argument('-i', '--ignore-file', type=str, action='append',
+                        help='File to ignore. It can be a substring of the file full path. '
+                             'To ignore multiple files, use multiple arguments, like -i file1 -i file2 -i ...')
 
-args = parser.parse_args()
+    parser.add_argument('-d', '--dir', type=str, help='Write the output files to dir.')
+
+    parser.add_argument('run',  type=str, nargs=argparse.REMAINDER,
+                        help='Command line to run, for example: "my_program.py", "pytest tests", "unittest discover", etc.')
+
+    return parser.parse_args()
 
 
 class SpotFlowScript:
 
     def __init__(self):
+        args = parse_args()
         self.action = args.action
         self.target_methods = args.target_method
         self.target_files = args.target_file

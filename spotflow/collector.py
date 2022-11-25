@@ -1,5 +1,5 @@
 import inspect
-from spotflow.utils import obj_value, obj_type, find_full_name, is_method_or_func
+from spotflow.utils import obj_value, obj_type, find_full_name, is_method_or_func, get_module_names
 from spotflow.model import CallState, MonitoredMethod, MonitoredProgram
 from spotflow.info import MethodInfo
 from spotflow.tracer import PyTracer
@@ -58,6 +58,100 @@ def line_has_keywords(frame, keywords):
     return False
 
 
+def update_method_info(method_info, frame, event):
+
+    lineno = frame.f_lineno
+
+    if lineno in method_info.other_lines or method_info.control_flow_lines or \
+            lineno in method_info.return_lines or lineno in method_info.yield_lines or \
+            lineno in method_info.exception_lines:
+        return
+
+    if event == 'line':
+        if line_has_control_flow(frame):
+            method_info.control_flow_lines.add(lineno)
+
+    elif event == 'return':
+        if line_has_return(frame):
+            method_info.return_lines.add(lineno)
+        elif line_has_yield(frame):
+            method_info.yield_lines.add(lineno)
+
+    elif event == 'exception':
+        method_info.exception_lines.add(lineno)
+
+    else:
+        method_info.other_lines.add(lineno)
+
+
+def find_local_func(entity_name, local_elements):
+    # 1st: check the back locals
+    if entity_name in local_elements:
+        func = local_elements[entity_name]
+        if inspect.isfunction(func) and entity_name == func.__name__:
+            if '<locals>' in func.__qualname__:
+                return func
+
+    # 2nd: check the back local values
+    for func in local_elements.values():
+        if inspect.isfunction(func) and entity_name == func.__name__:
+            if '<locals>' in func.__qualname__:
+                return func
+
+    # 3rd: check the back self, if any
+    if 'self' in local_elements:
+        obj = local_elements['self']
+        obj_funcs = dict(inspect.getmembers(obj, predicate=inspect.isfunction))
+        if entity_name in obj_funcs:
+            func = obj_funcs[entity_name]
+            if '<locals>' in func.__qualname__:
+                return func
+    return None
+
+
+def get_func_or_method(frame):
+    try:
+        entity_name = frame.f_code.co_name
+
+        # Method
+        if 'self' in frame.f_locals:
+            # In methods with super, use the free variable, __class__, not self
+            if method_has_super_call(frame):
+                obj_class = frame.f_locals['__class__']
+            # In methods without super but that was called by super (ie, the back frame has super),
+            # get the next mro class to discover the actual class
+            elif method_has_super_call(frame.f_back):
+                f_back = frame.f_back
+                obj_class = get_next_mro_class(f_back.f_locals['__class__'])
+            # The most common case: simply get self class
+            else:
+                obj_class = frame.f_locals['self'].__class__
+            method = inspect.getattr_static(obj_class, entity_name, None)
+            return method
+
+        if 'cls' in frame.f_locals:
+            obj_class = frame.f_locals['cls']
+            method = inspect.getattr_static(obj_class, entity_name, None)
+            return method
+
+        # Function
+        if entity_name in frame.f_globals:
+            func = frame.f_globals[entity_name]
+            return func
+
+        # Local function
+        local_func = find_local_func(entity_name, frame.f_back.f_locals)
+        if local_func:
+            return local_func
+
+        local_func = find_local_func(entity_name, frame.f_locals)
+        if local_func:
+            return local_func
+
+    except Exception as e:
+        return None
+
+
 class Collector:
 
     def __init__(self):
@@ -76,7 +170,6 @@ class Collector:
         self.last_frame_lineno = {}
         self.target_methods_cache = {}
         self.frame_cache = {}
-        self.funcs_cache = {}
 
         self.py_tracer = PyTracer(self)
 
@@ -90,190 +183,7 @@ class Collector:
 
     def init_target(self):
         if self.method_names:
-            pass
-            # self.module_names = get_module_names(self.method_names)
-
-    def is_valid_frame(self, frame):
-
-        current_filename = frame.f_code.co_filename
-
-        if current_filename.startswith('<') or frame.f_code.co_name == '<module>':
-            return False
-
-        if self.ignore_files:
-            for ignore in self.ignore_files:
-                if ignore in current_filename:
-                    return False
-
-        if self.file_names:
-            for filename in self.file_names:
-                if filename in current_filename:
-                    return True
-                if frame.f_back:
-                    back_filename = frame.f_back.f_code.co_filename
-                    if filename in back_filename:
-                        return True
-            return False
-
-        # if self.module_names:
-        #     for module_name in self.module_names:
-        #         if module_name in current_filename:
-        #             return True
-        #     return False
-
-        return True
-
-    def find_call_stack(self, frame):
-        call_stack = []
-        call_stack.append(frame.f_code.co_name)
-        while 'test_' not in frame.f_code.co_name:
-            if not frame.f_back:
-                break
-            frame = frame.f_back
-            full_name = self.get_full_entity_name(frame)
-            if full_name:
-                call_stack.append(full_name)
-            else:
-                break
-        call_stack.reverse()
-        return tuple(call_stack)
-
-    def get_full_entity_name(self, frame):
-
-        func_or_method = self.ensure_func_or_method(frame)
-
-        if func_or_method:
-            return find_full_name(func_or_method)
-
-        return None
-
-    def ensure_func_or_method(self, frame):
-
-        filename = frame.f_code.co_filename
-        lineno = frame.f_lineno
-        entity_name = frame.f_code.co_name
-        if is_comprehension(frame):
-            entity_name = frame.f_back.f_code.co_name
-        key = filename, lineno, entity_name
-
-        if key in self.frame_cache:
-            return self.frame_cache[key]
-
-        func_or_method = self.get_func_or_method(frame)
-        if not func_or_method or inspect.isbuiltin(func_or_method) or not is_method_or_func(func_or_method):
-            return None
-
-        self.frame_cache[key] = func_or_method
-        return self.frame_cache[key]
-
-    def get_func_or_method(self, frame):
-        try:
-            entity_name = frame.f_code.co_name
-
-            # Method
-            if 'self' in frame.f_locals:
-                # In methods with super, use the free variable, __class__, not self
-                if method_has_super_call(frame):
-                    obj_class = frame.f_locals['__class__']
-                # In methods without super but that was called by super (ie, the back frame has super),
-                # get the next mro class to discover the actual class
-                elif method_has_super_call(frame.f_back):
-                    f_back = frame.f_back
-                    obj_class = get_next_mro_class(f_back.f_locals['__class__'])
-                # The most common case: simply get self class
-                else:
-                    obj_class = frame.f_locals['self'].__class__
-                method = inspect.getattr_static(obj_class, entity_name, None)
-                return method
-
-            if 'cls' in frame.f_locals:
-                obj_class = frame.f_locals['cls']
-                method = inspect.getattr_static(obj_class, entity_name, None)
-                return method
-
-            # Function
-            if entity_name in frame.f_globals:
-                func = frame.f_globals[entity_name]
-                return func
-
-            # Local function
-            local_func = self.find_local_func(entity_name, frame.f_back.f_locals)
-            if local_func:
-                return local_func
-
-            local_func = self.find_local_func(entity_name, frame.f_locals)
-            if local_func:
-                return local_func
-
-        except Exception as e:
-            return None
-
-    def ensure_target_method(self, frame, current_entity_name, method_name):
-
-        # Handle special cases in which 'method' is already a method or function object
-        if is_method_or_func(method_name):
-            if current_entity_name in self.target_methods_cache:
-                return self.target_methods_cache[current_entity_name]
-            entity = MethodInfo.build(method_name)
-            self.target_methods_cache[current_entity_name] = entity
-            return entity
-
-        if method_name and not current_entity_name.startswith(method_name) and \
-                not current_entity_name.endswith(method_name):
-            return None
-
-        if current_entity_name in self.target_methods_cache:
-            return self.target_methods_cache[current_entity_name]
-
-        func_or_method = self.ensure_func_or_method(frame)
-        if not func_or_method:
-            return None
-        entity = MethodInfo.build(func_or_method)
-        if not entity:
-            return None
-
-        self.target_methods_cache[current_entity_name] = entity
-        return entity
-
-    def find_local_func(self, entity_name, local_elements):
-        # 1st: check the back locals
-        if entity_name in local_elements:
-            func = local_elements[entity_name]
-            if inspect.isfunction(func) and entity_name == func.__name__:
-                if '<locals>' in func.__qualname__:
-                    return func
-
-        # 2nd: check the back local values
-        for func in local_elements.values():
-            if inspect.isfunction(func) and entity_name == func.__name__:
-                if '<locals>' in func.__qualname__:
-                    return func
-
-        # 3rd: check the back self, if any
-        if 'self' in local_elements:
-            obj = local_elements['self']
-            obj_funcs = dict(inspect.getmembers(obj, predicate=inspect.isfunction))
-            if entity_name in obj_funcs:
-                func = obj_funcs[entity_name]
-                if '<locals>' in func.__qualname__:
-                    return func
-
-        return None
-
-    def update_method_info(self, method_info, frame, event):
-        lineno = frame.f_lineno
-
-        if event == 'line' and line_has_control_flow(frame):
-            method_info.control_flow_lines.add(lineno)
-
-        if event == 'return':
-            if line_has_return(frame):
-                method_info.return_lines.add(lineno)
-            elif line_has_yield(frame):
-                method_info.yield_lines.add(lineno)
-
-        if event == 'exception':
-            method_info.exception_lines.add(lineno)
+            self.module_names = get_module_names(self.method_names)
 
     def monitor_event(self, frame, event, arg):
 
@@ -294,7 +204,7 @@ class Collector:
         method_info = self.ensure_target_method(frame, current_method_name, method_name)
 
         if method_info and current_method_name == method_info.full_name:
-            self.update_method_info(method_info, frame, event)
+            update_method_info(method_info, frame, event)
 
             if current_method_name not in self.last_frame_lineno:
                 self.last_frame_lineno[current_method_name] = -1
@@ -351,3 +261,103 @@ class Collector:
                                 current_call_state._save_var_states(argvalues, lineno, inline)
 
                 self.last_frame_lineno[current_method_name] = lineno
+
+    def is_valid_frame(self, frame):
+
+        current_filename = frame.f_code.co_filename
+
+        if current_filename.startswith('<') or frame.f_code.co_name == '<module>':
+            return False
+
+        if self.ignore_files:
+            for ignore in self.ignore_files:
+                if ignore in current_filename:
+                    return False
+
+        if self.file_names:
+            for filename in self.file_names:
+                if filename in current_filename:
+                    return True
+                if frame.f_back:
+                    back_filename = frame.f_back.f_code.co_filename
+                    if filename in back_filename:
+                        return True
+            return False
+
+        if self.module_names:
+            for module_name in self.module_names:
+                if module_name in current_filename:
+                    return True
+            return False
+
+        return True
+
+    def get_full_entity_name(self, frame):
+
+        func_or_method = self.ensure_func_or_method(frame)
+
+        if func_or_method:
+            return find_full_name(func_or_method)
+
+        return None
+
+    def ensure_func_or_method(self, frame):
+
+        filename = frame.f_code.co_filename
+        lineno = frame.f_lineno
+        entity_name = frame.f_code.co_name
+        if is_comprehension(frame):
+            entity_name = frame.f_back.f_code.co_name
+        key = filename, lineno, entity_name
+
+        if key in self.frame_cache:
+            return self.frame_cache[key]
+
+        func_or_method = get_func_or_method(frame)
+        if not func_or_method or inspect.isbuiltin(func_or_method) or not is_method_or_func(func_or_method):
+            return None
+
+        self.frame_cache[key] = func_or_method
+        return self.frame_cache[key]
+
+    def ensure_target_method(self, frame, current_entity_name, method_name):
+
+        # Handle special cases in which 'method' is already a method or function object
+        if is_method_or_func(method_name):
+            if current_entity_name in self.target_methods_cache:
+                return self.target_methods_cache[current_entity_name]
+            entity = MethodInfo.build(method_name)
+            self.target_methods_cache[current_entity_name] = entity
+            return entity
+
+        if method_name and not current_entity_name.startswith(method_name) and \
+                not current_entity_name.endswith(method_name):
+            return None
+
+        if current_entity_name in self.target_methods_cache:
+            return self.target_methods_cache[current_entity_name]
+
+        func_or_method = self.ensure_func_or_method(frame)
+        if not func_or_method:
+            return None
+        entity = MethodInfo.build(func_or_method)
+        if not entity:
+            return None
+
+        self.target_methods_cache[current_entity_name] = entity
+        return entity
+
+    def find_call_stack(self, frame):
+        call_stack = []
+        call_stack.append(frame.f_code.co_name)
+        while 'test_' not in frame.f_code.co_name:
+            if not frame.f_back:
+                break
+            frame = frame.f_back
+            full_name = self.get_full_entity_name(frame)
+            if full_name:
+                call_stack.append(full_name)
+            else:
+                break
+        call_stack.reverse()
+        return tuple(call_stack)

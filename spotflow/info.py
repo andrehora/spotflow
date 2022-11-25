@@ -26,6 +26,7 @@ class MethodInfo:
         self.yield_lines = set()
         self.exception_lines = set()
         self.control_flow_lines = set()
+        self.other_lines = set()
 
     def is_method(self):
         return self.class_name is not None
