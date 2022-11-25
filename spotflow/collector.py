@@ -62,19 +62,16 @@ def update_method_info(method_info, frame, event):
 
     lineno = frame.f_lineno
 
-    if event == 'call':
-        return
-
-    if lineno in method_info.other_lines:
-        return
-
-    if lineno in method_info.control_flow_lines:
+    if lineno in method_info.other_lines or lineno in method_info.control_flow_lines:
         return
 
     if lineno in method_info.return_lines or lineno in method_info.yield_lines:
         return
 
     if lineno in method_info.exception_lines:
+        return
+
+    if event == 'call':
         return
 
     if event == 'line':
@@ -91,7 +88,6 @@ def update_method_info(method_info, frame, event):
 
     elif event == 'exception':
         method_info.exception_lines.add(lineno)
-
 
 
 def find_local_func(entity_name, local_elements):
@@ -358,8 +354,7 @@ class Collector:
         return entity
 
     def find_call_stack(self, frame):
-        call_stack = []
-        call_stack.append(frame.f_code.co_name)
+        call_stack = [frame.f_code.co_name]
         while 'test_' not in frame.f_code.co_name:
             if not frame.f_back:
                 break
