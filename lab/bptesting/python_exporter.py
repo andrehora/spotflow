@@ -8,12 +8,11 @@ def get_output_dir(output_dir, project, version):
     return output_dir + "/" + version + "/" + project + "-" + version
 
 
-def export_bptesting(project):
+def export_bptesting(project, output_dir):
 
     test_suite = f'test.test_{project}'
     test = importlib.import_module(test_suite)
 
-    output_dir = 'output'
     version = python_version()
 
     save_dir = get_output_dir(output_dir, project, version)
@@ -23,10 +22,11 @@ def export_bptesting(project):
     calls_with_return_and_args(monitored_program, save_dir)
 
 
-# projects = ['ast', 'gzip', 'json', 'calendar', 'collections', 'csv', 'ftplib', 'tarfile', 'locale', 'difflib']
+output_dir = 'output'
+projects = ['ast', 'gzip', 'json', 'calendar', 'collections', 'csv', 'ftplib', 'tarfile', 'locale', 'difflib']
 # projects = ['ast', 'gzip', 'json', 'csv', 'locale']
-projects = ['calendar', 'collections', 'ftplib', 'tarfile', 'difflib']
+# projects = ['calendar', 'collections', 'ftplib', 'tarfile', 'difflib']
 
 for project in projects:
     print(project)
-    export_bptesting(project)
+    export_bptesting(project, output_dir)
