@@ -18,8 +18,10 @@ def get_old_and_new_python_versions(versions):
 
 
 output_dir = 'output'
-# projects = ['ast', 'gzip', 'json', 'locale']
-projects = ['calendar', 'collections', 'ftplib', 'tarfile', 'difflib']
+# projects = ['ast', 'gzip', 'json', 'calendar', 'collections', 'csv', 'ftplib', 'tarfile', 'locale', 'difflib']
+# projects = ['ast', 'gzip', 'json', 'csv', 'locale']
+# projects = ['calendar', 'collections', 'ftplib', 'tarfile', 'difflib']
+projects = ['gzip', 'locale']
 
 python_versions = get_python_versions('3.7', 4)
 old_new_versions = get_old_and_new_python_versions(python_versions)
