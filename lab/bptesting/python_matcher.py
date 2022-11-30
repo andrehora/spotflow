@@ -23,7 +23,7 @@ output_dir = 'output'
 # projects = ['calendar', 'collections', 'ftplib', 'tarfile', 'difflib']
 projects = ['gzip', 'locale']
 
-python_versions = get_python_versions('3.7', 4)
+python_versions = get_python_versions('3.7', 11)
 old_new_versions = get_old_and_new_python_versions(python_versions)
 
 for project in projects:
