@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function run_bptesting() {
+function run_python() {
 
   local v_major_minor=$1
   local v_micros=$2
@@ -34,7 +34,7 @@ function run_on_docker() {
 # python 3.9.x: 1-15 - https://peps.python.org/pep-0596/
 # python 3.10.x: 1-8 - https://peps.python.org/pep-0619/
 
-run_bptesting 3.7 15
-#run_bptesting 3.8 15
-#run_bptesting 3.9 15
-#run_bptesting 3.10 8
+#run_python 3.7 15
+run_python 3.8 5
+#run_python 3.9 15
+#run_python 3.10 8
