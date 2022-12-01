@@ -1,6 +1,6 @@
 from spotflow.api import monitor_unittest_module
 from spotflow.utils import ensure_dir
-from lab.datasets import exporter, python_metrics
+from lab.rtmetrics import exporter, python_metrics
 from platform import python_version
 import importlib
 
