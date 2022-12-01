@@ -24,7 +24,7 @@ def export(project, output_dir):
 
 output_dir = 'output'
 # projects = ['ast', 'gzip', 'json', 'calendar', 'collections', 'csv', 'ftplib', 'tarfile', 'locale', 'difflib']
-projects = ['ast', 'gzip', 'json', 'csv', 'locale']
+projects = ['ast', 'gzip', 'json', 'locale']
 # projects = ['calendar', 'collections', 'ftplib', 'tarfile', 'difflib']
 # projects = ['gzip', 'locale']
 
