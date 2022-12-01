@@ -1,5 +1,5 @@
 from spotflow.api import monitor_unittest_module
-from lab.bptesting.exporter import calls_with_return_and_args
+from lab.bptesting.exporter import export_calls_with_return_and_args
 from platform import python_version
 import importlib
 
@@ -8,7 +8,7 @@ def get_output_dir(output_dir, project, version):
     return output_dir + "/" + version + "/" + project + "-" + version
 
 
-def export_bptesting(project, output_dir):
+def export(project, output_dir):
 
     test_suite = f'test.test_{project}'
     test = importlib.import_module(test_suite)
@@ -19,15 +19,15 @@ def export_bptesting(project, output_dir):
     print(save_dir)
 
     monitored_program = monitor_unittest_module(test, [project], var_states=False)
-    calls_with_return_and_args(monitored_program, save_dir)
+    export_calls_with_return_and_args(monitored_program, save_dir)
 
 
 output_dir = 'output'
 # projects = ['ast', 'gzip', 'json', 'calendar', 'collections', 'csv', 'ftplib', 'tarfile', 'locale', 'difflib']
-# projects = ['ast', 'gzip', 'json', 'csv', 'locale']
+projects = ['ast', 'gzip', 'json', 'csv', 'locale']
 # projects = ['calendar', 'collections', 'ftplib', 'tarfile', 'difflib']
-projects = ['gzip', 'locale']
+# projects = ['gzip', 'locale']
 
 for project in projects:
     print(project)
-    export_bptesting(project, output_dir)
+    export(project, output_dir)

@@ -17,8 +17,8 @@ function run_on_docker() {
 
   local python_version=$1
 
-#  docker build -t spotflow --build-arg VERSION=$python_version .
-  docker build -t spotflow --no-cache --build-arg VERSION=$python_version .
+  docker build -t spotflow --build-arg VERSION=$python_version .
+#  docker build -t spotflow --no-cache --build-arg VERSION=$python_version .
 
   docker create --name dummy spotflow
   mkdir output

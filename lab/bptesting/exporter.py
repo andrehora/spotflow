@@ -2,9 +2,7 @@ from spotflow.utils import write_txt, ensure_dir
 import hashlib
 
 
-def calls_with_return_and_args(monitored_program, save_dir):
-
-    print('calls_with_return_and_args')
+def export_calls_with_return_and_args(monitored_program, save_dir):
 
     counter = 0
     test_calls = 0
@@ -29,10 +27,6 @@ def calls_with_return_and_args(monitored_program, save_dir):
             hash_id = hashlib.sha1(values.encode()).hexdigest()
             ensure_dir(save_dir)
             write_txt(save_dir + '/' + str(hash_id) + '.txt', values)
-
-            # print(values)
-            # print(hash_id)
-            # print('======================')
 
     print('all_methods', len(monitored_program.all_methods()))
     print('all_calls', len(monitored_program.all_calls()))
