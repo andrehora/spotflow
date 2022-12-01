@@ -209,12 +209,6 @@ def write_csv(filename, content):
         wr.writerows(content)
 
 
-def write_newline(filename, content):
-    with open(filename, 'w') as fout:
-        wr = csv.writer(fout)
-        wr.writerows(content)
-
-
 def write_txt(filename, content):
     with open(filename, 'w') as fout:
         fout.write(content)
