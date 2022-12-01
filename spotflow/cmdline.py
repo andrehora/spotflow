@@ -120,7 +120,7 @@ class SpotFlowScript:
         #     flow.csv_report(self.directory)
 
     def handle_mine(self, result):
-        spec = importlib.util.spec_from_file_location("examples", "./examples/miner.py")
+        spec = importlib.util.spec_from_file_location(".", "./miner.py")
         miner = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(miner)
         miner.mine(result)

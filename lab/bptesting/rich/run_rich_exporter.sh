@@ -20,7 +20,7 @@ function run_on_tag() {
   cd rich
   git checkout tags/$version
   cd ..
-  python3 -m spotflow -t rich -a mine pytest rich/tests/test_align.py
+  python3 -m spotflow -t rich -a mine pytest -k 'not card and not markdown and not progress' rich/tests
 
 }
 
