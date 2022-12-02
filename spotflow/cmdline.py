@@ -16,6 +16,9 @@ def parse_args():
                              'It can be "summary", "calls", "mine", or "pprint". '
                              'Default is "summary".')
 
+    parser.add_argument('-arg', '--mine-argument', type=str, action='append',
+                        help='Arguments that are passed to "mine" function. Accept multiple arguments.')
+
     parser.add_argument('-t', '--target-method', type=str, action='append',
                         help='Target method full name (in the format module.Class.method) or prefix. '
                              'For example, "parser.StringParser.count" or simply "parse". '
@@ -43,6 +46,7 @@ class SpotFlowScript:
     def __init__(self):
         args = parse_args()
         self.action = args.action
+        self.mine_args = args.mine_argument
         self.target_methods = args.target_method
         self.target_files = args.target_file
         self.ignore_files = args.ignore_file
@@ -63,7 +67,7 @@ class SpotFlowScript:
         flow.target_methods(self.target_methods)
         flow.target_files(self.target_files)
         flow.ignore_files(self.ignore_files)
-        states = self.handle_config()
+        states = self.parse_config()
         if states:
             flow.collect_states(*states)
 
@@ -84,20 +88,22 @@ class SpotFlowScript:
                 return OK
             return ERR
 
-    def handle_config(self):
+    def parse_config(self):
         config = configparser.ConfigParser()
         has_config = config.read('./spotflow.cfg')
         if has_config:
-            if 'state' in config:
-                state = config['state']
-                arg_states = state.getboolean('arg_states')
-                return_states = state.getboolean('return_state')
-                yield_states = state.getboolean('yield_states')
-                exception_states = state.getboolean('exception_states')
-                var_states = state.getboolean('var_states')
-                states = arg_states, return_states, yield_states, exception_states, var_states
-                return states
-        return None
+
+            if 'state' not in config:
+                return None
+
+            state = config['state']
+            arg_states = state.getboolean('arg_states')
+            return_states = state.getboolean('return_state')
+            yield_states = state.getboolean('yield_states')
+            exception_states = state.getboolean('exception_states')
+            var_states = state.getboolean('var_states')
+            states = arg_states, return_states, yield_states, exception_states, var_states
+            return states
 
     def handle_action(self, flow):
 
@@ -123,7 +129,7 @@ class SpotFlowScript:
         spec = importlib.util.spec_from_file_location(".", "./miner.py")
         miner = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(miner)
-        miner.mine(result)
+        miner.mine(result, self.mine_args)
 
 
 def main():
