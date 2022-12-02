@@ -63,9 +63,9 @@ class SpotFlowScript:
         flow.target_methods(self.target_methods)
         flow.target_files(self.target_files)
         flow.ignore_files(self.ignore_files)
-        # states = self.handle_config()
-        # if states:
-        #     flow.collect_states(*states)
+        states = self.handle_config()
+        if states:
+            flow.collect_states(*states)
 
         py_runner = PyRunner(self.run_args, as_module=True)
         py_runner.prepare()
