@@ -3,6 +3,10 @@ from os.path import isfile, join
 from spotflow.utils import read_file_lines2
 
 
+def get_old_and_new_version_pairs(versions):
+    return list(zip(versions[0:-1], versions[1:]))
+
+
 def list_files(folder):
     return {f for f in listdir(folder) if isfile(join(folder, f))}
 

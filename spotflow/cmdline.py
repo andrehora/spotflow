@@ -47,6 +47,8 @@ class SpotFlowScript:
         args = parse_args()
         self.action = args.action
         self.mine_args = args.mine_argument
+        if not self.mine_args:
+            self.mine_args = []
         self.target_methods = args.target_method
         self.target_files = args.target_file
         self.ignore_files = args.ignore_file
@@ -129,7 +131,7 @@ class SpotFlowScript:
         spec = importlib.util.spec_from_file_location(".", "./miner.py")
         miner = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(miner)
-        miner.mine(result, self.mine_args)
+        miner.mine(result, *self.mine_args)
 
 
 def main():

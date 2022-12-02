@@ -1,4 +1,4 @@
-from spotflow.utils import write_txt, ensure_dir
+from spotflow.utils import write_txt
 import hashlib
 
 
@@ -14,7 +14,6 @@ def export_calls_with_return_and_args(monitored_program, save_dir):
             counter += 1
             values = ""
 
-            print(call.is_directly_called_from_test())
             if call.is_directly_called_from_test():
                 test_calls += 1
             else:
