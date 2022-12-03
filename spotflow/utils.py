@@ -152,8 +152,10 @@ def is_safe_iterator(obj):
     if obj.__class__.__name__ in ['list', 'tuple']:
         if not obj:
             return True
-        if obj and is_basic(obj[0]):
-            return True
+        for each in obj:
+            if not is_basic(each):
+                return False
+        return True
     return False
 
 
@@ -162,10 +164,9 @@ def is_safe_set(obj):
         if not obj:
             return True
         for each in obj:
-            # Only check the first element
-            if is_basic(each):
-                return True
-            return False
+            if not is_basic(each):
+                return False
+        return True
     return False
 
 
@@ -174,10 +175,9 @@ def is_safe_map(obj):
         if not obj:
             return True
         for key in obj:
-            # Only check the first element
-            if is_basic(obj[key]):
-                return True
-            return False
+            if not is_basic(obj[key]):
+                return False
+        return True
     return False
 
 

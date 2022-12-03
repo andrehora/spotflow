@@ -16,8 +16,10 @@ def get_python_versions(major_minor, micros):
 output_dir = 'output'
 project = 'rich'
 
-# versions = ['v12.4.0', 'v12.4.1', 'v12.4.3', 'v12.4.4']
-versions = ['v12.0.0','v12.0.1','v12.1.0','v12.2.0','v12.3.0','v12.4.0','v12.4.1','v12.4.2','v12.4.3','v12.4.4','v12.5.0','v12.5.1','v12.6.0']
+# versions = ['v12.0.0','v12.0.1','v12.1.0','v12.2.0','v12.3.0','v12.4.0','v12.4.1','v12.4.2','v12.4.3','v12.4.4','v12.5.0','v12.5.1','v12.6.0']
+versions = ['v12.1.0', 'v12.2.0']
+
+
 old_new_versions = get_old_and_new_version_pairs(versions)
 
 
