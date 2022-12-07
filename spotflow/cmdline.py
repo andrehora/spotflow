@@ -121,9 +121,9 @@ class SpotFlowScript:
         if self.action and self.action.lower() == 'post':
             self.run_spotflow_post(flow.result())
 
-        # if self.action and self.action.lower() == 'pprint':
-        #     flow.pprint_report()
-        #
+        if self.action and self.action.lower() == 'pprint':
+            flow.pprint_report()
+
         # if self.action and self.action.lower() == 'html':
         #     flow.html_report(self.directory)
         #

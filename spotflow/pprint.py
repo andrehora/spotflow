@@ -1,3 +1,8 @@
+def pprint_report(monitored_program):
+    for monitored_method in monitored_program:
+        PrettyPrintReport(monitored_method).report()
+
+
 class PrettyPrintReport:
 
     def __init__(self, monitored_method):

@@ -1,4 +1,4 @@
-from spotflow.report import Report
+from spotflow.pprint import pprint_report
 from spotflow.collector import Collector
 from spotflow.utils_unittest import loadTestsFromModule, loadTestsFromTestCase, suite_runner
 
@@ -35,21 +35,21 @@ class SpotFlow:
     def result(self):
         return self.collector.monitored_program
 
-    def html_report(self, directory=None):
-        try:
-            Report(self.result()).html_report(directory)
-        except Exception as e:
-            print(e)
+    # def html_report(self, directory=None):
+    #     try:
+    #         Report(self.result()).html_report(directory)
+    #     except Exception as e:
+    #         print(e)
+    #
+    # def csv_report(self, directory=None):
+    #     try:
+    #         Report(self.result()).csv_report(directory)
+    #     except Exception as e:
+    #         print(e)
 
-    def csv_report(self, directory=None):
+    def pprint(self):
         try:
-            Report(self.result()).csv_report(directory)
-        except Exception as e:
-            print(e)
-
-    def pprint_report(self):
-        try:
-            Report(self.collector.monitored_program).pprint_report()
+            pprint_report(self.collector.monitored_program)
             return True
         except Exception as e:
             print(e)
