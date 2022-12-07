@@ -10,7 +10,7 @@ def get_output_dir(output_dir, project, version):
     return output_dir + "/" + project + "-" + version
 
 
-def mine(monitored_program, *args):
+def spotflow_post(monitored_program, *args):
 
     version = args[0]
 
