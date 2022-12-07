@@ -131,7 +131,7 @@ class SpotFlowScript:
         #     flow.csv_report(self.directory)
 
     def run_spotflow_post(self, result):
-        spec = importlib.util.spec_from_file_location(".", "./spotflow.py")
+        spec = importlib.util.spec_from_file_location(".", "./confspotflow.py")
         spotflow_post = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(spotflow_post)
         spotflow_post.spotflow_post(result, *self.post_args)
