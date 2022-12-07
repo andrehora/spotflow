@@ -10,9 +10,6 @@ class PrettyPrintReport:
 
     def report(self):
 
-        # self.show_state_summary(self.monitored_method.calls[0].call_state)
-        # print('============================================')
-
         for flow in self.monitored_method.flows:
             current_line = 0
             for line in flow.info.lines:

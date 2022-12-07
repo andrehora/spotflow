@@ -1,5 +1,4 @@
 from spotflow.utils import obj_value, obj_type
-from spotflow.info import *
 
 
 class MonitoredProgram:
@@ -119,13 +118,6 @@ class CallContainer:
     def _add_call(self, call):
         self.calls.append(call)
 
-    def _select_calls_by_lines(self, distinct_lines):
-        calls = []
-        for call in self.calls:
-            if tuple(call.distinct_run_lines()) == tuple(distinct_lines):
-                calls.append(call)
-        return calls
-
 
 class MonitoredMethod(CallContainer):
 
@@ -134,7 +126,6 @@ class MonitoredMethod(CallContainer):
         self.info = method_info
         self.name = method_info.name
         self.full_name = method_info.full_name
-        self.flows = []
         self.run_lines = {}
         self.calls_by_id = {}
 
@@ -162,76 +153,11 @@ class MonitoredMethod(CallContainer):
         self.calls_by_id[call_id] = call
         return call
 
-    def _add_flow(self, flow_pos, distinct_run_lines, flow_calls):
-        flow = MethodFlow(flow_pos, distinct_run_lines, flow_calls, self)
-        self.flows.append(flow)
-        return flow
-
-    def _compute_flows(self):
-        most_common_run_lines = Analysis(self).most_common_run_lines()
-        flow_pos = 0
-        for run_lines in most_common_run_lines:
-            flow_pos += 1
-            distinct_run_lines = run_lines[0]
-
-            flow_calls = self._select_calls_by_lines(distinct_run_lines)
-            flow = self._add_flow(flow_pos, distinct_run_lines, flow_calls)
-            flow._update_flow_info()
-
     def _update_call_info(self):
         self.info._update_call_info(self)
 
     def __str__(self):
         return f'MonitoredMethod: {self.full_name} (calls: {len(self.calls)})'
-
-
-class MethodFlow(CallContainer):
-
-    def __init__(self, pos, distinct_run_lines, calls, monitored_method):
-        super().__init__(calls)
-        self.pos = pos
-        self.distinct_run_lines = distinct_run_lines
-        self.monitored_method = monitored_method
-        self.info = None
-        self.found_first_run_line = False
-
-    def _update_flow_info(self):
-        lineno = 0
-        self.info = FlowInfo(self)
-        self.found_first_run_line = False
-
-        for lineno_entity in range(self.monitored_method.info.start_line, self.monitored_method.info.end_line+1):
-            lineno += 1
-
-            line_status = self._get_line_status(lineno_entity)
-            line_type, line_state = self._get_line_state(lineno_entity)
-            line_info = LineInfo(lineno, lineno_entity, line_status, line_type, line_state, self.monitored_method.info)
-
-            self.info._append(line_info)
-            self.info._update_run_status(line_info)
-
-    def _get_line_status(self, current_line):
-
-        if current_line in self.distinct_run_lines:
-            self.found_first_run_line = True
-            return RunStatus.RUN
-
-        # _find_executable_linenos of trace returns method/function definitions as executable lines (?).
-        # We should flag those definitions as not executable lines (NOT_EXEC). Otherwise, the definitions would impact
-        # on the flows, coverage, etc. The solution for now is flagging all first lines as not executable until we
-        # find the first run line. This way, the definitions are flagged as not executable lines...
-        if not self.found_first_run_line:
-            return RunStatus.NOT_EXEC
-
-        if current_line not in self.distinct_run_lines:
-            if not self.monitored_method.info._line_is_executable(current_line):
-                return RunStatus.NOT_EXEC
-
-        return RunStatus.NOT_RUN
-
-    def _get_line_state(self, current_line, n=0):
-        call = self.calls[n]
-        return call._get_line_state(current_line)
 
 
 class MethodCall:
@@ -274,19 +200,19 @@ class MethodCall:
             return self._line_var_states(states)
         return '', ''
 
-    def _line_arg_state(self):
-        arg_str = ''
-        for arg in self.call_state.arg_states:
-            if arg.name != 'self':
-                arg_str += str(arg)
-        return LineType.ARG, arg_str
-
-    def _line_return_state(self):
-        return_state = self.call_state.return_state
-        return LineType.RETURN, str(return_state)
-
-    def _line_var_states(self, states):
-        return LineType.VAR, states
+    # def _line_arg_state(self):
+    #     arg_str = ''
+    #     for arg in self.call_state.arg_states:
+    #         if arg.name != 'self':
+    #             arg_str += str(arg)
+    #     return LineType.ARG, arg_str
+    #
+    # def _line_return_state(self):
+    #     return_state = self.call_state.return_state
+    #     return LineType.RETURN, str(return_state)
+    #
+    # def _line_var_states(self, states):
+    #     return LineType.VAR, states
 
     def _add_run_line(self, lineno):
         self.run_lines.append(lineno)
