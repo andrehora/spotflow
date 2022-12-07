@@ -13,11 +13,11 @@ def parse_args():
 
     parser.add_argument('-a', '--action', type=str,
                         help='Action to be performed after monitoring the program. '
-                             'It can be "summary", "calls", "mine", or "pprint". '
+                             'It can be "summary", "calls", "post", or "pprint". '
                              'Default is "summary".')
 
-    parser.add_argument('-arg', '--mine-argument', type=str, action='append',
-                        help='Arguments that are passed to "mine" function. Accept multiple arguments.')
+    parser.add_argument('-arg', '--post-argument', type=str, action='append',
+                        help='Arguments that are passed to "post" function. Accept multiple arguments.')
 
     parser.add_argument('-t', '--target-method', type=str, action='append',
                         help='Target method full name (in the format module.Class.method) or prefix. '
@@ -46,9 +46,9 @@ class SpotFlowScript:
     def __init__(self):
         args = parse_args()
         self.action = args.action
-        self.mine_args = args.mine_argument
-        if not self.mine_args:
-            self.mine_args = []
+        self.post_args = args.post_argument
+        if not self.post_args:
+            self.post_args = []
         self.target_methods = args.target_method
         self.target_files = args.target_file
         self.ignore_files = args.ignore_file
@@ -104,19 +104,22 @@ class SpotFlowScript:
             yield_states = state.getboolean('yield_states')
             exception_states = state.getboolean('exception_states')
             var_states = state.getboolean('var_states')
+
             states = arg_states, return_states, yield_states, exception_states, var_states
+
             return states
 
     def handle_action(self, flow):
 
         if not self.action or (self.action and self.action.lower() == 'summary'):
-            flow.result().show_summary()
+            pass
+            # flow.result().show_summary()
 
         if self.action and self.action.lower() == 'calls':
             flow.result().show_calls()
 
-        if self.action and self.action.lower() == 'mine':
-            self.handle_mine(flow.result())
+        if self.action and self.action.lower() == 'post':
+            self.run_spotflow_post(flow.result())
 
         if self.action and self.action.lower() == 'pprint':
             flow.pprint_report()
@@ -127,11 +130,11 @@ class SpotFlowScript:
         # if self.action and self.action.lower() == 'csv':
         #     flow.csv_report(self.directory)
 
-    def handle_mine(self, result):
-        spec = importlib.util.spec_from_file_location(".", "./miner.py")
-        miner = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(miner)
-        miner.mine(result, *self.mine_args)
+    def run_spotflow_post(self, result):
+        spec = importlib.util.spec_from_file_location(".", "./spotflow.py")
+        spotflow_post = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(spotflow_post)
+        spotflow_post.spotflow_post(result, *self.post_args)
 
 
 def main():
