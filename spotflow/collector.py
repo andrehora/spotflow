@@ -185,7 +185,7 @@ class Collector:
 
     def stop(self):
         self.py_tracer.stop_tracer()
-        self.monitored_program._update_flows_and_info()
+        self.monitored_program._update_info()
 
     def init_target(self):
         if self.method_names:

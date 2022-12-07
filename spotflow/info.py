@@ -101,8 +101,8 @@ class MethodInfo:
         self.total_exceptions = len(monitored_method.exception_states())
 
         self.total_flows = len(monitored_method.flows)
-        self.top_flow_calls = monitored_method.flows[0].info.call_count
-        self.top_flow_ratio = monitored_method.flows[0].info.call_ratio
+        # self.top_flow_calls = monitored_method.flows[0].info.call_count
+        # self.top_flow_ratio = monitored_method.flows[0].info.call_ratio
 
     def __str__(self):
         return self.full_name

@@ -4,6 +4,7 @@ import os.path
 from spotflow.api import SpotFlow
 
 
+@unittest.skip
 class TestCSVReport(unittest.TestCase):
 
     def test_generate_csv_report_from_test_class(self):

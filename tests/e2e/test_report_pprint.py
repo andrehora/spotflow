@@ -2,6 +2,7 @@ import unittest
 from spotflow.api import SpotFlow, pprint
 
 
+@unittest.skip
 class TestPrettyPrintReport(unittest.TestCase):
 
     def test_generate_pprint_report_count_uppercase_words(self):

@@ -34,9 +34,9 @@ class MonitoredProgram:
             for call in m.calls:
                 call.show_summary()
 
-    def _update_flows_and_info(self):
+    def _update_info(self):
         for method in self.monitored_methods.values():
-            method._compute_flows()
+            # method._compute_flows()
             method._update_call_info()
 
     def __getitem__(self, key):

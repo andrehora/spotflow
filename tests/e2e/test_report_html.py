@@ -4,6 +4,7 @@ import os.path
 from spotflow.api import SpotFlow
 
 
+@unittest.skip
 class TestHTMLReport(unittest.TestCase):
 
     def assert_exists(self, filename):
