@@ -74,11 +74,12 @@ class ChangeRepository:
     def find_changes(self):
         for arg_value in self.arg_return_values:
             return_value = self.arg_return_values[arg_value]
-            if len(return_value) >= 2:
+            if len(return_value) == 2:
                 print('Returns:', len(return_value))
                 print('Argument:', arg_value)
                 for each_return in return_value:
                     print(each_return)
+                print()
 
     def add_new(self, v):
         if v.arg_value in self.arg_return_values:
