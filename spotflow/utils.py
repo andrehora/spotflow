@@ -268,3 +268,12 @@ def find_distinct_in_file(old_file, new_file):
 
 def find_distinct_in_set(old, new):
     return new ^ old
+
+
+def is_super_call(frame):
+    import dis
+    instructions = dis.Bytecode(frame.f_code)
+    for instr in instructions:
+        if instr.offset == frame.f_lasti and instr.opname == 'LOAD_GLOBAL' and instr.argval == 'super':
+            return True
+    return False
