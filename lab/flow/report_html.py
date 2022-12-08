@@ -1,5 +1,5 @@
 import os
-from lab.flows.libs import Templite
+from lab.flow.libs.templite import Templite
 from spotflow.utils import full_filename, ensure_dir, copy_files, read_file, write_html
 
 

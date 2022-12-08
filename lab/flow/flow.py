@@ -3,10 +3,20 @@ from spotflow.utils import ratio
 from collections import Counter
 
 
+def spotflow_post(monitored_program, *args):
+    compute_flows(monitored_program)
+
+
 def compute_flows(monitored_program):
 
-    for method in monitored_program.all_methods():
-        compute_flows_for_method(method)
+    # repo = FlowRepository()
+
+    for monitored_method in monitored_program.all_methods():
+        flows = compute_flows_for_method(monitored_method)
+        monitored_method.flows = flows
+        # repo.add(monitored_method, flows)
+
+    # return repo
 
 
 def compute_flows_for_method(monitored_method):
@@ -39,10 +49,44 @@ def create_flow(flow_pos, distinct_run_lines, flow_calls, monitored_method):
     return flow
 
 
-class FlowRepository:
+def get_line_state(call, lineno):
 
-    def __init__(self):
-        self.flows = []
+    if call.monitored_method.info.start_line == lineno:
+        return line_arg_state(call)
+
+    if lineno in call.monitored_method.info.return_lines:
+        return line_return_state(call)
+
+    states = call.call_state._states_for_line(lineno)
+    if states:
+        return line_var_states(states)
+    return '', ''
+
+
+def line_arg_state(call):
+    arg_str = ''
+    for arg in call.call_state.arg_states:
+        if arg.name != 'self':
+            arg_str += str(arg)
+    return LineType.ARG, arg_str
+
+
+def line_return_state(call):
+    return_state = call.call_state.return_state
+    return LineType.RETURN, str(return_state)
+
+
+def line_var_states(states):
+    return LineType.VAR, states
+
+
+# class FlowRepository:
+#
+#     def __init__(self):
+#         self.flows = {}
+#
+#     def add(self, monitored_method, flows):
+#         self.flows[monitored_method] = flows
 
 
 class MethodFlow(CallContainer):
@@ -255,6 +299,3 @@ class Analysis:
         if len(values) >= max_len:
             values = f'{values[0:max_len]}...'
         return values
-
-
-repo = FlowRepository()

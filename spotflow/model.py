@@ -187,33 +187,6 @@ class MethodCall:
         print('- run_lines: ' + str(self.run_lines))
         self.call_state.show_summary()
 
-    def _get_line_state(self, lineno):
-
-        if self.monitored_method.info.start_line == lineno:
-            return self._line_arg_state()
-
-        if lineno in self.monitored_method.info.return_lines:
-            return self._line_return_state()
-
-        states = self.call_state._states_for_line(lineno)
-        if states:
-            return self._line_var_states(states)
-        return '', ''
-
-    # def _line_arg_state(self):
-    #     arg_str = ''
-    #     for arg in self.call_state.arg_states:
-    #         if arg.name != 'self':
-    #             arg_str += str(arg)
-    #     return LineType.ARG, arg_str
-    #
-    # def _line_return_state(self):
-    #     return_state = self.call_state.return_state
-    #     return LineType.RETURN, str(return_state)
-    #
-    # def _line_var_states(self, states):
-    #     return LineType.VAR, states
-
     def _add_run_line(self, lineno):
         self.run_lines.append(lineno)
 
