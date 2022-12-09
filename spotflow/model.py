@@ -15,14 +15,6 @@ class MonitoredProgram:
             calls.extend(mth.calls)
         return calls
 
-    def show_calls(self):
-        sorted_methods = sorted(self.all_methods(), key=lambda mth: len(mth.calls), reverse=True)
-        print('rank, method_name, number_of_calls')
-        count = 0
-        for method in sorted_methods:
-            count += 1
-            print(f'{count}, {method.full_name}, {len(method.calls)}')
-
     def show_summary(self):
         print('============= Result =============')
         print('MonitoredProgram')
@@ -32,6 +24,21 @@ class MonitoredProgram:
             m.show_summary()
             for call in m.calls:
                 call.show_summary()
+
+    def show_calls(self):
+        sorted_methods = sorted(self.all_methods(), key=lambda mth: len(mth.calls), reverse=True)
+        print('rank, method_name, number_of_calls')
+        count = 0
+        for method in sorted_methods:
+            count += 1
+            print(f'{count}, {method.full_name}, {len(method.calls)}')
+
+    def show_pprint(self):
+        from spotflow.pprint import pprint_report
+        try:
+            pprint_report(self)
+        except Exception as e:
+            pass
 
     def _update_info(self):
         for method in self.monitored_methods.values():

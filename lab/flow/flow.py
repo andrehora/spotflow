@@ -9,14 +9,9 @@ def spotflow_post(monitored_program, *args):
 
 def compute_flows(monitored_program):
 
-    # repo = FlowRepository()
-
     for monitored_method in monitored_program.all_methods():
         flows = compute_flows_for_method(monitored_method)
         monitored_method.flows = flows
-        # repo.add(monitored_method, flows)
-
-    # return repo
 
 
 def compute_flows_for_method(monitored_method):
@@ -78,15 +73,6 @@ def line_return_state(call):
 
 def line_var_states(states):
     return LineType.VAR, states
-
-
-# class FlowRepository:
-#
-#     def __init__(self):
-#         self.flows = {}
-#
-#     def add(self, monitored_method, flows):
-#         self.flows[monitored_method] = flows
 
 
 class MethodFlow(CallContainer):

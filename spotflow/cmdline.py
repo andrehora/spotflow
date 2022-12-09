@@ -11,13 +11,17 @@ def parse_args():
 
     parser = argparse.ArgumentParser(description='Command line for SpotFlow')
 
-    parser.add_argument('-a', '--action', type=str,
-                        help='Action to be performed after monitoring the program. '
-                             'It can be "summary", "calls", "post", or "pprint". '
+    parser.add_argument('-a', '--action', type=str, nargs='?', const='summary',
+                        help='Action to be performed after monitoring the program.'
+                             'It can be "summary", "calls", or "pprint".'
                              'Default is "summary".')
 
-    parser.add_argument('-arg', '--post-argument', type=str, action='append',
-                        help='Arguments that are passed to "post" function. Accept multiple arguments.')
+    parser.add_argument('-s', '--script', type=str, nargs='?', const='spotflow_script.py',
+                        help='Python script to be run after monitoring the program.'
+                             'Default is "spotflow_script.py".')
+
+    parser.add_argument('-arg', '--script-argument', type=str, action='append',
+                        help='Arguments that are passed to the script. Accept multiple arguments.')
 
     parser.add_argument('-t', '--target-method', type=str, action='append',
                         help='Target method full name (in the format module.Class.method) or prefix. '
@@ -33,8 +37,6 @@ def parse_args():
                         help='File to ignore. It can be a substring of the file full path. '
                              'To ignore multiple files, use multiple arguments, like -i file1 -i file2 -i ...')
 
-    parser.add_argument('-d', '--dir', type=str, help='Write the output files to dir.')
-
     parser.add_argument('run',  type=str, nargs=argparse.REMAINDER,
                         help='Command line to run, for example: "my_program.py", "pytest tests", "unittest discover", etc.')
 
@@ -45,14 +47,16 @@ class SpotFlowScript:
 
     def __init__(self):
         args = parse_args()
+
         self.action = args.action
-        self.post_args = args.post_argument
-        if not self.post_args:
-            self.post_args = []
+
+        self.script = args.script
+        self.script_args = args.script_argument
+
         self.target_methods = args.target_method
         self.target_files = args.target_file
         self.ignore_files = args.ignore_file
-        self.directory = args.dir
+
         self.run_args = args.run
 
     def command_line(self):
@@ -79,14 +83,14 @@ class SpotFlowScript:
         flow.start()
         code_ran = True
         try:
-            py_runner.run()
+            pass
+            # py_runner.run()
         except Exception as e:
-            # print(e)
             code_ran = False
         finally:
             flow.stop()
             if code_ran:
-                self.handle_action(flow)
+                # self.run_action_or_script(flow)
                 return OK
             return ERR
 
@@ -109,32 +113,38 @@ class SpotFlowScript:
 
             return states
 
-    def handle_action(self, flow):
+    def run_action_or_script(self, flow):
 
-        if not self.action or (self.action and self.action.lower() == 'summary'):
-            pass
-            # flow.result().show_summary()
+        if self.action:
+            self.run_action(flow.result())
 
-        if self.action and self.action.lower() == 'calls':
-            flow.result().show_calls()
+        elif self.script:
+            self.run_script(flow.result())
 
-        if self.action and self.action.lower() == 'post':
-            self.run_spotflow_post(flow.result())
+    def run_action(self, result):
 
-        if self.action and self.action.lower() == 'pprint':
-            flow.pprint_report()
+        if self.action.lower() == 'summary':
+            result.show_summary()
 
-        # if self.action and self.action.lower() == 'html':
-        #     flow.html_report(self.directory)
-        #
-        # if self.action and self.action.lower() == 'csv':
-        #     flow.csv_report(self.directory)
+        if self.action.lower() == 'calls':
+            result.show_calls()
 
-    def run_spotflow_post(self, result):
-        spec = importlib.util.spec_from_file_location(".", "./confspotflow.py")
-        spotflow_post = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(spotflow_post)
-        spotflow_post.spotflow_post(result, *self.post_args)
+        if self.action.lower() == 'pprint':
+            result.show_pprint()
+
+    def run_script(self, result):
+
+        pyscript = self.script
+        if not pyscript.endswith('.py'):
+            pyscript = pyscript + '.py'
+
+        if not self.script_args:
+            self.script_args = []
+
+        spec = importlib.util.spec_from_file_location(".", pyscript)
+        pyscript_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(pyscript_module)
+        pyscript_module.spotflow_post(result, *self.script_args)
 
 
 def main():

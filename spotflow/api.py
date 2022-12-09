@@ -1,4 +1,3 @@
-from spotflow.pprint import pprint_report
 from spotflow.collector import Collector
 from spotflow.utils_unittest import loadTestsFromModule, loadTestsFromTestCase, suite_runner
 
@@ -47,13 +46,7 @@ class SpotFlow:
     #     except Exception as e:
     #         print(e)
 
-    def pprint(self):
-        try:
-            pprint_report(self.collector.monitored_program)
-            return True
-        except Exception as e:
-            print(e)
-            return False
+
 
 
 def pprint(func, target_methods):
