@@ -20,13 +20,13 @@ function run_on_tag() {
   cd rich
   git checkout tags/$version
   cd ..
-  python3 -m spotflow -t rich -a post -arg $version pytest -k 'not card and not markdown and not progress' rich/tests
+  python3 -m spotflow -t rich -s -arg $version pytest -k 'not card and not markdown and not progress' rich/tests/test_align.py
 
 }
 
 # rich tags: https://github.com/Textualize/rich/tags
 
-#run_rich "v12.0.0 v12.0.1 v12.1.0 v12.2.0 v12.3.0 v12.4.0 v12.4.1 v12.4.2 v12.4.3 v12.4.4 v12.5.0 v12.5.1 v12.6.0"
+run_rich "v12.0.0 v12.0.1 v12.1.0 v12.2.0 v12.3.0 v12.4.0 v12.4.1 v12.4.2 v12.4.3 v12.4.4 v12.5.0 v12.5.1 v12.6.0"
 #run_rich "v12.0.0 v12.0.1 v12.1.0 v12.2.0"
-run_rich "v12.5.1 v12.6.0"
+#run_rich "v12.5.1 v12.6.0"
 
