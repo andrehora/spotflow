@@ -84,13 +84,13 @@ class SpotFlowScript:
         code_ran = True
         try:
             pass
-            # py_runner.run()
+            py_runner.run()
         except Exception as e:
             code_ran = False
         finally:
             flow.stop()
             if code_ran:
-                # self.run_action_or_script(flow)
+                self.run_action_or_script(flow)
                 return OK
             return ERR
 
