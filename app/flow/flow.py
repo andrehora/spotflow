@@ -1,17 +1,27 @@
 from spotflow.model import CallContainer
 from spotflow.utils import ratio
+from app.flow import report
 from collections import Counter
 
 
 def spotflow_post(monitored_program, *args):
+
     compute_flows(monitored_program)
+
+    dir = args[0]
+    rep = report.Report(monitored_program)
+    rep.html_report(dir)
 
 
 def compute_flows(monitored_program):
 
     for monitored_method in monitored_program.all_methods():
         flows = compute_flows_for_method(monitored_method)
+
         monitored_method.flows = flows
+        monitored_method.info.total_flows = len(monitored_method.flows)
+        monitored_method.info.top_flow_calls = monitored_method.flows[0].info.call_count
+        monitored_method.info.top_flow_ratio = monitored_method.flows[0].info.call_ratio
 
 
 def compute_flows_for_method(monitored_method):
@@ -23,7 +33,7 @@ def compute_flows_for_method(monitored_method):
         flow_pos += 1
         distinct_run_lines = run_lines[0]
 
-        flow_calls = select_calls_by_lines(distinct_run_lines)
+        flow_calls = select_calls_by_lines(monitored_method, distinct_run_lines)
         flow = create_flow(flow_pos, distinct_run_lines, flow_calls, monitored_method)
         flows.append(flow)
 
@@ -121,7 +131,7 @@ class MethodFlow(CallContainer):
 
     def get_line_state(self, current_line, n=0):
         call = self.calls[n]
-        return call.get_line_state(current_line)
+        return get_line_state(call, current_line)
 
 
 class FlowInfo:

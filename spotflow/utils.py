@@ -47,19 +47,26 @@ def read_file_lines2(filename):
         return f.read().splitlines()
 
 
-def copy_files(local_dir, files, destination):
-    for static in files:
-        shutil.copyfile(full_filename(local_dir, static), os.path.join(destination, static))
+def copy_files(local_dir, files, destination, file_origin=__file__):
+    for file in files:
+        from_file = full_filename(local_dir, file, file_origin)
+        to_file = full_filename(destination, file, file_origin)
+        shutil.copyfile(from_file, to_file)
+
+
+def full_filename(local_dir, filename, file_origin):
+    dir_path = os.path.dirname(file_origin)
+    return os.path.join(dir_path, local_dir, filename)
+
+
+def full_dir(local_dir, file_origin):
+    dir_path = os.path.dirname(file_origin)
+    return os.path.join(dir_path, local_dir)
 
 
 def ensure_dir(directory):
     if directory:
         os.makedirs(directory, exist_ok=True)
-
-
-def full_filename(local_dir, filename):
-    dir_path = os.path.dirname(__file__)
-    return os.path.join(dir_path, local_dir, filename)
 
 
 def find_module_name(filename):

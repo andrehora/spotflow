@@ -1,6 +1,6 @@
 import os
 from app.flow.libs.templite import Templite
-from spotflow.utils import full_filename, ensure_dir, copy_files, read_file, write_html
+from spotflow.utils import full_filename, full_dir, ensure_dir, copy_files, read_file, write_html
 
 
 REPORT_DIR = 'spotflow_html_report'
@@ -24,11 +24,12 @@ class HTMLCodeReport:
         if not self.report_dir:
             self.report_dir = REPORT_DIR
 
-        pyfile_path = full_filename(LOCAL_DIR, PY_FILE)
+        pyfile = full_filename(LOCAL_DIR, PY_FILE, __file__)
+        self.report_dir = full_dir(self.report_dir, __file__)
         ensure_dir(self.report_dir)
-        copy_files(LOCAL_DIR, STATIC_FILES, self.report_dir)
+        copy_files(LOCAL_DIR, STATIC_FILES, self.report_dir, __file__)
 
-        pyfile_html_source = read_file(pyfile_path)
+        pyfile_html_source = read_file(pyfile)
         self.source_tmpl = Templite(pyfile_html_source)
 
     def report(self):
@@ -57,7 +58,8 @@ class HTMLIndexReport:
         if not self.report_dir:
             self.report_dir = REPORT_DIR
 
-        index_path = full_filename(LOCAL_DIR, INDEX_FILE)
+        index_path = full_filename(LOCAL_DIR, INDEX_FILE, __file__)
+        self.report_dir = full_dir(self.report_dir, __file__)
         ensure_dir(self.report_dir)
         # copy_files(LOCAL_DIR, STATIC_FILES, REPORT_DIR)
 
