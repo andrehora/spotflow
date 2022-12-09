@@ -1,6 +1,6 @@
 from spotflow.api import monitor_unittest_module
 from spotflow.utils import ensure_dir
-from lab.bptesting.exporter import export_calls_with_return_and_args
+from app.bptesting.exporter import export_calls_with_return_and_args
 from platform import python_version
 import importlib
 

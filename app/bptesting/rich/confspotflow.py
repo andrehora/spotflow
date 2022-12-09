@@ -1,4 +1,4 @@
-from lab.bptesting.exporter import export_calls_with_return_and_args
+from app.bptesting.exporter import export_calls_with_return_and_args
 from spotflow.utils import ensure_dir
 
 

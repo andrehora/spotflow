@@ -1,4 +1,4 @@
-from lab.polarity.polarity import compute_polarity
+from app.polarity.polarity import compute_polarity
 
 
 def main():
