@@ -1,6 +1,6 @@
 from spotflow.model import CallContainer
 from spotflow.utils import ratio
-from app.flow import report
+from app.happypath import report
 from collections import Counter
 
 
