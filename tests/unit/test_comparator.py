@@ -4,12 +4,6 @@ from spotflow.utils import find_distinct_in_file, find_distinct_in_set
 
 class TestComparator(unittest.TestCase):
 
-    @unittest.skip
-    def test_find_distinct_in_file(self):
-
-        result = find_distinct_in_file('./unit/old_all_distinct.txt', './unit/new_all_distinct.txt')
-        self.assertEqual(result, {'1', '2', '3', '4', '5', '6'})
-
     def test_find_distinct_all_equal(self):
 
         old = {1, 2, 3}
