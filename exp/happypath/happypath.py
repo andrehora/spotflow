@@ -6,25 +6,25 @@ from collections import Counter
 
 def spotflow_post(monitored_program, *args):
 
-    compute_flows(monitored_program)
+    compute_paths(monitored_program)
 
     dir = args[0]
     rep = report.Report(monitored_program)
     rep.html_report(dir)
 
 
-def compute_flows(monitored_program):
+def compute_paths(monitored_program):
 
     for monitored_method in monitored_program.all_methods():
-        flows = compute_flows_for_method(monitored_method)
+        flows = compute_paths_for_method(monitored_method)
 
         monitored_method.flows = flows
         monitored_method.info.total_flows = len(monitored_method.flows)
-        monitored_method.info.top_flow_calls = monitored_method.flows[0].info.call_count
-        monitored_method.info.top_flow_ratio = monitored_method.flows[0].info.call_ratio
+        monitored_method.info.top_flow_calls = monitored_method.flows[0].path_info.call_count
+        monitored_method.info.top_flow_ratio = monitored_method.flows[0].path_info.call_ratio
 
 
-def compute_flows_for_method(monitored_method):
+def compute_paths_for_method(monitored_method):
 
     most_common_run_lines = Analysis(monitored_method).most_common_run_lines()
     flow_pos = 0
@@ -34,7 +34,7 @@ def compute_flows_for_method(monitored_method):
         distinct_run_lines = run_lines[0]
 
         flow_calls = select_calls_by_lines(monitored_method, distinct_run_lines)
-        flow = create_flow(flow_pos, distinct_run_lines, flow_calls, monitored_method)
+        flow = create_path(flow_pos, distinct_run_lines, flow_calls, monitored_method)
         flows.append(flow)
 
     return flows
@@ -48,9 +48,9 @@ def select_calls_by_lines(monitored_method, distinct_lines):
     return calls
 
 
-def create_flow(flow_pos, distinct_run_lines, flow_calls, monitored_method):
-    flow = MethodFlow(flow_pos, distinct_run_lines, flow_calls, monitored_method)
-    flow.update_flow_info()
+def create_path(flow_pos, distinct_run_lines, flow_calls, monitored_method):
+    flow = MethodPath(flow_pos, distinct_run_lines, flow_calls, monitored_method)
+    flow.update_path_info()
     return flow
 
 
@@ -85,19 +85,19 @@ def line_var_states(states):
     return LineType.VAR, states
 
 
-class MethodFlow(CallContainer):
+class MethodPath(CallContainer):
 
     def __init__(self, pos, distinct_run_lines, calls, monitored_method):
         super().__init__(calls)
         self.pos = pos
         self.distinct_run_lines = distinct_run_lines
         self.monitored_method = monitored_method
-        self.info = None
+        self.path_info = None
         self.found_first_run_line = False
 
-    def update_flow_info(self):
+    def update_path_info(self):
         lineno = 0
-        self.info = FlowInfo(self)
+        self.path_info = PathInfo(self)
         self.found_first_run_line = False
 
         for lineno_entity in range(self.monitored_method.info.start_line, self.monitored_method.info.end_line+1):
@@ -107,8 +107,8 @@ class MethodFlow(CallContainer):
             line_type, line_state = self.get_line_state(lineno_entity)
             line_info = LineInfo(lineno, lineno_entity, line_status, line_type, line_state, self.monitored_method.info)
 
-            self.info.append(line_info)
-            self.info.update_run_status(line_info)
+            self.path_info.append(line_info)
+            self.path_info.update_run_status(line_info)
 
     def get_line_status(self, current_line):
 
@@ -134,23 +134,23 @@ class MethodFlow(CallContainer):
         return get_line_state(call, current_line)
 
 
-class FlowInfo:
+class PathInfo:
 
-    def __init__(self, method_flow):
+    def __init__(self, method_path):
         self.lines = []
 
         self.run_count = 0
         self.not_run_count = 0
         self.not_exec_count = 0
 
-        self.call_count = len(method_flow.calls)
-        total_calls = len(method_flow.monitored_method.calls)
+        self.call_count = len(method_path.calls)
+        total_calls = len(method_path.monitored_method.calls)
         self.call_ratio = ratio(self.call_count, total_calls)
 
-        self.arg_values = Analysis(method_flow).most_common_args_pretty()
-        self.return_values = Analysis(method_flow).most_common_return_values_pretty()
-        self.yield_values = Analysis(method_flow).most_common_yield_values_pretty()
-        self.exception_values = Analysis(method_flow).most_common_exception_values_pretty()
+        self.arg_values = Analysis(method_path).most_common_args_pretty()
+        self.return_values = Analysis(method_path).most_common_return_values_pretty()
+        self.yield_values = Analysis(method_path).most_common_yield_values_pretty()
+        self.exception_values = Analysis(method_path).most_common_exception_values_pretty()
 
     def append(self, other):
         self.lines.append(other)
@@ -168,6 +168,10 @@ class FlowInfo:
 
     def __getitem__(self, position):
         return self.lines[position]
+
+
+class CallInfo:
+    pass
 
 
 class LineInfo:
