@@ -54,37 +54,6 @@ def create_path(flow_pos, distinct_run_lines, flow_calls, monitored_method):
     return flow
 
 
-def get_line_state(call, lineno):
-
-    if call.monitored_method.info.start_line == lineno:
-        return line_arg_state(call)
-
-    if lineno in call.monitored_method.info.return_lines:
-        return line_return_state(call)
-
-    states = call.call_state._states_for_line(lineno)
-    if states:
-        return line_var_states(states)
-    return '', ''
-
-
-def line_arg_state(call):
-    arg_str = ''
-    for arg in call.call_state.arg_states:
-        if arg.name != 'self':
-            arg_str += str(arg)
-    return LineType.ARG, arg_str
-
-
-def line_return_state(call):
-    return_state = call.call_state.return_state
-    return LineType.RETURN, str(return_state)
-
-
-def line_var_states(states):
-    return LineType.VAR, states
-
-
 class MethodPath(CallContainer):
 
     def __init__(self, pos, distinct_run_lines, calls, monitored_method):
@@ -129,9 +98,33 @@ class MethodPath(CallContainer):
 
         return RunStatus.NOT_RUN
 
-    def get_line_state(self, current_line, n=0):
+    def get_line_state(self, lineno, n=0):
         call = self.calls[n]
-        return get_line_state(call, current_line)
+
+        if call.monitored_method.info.start_line == lineno:
+            return self.line_arg_state(call)
+
+        if lineno in call.monitored_method.info.return_lines:
+            return self.line_return_state(call)
+
+        states = call.call_state._states_for_line(lineno)
+        if states:
+            return self.line_var_states(states)
+        return '', ''
+
+    def line_arg_state(self, call):
+        arg_str = ''
+        for arg in call.call_state.arg_states:
+            if arg.name != 'self':
+                arg_str += str(arg)
+        return LineType.ARG, arg_str
+
+    def line_return_state(self, call):
+        return_state = call.call_state.return_state
+        return LineType.RETURN, str(return_state)
+
+    def line_var_states(self, states):
+        return LineType.VAR, states
 
 
 class PathInfo:
