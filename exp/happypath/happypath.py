@@ -16,28 +16,28 @@ def spotflow_post(monitored_program, *args):
 def compute_paths(monitored_program):
 
     for monitored_method in monitored_program.all_methods():
-        flows = compute_paths_for_method(monitored_method)
+        paths = compute_paths_for_method(monitored_method)
 
-        monitored_method.flows = flows
-        monitored_method.info.total_flows = len(monitored_method.flows)
-        monitored_method.info.top_flow_calls = monitored_method.flows[0].path_info.call_count
-        monitored_method.info.top_flow_ratio = monitored_method.flows[0].path_info.call_ratio
+        monitored_method.paths = paths
+        monitored_method.info.total_paths = len(monitored_method.paths)
+        monitored_method.info.top_path_calls = monitored_method.paths[0].call_count
+        monitored_method.info.top_path_ratio = monitored_method.paths[0].call_ratio
 
 
 def compute_paths_for_method(monitored_method):
 
     most_common_run_lines = Analysis(monitored_method).most_common_run_lines()
-    flow_pos = 0
-    flows = []
+    path_pos = 0
+    paths = []
     for run_lines in most_common_run_lines:
-        flow_pos += 1
+        path_pos += 1
         distinct_run_lines = run_lines[0]
 
-        flow_calls = select_calls_by_lines(monitored_method, distinct_run_lines)
-        flow = create_path(flow_pos, distinct_run_lines, flow_calls, monitored_method)
-        flows.append(flow)
+        path_calls = select_calls_by_lines(monitored_method, distinct_run_lines)
+        path = MethodPath(path_pos, distinct_run_lines, path_calls, monitored_method)
+        paths.append(path)
 
-    return flows
+    return paths
 
 
 def select_calls_by_lines(monitored_method, distinct_lines):
@@ -46,12 +46,6 @@ def select_calls_by_lines(monitored_method, distinct_lines):
         if tuple(call.distinct_run_lines()) == tuple(distinct_lines):
             calls.append(call)
     return calls
-
-
-def create_path(flow_pos, distinct_run_lines, flow_calls, monitored_method):
-    flow = MethodPath(flow_pos, distinct_run_lines, flow_calls, monitored_method)
-    flow.update_path_info()
-    return flow
 
 
 class MethodPath(CallContainer):
@@ -109,7 +103,7 @@ class PathInfo:
 
         # _find_executable_linenos of trace returns method/function definitions as executable lines (?).
         # We should flag those definitions as not executable lines (NOT_EXEC). Otherwise, the definitions would impact
-        # on the flows, coverage, etc. The solution for now is flagging all first lines as not executable until we
+        # on the paths, coverage, etc. The solution for now is flagging all first lines as not executable until we
         # find the first run line. This way, the definitions are flagged as not executable lines...
         if not self._found_first_run_line:
             return RunStatus.NOT_EXEC

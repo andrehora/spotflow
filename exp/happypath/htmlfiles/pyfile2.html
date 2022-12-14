@@ -26,34 +26,34 @@
                 <span>Tests: {{monitored_method.info.total_tests}}, </span>
                 <span>Calls: {{monitored_method.info.total_calls}}, </span>
                 <span>Exceptions: {{monitored_method.info.total_exceptions}}, </span>
-                <span>Flows: {{monitored_method.info.total_flows}}</span>
+                <span>Paths: {{monitored_method.info.total_paths}}</span>
                 <br><a href="index.html">Back</a>
             </div>
         </div>
 
-        {% for flow in monitored_method.flows %}
-            <p><b>Flow {{flow.pos}}</b>: {{flow.call_count}} calls ({{flow.call_ratio}}%)</p>
+        {% for path in monitored_method.paths %}
+            <p><b>Path {{path.pos}}</b>: {{path.call_count}} calls ({{path.call_ratio}}%)</p>
 
-            {% for each in flow.arg_values %}
+            {% for each in path.arg_values %}
                 <p><button class="input"><span>&#8594;</span> {{each.name}}</button> {{each.value}}</p>
             {% endfor %}
 
-            {% if flow.yield_values %}
-                <p><button class="output"><span>&#8647; yield</span></button> {{flow.yield_values}}</p>
+            {% if path.yield_values %}
+                <p><button class="output"><span>&#8647; yield</span></button> {{path.yield_values}}</p>
             {% endif %}
 
-            {% if flow.return_values %}
-                <p><button class="output"><span>&#8617; return</span></button> {{flow.return_values}}</p>
+            {% if path.return_values %}
+                <p><button class="output"><span>&#8617; return</span></button> {{path.return_values}}</p>
             {% endif %}
 
-            {% if flow.exception_values %}
-                <p><button class="warning"><span>&#9888; exception</span></button> {{flow.exception_values}}</p>
+            {% if path.exception_values %}
+                <p><button class="warning"><span>&#9888; exception</span></button> {{path.exception_values}}</p>
             {% endif %}
 
-            <button class="run" title="lines run...">{{flow.path_info.run_count}} run</button>
-            <button class="not_run" title="lines not run...">{{flow.path_info.not_run_count}} not run</button>
+            <button class="run" title="lines run...">{{path.path_info.run_count}} run</button>
+            <button class="not_run" title="lines not run...">{{path.path_info.not_run_count}} not run</button>
             <pre>
-                {% for line in flow.path_info.lines %}
+                {% for line in path.path_info.lines %}
                 {% if line.is_run %}
 <span class="num"><a href="#{{line.lineno}}">{{line.lineno}}</a></span><span class="full run">{{line.html}}</span>
                 {% endif %}
