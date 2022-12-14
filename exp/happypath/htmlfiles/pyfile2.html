@@ -32,22 +32,22 @@
         </div>
 
         {% for flow in monitored_method.flows %}
-            <p><b>Flow {{flow.pos}}</b>: {{flow.path_info.call_count}} calls ({{flow.path_info.call_ratio}}%)</p>
+            <p><b>Flow {{flow.pos}}</b>: {{flow.call_count}} calls ({{flow.call_ratio}}%)</p>
 
-            {% for each in flow.path_info.arg_values %}
+            {% for each in flow.arg_values %}
                 <p><button class="input"><span>&#8594;</span> {{each.name}}</button> {{each.value}}</p>
             {% endfor %}
 
-            {% if flow.path_info.yield_values %}
-                <p><button class="output"><span>&#8647; yield</span></button> {{flow.path_info.yield_values}}</p>
+            {% if flow.yield_values %}
+                <p><button class="output"><span>&#8647; yield</span></button> {{flow.yield_values}}</p>
             {% endif %}
 
-            {% if flow.path_info.return_values %}
-                <p><button class="output"><span>&#8617; return</span></button> {{flow.path_info.return_values}}</p>
+            {% if flow.return_values %}
+                <p><button class="output"><span>&#8617; return</span></button> {{flow.return_values}}</p>
             {% endif %}
 
-            {% if flow.path_info.exception_values %}
-                <p><button class="warning"><span>&#9888; exception</span></button> {{flow.path_info.exception_values}}</p>
+            {% if flow.exception_values %}
+                <p><button class="warning"><span>&#9888; exception</span></button> {{flow.exception_values}}</p>
             {% endif %}
 
             <button class="run" title="lines run...">{{flow.path_info.run_count}} run</button>

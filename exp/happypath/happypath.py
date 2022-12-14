@@ -61,13 +61,35 @@ class MethodPath(CallContainer):
         self.pos = pos
         self.distinct_run_lines = distinct_run_lines
         self.monitored_method = monitored_method
-        self.path_info = None
-        self.found_first_run_line = False
+        self.path_info = PathInfo(self.monitored_method, self.calls[0])
 
-    def update_path_info(self):
+        self.call_count = len(self.calls)
+        total_calls = len(self.monitored_method.calls)
+        self.call_ratio = ratio(self.call_count, total_calls)
+
+        self.arg_values = Analysis(self).most_common_args_pretty()
+        self.return_values = Analysis(self).most_common_return_values_pretty()
+        self.yield_values = Analysis(self).most_common_yield_values_pretty()
+        self.exception_values = Analysis(self).most_common_exception_values_pretty()
+
+
+class PathInfo:
+
+    def __init__(self, monitored_method, call):
+        self.monitored_method = monitored_method
+        self.call = call
+        self.distinct_run_lines = self.call.distinct_run_lines()
+
+        self.lines = []
+        self.run_count = 0
+        self.not_run_count = 0
+        self.not_exec_count = 0
+
+        self._found_first_run_line = False
+        self.create_lines()
+
+    def create_lines(self):
         lineno = 0
-        self.path_info = PathInfo(self)
-        self.found_first_run_line = False
 
         for lineno_entity in range(self.monitored_method.info.start_line, self.monitored_method.info.end_line+1):
             lineno += 1
@@ -76,20 +98,20 @@ class MethodPath(CallContainer):
             line_type, line_state = self.get_line_state(lineno_entity)
             line_info = LineInfo(lineno, lineno_entity, line_status, line_type, line_state, self.monitored_method.info)
 
-            self.path_info.append(line_info)
-            self.path_info.update_run_status(line_info)
+            self.lines.append(line_info)
+            self.update_run_status(line_info)
 
     def get_line_status(self, current_line):
 
         if current_line in self.distinct_run_lines:
-            self.found_first_run_line = True
+            self._found_first_run_line = True
             return RunStatus.RUN
 
         # _find_executable_linenos of trace returns method/function definitions as executable lines (?).
         # We should flag those definitions as not executable lines (NOT_EXEC). Otherwise, the definitions would impact
         # on the flows, coverage, etc. The solution for now is flagging all first lines as not executable until we
         # find the first run line. This way, the definitions are flagged as not executable lines...
-        if not self.found_first_run_line:
+        if not self._found_first_run_line:
             return RunStatus.NOT_EXEC
 
         if current_line not in self.distinct_run_lines:
@@ -98,55 +120,32 @@ class MethodPath(CallContainer):
 
         return RunStatus.NOT_RUN
 
-    def get_line_state(self, lineno, n=0):
-        call = self.calls[n]
+    def get_line_state(self, lineno):
 
-        if call.monitored_method.info.start_line == lineno:
-            return self.line_arg_state(call)
+        if self.monitored_method.info.start_line == lineno:
+            return self.line_arg_state()
 
-        if lineno in call.monitored_method.info.return_lines:
-            return self.line_return_state(call)
+        if lineno in self.monitored_method.info.return_lines:
+            return self.line_return_state()
 
-        states = call.call_state._states_for_line(lineno)
+        states = self.call.call_state._states_for_line(lineno)
         if states:
             return self.line_var_states(states)
         return '', ''
 
-    def line_arg_state(self, call):
+    def line_arg_state(self):
         arg_str = ''
-        for arg in call.call_state.arg_states:
+        for arg in self.call.call_state.arg_states:
             if arg.name != 'self':
                 arg_str += str(arg)
         return LineType.ARG, arg_str
 
-    def line_return_state(self, call):
-        return_state = call.call_state.return_state
+    def line_return_state(self):
+        return_state = self.call.call_state.return_state
         return LineType.RETURN, str(return_state)
 
     def line_var_states(self, states):
         return LineType.VAR, states
-
-
-class PathInfo:
-
-    def __init__(self, method_path):
-        self.lines = []
-
-        self.run_count = 0
-        self.not_run_count = 0
-        self.not_exec_count = 0
-
-        self.call_count = len(method_path.calls)
-        total_calls = len(method_path.monitored_method.calls)
-        self.call_ratio = ratio(self.call_count, total_calls)
-
-        self.arg_values = Analysis(method_path).most_common_args_pretty()
-        self.return_values = Analysis(method_path).most_common_return_values_pretty()
-        self.yield_values = Analysis(method_path).most_common_yield_values_pretty()
-        self.exception_values = Analysis(method_path).most_common_exception_values_pretty()
-
-    def append(self, other):
-        self.lines.append(other)
 
     def update_run_status(self, line_info):
         if line_info.is_run():
@@ -161,10 +160,6 @@ class PathInfo:
 
     def __getitem__(self, position):
         return self.lines[position]
-
-
-class CallInfo:
-    pass
 
 
 class LineInfo:
