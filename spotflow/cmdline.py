@@ -13,7 +13,7 @@ def parse_args():
 
     parser.add_argument('-a', '--action', type=str, nargs='?', const='summary',
                         help='Action to be performed after monitoring the program.'
-                             'It can be "summary" or "calls"'
+                             'It can be "summary", "calls" or "pprint"'
                              'Default is "summary".')
 
     parser.add_argument('-s', '--script', type=str, nargs='?', const='spotflow_script.py',
@@ -129,8 +129,8 @@ class SpotFlowScript:
         if self.action.lower() == 'calls':
             result.show_calls()
 
-        # if self.action.lower() == 'pprint':
-        #     result.show_pprint()
+        if self.action.lower() == 'pprint':
+            result.show_pprint()
 
     def run_script(self, result):
 

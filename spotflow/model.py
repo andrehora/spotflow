@@ -33,6 +33,13 @@ class MonitoredProgram:
             count += 1
             print(f'{count}, {method.full_name}, {len(method.calls)}')
 
+    def show_pprint(self):
+        from spotflow.pprint import pprint_report
+        try:
+            pprint_report(self)
+        except Exception as e:
+            pass
+
     def _update_info(self):
         for method in self.monitored_methods.values():
             # method._compute_flows()

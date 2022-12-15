@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        {% for path in monitored_method.paths %}
+        {% for path in monitored_method.info.paths %}
             <p><b>Path {{path.pos}}</b>: {{path.call_count}} calls ({{path.call_ratio}}%)</p>
 
             {% for each in path.arg_values %}
