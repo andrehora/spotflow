@@ -276,6 +276,12 @@ class Collector:
         if current_filename.startswith('<') or frame.f_code.co_name == '<module>':
             return False
 
+        if self.method_names2:
+            for method_name in self.method_names2:
+                if method_name == frame.f_code.co_name:
+                    return True
+            return False
+
         if self.ignore_files:
             for ignore in self.ignore_files:
                 if ignore in current_filename:
@@ -294,12 +300,6 @@ class Collector:
         if self.module_names:
             for module_name in self.module_names:
                 if module_name in current_filename:
-                    return True
-            return False
-
-        if self.method_names2:
-            for method_name in self.method_names2:
-                if method_name == frame.f_code.co_name:
                     return True
             return False
 
