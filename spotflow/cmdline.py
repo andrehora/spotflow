@@ -28,6 +28,10 @@ def parse_args():
                              'For example, "parser.StringParser.count" or simply "parse". '
                              'To monitor multiple methods, use multiple arguments, like -t name1 -t name2 -t ...')
 
+    parser.add_argument('-tt', '--target-method-name', type=str, action='append',
+                        help='Target method name. '
+                             'To monitor multiple methods, use multiple arguments, like -tt name1 -tt name2 -tt ...')
+
     parser.add_argument('-f', '--target-file', type=str, action='append',
                         help='Target file. It can be a substring of the file full path. '
                              'For example, "path/to/my_program.py" or simply "my_program". '
@@ -54,6 +58,8 @@ class SpotFlowScript:
         self.script_args = args.script_argument
 
         self.target_methods = args.target_method
+        self.target_method_names = args.target_method_name
+
         self.target_files = args.target_file
         self.ignore_files = args.ignore_file
 
@@ -71,6 +77,7 @@ class SpotFlowScript:
 
         flow = SpotFlow()
         flow.target_methods(self.target_methods)
+        flow.target_method_names(self.target_method_names)
         flow.target_files(self.target_files)
         flow.ignore_files(self.ignore_files)
         states = self.parse_config()

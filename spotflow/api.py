@@ -10,6 +10,9 @@ class SpotFlow:
     def target_methods(self, method_names):
         self.collector.method_names = method_names
 
+    def target_method_names(self, method_names):
+        self.collector.method_names2 = method_names
+
     def target_files(self, file_names):
         self.collector.file_names = file_names
 

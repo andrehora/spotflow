@@ -163,6 +163,7 @@ class Collector:
     def __init__(self):
         self.monitored_program = MonitoredProgram()
         self.method_names = None
+        self.method_names2 = None
         self.file_names = None
         self.ignore_files = None
         self.module_names = None
@@ -188,7 +189,7 @@ class Collector:
         self.monitored_program._update_info()
 
     def init_target(self):
-        if self.method_names:
+        if self.method_names and not self.method_names2:
             self.module_names = get_module_names(self.method_names)
 
     def monitor_event(self, frame, event, arg):
@@ -296,6 +297,12 @@ class Collector:
                     return True
             return False
 
+        if self.method_names2:
+            for method_name in self.method_names2:
+                if method_name == frame.f_code.co_name:
+                    return True
+            return False
+
         return True
 
     def get_full_entity_name(self, frame):
@@ -336,8 +343,11 @@ class Collector:
             self.target_methods_cache[current_entity_name] = entity
             return entity
 
-        if method_name and not current_entity_name.startswith(method_name) and \
-                not current_entity_name.endswith(method_name):
+        # # using fnmatch to support wildcards
+        # if method_name and not fnmatch.fnmatch(current_entity_name, method_name):
+        #     return None
+
+        if method_name and not current_entity_name.startswith(method_name):
             return None
 
         if current_entity_name in self.target_methods_cache:
