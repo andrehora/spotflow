@@ -11,10 +11,14 @@ def parse_args():
 
     parser = argparse.ArgumentParser(description='Command line for SpotFlow')
 
-    parser.add_argument('-a', '--action', type=str, nargs='?', const='summary',
-                        help='Action to be performed after monitoring the program.'
-                             'It can be "summary", "calls" or "pprint"'
-                             'Default is "summary".')
+    parser.add_argument('-o', '--objects', action='store_true',
+                        help='Objects.')
+
+    parser.add_argument('-c', '--calls', action='store_true',
+                        help='Calls.')
+
+    parser.add_argument('-p', '--pprint', action='store_true',
+                        help='PPrint.')
 
     parser.add_argument('-s', '--script', type=str, nargs='?', const='spotflow_script.py',
                         help='Python script to be run after monitoring the program.'
@@ -52,7 +56,11 @@ class SpotFlowScript:
     def __init__(self):
         args = parse_args()
 
-        self.action = args.action
+        self.objects = args.objects
+        self.calls = args.calls
+        self.pprint = args.pprint
+
+        # self.action = args.action
 
         self.script = args.script
         self.script_args = args.script_argument
@@ -122,21 +130,20 @@ class SpotFlowScript:
 
     def run_action_or_script(self, flow):
 
-        if self.action:
-            self.run_action(flow.result())
-
-        elif self.script:
+        if self.script:
             self.run_script(flow.result())
+        else:
+            self.run_action(flow.result())
 
     def run_action(self, result):
 
-        if self.action.lower() == 'summary':
+        if self.objects:
             result.show_summary()
 
-        if self.action.lower() == 'calls':
+        if self.calls:
             result.show_calls()
 
-        if self.action.lower() == 'pprint':
+        if self.pprint:
             result.show_pprint()
 
     def run_script(self, result):
