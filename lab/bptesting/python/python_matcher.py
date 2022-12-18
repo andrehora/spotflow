@@ -1,4 +1,4 @@
-from exp.bptesting.matcher import ChangeRepository, get_old_and_new_version_pairs
+from lab.bptesting.matcher import ChangeRepository, get_old_and_new_version_pairs
 
 
 def get_output_dir(output_dir, project, version):
