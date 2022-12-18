@@ -99,7 +99,6 @@ class SpotFlowCommandLine:
         flow.start()
         code_ran = True
         try:
-            pass
             py_runner.run()
         except Exception as e:
             code_ran = False

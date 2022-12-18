@@ -1,19 +1,49 @@
 import unittest
-from spotflow.api import monitor_unittest_module, monitor_unittest_testcase
+from spotflow.cmdline import SpotFlowCommandLine
 
 
-class TestMonitorUnittest(unittest.TestCase):
+class TestCmdLine(unittest.TestCase):
 
-    def test_monitor_unittest_module_gzip(self):
+    def test_one_t_unittest(self):
 
-        from test import test_gzip
-        monitored_program = monitor_unittest_module(test_gzip, ['gzip'])
-        self.assertGreater(len(monitored_program.all_methods()), 25)
+        args = '-t gzip -c unittest test.test_gzip'.split()
+        result = SpotFlowCommandLine(args).run()
+        self.assertEqual(result, 0)
 
-    def test_monitor_unittest_testcase_email(self):
-        from test.test_email.test_email import TestMessageAPI
-        monitored_program = monitor_unittest_testcase(TestMessageAPI, ['email'])
-        self.assertGreater(len(monitored_program.all_methods()), 100)
+    def test_multiple_t_unittest(self):
+
+        args = '-t gzip -t _compression -c unittest test.test_gzip'.split()
+        result = SpotFlowCommandLine(args).run()
+        self.assertEqual(result, 0)
+
+    def test_one_tt_unittest(self):
+        args = '-tt read -c unittest test.test_gzip'.split()
+        result = SpotFlowCommandLine(args).run()
+        self.assertEqual(result, 0)
+
+    def test_multiple_tt_unittest(self):
+        args = '-tt read -tt write -c unittest test.test_gzip'.split()
+        result = SpotFlowCommandLine(args).run()
+        self.assertEqual(result, 0)
+
+    def test_one_tt_program(self):
+        args = '-tt sum -c spotflow.sample'.split()
+        result = SpotFlowCommandLine(args).run()
+        self.assertEqual(result, 0)
+
+        args = '-tt absolute -c spotflow.sample'.split()
+        result = SpotFlowCommandLine(args).run()
+        self.assertEqual(result, 0)
+
+    def test_multiple_tt(self):
+        args = '-tt sum -tt absolute -c spotflow.sample'.split()
+        result = SpotFlowCommandLine(args).run()
+        self.assertEqual(result, 0)
+
+    def test_no_t(self):
+        args = '-c spotflow.sample'.split()
+        result = SpotFlowCommandLine(args).run()
+        self.assertEqual(result, 0)
 
 
 if __name__ == '__main__':
