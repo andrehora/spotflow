@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestExceptions
-from spotflow.api import monitor
+from spotflow.api import monitor_func
 
 
 class TestException(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestException(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Exceptions.zero_division'
         func = TestExceptions().test_zero_division
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -23,7 +23,7 @@ class TestException(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_generic_exception'
         func = TestExceptions().test_raise_generic_exception
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -37,7 +37,7 @@ class TestException(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_specific_exception'
         func = TestExceptions().test_raise_specific_exception
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -52,7 +52,7 @@ class TestException(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_exception_line_1
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -69,7 +69,7 @@ class TestException(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_exception_line_2
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -86,7 +86,7 @@ class TestException(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_exception_line_3
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -103,7 +103,7 @@ class TestException(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_raise_no_exception
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -115,7 +115,7 @@ class TestException(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
         func = TestExceptions().test_calls_with_exceptions
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 3)

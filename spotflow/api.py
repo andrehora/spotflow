@@ -49,8 +49,8 @@ def pprint(func, target_methods):
     return flow.result().show_pprint()
 
 
-def monitor(func, target_methods=None, target_files=None, ignore_files=None,
-            arg_states=True, return_states=True, yield_states=True, exception_states=True, var_states=True):
+def monitor_func(func, target_methods=None, target_files=None, ignore_files=None,
+                 arg_states=True, return_states=True, yield_states=True, exception_states=True, var_states=True):
     flow = SpotFlow()
     flow.target_methods(target_methods)
     flow.target_files(target_files)
@@ -70,8 +70,8 @@ def monitor_unittest_module(module, target_methods=None, target_files=None, igno
     suite = loadTestsFromModule(module)
     suite = suite_runner(suite)
 
-    return monitor(suite, target_methods, target_files, ignore_files,
-                   arg_states, return_states, yield_states, exception_states, var_states)
+    return monitor_func(suite, target_methods, target_files, ignore_files,
+                        arg_states, return_states, yield_states, exception_states, var_states)
 
 
 def monitor_unittest_testcase(test_case, target_methods=None, target_files=None, ignore_files=None,
@@ -80,5 +80,5 @@ def monitor_unittest_testcase(test_case, target_methods=None, target_files=None,
     suite = loadTestsFromTestCase(test_case)
     suite = suite_runner(suite)
 
-    return monitor(suite, target_methods, target_files, ignore_files,
-                   arg_states, return_states, yield_states, exception_states, var_states)
+    return monitor_func(suite, target_methods, target_files, ignore_files,
+                        arg_states, return_states, yield_states, exception_states, var_states)

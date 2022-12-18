@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestClassWithExternalDependency
-from spotflow.api import monitor
+from spotflow.api import monitor_func
 from sys import platform
 
 
@@ -9,7 +9,7 @@ class TestFilter(unittest.TestCase):
     def test_no_filter(self):
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func)
+        result = monitor_func(func)
         methods = result.all_methods()
 
         # This may vary according to the Python version
@@ -20,7 +20,7 @@ class TestFilter(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, target_methods=[method_name])
+        result = monitor_func(func, target_methods=[method_name])
         methods = result.all_methods()
 
         self.assertEqual(len(methods), 6)
@@ -44,7 +44,7 @@ class TestFilter(unittest.TestCase):
         method_name2 = 'inspect'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, target_methods=[method_name1, method_name2])
+        result = monitor_func(func, target_methods=[method_name1, method_name2])
         methods = result.all_methods()
 
         self.assertEqual(len(methods), 7)
@@ -71,7 +71,7 @@ class TestFilter(unittest.TestCase):
         file_name = 'stub_sut'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, target_files=[file_name])
+        result = monitor_func(func, target_files=[file_name])
         methods = result.all_methods()
 
         self.assertGreaterEqual(len(methods), 8)
@@ -105,7 +105,7 @@ class TestFilter(unittest.TestCase):
         file_name = 'genericpath.py'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, target_files=[file_name])
+        result = monitor_func(func, target_files=[file_name])
         methods = result.all_methods()
 
         self.assertEqual(len(methods), 1)
@@ -123,7 +123,7 @@ class TestFilter(unittest.TestCase):
 
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, target_files=[file_name])
+        result = monitor_func(func, target_files=[file_name])
         methods = result.all_methods()
 
         # This may vary according to the Python version
@@ -133,7 +133,7 @@ class TestFilter(unittest.TestCase):
         file_name = 'inspect.py'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, target_files=[file_name])
+        result = monitor_func(func, target_files=[file_name])
         methods = result.all_methods()
 
         self.assertEqual(len(methods), 1)
@@ -147,7 +147,7 @@ class TestFilter(unittest.TestCase):
         file_name2 = 'inspect'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, target_files=[file_name1, file_name2])
+        result = monitor_func(func, target_files=[file_name1, file_name2])
         methods = result.all_methods()
 
         self.assertEqual(len(methods), 2)
@@ -160,7 +160,7 @@ class TestFilter(unittest.TestCase):
         ignore_file_name = 'genericpath.py'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, ignore_files=[ignore_file_name])
+        result = monitor_func(func, ignore_files=[ignore_file_name])
         methods = result.all_methods()
 
         for method in methods:
@@ -176,7 +176,7 @@ class TestFilter(unittest.TestCase):
 
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, ignore_files=[ignore_file_name])
+        result = monitor_func(func, ignore_files=[ignore_file_name])
         methods = result.all_methods()
 
         for method in methods:
@@ -186,7 +186,7 @@ class TestFilter(unittest.TestCase):
         ignore_file_name = 'inspect.py'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, ignore_files=[ignore_file_name])
+        result = monitor_func(func, ignore_files=[ignore_file_name])
         methods = result.all_methods()
 
         for method in methods:
@@ -196,7 +196,7 @@ class TestFilter(unittest.TestCase):
         ignore_file_name = 'stub_sut'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, ignore_files=[ignore_file_name])
+        result = monitor_func(func, ignore_files=[ignore_file_name])
         methods = result.all_methods()
 
         for method in methods:
@@ -207,7 +207,7 @@ class TestFilter(unittest.TestCase):
         ignore_file_name2 = 'stub_sut'
         func = TestClassWithExternalDependency().test_call_external_dependencies
 
-        result = monitor(func, ignore_files=[ignore_file_name1, ignore_file_name2])
+        result = monitor_func(func, ignore_files=[ignore_file_name1, ignore_file_name2])
         methods = result.all_methods()
 
         for method in methods:

@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestClassWithManyCalls
-from spotflow.api import monitor
+from spotflow.api import monitor_func
 
 
 class TestFilter(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestFilter(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls.method_called_many_times'
         func = TestClassWithManyCalls().test_method_called_many_times
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result.all_methods()), 1)
@@ -20,7 +20,7 @@ class TestFilter(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls'
         func = TestClassWithManyCalls().test_call_methods
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         def with_arg_value_123(call):
             arg_states = call.call_state.arg_states
@@ -41,7 +41,7 @@ class TestFilter(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls'
         func = TestClassWithManyCalls().test_call_methods
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         def with_return_value_123(call):
             return_state = call.call_state.return_state
@@ -59,7 +59,7 @@ class TestFilter(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls'
         func = TestClassWithManyCalls().test_call_methods
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         def with_exception(call):
             return call.call_state.has_exception()
@@ -76,7 +76,7 @@ class TestFilter(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls'
         func = TestClassWithManyCalls().test_call_methods
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         def with_ZeroDivisionError(call):
             exception_state = call.call_state.exception_state
@@ -94,7 +94,7 @@ class TestFilter(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls.method_called_many_times'
         func = TestClassWithManyCalls().test_method_called_many_times
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         def with_arg_value_less_than_51(call):
             arg_states = call.call_state.arg_states
@@ -115,7 +115,7 @@ class TestFilter(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls.method_called_many_times'
         func = TestClassWithManyCalls().test_method_called_many_times
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         def with_return_value_less_than_51(call):
             return_state = call.call_state.return_state

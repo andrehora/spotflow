@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestReturnValue
-from spotflow.api import monitor
+from spotflow.api import monitor_func
 
 
 class TestArg(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.simple_return'
         func = TestReturnValue().test_simple_return_local
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -24,7 +24,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.simple_return'
         func = TestReturnValue().test_simple_return_global
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -39,7 +39,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.simple_return_with_arg'
         func = TestReturnValue().test_simple_return_with_arg
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -56,7 +56,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_return_0'
         func = TestReturnValue().test_change_return_0
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -73,7 +73,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_return_1'
         func = TestReturnValue().test_change_return_1
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -88,7 +88,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_return_2'
         func = TestReturnValue().test_change_return_2
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -103,7 +103,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_return_3'
         func = TestReturnValue().test_change_return_3
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -118,7 +118,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_return_4'
         func = TestReturnValue().test_change_return_4
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -133,7 +133,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_return_5'
         func = TestReturnValue().test_change_return_5
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -148,7 +148,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.multiple_return'
         func = TestReturnValue().test_multiple_return_true
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -164,7 +164,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.multiple_return'
         func = TestReturnValue().test_multiple_return_false
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -180,7 +180,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_attribute_0'
         func = TestReturnValue().test_change_attribute_0
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -196,7 +196,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_attribute_1'
         func = TestReturnValue().test_change_attribute_1
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -211,7 +211,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_attribute_2'
         func = TestReturnValue().test_change_attribute_2
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -226,7 +226,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_attribute_3'
         func = TestReturnValue().test_change_attribute_3
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -241,7 +241,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_obj_1'
         func = TestReturnValue().test_change_obj_1
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
@@ -256,7 +256,7 @@ class TestArg(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.ReturnValue.change_obj_2'
         func = TestReturnValue().test_change_obj_2
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)

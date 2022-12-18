@@ -1,6 +1,6 @@
 import unittest
 from tests.unit.stub_test import TestLocalClass
-from spotflow.api import monitor
+from spotflow.api import monitor_func
 
 
 class TestLocalClassCall(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestLocalClassCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut.HasLocalClass.LocalClass1.local'
         func = TestLocalClass().test_has_local_class_1
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         self.assertEqual(len(result), 1)
 
@@ -21,7 +21,7 @@ class TestLocalClassCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestLocalClass().test_has_local_class_2
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         self.assertEqual(len(result), 2)
 
@@ -37,7 +37,7 @@ class TestLocalClassCall(unittest.TestCase):
         method_name = 'tests.unit.stub_sut'
         func = TestLocalClass().test_has_local_class_3
 
-        result = monitor(func, [method_name])
+        result = monitor_func(func, [method_name])
 
         self.assertEqual(len(result), 2)
 
