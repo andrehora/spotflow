@@ -38,15 +38,15 @@ class SpotFlow:
         return self.collector.monitored_program
 
 
-# def pprint(func, target_methods):
-#     flow = SpotFlow()
-#     flow.target_methods(target_methods)
-#
-#     flow.start()
-#     func()
-#     flow.stop()
-#
-#     return flow.pprint_report()
+def pprint(func, target_methods):
+    flow = SpotFlow()
+    flow.target_methods(target_methods)
+
+    flow.start()
+    func()
+    flow.stop()
+
+    return flow.result().show_pprint()
 
 
 def monitor(func, target_methods=None, target_files=None, ignore_files=None,

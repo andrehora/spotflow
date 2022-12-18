@@ -37,8 +37,9 @@ class MonitoredProgram:
         from spotflow.pprint import pprint_report
         try:
             pprint_report(self)
+            return True
         except Exception as e:
-            pass
+            return False
 
     def _update_info(self):
         for method in self.monitored_methods.values():

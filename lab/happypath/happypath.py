@@ -1,7 +1,7 @@
 from spotflow.model import CallContainer
 from spotflow.info import Analysis, PathInfo
 from spotflow.utils import ratio
-from exp.happypath import report
+from lab.happypath import report
 
 
 def spotflow_post(monitored_program, *args):
