@@ -8,9 +8,10 @@ def spotflow_post(monitored_program, *args):
 
     compute_paths(monitored_program)
 
-    dir = args[0]
+    output_dir = args[0]
     rep = report.Report(monitored_program)
-    rep.html_report(dir)
+    # rep.html_report(output_dir)
+    rep.csv_report(output_dir)
 
 
 def compute_paths(monitored_program):
