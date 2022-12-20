@@ -1,7 +1,7 @@
 import os
 from spotflow.utils import write_csv, ensure_dir
 
-REPORT_DIR = 'spotflow_csv_report'
+REPORT_DIR = 'happypath_csv'
 INDEX_FILE = 'index.csv'
 
 
@@ -21,9 +21,9 @@ class CSVCodeReport:
         line = ['pos', 'call_count', 'call_ratio', 'run_count', 'not_run_count']
         content.append(line)
 
-        for flow in self.monitored_method.flows:
-            line = [flow.pos, flow.info.call_count, flow.info.call_ratio,
-                    flow.info.run_count, flow.info.not_run_count]
+        for path in self.monitored_method.info.paths:
+            line = [path.pos, path.info.call_count, path.info.call_ratio,
+                    path.info.run_count, path.info.not_run_count]
             content.append(line)
 
         pyfile = os.path.join(self.report_dir, self.monitored_method.info.full_name + '.csv')
@@ -47,7 +47,7 @@ class CSVIndexReport:
         line = ['full_name',
                 'coverage_ratio', 'run_lines_count', 'executable_lines_count',
                 'total_tests', 'total_calls', 'total_exceptions',
-                'total_flows', 'top_flow_calls', 'top_flow_ratio']
+                'total_paths', 'top_path_calls', 'top_path_ratio']
         content.append(line)
 
         for monitored_method in self.monitored_program:
@@ -62,9 +62,9 @@ class CSVIndexReport:
                     monitored_method.info.total_calls,
                     monitored_method.info.total_exceptions,
 
-                    monitored_method.info.total_flows,
-                    monitored_method.info.top_flow_calls,
-                    monitored_method.info.top_flow_ratio]
+                    monitored_method.info.total_paths,
+                    monitored_method.info.top_path_calls,
+                    monitored_method.info.top_path_ratio]
 
             content.append(line)
 
