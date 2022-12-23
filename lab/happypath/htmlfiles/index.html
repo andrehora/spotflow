@@ -30,8 +30,8 @@
                 <th aria-sort="none" data-default-sort-order="descending">calls</th>
                 <th aria-sort="none" data-default-sort-order="descending">exceptions</th>
                 <th aria-sort="none" data-default-sort-order="descending">paths</th>
-                <th aria-sort="none" data-default-sort-order="descending">top path calls</th>
-                <th aria-sort="none" data-default-sort-order="descending">top path ratio (%)</th>
+                <th aria-sort="none" data-default-sort-order="descending">top1 path calls</th>
+                <th aria-sort="none" data-default-sort-order="descending">top1 path ratio (%)</th>
             </tr>
         </thead>
         <tbody>
@@ -43,8 +43,8 @@
                 <td>{{monitored_method.info.total_calls}}</td>
                 <td>{{monitored_method.info.total_exceptions}}</td>
                 <td>{{monitored_method.info.total_paths}}</td>
-                <td>{{monitored_method.info.top_path_calls}}</td>
-                <td>{{monitored_method.info.top_path_ratio}}</td>
+                <td>{{monitored_method.info.top1_path_calls}}</td>
+                <td>{{monitored_method.info.top1_path_ratio}}</td>
             </tr>
             {% endfor %}
         </tbody>
