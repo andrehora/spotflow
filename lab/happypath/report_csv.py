@@ -1,5 +1,6 @@
 import os
-from spotflow.utils import write_csv, ensure_dir
+from spotflow.utils import write_csv, full_filename, full_dir, ensure_dir
+
 
 REPORT_DIR = 'happypath_csv'
 INDEX_FILE = 'index.csv'
@@ -13,7 +14,6 @@ class CSVCodeReport:
         self.report_dir = report_dir
         if not self.report_dir:
             self.report_dir = REPORT_DIR
-        ensure_dir(self.report_dir)
 
     def report(self):
 
@@ -22,9 +22,12 @@ class CSVCodeReport:
         content.append(line)
 
         for path in self.monitored_method.info.paths:
-            line = [path.pos, path.info.call_count, path.info.call_ratio,
-                    path.info.run_count, path.info.not_run_count]
+            line = [path.pos, path.call_count, path.call_ratio,
+                    path.path_info.run_count, path.path_info.not_run_count]
             content.append(line)
+
+        self.report_dir = full_dir(self.report_dir, __file__)
+        ensure_dir(self.report_dir)
 
         pyfile = os.path.join(self.report_dir, self.monitored_method.info.full_name + '.csv')
         write_csv(pyfile, content)
@@ -39,15 +42,13 @@ class CSVIndexReport:
         if not self.report_dir:
             self.report_dir = REPORT_DIR
 
-        ensure_dir(self.report_dir)
-
     def report(self):
 
         content = []
         line = ['full_name',
                 'coverage_ratio', 'run_lines_count', 'executable_lines_count',
                 'total_tests', 'total_calls', 'total_exceptions',
-                'total_paths', 'top_path_calls', 'top_path_ratio']
+                'total_paths', 'top1_path_calls', 'top1_path_ratio', 'top2_path_calls', 'top2_path_ratio']
         content.append(line)
 
         for monitored_method in self.monitored_program:
@@ -63,10 +64,16 @@ class CSVIndexReport:
                     monitored_method.info.total_exceptions,
 
                     monitored_method.info.total_paths,
-                    monitored_method.info.top_path_calls,
-                    monitored_method.info.top_path_ratio]
+                    monitored_method.info.top1_path_calls,
+                    monitored_method.info.top1_path_ratio,
+
+                    monitored_method.info.top2_path_calls,
+                    monitored_method.info.top2_path_ratio]
 
             content.append(line)
+
+        self.report_dir = full_dir(self.report_dir, __file__)
+        ensure_dir(self.report_dir)
 
         index_file = os.path.join(self.report_dir, INDEX_FILE)
         write_csv(index_file, content)

@@ -21,8 +21,16 @@ def compute_paths(monitored_program):
 
         monitored_method.info.paths = paths
         monitored_method.info.total_paths = len(paths)
-        monitored_method.info.top_path_calls = paths[0].call_count
-        monitored_method.info.top_path_ratio = paths[0].call_ratio
+
+        monitored_method.info.top1_path_calls = paths[0].call_count
+        monitored_method.info.top1_path_ratio = paths[0].call_ratio
+
+        monitored_method.info.top2_path_calls = -1
+        monitored_method.info.top2_path_ratio = -1
+
+        if len(paths) >= 2:
+            monitored_method.info.top2_path_calls = paths[1].call_count
+            monitored_method.info.top2_path_ratio = paths[1].call_ratio
 
 
 def compute_paths_for_method(monitored_method):
