@@ -34,7 +34,6 @@ class TestGeneratorCall(unittest.TestCase):
         self.assertEqual(len(call_state.get_yield_states()), 1)
         self.assertEqual(call_state.yield_states[0].value, 'None')
 
-
     def test_call_generator_2(self):
         method_name1 = 'tests.unit.stub_sut.Generators.call_generator_2'
         method_name2 = 'tests.unit.stub_sut.Generators.has_generator_2'
@@ -56,7 +55,6 @@ class TestGeneratorCall(unittest.TestCase):
         self.assertEqual(len(call_state.get_yield_states()), 2)
         self.assertEqual(call_state.yield_states[0].value, '100')
         self.assertEqual(call_state.yield_states[1].value, '200')
-
 
     def test_call_generator_3(self):
         method_name1 = 'tests.unit.stub_sut.Generators.call_generator_3'

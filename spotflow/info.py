@@ -6,12 +6,13 @@ executable_lines_for_file = {}
 
 class MethodInfo:
 
-    def __init__(self, module_name, class_name, name, full_name, filename, code=''):
+    def __init__(self, module_name, class_name, name, full_name, filename, is_generator_func=False, code=''):
         self.module_name = module_name
         self.class_name = class_name
         self.name = name
         self.full_name = full_name
         self.filename = filename
+        self.is_generator_func = is_generator_func
         self.code = code
 
         self.start_line = None
@@ -113,8 +114,11 @@ class MethodInfo:
     @staticmethod
     def build(func_or_method):
         try:
-            module_name, class_name, name, filename, start_line, end_line, full_name, code = get_metadata(func_or_method)
-            method_info = MethodInfo(module_name, class_name, name, full_name, filename, code)
+            module_name, class_name, name, filename, \
+                start_line, end_line, full_name, \
+                is_generator_func, code = get_metadata(func_or_method)
+
+            method_info = MethodInfo(module_name, class_name, name, full_name, filename, is_generator_func, code)
             method_info.start_line = start_line
             method_info.end_line = end_line
             return method_info

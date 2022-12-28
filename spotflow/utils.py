@@ -85,13 +85,18 @@ def get_class_name(obj):
 def get_metadata(func_or_method):
     func = func_or_method
     class_name = None
+
     if isinstance(func_or_method, types.MethodType):
         func = func_or_method.__func__
         class_name = func_or_method.__self__.__class__.__name__
-        # class_name = get_class_name(func_or_method.__self__)
+
+    is_generator_func = False
+    if inspect.isgeneratorfunction(func_or_method):
+        is_generator_func = True
 
     module_name, name, filename, start_line, end_line, full_name, code = function_metadata(func)
-    return module_name, class_name, name, filename, start_line, end_line, full_name, code
+
+    return module_name, class_name, name, filename, start_line, end_line, full_name, is_generator_func, code
 
 
 def function_metadata(func):
