@@ -80,7 +80,13 @@ class CallContainer:
         return sorted(set(map(lambda each: each[-2], self.call_stack())))
 
     def tests(self):
-        return sorted(set(map(lambda each: each[0], self.call_stack())))
+        tests = set()
+        for call in self.calls:
+            for call_name in call.call_stack:
+                if '.test_' in call_name:
+                    tests.add(call_name)
+                    break
+        return tests
 
     def all_distinct_run_lines(self):
         lines = []
