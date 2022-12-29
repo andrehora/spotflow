@@ -92,7 +92,7 @@ class MethodInfo:
         return exec_lines[first_run_line_index:]
 
     def _update_call_info(self, monitored_method):
-        self.run_lines_count = len(monitored_method.run_lines)
+        self.run_lines_count = len(monitored_method.distinct_run_lines())
         # self.executable_lines_count = len(self._executable_lines_without_def(monitored_method))
         self.executable_lines_count = len(self.executable_lines()) - 1
         self.coverage_ratio = ratio(self.run_lines_count, self.executable_lines_count)
@@ -100,10 +100,6 @@ class MethodInfo:
         self.total_calls = len(monitored_method.calls)
         self.total_tests = len(monitored_method.tests())
         self.total_exceptions = len(monitored_method.exception_states())
-
-        # self.total_flows = len(monitored_method.flows)
-        # self.top_flow_calls = monitored_method.flows[0].info.call_count
-        # self.top_flow_ratio = monitored_method.flows[0].info.call_ratio
 
     def __str__(self):
         return self.full_name

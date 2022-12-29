@@ -47,8 +47,10 @@ class CSVIndexReport:
         content = []
         line = ['full_name',
                 'coverage_ratio', 'run_lines_count', 'executable_lines_count',
-                'total_tests', 'total_calls', 'total_exceptions',
-                'total_paths', 'top1_path_calls', 'top1_path_ratio', 'top2_path_calls', 'top2_path_ratio']
+                'total_tests', 'total_calls', 'total_exceptions', 'total_paths',
+                'top1_path_calls', 'top1_path_ratio', 'top1_path_run_lines', 'top1_path_coverage',
+                'top2_path_calls', 'top2_path_ratio', 'top2_path_run_lines', 'top2_path_coverage']
+
         content.append(line)
 
         for monitored_method in self.monitored_program:
@@ -62,13 +64,19 @@ class CSVIndexReport:
                     monitored_method.info.total_tests,
                     monitored_method.info.total_calls,
                     monitored_method.info.total_exceptions,
-
                     monitored_method.info.total_paths,
+
                     monitored_method.info.top1_path_calls,
                     monitored_method.info.top1_path_ratio,
+                    monitored_method.info.top1_path_run_lines,
+                    monitored_method.info.top1_path_coverage,
 
                     monitored_method.info.top2_path_calls,
-                    monitored_method.info.top2_path_ratio]
+                    monitored_method.info.top2_path_ratio,
+                    monitored_method.info.top2_path_run_lines,
+                    monitored_method.info.top2_path_coverage,
+
+                    ]
 
             content.append(line)
 
