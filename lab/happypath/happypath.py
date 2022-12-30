@@ -25,18 +25,18 @@ def compute_paths(monitored_program):
         monitored_method.info.top1_path_calls = paths[0].call_count
         monitored_method.info.top1_path_ratio = paths[0].call_ratio
         monitored_method.info.top1_path_run_lines = len(paths[0].distinct_run_lines)
-        monitored_method.info.top1_path_coverage = paths[0].coverage_ratio
+        monitored_method.info.top1_path_run_lines_ratio = paths[0].run_lines_ratio
 
         monitored_method.info.top2_path_calls = -1
         monitored_method.info.top2_path_ratio = -1
         monitored_method.info.top2_path_run_lines = -1
-        monitored_method.info.top2_path_coverage = -1
+        monitored_method.info.top2_path_run_lines_ratio = -1
 
         if len(paths) >= 2:
             monitored_method.info.top2_path_calls = paths[1].call_count
             monitored_method.info.top2_path_ratio = paths[1].call_ratio
             monitored_method.info.top2_path_run_lines = len(paths[1].distinct_run_lines)
-            monitored_method.info.top2_path_coverage = paths[1].coverage_ratio
+            monitored_method.info.top2_path_run_lines_ratio = paths[1].run_lines_ratio
 
 
 def compute_paths_for_method(monitored_method):
@@ -79,7 +79,7 @@ class MethodPath(CallContainer):
 
         run_lines_count = len(self.distinct_run_lines)
         executable_lines_count = self.monitored_method.info.executable_lines_count
-        self.coverage_ratio = ratio(run_lines_count, executable_lines_count)
+        self.run_lines_ratio = ratio(run_lines_count, executable_lines_count)
 
         self.arg_values = Analysis(self).most_common_args_pretty()
         self.return_values = Analysis(self).most_common_return_values_pretty()

@@ -93,7 +93,6 @@ class MethodInfo:
 
     def _update_call_info(self, monitored_method):
         self.run_lines_count = len(monitored_method.distinct_run_lines())
-        # self.executable_lines_count = len(self._executable_lines_without_def(monitored_method))
         self.executable_lines_count = len(self.executable_lines()) - 1
         self.coverage_ratio = ratio(self.run_lines_count, self.executable_lines_count)
 
