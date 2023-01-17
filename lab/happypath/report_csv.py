@@ -45,7 +45,7 @@ class CSVIndexReport:
     def report(self):
 
         content = []
-        line = ['full_name',
+        line = ['full_name', "is_generator",
                 'coverage_ratio', 'run_lines_count', 'executable_lines_count',
                 'total_tests', 'total_calls', 'total_exceptions', 'total_paths',
                 'top1_path_calls', 'top1_path_ratio', 'top1_path_run_lines', 'top1_path_run_lines_ratio',
@@ -55,7 +55,10 @@ class CSVIndexReport:
 
         for monitored_method in self.monitored_program:
 
-            line = [monitored_method.info.full_name,
+            line = [
+
+                    monitored_method.info.full_name,
+                    monitored_method.info.is_generator_func,
 
                     monitored_method.info.coverage_ratio,
                     monitored_method.info.run_lines_count,
