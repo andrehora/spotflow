@@ -18,10 +18,10 @@ python3 -m spotflow -t argparse -s happypath.py -arg output/argparse test.test_a
 python3 -m spotflow -t configparser -s happypath.py -arg output/configparser test.test_configparser
 
 
-
-
 # Other projects
-#python3 -m spotflow -t rich -s happypath.py -arg output pytest -k 'not card and not markdown and not progress' lab/happypath/rich/tests
+
+#python -m spotflow -t rich -s ../../happypath.py -arg output/rich pytest tests -k "not test_python_render_line_range_indent_guides and not test_python_render_simple_indent_guides and not test_columns"
+#python -m spotflow -t dateutil -s ../../happypath.py -arg output/dateutil pytest tests -k "not test_gettz_returns_local"
 #thefuck
 #six
 #requests
