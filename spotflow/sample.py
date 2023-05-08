@@ -12,6 +12,6 @@ def sum(iter, start=0):
     return count
 
 
-absolute(-10)       # 10
-sum([1, 2])         # 3
-sum([1, 2, 3], 1)   # 7
+absolute(-10)  # 10
+sum([1, 2])  # 3
+sum([1, 2, 3], 1)  # 7

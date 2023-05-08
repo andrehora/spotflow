@@ -2,7 +2,6 @@ import sys
 
 
 class PyTracer:
-
     def __init__(self, collector):
         self.collector = collector
 
@@ -13,9 +12,7 @@ class PyTracer:
         sys.settrace(None)
 
     def _global_trace(self, frame, event, arg):
-
-        if event in ('call', 'line', 'return', 'exception'):
-
+        if event in ("call", "line", "return", "exception"):
             self.collector.monitor_event(frame, event, arg)
 
             return self._global_trace
@@ -29,4 +26,3 @@ class PyTracer:
             #             return self._global_trace
             # else:
             #     return None
-

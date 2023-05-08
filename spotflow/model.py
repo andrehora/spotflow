@@ -2,7 +2,6 @@ from spotflow.utils import obj_value, obj_type
 
 
 class MonitoredProgram:
-
     def __init__(self):
         self.monitored_methods = {}
 
@@ -16,25 +15,28 @@ class MonitoredProgram:
         return calls
 
     def show_summary(self):
-        print('============= Result =============')
-        print('MonitoredProgram')
-        print('- methods: ' + str(len(self.all_methods())))
-        print('- calls: ' + str(len(self.all_calls())))
+        print("============= Result =============")
+        print("MonitoredProgram")
+        print("- methods: " + str(len(self.all_methods())))
+        print("- calls: " + str(len(self.all_calls())))
         for m in self.all_methods():
             m.show_summary()
             for call in m.calls:
                 call.show_summary()
 
     def show_calls(self):
-        sorted_methods = sorted(self.all_methods(), key=lambda mth: len(mth.calls), reverse=True)
-        print('rank, method_name, number_of_calls')
+        sorted_methods = sorted(
+            self.all_methods(), key=lambda mth: len(mth.calls), reverse=True
+        )
+        print("rank, method_name, number_of_calls")
         count = 0
         for method in sorted_methods:
             count += 1
-            print(f'{count}, {method.full_name}, {len(method.calls)}')
+            print(f"{count}, {method.full_name}, {len(method.calls)}")
 
     def show_pprint(self):
         from spotflow.pprint import pprint_report
+
         try:
             pprint_report(self)
             return True
@@ -66,7 +68,6 @@ class MonitoredProgram:
 
 
 class CallContainer:
-
     def __init__(self, calls):
         self.calls = calls
 
@@ -83,7 +84,7 @@ class CallContainer:
         tests = set()
         for call in self.calls:
             for call_name in call.call_stack:
-                if '.test_' in call_name:
+                if ".test_" in call_name:
                     tests.add(call_name)
                     break
         return tests
@@ -99,7 +100,7 @@ class CallContainer:
         for call in self.calls:
             if call.call_state and call.call_state.arg_states:
                 for arg in call.call_state.arg_states:
-                    if arg.name != 'self':
+                    if arg.name != "self":
                         value = arg.value
                         args_and_values[arg.name] = args_and_values.get(arg.name, [])
                         args_and_values[arg.name].append(value)
@@ -134,7 +135,6 @@ class CallContainer:
 
 
 class MonitoredMethod(CallContainer):
-
     def __init__(self, method_info):
         super().__init__(calls=[])
         self.info = method_info
@@ -147,9 +147,9 @@ class MonitoredMethod(CallContainer):
         return self.run_lines.keys()
 
     def show_summary(self):
-        print('MonitoredMethod')
-        print('- name: ' + self.name)
-        print('- calls: ' + str(len(self.calls)))
+        print("MonitoredMethod")
+        print("- name: " + self.name)
+        print("- calls: " + str(len(self.calls)))
 
     def _get_first_run_line(self):
         return self.calls[0].run_lines[0]
@@ -171,11 +171,10 @@ class MonitoredMethod(CallContainer):
         self.info._update_call_info(self)
 
     def __str__(self):
-        return f'MonitoredMethod: {self.full_name} (calls: {len(self.calls)})'
+        return f"MonitoredMethod: {self.full_name} (calls: {len(self.calls)})"
 
 
 class MethodCall:
-
     def __init__(self, call_state, call_stack, monitored_method):
         self.call_state = call_state
         self.call_stack = call_stack
@@ -186,19 +185,19 @@ class MethodCall:
         if len(self.call_stack) <= 1:
             return False
         caller = self.call_stack[-2]
-        return '.test_' in caller
+        return ".test_" in caller
 
     def is_started_in_test(self):
         test_name = self.call_stack[0]
-        return '.test_' in test_name
+        return ".test_" in test_name
 
     def distinct_run_lines(self):
         return sorted(list(set(self.run_lines)))
 
     def show_summary(self):
-        print('MethodCall')
-        print('- distinct_run_lines: ' + str(self.distinct_run_lines()))
-        print('- run_lines: ' + str(self.run_lines))
+        print("MethodCall")
+        print("- distinct_run_lines: " + str(self.distinct_run_lines()))
+        print("- run_lines: " + str(self.run_lines))
         self.call_state.show_summary()
 
     def _add_run_line(self, lineno):
@@ -209,7 +208,6 @@ class MethodCall:
 
 
 class CallState:
-
     def __init__(self):
         self.var_states = {}
         self.arg_states = []
@@ -218,7 +216,7 @@ class CallState:
         self.exception_state = None
 
     def has_argument(self):
-        return len(self.arg_states) > 0 and self.arg_states[0].name != 'self'
+        return len(self.arg_states) > 0 and self.arg_states[0].name != "self"
 
     def has_var(self):
         return len(self.var_states) > 0
@@ -243,28 +241,28 @@ class CallState:
 
     def show_summary(self):
         if self.has_argument():
-            print('ArgState')
+            print("ArgState")
             for arg in self.arg_states:
-                print('- ' + str(arg))
+                print("- " + str(arg))
         if self.has_var():
-            print('VarStateHistory')
+            print("VarStateHistory")
             for var in self.var_states:
-                print('- ' + str(self.var_states[var]))
+                print("- " + str(self.var_states[var]))
         if self.has_return():
-            print('ReturnState: ' + str(self.return_state))
+            print("ReturnState: " + str(self.return_state))
         if self.has_exception():
-            print('ExceptionState: ' + str(self.exception_state))
+            print("ExceptionState: " + str(self.exception_state))
 
     def _states_for_line(self, lineno):
         states = []
         for var in self.var_states:
-            var_states = ''
-            if var != 'self':
+            var_states = ""
+            if var != "self":
                 call_state = self.var_states[var]
                 for state in call_state.states:
                     if state.inline == lineno:
                         if str(state) not in var_states and state.value_has_changed:
-                            var_states += str(state) + ' '
+                            var_states += str(state) + " "
             if var_states:
                 states.append(var_states.strip())
         return states
@@ -277,12 +275,16 @@ class CallState:
 
         if argvalues.varargs:
             obj = argvalues.locals[argvalues.varargs]
-            arg_state = ArgState(argvalues.varargs, obj_value(obj), obj_type(obj), lineno)
+            arg_state = ArgState(
+                argvalues.varargs, obj_value(obj), obj_type(obj), lineno
+            )
             self.arg_states.append(arg_state)
 
         if argvalues.keywords:
             obj = argvalues.locals[argvalues.keywords]
-            arg_state = ArgState(argvalues.keywords, obj_value(obj), obj_type(obj), lineno)
+            arg_state = ArgState(
+                argvalues.keywords, obj_value(obj), obj_type(obj), lineno
+            )
             self.arg_states.append(arg_state)
 
     def _save_var_states(self, argvalues, lineno, inline):
@@ -290,7 +292,9 @@ class CallState:
             obj = argvalues.locals[arg]
             value = obj_value(obj)
             type = obj_type(obj)
-            self._save_var_state(name=arg, value=value, type=type, lineno=lineno, inline=inline)
+            self._save_var_state(
+                name=arg, value=value, type=type, lineno=lineno, inline=inline
+            )
 
     def _save_var_state(self, name, value, type, lineno, inline):
         self.var_states[name] = self.var_states.get(name, VarStateHistory(name, []))
@@ -307,7 +311,6 @@ class CallState:
 
 
 class VarStateHistory:
-
     def __init__(self, name, states):
         self.name = name
         self.states = states
@@ -354,23 +357,21 @@ class VarStateHistory:
 
     def __str__(self):
         values = self.distinct_sequential_values()
-        values_str = ', '.join(map(str, values))
-        return f'{self.name}: {values_str}'
+        values_str = ", ".join(map(str, values))
+        return f"{self.name}: {values_str}"
 
 
 class State:
-
     def __init__(self, value, type, lineno):
         self.value = value
         self.type = type
         self.lineno = lineno
 
     def is_primitive(self):
-        return self.type in ['int', 'float', 'complex', 'str', 'bool', 'NoneType']
+        return self.type in ["int", "float", "complex", "str", "bool", "NoneType"]
 
 
 class VarState(State):
-
     def __init__(self, name, value, type, lineno, inline, value_has_changed=False):
         super().__init__(value, type, lineno)
         self.name = name
@@ -378,51 +379,47 @@ class VarState(State):
         self.value_has_changed = value_has_changed
 
     def __str__(self):
-        return f'{self.name}: {self.value}'
+        return f"{self.name}: {self.value}"
 
 
 class ArgState(State):
-
     def __init__(self, name, value, type, lineno):
         super().__init__(value, type, lineno)
         self.name = name
         self.lineno = lineno
 
     def __str__(self):
-        return f'{self.name}: {self.value}'
+        return f"{self.name}: {self.value}"
 
 
 class ReturnState(State):
-
     def __init__(self, value, type, lineno=0):
         super().__init__(value, type, lineno)
 
     def __str__(self):
-        return f'{self.value}'
+        return f"{self.value}"
 
     def __eq__(self, other):
         return self.value == other
 
 
 class YieldState(State):
-
     def __init__(self, value, type, lineno=0):
         super().__init__(value, type, lineno)
 
     def __str__(self):
-        return f'{self.value}'
+        return f"{self.value}"
 
     def __eq__(self, other):
         return self.value == other
 
 
 class ExceptionState(State):
-
     def __init__(self, value, type, lineno=0):
         super().__init__(value, type, lineno)
 
     def __str__(self):
-        return f'{self.value}'
+        return f"{self.value}"
 
     def __eq__(self, other):
         return self.value == other

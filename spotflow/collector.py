@@ -1,5 +1,11 @@
 import inspect
-from spotflow.utils import obj_value, obj_type, find_full_name, is_method_or_func, get_module_names
+from spotflow.utils import (
+    obj_value,
+    obj_type,
+    find_full_name,
+    is_method_or_func,
+    get_module_names,
+)
 from spotflow.model import CallState, MonitoredMethod, MonitoredProgram
 from spotflow.info import MethodInfo
 from spotflow.tracer import PyTracer
@@ -8,7 +14,7 @@ from spotflow.tracer import PyTracer
 def get_next_mro_class(current_class):
     mro_classes = current_class.__mro__
     current_class_index = mro_classes.index(current_class)
-    return mro_classes[current_class_index+1]
+    return mro_classes[current_class_index + 1]
 
 
 def get_frame_id(frame):
@@ -21,23 +27,28 @@ def get_frame_id(frame):
 
 
 def is_comprehension(frame):
-    return frame.f_code.co_name in ['<listcomp>', '<setcomp>', '<dictcomp>', '<genexpr>']
+    return frame.f_code.co_name in [
+        "<listcomp>",
+        "<setcomp>",
+        "<dictcomp>",
+        "<genexpr>",
+    ]
 
 
 def method_has_super_call(frame):
-    return '__class__' in frame.f_locals and 'super' in frame.f_code.co_names
+    return "__class__" in frame.f_locals and "super" in frame.f_code.co_names
 
 
 def line_has_return(frame):
-    return line_has_keyword(frame, 'return')
+    return line_has_keyword(frame, "return")
 
 
 def line_has_yield(frame):
-    return line_has_keyword(frame, 'yield')
+    return line_has_keyword(frame, "yield")
 
 
 def line_has_control_flow(frame):
-    return line_has_keywords(frame, ['if', 'elif', 'while', 'for'])
+    return line_has_keywords(frame, ["if", "elif", "while", "for"])
 
 
 def line_has_keyword(frame, keyword):
@@ -59,7 +70,6 @@ def line_has_keywords(frame, keywords):
 
 
 def update_method_info(method_info, frame, event):
-
     lineno = frame.f_lineno
 
     if lineno in method_info.other_lines or lineno in method_info.control_flow_lines:
@@ -71,22 +81,22 @@ def update_method_info(method_info, frame, event):
     if lineno in method_info.exception_lines:
         return
 
-    if event == 'call':
+    if event == "call":
         return
 
-    if event == 'line':
+    if event == "line":
         if line_has_control_flow(frame):
             method_info.control_flow_lines.add(lineno)
         else:
             method_info.other_lines.add(lineno)
 
-    elif event == 'return':
+    elif event == "return":
         if line_has_return(frame):
             method_info.return_lines.add(lineno)
         elif line_has_yield(frame):
             method_info.yield_lines.add(lineno)
 
-    elif event == 'exception':
+    elif event == "exception":
         method_info.exception_lines.add(lineno)
 
 
@@ -95,22 +105,22 @@ def find_local_func(entity_name, local_elements):
     if entity_name in local_elements:
         func = local_elements[entity_name]
         if inspect.isfunction(func) and entity_name == func.__name__:
-            if '<locals>' in func.__qualname__:
+            if "<locals>" in func.__qualname__:
                 return func
 
     # 2nd: check the back local values
     for func in local_elements.values():
         if inspect.isfunction(func) and entity_name == func.__name__:
-            if '<locals>' in func.__qualname__:
+            if "<locals>" in func.__qualname__:
                 return func
 
     # 3rd: check the back self, if any
-    if 'self' in local_elements:
-        obj = local_elements['self']
+    if "self" in local_elements:
+        obj = local_elements["self"]
         obj_funcs = dict(inspect.getmembers(obj, predicate=inspect.isfunction))
         if entity_name in obj_funcs:
             func = obj_funcs[entity_name]
-            if '<locals>' in func.__qualname__:
+            if "<locals>" in func.__qualname__:
                 return func
     return None
 
@@ -120,23 +130,23 @@ def get_func_or_method(frame):
         entity_name = frame.f_code.co_name
 
         # Method
-        if 'self' in frame.f_locals:
+        if "self" in frame.f_locals:
             # In methods with super, use the free variable, __class__, not self
             if method_has_super_call(frame):
-                obj_class = frame.f_locals['__class__']
+                obj_class = frame.f_locals["__class__"]
             # In methods without super but that was called by super (ie, the back frame has super),
             # get the next mro class to discover the actual class
             elif method_has_super_call(frame.f_back):
                 f_back = frame.f_back
-                obj_class = get_next_mro_class(f_back.f_locals['__class__'])
+                obj_class = get_next_mro_class(f_back.f_locals["__class__"])
             # The most common case: simply get self class
             else:
-                obj_class = frame.f_locals['self'].__class__
+                obj_class = frame.f_locals["self"].__class__
             method = inspect.getattr_static(obj_class, entity_name, None)
             return method
 
-        if 'cls' in frame.f_locals:
-            obj_class = frame.f_locals['cls']
+        if "cls" in frame.f_locals:
+            obj_class = frame.f_locals["cls"]
             method = inspect.getattr_static(obj_class, entity_name, None)
             return method
 
@@ -159,7 +169,6 @@ def get_func_or_method(frame):
 
 
 class Collector:
-
     def __init__(self):
         self.monitored_program = MonitoredProgram()
         self.method_names = None
@@ -193,7 +202,6 @@ class Collector:
             self.module_names = get_module_names(self.method_names)
 
     def monitor_event(self, frame, event, arg):
-
         if not self.is_valid_frame(frame):
             return
 
@@ -202,12 +210,13 @@ class Collector:
         if current_method_name:
             if self.method_names:
                 for method_name in self.method_names:
-                    self.monitor_method(frame, event, arg, current_method_name, method_name)
+                    self.monitor_method(
+                        frame, event, arg, current_method_name, method_name
+                    )
             elif self.method_names is None:
                 self.monitor_method(frame, event, arg, current_method_name)
 
     def monitor_method(self, frame, event, arg, current_method_name, method_name=None):
-
         method_info = self.ensure_target_method(frame, current_method_name, method_name)
 
         if method_info and current_method_name == method_info.full_name:
@@ -221,15 +230,23 @@ class Collector:
             # function calls and re-entering generators.  The f_lasti field is
             # -1 for calls, and a real offset for generators.  Use < 0 as the
             # line number for calls, and the real line number for generators.
-            if event == 'call' and getattr(frame, 'f_lasti', -1) < 0 and not is_comprehension(frame):
+            if (
+                event == "call"
+                and getattr(frame, "f_lasti", -1) < 0
+                and not is_comprehension(frame)
+            ):
                 if current_method_name not in self.monitored_program:
-                    self.monitored_program[current_method_name] = MonitoredMethod(method_info)
+                    self.monitored_program[current_method_name] = MonitoredMethod(
+                        method_info
+                    )
 
                 call_state = CallState()
                 callers = self.find_call_stack(frame)
 
                 if self.collect_arg_states:
-                    call_state._save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
+                    call_state._save_arg_states(
+                        inspect.getargvalues(frame), frame.f_lineno
+                    )
 
                 frame_id = get_frame_id(frame)
                 monitored_method = self.monitored_program[current_method_name]
@@ -244,36 +261,46 @@ class Collector:
                         frame_id = get_frame_id(frame)
                         method_call = monitored_method._get_call_from_id(frame_id)
                         if method_call:
-
                             current_call_state = method_call.call_state
-                            if event == 'line':
+                            if event == "line":
                                 method_call._add_run_line(lineno)
                                 monitored_method._add_run_line(lineno)
 
-                            elif event == 'return':
-                                if self.collect_return_states and line_has_return(frame):
-                                    current_call_state._save_return_state(obj_value(arg), obj_type(arg), lineno)
-                                elif self.collect_yield_states and line_has_yield(frame):
-                                    current_call_state._save_yield_state(obj_value(arg), obj_type(arg), lineno)
+                            elif event == "return":
+                                if self.collect_return_states and line_has_return(
+                                    frame
+                                ):
+                                    current_call_state._save_return_state(
+                                        obj_value(arg), obj_type(arg), lineno
+                                    )
+                                elif self.collect_yield_states and line_has_yield(
+                                    frame
+                                ):
+                                    current_call_state._save_yield_state(
+                                        obj_value(arg), obj_type(arg), lineno
+                                    )
 
-                            elif event == 'exception':
+                            elif event == "exception":
                                 if self.collect_exception_states:
                                     exception_name = arg[0].__name__
                                     exception_type = obj_type(arg[0])
-                                    current_call_state._save_exception_state(exception_name, exception_type, lineno)
+                                    current_call_state._save_exception_state(
+                                        exception_name, exception_type, lineno
+                                    )
 
                             if self.collect_var_states and current_call_state:
                                 argvalues = inspect.getargvalues(frame)
                                 inline = self.last_frame_lineno[current_method_name]
-                                current_call_state._save_var_states(argvalues, lineno, inline)
+                                current_call_state._save_var_states(
+                                    argvalues, lineno, inline
+                                )
 
                 self.last_frame_lineno[current_method_name] = lineno
 
     def is_valid_frame(self, frame):
-
         current_filename = frame.f_code.co_filename
 
-        if current_filename.startswith('<') or frame.f_code.co_name == '<module>':
+        if current_filename.startswith("<") or frame.f_code.co_name == "<module>":
             return False
 
         if self.method_names2:
@@ -306,7 +333,6 @@ class Collector:
         return True
 
     def get_full_entity_name(self, frame):
-
         func_or_method = self.ensure_func_or_method(frame)
 
         if func_or_method:
@@ -315,7 +341,6 @@ class Collector:
         return None
 
     def ensure_func_or_method(self, frame):
-
         filename = frame.f_code.co_filename
         lineno = frame.f_lineno
         entity_name = frame.f_code.co_name
@@ -327,14 +352,17 @@ class Collector:
             return self.frame_cache[key]
 
         func_or_method = get_func_or_method(frame)
-        if not func_or_method or inspect.isbuiltin(func_or_method) or not is_method_or_func(func_or_method):
+        if (
+            not func_or_method
+            or inspect.isbuiltin(func_or_method)
+            or not is_method_or_func(func_or_method)
+        ):
             return None
 
         self.frame_cache[key] = func_or_method
         return self.frame_cache[key]
 
     def ensure_target_method(self, frame, current_entity_name, method_name):
-
         # Handle special cases in which 'method' is already a method or function object
         if is_method_or_func(method_name):
             if current_entity_name in self.target_methods_cache:
@@ -365,7 +393,7 @@ class Collector:
 
     def find_call_stack(self, frame):
         call_stack = [frame.f_code.co_name]
-        while 'test_' not in frame.f_code.co_name:
+        while "test_" not in frame.f_code.co_name:
             if not frame.f_back:
                 break
             frame = frame.f_back

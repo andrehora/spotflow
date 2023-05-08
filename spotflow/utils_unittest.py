@@ -13,7 +13,7 @@ def loadTestsFromModule(module):
     return suite
 
 
-def loadTestsFromName(pattern='test*.py'):
+def loadTestsFromName(pattern="test*.py"):
     suite = loader.loadTestsFromName(pattern)
     return suite
 

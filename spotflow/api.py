@@ -1,9 +1,12 @@
 from spotflow.collector import Collector
-from spotflow.utils_unittest import loadTestsFromModule, loadTestsFromTestCase, suite_runner
+from spotflow.utils_unittest import (
+    loadTestsFromModule,
+    loadTestsFromTestCase,
+    suite_runner,
+)
 
 
 class SpotFlow:
-
     def __init__(self):
         self.collector = Collector()
 
@@ -19,9 +22,14 @@ class SpotFlow:
     def ignore_files(self, ignore_files):
         self.collector.ignore_files = ignore_files
 
-    def collect_states(self, arg_states=True, return_states=True, yield_states=True,
-                       exception_states=True, var_states=True):
-
+    def collect_states(
+        self,
+        arg_states=True,
+        return_states=True,
+        yield_states=True,
+        exception_states=True,
+        var_states=True,
+    ):
         self.collector.collect_arg_states = arg_states
         self.collector.collect_return_states = return_states
         self.collector.collect_yield_states = yield_states
@@ -49,13 +57,24 @@ def pprint(func, target_methods):
     return flow.result().show_pprint()
 
 
-def monitor_func(func, target_methods=None, target_files=None, ignore_files=None,
-                 arg_states=True, return_states=True, yield_states=True, exception_states=True, var_states=True):
+def monitor_func(
+    func,
+    target_methods=None,
+    target_files=None,
+    ignore_files=None,
+    arg_states=True,
+    return_states=True,
+    yield_states=True,
+    exception_states=True,
+    var_states=True,
+):
     flow = SpotFlow()
     flow.target_methods(target_methods)
     flow.target_files(target_files)
     flow.ignore_files(ignore_files)
-    flow.collect_states(arg_states, return_states, yield_states, exception_states, var_states)
+    flow.collect_states(
+        arg_states, return_states, yield_states, exception_states, var_states
+    )
 
     flow.start()
     func()
@@ -64,21 +83,55 @@ def monitor_func(func, target_methods=None, target_files=None, ignore_files=None
     return flow.result()
 
 
-def monitor_unittest_module(module, target_methods=None, target_files=None, ignore_files=None,
-            arg_states=True, return_states=True, yield_states=True, exception_states=True, var_states=True):
-
+def monitor_unittest_module(
+    module,
+    target_methods=None,
+    target_files=None,
+    ignore_files=None,
+    arg_states=True,
+    return_states=True,
+    yield_states=True,
+    exception_states=True,
+    var_states=True,
+):
     suite = loadTestsFromModule(module)
     suite = suite_runner(suite)
 
-    return monitor_func(suite, target_methods, target_files, ignore_files,
-                        arg_states, return_states, yield_states, exception_states, var_states)
+    return monitor_func(
+        suite,
+        target_methods,
+        target_files,
+        ignore_files,
+        arg_states,
+        return_states,
+        yield_states,
+        exception_states,
+        var_states,
+    )
 
 
-def monitor_unittest_testcase(test_case, target_methods=None, target_files=None, ignore_files=None,
-            arg_states=True, return_states=True, yield_states=True, exception_states=True, var_states=True):
-
+def monitor_unittest_testcase(
+    test_case,
+    target_methods=None,
+    target_files=None,
+    ignore_files=None,
+    arg_states=True,
+    return_states=True,
+    yield_states=True,
+    exception_states=True,
+    var_states=True,
+):
     suite = loadTestsFromTestCase(test_case)
     suite = suite_runner(suite)
 
-    return monitor_func(suite, target_methods, target_files, ignore_files,
-                        arg_states, return_states, yield_states, exception_states, var_states)
+    return monitor_func(
+        suite,
+        target_methods,
+        target_files,
+        ignore_files,
+        arg_states,
+        return_states,
+        yield_states,
+        exception_states,
+        var_states,
+    )

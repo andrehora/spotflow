@@ -1,12 +1,27 @@
-from spotflow.utils import line_intersection, get_html_lines, find_executable_linenos, get_metadata, escape, ratio
+from spotflow.utils import (
+    line_intersection,
+    get_html_lines,
+    find_executable_linenos,
+    get_metadata,
+    escape,
+    ratio,
+)
 from collections import Counter
 
 executable_lines_for_file = {}
 
 
 class MethodInfo:
-
-    def __init__(self, module_name, class_name, name, full_name, filename, is_generator_func=False, code=''):
+    def __init__(
+        self,
+        module_name,
+        class_name,
+        name,
+        full_name,
+        filename,
+        is_generator_func=False,
+        code="",
+    ):
         self.module_name = module_name
         self.class_name = class_name
         self.name = name
@@ -63,23 +78,25 @@ class MethodInfo:
         return self.html_lines
 
     def get_code_line_at_lineno(self, n):
-        return self.get_code_lines()[n-1]
+        return self.get_code_lines()[n - 1]
 
     def get_html_line_at_lineno(self, n):
-        return self.get_html_lines()[n-1]
+        return self.get_html_lines()[n - 1]
 
     def full_name_escaped(self):
         return escape(self.full_name)
 
     def summary(self):
-        return f'{self.full_name} (lines: {self.start_line}-{self.end_line})'
+        return f"{self.full_name} (lines: {self.start_line}-{self.end_line})"
 
     def _has_lineno(self, lineno):
         return lineno in range(self.start_line, self.end_line + 1)
 
     def _ensure_executable_lines_for_file(self):
         if self.filename not in executable_lines_for_file:
-            executable_lines_for_file[self.filename] = find_executable_linenos(self.filename)
+            executable_lines_for_file[self.filename] = find_executable_linenos(
+                self.filename
+            )
         return executable_lines_for_file[self.filename]
 
     def _line_is_executable(self, lineno):
@@ -109,11 +126,27 @@ class MethodInfo:
     @staticmethod
     def build(func_or_method):
         try:
-            module_name, class_name, name, filename, \
-                start_line, end_line, full_name, \
-                is_generator_func, code = get_metadata(func_or_method)
+            (
+                module_name,
+                class_name,
+                name,
+                filename,
+                start_line,
+                end_line,
+                full_name,
+                is_generator_func,
+                code,
+            ) = get_metadata(func_or_method)
 
-            method_info = MethodInfo(module_name, class_name, name, full_name, filename, is_generator_func, code)
+            method_info = MethodInfo(
+                module_name,
+                class_name,
+                name,
+                full_name,
+                filename,
+                is_generator_func,
+                code,
+            )
             method_info.start_line = start_line
             method_info.end_line = end_line
             return method_info
@@ -122,7 +155,6 @@ class MethodInfo:
 
 
 class PathInfo:
-
     def __init__(self, monitored_method, call):
         self.monitored_method = monitored_method
         self.call = call
@@ -139,18 +171,27 @@ class PathInfo:
     def create_lines(self):
         lineno = 0
 
-        for lineno_entity in range(self.monitored_method.info.start_line, self.monitored_method.info.end_line+1):
+        for lineno_entity in range(
+            self.monitored_method.info.start_line,
+            self.monitored_method.info.end_line + 1,
+        ):
             lineno += 1
 
             line_status = self.get_line_status(lineno_entity)
             line_type, line_state = self.get_line_state(lineno_entity)
-            line_info = LineInfo(lineno, lineno_entity, line_status, line_type, line_state, self.monitored_method.info)
+            line_info = LineInfo(
+                lineno,
+                lineno_entity,
+                line_status,
+                line_type,
+                line_state,
+                self.monitored_method.info,
+            )
 
             self.lines.append(line_info)
             self.update_run_status(line_info)
 
     def get_line_status(self, current_line):
-
         if current_line in self.distinct_run_lines:
             self._found_first_run_line = True
             return RunStatus.RUN
@@ -169,7 +210,6 @@ class PathInfo:
         return RunStatus.NOT_RUN
 
     def get_line_state(self, lineno):
-
         if self.monitored_method.info.start_line == lineno:
             return self.line_arg_state()
 
@@ -179,12 +219,12 @@ class PathInfo:
         states = self.call.call_state._states_for_line(lineno)
         if states:
             return self.line_var_states(states)
-        return '', ''
+        return "", ""
 
     def line_arg_state(self):
-        arg_str = ''
+        arg_str = ""
         for arg in self.call.call_state.arg_states:
-            if arg.name != 'self':
+            if arg.name != "self":
                 arg_str += str(arg)
         return LineType.ARG, arg_str
 
@@ -211,7 +251,6 @@ class PathInfo:
 
 
 class LineInfo:
-
     def __init__(self, lineno, lineno_entity, run_status, type, state, method_info):
         self.lineno = lineno
         self.lineno_entity = lineno_entity
@@ -246,9 +285,9 @@ class LineInfo:
 
 
 class LineType:
-    ARG = 'arg'
-    RETURN = 'return'
-    VAR = 'var'
+    ARG = "arg"
+    RETURN = "return"
+    VAR = "var"
 
 
 class RunStatus:
@@ -258,7 +297,6 @@ class RunStatus:
 
 
 class Analysis:
-
     def __init__(self, call_container):
         self.call_container = call_container
 
@@ -312,20 +350,20 @@ class Analysis:
         result = []
         for arg_name in args:
             arg_value = {}
-            arg_value['name'] = arg_name
-            values = ''
+            arg_value["name"] = arg_name
+            values = ""
             for value in args[arg_name]:
                 value_str = value[0]
                 count = value[1]
-                values += f'{value_str} ({count}) '
-            arg_value['value'] = self.clear_values(values, max_len)
+                values += f"{value_str} ({count}) "
+            arg_value["value"] = self.clear_values(values, max_len)
             result.append(arg_value)
         return result
 
     def pretty_return_values(self, return_values, max_len=150):
-        values = ''
+        values = ""
         for value in return_values:
-            values += f'{value[0]} ({value[1]}) '
+            values += f"{value[0]} ({value[1]}) "
         if values:
             return self.clear_values(values, max_len)
         return None
@@ -333,5 +371,5 @@ class Analysis:
     def clear_values(self, values, max_len):
         # values = values.rstrip(', ')
         if len(values) >= max_len:
-            values = f'{values[0:max_len]}...'
+            values = f"{values[0:max_len]}..."
         return values

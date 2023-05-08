@@ -11,13 +11,13 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import get_formatter_by_name
 
 
-def find_python_files(dir='.'):
-    if dir.endswith('.py'):
+def find_python_files(dir="."):
+    if dir.endswith(".py"):
         return [dir]
     python_files = []
     for r, d, f in os.walk(dir):
         for file in f:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 abs_dir = os.path.join(os.getcwd(), r, file)
                 # if 'test' not in abs_dir:
                 python_files.append(os.path.abspath(abs_dir))
@@ -26,7 +26,7 @@ def find_python_files(dir='.'):
 
 def open_file(filename):
     try:
-        with open(filename, 'r', encoding="utf-8") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             return f.read()
     except:
         return None
@@ -38,12 +38,12 @@ def read_file(filename):
 
 
 def read_file_lines(filename):
-    with open(filename, 'r', encoding="utf-8") as f:
+    with open(filename, "r", encoding="utf-8") as f:
         return f.readlines()
 
 
 def read_file_lines2(filename):
-    with open(filename, 'r', encoding="utf-8") as f:
+    with open(filename, "r", encoding="utf-8") as f:
         return f.read().splitlines()
 
 
@@ -70,7 +70,7 @@ def ensure_dir(directory):
 
 
 def find_module_name(filename):
-    return filename.split('/')[-1].split('.')[0]
+    return filename.split("/")[-1].split(".")[0]
 
 
 def getattr_static(obj, attr1, attr2):
@@ -79,7 +79,7 @@ def getattr_static(obj, attr1, attr2):
 
 
 def get_class_name(obj):
-    return getattr_static(obj, '__class__', '__name__')
+    return getattr_static(obj, "__class__", "__name__")
 
 
 def get_metadata(func_or_method):
@@ -94,13 +94,30 @@ def get_metadata(func_or_method):
     if inspect.isgeneratorfunction(func_or_method):
         is_generator_func = True
 
-    module_name, name, filename, start_line, end_line, full_name, code = function_metadata(func)
+    (
+        module_name,
+        name,
+        filename,
+        start_line,
+        end_line,
+        full_name,
+        code,
+    ) = function_metadata(func)
 
-    return module_name, class_name, name, filename, start_line, end_line, full_name, is_generator_func, code
+    return (
+        module_name,
+        class_name,
+        name,
+        filename,
+        start_line,
+        end_line,
+        full_name,
+        is_generator_func,
+        code,
+    )
 
 
 def function_metadata(func):
-
     func_code = func.__code__
 
     module_name = find_module_name(func_code.co_filename)
@@ -119,18 +136,20 @@ def find_full_name(func_or_method):
         module = func_or_method.__module__
         qualname = func_or_method.__qualname__
 
-        return f'{module}.{qualname}'
+        return f"{module}.{qualname}"
     except Exception as e:
         return None
 
 
 def get_end_line(start_line, source):
-    loc = source.count('\n')
+    loc = source.count("\n")
     return start_line + loc - 1
 
 
 def check_is_generator_function(func_or_method):
-    if inspect.isgeneratorfunction(func_or_method) or inspect.isgenerator(func_or_method):
+    if inspect.isgeneratorfunction(func_or_method) or inspect.isgenerator(
+        func_or_method
+    ):
         return None
     return func_or_method
 
@@ -138,8 +157,13 @@ def check_is_generator_function(func_or_method):
 def obj_value(obj):
     try:
         if is_definition(obj):
-            return f'{obj.__qualname__} def'
-        elif is_basic(obj) or is_safe_iterator(obj) or is_safe_set(obj) or is_safe_map(obj):
+            return f"{obj.__qualname__} def"
+        elif (
+            is_basic(obj)
+            or is_safe_iterator(obj)
+            or is_safe_set(obj)
+            or is_safe_map(obj)
+        ):
             return repr(obj)
         else:
             return obj.__class__.__qualname__
@@ -152,16 +176,33 @@ def obj_type(obj):
 
 
 def is_definition(obj):
-    return obj.__class__.__name__ in ['type', 'module', 'function', 'method',
-                                      'code', 'traceback', 'frame', 'generator', 'coroutine']
+    return obj.__class__.__name__ in [
+        "type",
+        "module",
+        "function",
+        "method",
+        "code",
+        "traceback",
+        "frame",
+        "generator",
+        "coroutine",
+    ]
 
 
 def is_basic(obj):
-    return obj.__class__.__name__ in ['NoneType', 'bool', 'int', 'float', 'complex', 'str', 'range']
+    return obj.__class__.__name__ in [
+        "NoneType",
+        "bool",
+        "int",
+        "float",
+        "complex",
+        "str",
+        "range",
+    ]
 
 
 def is_safe_iterator(obj):
-    if obj.__class__.__name__ in ['list', 'tuple']:
+    if obj.__class__.__name__ in ["list", "tuple"]:
         if not obj:
             return True
         for each in obj:
@@ -172,7 +213,7 @@ def is_safe_iterator(obj):
 
 
 def is_safe_set(obj):
-    if obj.__class__.__name__ in ['set', 'frozenset']:
+    if obj.__class__.__name__ in ["set", "frozenset"]:
         if not obj:
             return True
         for each in obj:
@@ -183,7 +224,7 @@ def is_safe_set(obj):
 
 
 def is_safe_map(obj):
-    if obj.__class__.__name__ == 'dict':
+    if obj.__class__.__name__ == "dict":
         if not obj:
             return True
         for key in obj:
@@ -197,8 +238,8 @@ def get_html_lines(code):
     html = html_for_code(code)
     lines = []
     for line in html.splitlines():
-        line = line.replace('<div class="highlight"><pre><span></span>', '')
-        line = line.replace('</pre></div>', '')
+        line = line.replace('<div class="highlight"><pre><span></span>', "")
+        line = line.replace("</pre></div>", "")
         lines.append(line)
     return lines
 
@@ -212,17 +253,17 @@ def html_for_code(code):
 def write_html(filename, content):
     html = re.sub(r"(\A\s+)|(\s+$)", "", content, flags=re.MULTILINE) + "\n"
     with open(filename, "wb") as fout:
-        fout.write(html.encode('ascii', 'xmlcharrefreplace'))
+        fout.write(html.encode("ascii", "xmlcharrefreplace"))
 
 
 def write_csv(filename, content):
-    with open(filename, 'w') as fout:
+    with open(filename, "w") as fout:
         wr = csv.writer(fout, quoting=csv.QUOTE_ALL)
         wr.writerows(content)
 
 
 def write_txt(filename, content):
-    with open(filename, 'w') as fout:
+    with open(filename, "w") as fout:
         fout.write(content)
 
 
@@ -246,14 +287,14 @@ def get_module_names(method_names):
     module_names = []
     for method_name in method_names:
         if isinstance(method_name, str):
-            module_name = method_name.split('.')[0]
+            module_name = method_name.split(".")[0]
             module_names.append(module_name)
     return module_names
 
 
 def ratio(a, b, dec=1):
     if b == 0:
-        return 'NA'
+        return "NA"
     r = a / b * 100
     return round(r, dec)
 
@@ -284,8 +325,13 @@ def find_distinct_in_set(old, new):
 
 def is_super_call(frame):
     import dis
+
     instructions = dis.Bytecode(frame.f_code)
     for instr in instructions:
-        if instr.offset == frame.f_lasti and instr.opname == 'LOAD_GLOBAL' and instr.argval == 'super':
+        if (
+            instr.offset == frame.f_lasti
+            and instr.opname == "LOAD_GLOBAL"
+            and instr.argval == "super"
+        ):
             return True
     return False
