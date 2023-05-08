@@ -2,36 +2,32 @@ from spotflow.api import monitor_unittest_module
 from spotflow.utils import count_values, ratio, write_csv
 
 
-def compute_polarity(test, target_methods):
-    print('Test suite:', test.__name__)
-    monitored_program = monitor_unittest_module(test, target_methods, var_states=False)
-    test_methods = polarity_for_program(monitored_program)
+def compute_polarity(sut_name, test_suite, target_methods):
+    
+    print('SUT:', sut_name)
 
-    project_name = target_methods[0]
-    filename = project_name + '.csv'
-    write_csv(filename, test_methods)
-
-
-def polarity_for_program(monitored_program):
-
-    print('compute_polarity_for_test_methods')
-
-    test_suite_data = run_polarity(monitored_program, min_branch_frequency=99)
-
-    # for each in branch_track_values:
-    #     tf_values = branch_track_values[each]
-    #     print(each, tf_values)
-
-    to_export = []
-    for test_name in test_suite_data:
-        t, f, total_tf, positivity, negativity, exception_freq = test_suite_data[test_name]
-        to_export.append([test_name, t, f, total_tf, positivity, negativity, exception_freq])
-        print(test_name, t, f, total_tf, positivity, negativity, exception_freq)
-
-    return to_export
+    monitored_program = monitor_unittest_module(test_suite, target_methods, var_states=False)
+    test_suite_polarity = polarity_for_program(monitored_program, min_branch_frequency=99)
+    export_report(sut_name, test_suite_polarity)
 
 
-def run_polarity(monitored_program, min_branch_frequency=95):
+def export_report(sut_name, test_suite_polarity):
+
+    polarity_data = []
+    header = ["test_name", "t", "f", "total_tf", "positivity", "negativity", "exception_freq"]
+    polarity_data.append(header)
+    print(header)
+    for test_name in test_suite_polarity:
+        t, f, total_tf, positivity, negativity, exception_freq = test_suite_polarity[test_name]
+        line = [test_name, t, f, total_tf, positivity, negativity, exception_freq]
+        polarity_data.append(line)
+        print(line)
+
+    filename = sut_name + '.csv'
+    write_csv(filename, polarity_data)
+
+
+def polarity_for_program(monitored_program, min_branch_frequency=95):
 
     branch_data = branch_data_for_program(monitored_program)
     test_suite_branch_data = {}
