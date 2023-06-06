@@ -250,10 +250,10 @@ def is_safe_map(obj):
 #     return highlight(code, lexer, formatter)
 
 
-# def write_html(filename, content):
-#     html = re.sub(r"(\A\s+)|(\s+$)", "", content, flags=re.MULTILINE) + "\n"
-#     with open(filename, "wb") as fout:
-#         fout.write(html.encode("ascii", "xmlcharrefreplace"))
+def write_html(filename, content):
+    html = re.sub(r"(\A\s+)|(\s+$)", "", content, flags=re.MULTILINE) + "\n"
+    with open(filename, "wb") as fout:
+        fout.write(html.encode("ascii", "xmlcharrefreplace"))
 
 
 def write_csv(filename, content):
