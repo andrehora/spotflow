@@ -1,8 +1,8 @@
-name: Install
+name: install-dev
 
 on:
   workflow_run:
-    workflows: ["Tests"]
+    workflows: ["tests"]
     branches: [main]
     types: 
       - completed

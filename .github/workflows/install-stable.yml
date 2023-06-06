@@ -1,4 +1,4 @@
-name: Install
+name: install-stable
 
 on: [workflow_dispatch]
 
