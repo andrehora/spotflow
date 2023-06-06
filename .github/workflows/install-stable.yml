@@ -14,13 +14,12 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
-      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
       - name: Install SpotFlow
-        run: pip install -e .
+        run: sh tests/e2e/smoke/install-stable.sh
       - name: Run SpotFlow
         run: sh tests/e2e/smoke/run.sh
