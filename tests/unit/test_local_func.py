@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestLocalMethod, TestLocalFunction
+from tests.unit.stub_test import TLocalMethod, TLocalFunction
 from spotflow.api import monitor_func
 
 
@@ -7,7 +7,7 @@ class TestLocalMethodCall(unittest.TestCase):
 
     def test_has_local_method_1(self):
         method_name = 'tests.unit.stub_sut.LocalMethod.has_local_method_1'
-        func = TestLocalMethod().test_has_local_method_1
+        func = TLocalMethod().test_has_local_method_1
 
         result = monitor_func(func, [method_name])
 
@@ -19,7 +19,7 @@ class TestLocalMethodCall(unittest.TestCase):
 
     def test_has_local_method_2(self):
         method_name = 'tests.unit.stub_sut.LocalMethod.has_local_method_2'
-        func = TestLocalMethod().test_has_local_method_2
+        func = TLocalMethod().test_has_local_method_2
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 2)
@@ -35,7 +35,7 @@ class TestLocalMethodCall(unittest.TestCase):
 
     def test_has_local_method_3(self):
         method_name = 'tests.unit.stub_sut.LocalMethod.has_local_method_3'
-        func = TestLocalMethod().test_has_local_method_3
+        func = TLocalMethod().test_has_local_method_3
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 3)
@@ -54,7 +54,7 @@ class TestLocalMethodCall(unittest.TestCase):
 
     def test_has_local_method_4(self):
         method_name = 'tests.unit.stub_sut.LocalMethod.has_local_method_4'
-        func = TestLocalMethod().test_has_local_method_4
+        func = TLocalMethod().test_has_local_method_4
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 3)
@@ -77,7 +77,7 @@ class TestLocalFunctionCall(unittest.TestCase):
 
     def test_has_local_method_1(self):
         method_name = 'tests.unit.stub_sut.has_local_function_1'
-        func = TestLocalFunction().test_has_local_function_1
+        func = TLocalFunction().test_has_local_function_1
 
         result = monitor_func(func, [method_name])
 
@@ -89,7 +89,7 @@ class TestLocalFunctionCall(unittest.TestCase):
 
     def test_has_local_function_2(self):
         method_name = 'tests.unit.stub_sut.has_local_function_2'
-        func = TestLocalFunction().test_has_local_function_2
+        func = TLocalFunction().test_has_local_function_2
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 2)
@@ -105,7 +105,7 @@ class TestLocalFunctionCall(unittest.TestCase):
 
     def test_has_local_function_3(self):
         method_name = 'tests.unit.stub_sut.has_local_function_3'
-        func = TestLocalFunction().test_has_local_function_3
+        func = TLocalFunction().test_has_local_function_3
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 3)
@@ -124,7 +124,7 @@ class TestLocalFunctionCall(unittest.TestCase):
 
     def test_has_local_function_4(self):
         method_name = 'tests.unit.stub_sut.has_local_function_4'
-        func = TestLocalFunction().test_has_local_function_4
+        func = TLocalFunction().test_has_local_function_4
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 3)

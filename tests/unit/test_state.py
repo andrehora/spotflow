@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestChangeState
+from tests.unit.stub_test import TChangeState
 from spotflow.api import monitor_func
 
 
@@ -7,7 +7,7 @@ class TestState(unittest.TestCase):
 
     def test_change_var_state(self):
         method_name = 'tests.unit.stub_sut.ChangeState.change_var_state'
-        func = TestChangeState().test_change_var_state
+        func = TChangeState().test_change_var_state
 
         result = monitor_func(func, [method_name])
 
@@ -27,7 +27,7 @@ class TestState(unittest.TestCase):
 
     def test_change_arg_state(self):
         method_name = 'tests.unit.stub_sut.ChangeState.change_arg_state'
-        func = TestChangeState().test_change_arg_state
+        func = TChangeState().test_change_arg_state
 
         result = monitor_func(func, [method_name])
 
@@ -43,7 +43,7 @@ class TestState(unittest.TestCase):
 
     def test_change_var_state_with_conditional_true(self):
         method_name = 'tests.unit.stub_sut.ChangeState.change_var_state_with_conditional'
-        func = TestChangeState().test_change_var_state_with_conditional_true
+        func = TChangeState().test_change_var_state_with_conditional_true
 
         result = monitor_func(func, [method_name])
 
@@ -61,7 +61,7 @@ class TestState(unittest.TestCase):
 
     def test_change_var_state_with_conditional_false(self):
         method_name = 'tests.unit.stub_sut.ChangeState.change_var_state_with_conditional'
-        func = TestChangeState().test_change_var_state_with_conditional_false
+        func = TChangeState().test_change_var_state_with_conditional_false
 
         result = monitor_func(func, [method_name])
 
@@ -79,7 +79,7 @@ class TestState(unittest.TestCase):
 
     def test_change_multiple_vars_states(self):
         method_name = 'tests.unit.stub_sut.ChangeState.change_multiple_vars_states'
-        func = TestChangeState().test_change_multiple_vars_states
+        func = TChangeState().test_change_multiple_vars_states
 
         result = monitor_func(func, [method_name])
 
@@ -98,7 +98,7 @@ class TestState(unittest.TestCase):
 
     def test_change_list_state(self):
         method_name = 'tests.unit.stub_sut.ChangeState.change_list_state'
-        func = TestChangeState().test_change_list_state
+        func = TChangeState().test_change_list_state
 
         result = monitor_func(func, [method_name])
 
@@ -117,7 +117,7 @@ class TestState(unittest.TestCase):
 
     def test_change_var_state_with_loop(self):
         method_name = 'tests.unit.stub_sut.ChangeState.change_var_state_with_loop'
-        func = TestChangeState().test_change_var_state_with_loop
+        func = TChangeState().test_change_var_state_with_loop
 
         result = monitor_func(func, [method_name])
 
@@ -146,7 +146,7 @@ class TestState(unittest.TestCase):
 
     def test_change_instance_var(self):
         method_name = 'tests.unit.stub_sut.ChangeState.change_instance_var'
-        func = TestChangeState().test_change_instance_var
+        func = TChangeState().test_change_instance_var
 
         result = monitor_func(func, [method_name])
 
@@ -165,7 +165,7 @@ class TestState(unittest.TestCase):
 
     def test_init_with_instance_var(self):
         method_name = 'tests.unit.stub_sut.ChangeState.__init__'
-        func = TestChangeState().test_init
+        func = TChangeState().test_init
 
         result = monitor_func(func, [method_name])
 
@@ -184,7 +184,7 @@ class TestState(unittest.TestCase):
 
     def test_keep_var_state(self):
         method_name = 'tests.unit.stub_sut.ChangeState.keep_var_state'
-        func = TestChangeState().test_keep_var_state
+        func = TChangeState().test_keep_var_state
 
         result = monitor_func(func, [method_name])
 

@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestRecursion
+from tests.unit.stub_test import TRecursion
 from spotflow.api import monitor_func
 
 
@@ -7,7 +7,7 @@ class TestRecursiveCalls(unittest.TestCase):
 
     def test_basic_recursion(self):
         method_name = 'tests.unit.stub_sut.Recursion.basic_recursion'
-        func = TestRecursion().test_basic_recursion
+        func = TRecursion().test_basic_recursion
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 1)
@@ -21,7 +21,7 @@ class TestRecursiveCalls(unittest.TestCase):
 
     def test_fib_recursive(self):
         method_name = 'tests.unit.stub_sut.Recursion.fib_recursive'
-        func = TestRecursion().test_fib_recursive_3
+        func = TRecursion().test_fib_recursive_3
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 2)

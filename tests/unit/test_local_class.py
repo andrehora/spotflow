@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestLocalClass
+from tests.unit.stub_test import TLocalClass
 from spotflow.api import monitor_func
 
 
@@ -7,7 +7,7 @@ class TestLocalClassCall(unittest.TestCase):
 
     def test_has_local_class_1(self):
         method_name = 'tests.unit.stub_sut.HasLocalClass.LocalClass1.local'
-        func = TestLocalClass().test_has_local_class_1
+        func = TLocalClass().test_has_local_class_1
 
         result = monitor_func(func, [method_name])
 
@@ -19,7 +19,7 @@ class TestLocalClassCall(unittest.TestCase):
 
     def test_has_local_class_2(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestLocalClass().test_has_local_class_2
+        func = TLocalClass().test_has_local_class_2
 
         result = monitor_func(func, [method_name])
 
@@ -35,7 +35,7 @@ class TestLocalClassCall(unittest.TestCase):
 
     def test_has_local_class_3(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestLocalClass().test_has_local_class_3
+        func = TLocalClass().test_has_local_class_3
 
         result = monitor_func(func, [method_name])
 

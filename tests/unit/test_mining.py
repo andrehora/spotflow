@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestClassWithManyCalls
+from tests.unit.stub_test import TClassWithManyCalls
 from spotflow.api import monitor_func
 
 
@@ -7,7 +7,7 @@ class TestFilter(unittest.TestCase):
 
     def test_basics(self):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls.method_called_many_times'
-        func = TestClassWithManyCalls().test_method_called_many_times
+        func = TClassWithManyCalls().test_method_called_many_times
 
         result = monitor_func(func, [method_name])
 
@@ -18,7 +18,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_calls_based_on_specific_arg_value(self):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls'
-        func = TestClassWithManyCalls().test_call_methods
+        func = TClassWithManyCalls().test_call_methods
 
         result = monitor_func(func, [method_name])
 
@@ -39,7 +39,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_calls_based_on_specific_return_value(self):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls'
-        func = TestClassWithManyCalls().test_call_methods
+        func = TClassWithManyCalls().test_call_methods
 
         result = monitor_func(func, [method_name])
 
@@ -57,7 +57,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_calls_based_on_exceptions(self):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls'
-        func = TestClassWithManyCalls().test_call_methods
+        func = TClassWithManyCalls().test_call_methods
 
         result = monitor_func(func, [method_name])
 
@@ -74,7 +74,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_calls_based_on_specific_exception(self):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls'
-        func = TestClassWithManyCalls().test_call_methods
+        func = TClassWithManyCalls().test_call_methods
 
         result = monitor_func(func, [method_name])
 
@@ -92,7 +92,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_calls_based_on_arg_values(self):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls.method_called_many_times'
-        func = TestClassWithManyCalls().test_method_called_many_times
+        func = TClassWithManyCalls().test_method_called_many_times
 
         result = monitor_func(func, [method_name])
 
@@ -113,7 +113,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_calls_based_on_return_values(self):
         method_name = 'tests.unit.stub_sut.ClassWithManyCalls.method_called_many_times'
-        func = TestClassWithManyCalls().test_method_called_many_times
+        func = TClassWithManyCalls().test_method_called_many_times
 
         result = monitor_func(func, [method_name])
 

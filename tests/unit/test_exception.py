@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestExceptions
+from tests.unit.stub_test import TExceptions
 from spotflow.api import monitor_func
 
 
@@ -7,7 +7,7 @@ class TestException(unittest.TestCase):
 
     def test_zero_division(self):
         method_name = 'tests.unit.stub_sut.Exceptions.zero_division'
-        func = TestExceptions().test_zero_division
+        func = TExceptions().test_zero_division
 
         result = monitor_func(func, [method_name])
 
@@ -21,7 +21,7 @@ class TestException(unittest.TestCase):
 
     def test_raise_generic_exception(self):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_generic_exception'
-        func = TestExceptions().test_raise_generic_exception
+        func = TExceptions().test_raise_generic_exception
 
         result = monitor_func(func, [method_name])
 
@@ -35,7 +35,7 @@ class TestException(unittest.TestCase):
 
     def test_raise_specific_exception(self):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_specific_exception'
-        func = TestExceptions().test_raise_specific_exception
+        func = TExceptions().test_raise_specific_exception
 
         result = monitor_func(func, [method_name])
 
@@ -50,7 +50,7 @@ class TestException(unittest.TestCase):
 
     def test_raise_exception_line_1(self):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
-        func = TestExceptions().test_raise_exception_line_1
+        func = TExceptions().test_raise_exception_line_1
 
         result = monitor_func(func, [method_name])
 
@@ -67,7 +67,7 @@ class TestException(unittest.TestCase):
 
     def test_raise_exception_line_2(self):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
-        func = TestExceptions().test_raise_exception_line_2
+        func = TExceptions().test_raise_exception_line_2
 
         result = monitor_func(func, [method_name])
 
@@ -84,7 +84,7 @@ class TestException(unittest.TestCase):
 
     def test_raise_exception_line_3(self):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
-        func = TestExceptions().test_raise_exception_line_3
+        func = TExceptions().test_raise_exception_line_3
 
         result = monitor_func(func, [method_name])
 
@@ -101,7 +101,7 @@ class TestException(unittest.TestCase):
 
     def test_raise_no_exception(self):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
-        func = TestExceptions().test_raise_no_exception
+        func = TExceptions().test_raise_no_exception
 
         result = monitor_func(func, [method_name])
 
@@ -113,7 +113,7 @@ class TestException(unittest.TestCase):
 
     def test_calls_with_exceptions(self):
         method_name = 'tests.unit.stub_sut.Exceptions.raise_distinct_exception'
-        func = TestExceptions().test_calls_with_exceptions
+        func = TExceptions().test_calls_with_exceptions
 
         result = monitor_func(func, [method_name])
 

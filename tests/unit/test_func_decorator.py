@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestFuncRunner
+from tests.unit.stub_test import TFuncRunner
 from spotflow.api import monitor_func
 
 
@@ -7,7 +7,7 @@ class TestFuncRunnerCalls(unittest.TestCase):
 
     def test_run_decorator_once(self):
         method_name = 'tests.unit.stub_sut.FuncRunner'
-        func = TestFuncRunner().test_run_decorator_once
+        func = TFuncRunner().test_run_decorator_once
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 4)
@@ -30,7 +30,7 @@ class TestFuncRunnerCalls(unittest.TestCase):
 
     def test_run_decorator_twice(self):
         method_name = 'tests.unit.stub_sut.FuncRunner'
-        func = TestFuncRunner().test_run_decorator_twice
+        func = TFuncRunner().test_run_decorator_twice
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 4)
@@ -53,7 +53,7 @@ class TestFuncRunnerCalls(unittest.TestCase):
 
     def test_run_call_func(self):
         method_name = 'tests.unit.stub_sut.FuncRunner'
-        func = TestFuncRunner().test_run_call_func
+        func = TFuncRunner().test_run_call_func
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 3)

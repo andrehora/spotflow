@@ -7,7 +7,7 @@ class TestFoo:
         pass
 
 
-class TestSimpleCall:
+class TSimpleCall:
 
     def __init__(self):
         self.bs = SimpleCall()
@@ -48,7 +48,7 @@ class TestSimpleCall:
         self.test_try_fail()
 
 
-class TestComplexCall:
+class TComplexCall:
 
     def __init__(self):
         self.cs = ComplexCall()
@@ -78,7 +78,7 @@ class TestComplexCall:
         self.test_sut_call_sut()
 
 
-class TestChangeState:
+class TChangeState:
 
     def __init__(self):
         self.states = ChangeState()
@@ -114,7 +114,7 @@ class TestChangeState:
         self.states.keep_var_state()
 
 
-class TestReturnValue:
+class TReturnValue:
 
     def __init__(self):
         self.ret = ReturnValue()
@@ -187,7 +187,7 @@ class TestReturnValue:
         self.ret.implicit_return()
 
 
-class TestExceptions:
+class TExceptions:
 
     def __init__(self):
         self.ex = Exceptions()
@@ -251,7 +251,7 @@ class TestExceptions:
             pass
 
 
-class TestGenerator:
+class TGenerator:
 
     def __init__(self):
         self.g = Generators()
@@ -295,7 +295,7 @@ class TestGenerator:
         self.test_has_generator_4()
 
 
-class TestGeneratorExpression:
+class TGeneratorExpression:
 
     def __init__(self):
         self.ge = GeneratorExpression()
@@ -307,7 +307,7 @@ class TestGeneratorExpression:
         self.ge.generator_expression_2()
 
 
-class TestComprehension:
+class TComprehension:
 
     def __init__(self):
         self.c = Comprehension()
@@ -328,7 +328,7 @@ class TestComprehension:
         self.c.dictcomp()
 
 
-class TestLocalMethod:
+class TLocalMethod:
 
     def __init__(self):
         self.lm = LocalMethod()
@@ -346,7 +346,7 @@ class TestLocalMethod:
         self.lm.has_local_method_4()
 
 
-class TestLocalFunction:
+class TLocalFunction:
 
     def test_has_local_function_1(self):
         has_local_function_1()
@@ -361,7 +361,7 @@ class TestLocalFunction:
         has_local_function_4()
 
 
-class TestLocalClass:
+class TLocalClass:
 
     def test_has_local_class_1(self):
         HasLocalClass().LocalClass1().local()
@@ -373,7 +373,7 @@ class TestLocalClass:
         has_local_class()
 
 
-class TestSuper:
+class TSuper:
 
     def test_super_init_a(self):
         ClassA(123)
@@ -397,7 +397,7 @@ class TestSuper:
         ClassC(123).foobar(123)
 
 
-class TestOverride:
+class TOverride:
 
     def test_base_class_main(self):
         BaseClass().main()
@@ -418,7 +418,7 @@ class TestOverride:
         OverrideMainAndReport().main()
 
 
-class TestMoreSuper:
+class TMoreSuper:
 
     def test_super_1(self):
         ClassSuper1()
@@ -430,7 +430,7 @@ class TestMoreSuper:
         ClassSuper3()
 
 
-class TestFuncRunner:
+class TFuncRunner:
 
     def test_run_decorator_once(self):
         FuncRunner().run_decorator_once()
@@ -442,7 +442,7 @@ class TestFuncRunner:
         FuncRunner().run_call_func()
 
 
-class TestRecursion:
+class TRecursion:
 
     def test_basic_recursion(self):
         Recursion().run_basic_recursion()
@@ -451,7 +451,7 @@ class TestRecursion:
         Recursion().fib_recursive(3)
 
 
-class TestClassWithManyCalls:
+class TClassWithManyCalls:
 
     def test_method_called_many_times(self):
         ClassWithManyCalls().call_method_many_times()
@@ -460,7 +460,7 @@ class TestClassWithManyCalls:
         ClassWithManyCalls().call_methods()
 
 
-class TestClassWithExternalDependency:
+class TClassWithExternalDependency:
 
     def test_call_external_dependencies(self):
         ClassWithExternalDependency().call_external_dependencies()

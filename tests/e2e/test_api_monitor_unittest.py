@@ -5,7 +5,6 @@ from spotflow.api import monitor_unittest_module, monitor_unittest_testcase
 class TestMonitorUnittest(unittest.TestCase):
 
     def test_monitor_unittest_module_gzip(self):
-
         from test import test_gzip
         monitored_program = monitor_unittest_module(test_gzip, ['gzip'])
         self.assertGreater(len(monitored_program.all_methods()), 25)

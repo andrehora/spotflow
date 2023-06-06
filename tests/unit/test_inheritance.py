@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestSuper, TestMoreSuper, TestOverride
+from tests.unit.stub_test import TSuper, TMoreSuper, TOverride
 from spotflow.api import monitor_func
 
 
@@ -7,7 +7,7 @@ class TestSuperCall(unittest.TestCase):
 
     def test_super_init_a(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestSuper().test_super_init_a
+        func = TSuper().test_super_init_a
 
         result = monitor_func(func, [method_name])
 
@@ -19,7 +19,7 @@ class TestSuperCall(unittest.TestCase):
 
     def test_super_init_b(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestSuper().test_super_init_b
+        func = TSuper().test_super_init_b
 
         result = monitor_func(func, [method_name])
 
@@ -35,7 +35,7 @@ class TestSuperCall(unittest.TestCase):
 
     def test_super_init_c(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestSuper().test_super_init_c
+        func = TSuper().test_super_init_c
 
         result = monitor_func(func, [method_name])
 
@@ -55,7 +55,7 @@ class TestSuperCall(unittest.TestCase):
 
     def test_super_init_d(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestSuper().test_super_init_d
+        func = TSuper().test_super_init_d
 
         result = monitor_func(func, [method_name])
 
@@ -75,7 +75,7 @@ class TestSuperCall(unittest.TestCase):
 
     def test_super_foobar_a(self):
         method_name = 'tests.unit.stub_sut.ClassA.foobar'
-        func = TestSuper().test_super_foobar_a
+        func = TSuper().test_super_foobar_a
 
         result = monitor_func(func, [method_name])
 
@@ -87,7 +87,7 @@ class TestSuperCall(unittest.TestCase):
 
     def test_super_foobar_b(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestSuper().test_super_foobar_b
+        func = TSuper().test_super_foobar_b
 
         result = monitor_func(func, [method_name])
 
@@ -111,7 +111,7 @@ class TestSuperCall(unittest.TestCase):
 
     def test_super_foobar_c(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestSuper().test_super_foobar_c
+        func = TSuper().test_super_foobar_c
 
         result = monitor_func(func, [method_name])
 
@@ -146,7 +146,7 @@ class TestMoreSuperCall(unittest.TestCase):
 
     def test_super_1(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestMoreSuper().test_super_1
+        func = TMoreSuper().test_super_1
 
         result = monitor_func(func, [method_name])
 
@@ -162,7 +162,7 @@ class TestMoreSuperCall(unittest.TestCase):
 
     def test_super_2(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestMoreSuper().test_super_2
+        func = TMoreSuper().test_super_2
 
         result = monitor_func(func, [method_name])
 
@@ -182,7 +182,7 @@ class TestMoreSuperCall(unittest.TestCase):
 
     def test_super_3(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestMoreSuper().test_super_3
+        func = TMoreSuper().test_super_3
 
         result = monitor_func(func, [method_name])
 
@@ -209,7 +209,7 @@ class TestOverrideCall(unittest.TestCase):
 
     def test_base_class_main(self):
         method_name = 'tests.unit.stub_sut.BaseClass.main'
-        func = TestOverride().test_base_class_main
+        func = TOverride().test_base_class_main
 
         result = monitor_func(func, [method_name])
 
@@ -221,7 +221,7 @@ class TestOverrideCall(unittest.TestCase):
 
     def test_base_class_show(self):
         method_name = 'tests.unit.stub_sut.BaseClass.show'
-        func = TestOverride().test_base_class_show
+        func = TOverride().test_base_class_show
 
         result = monitor_func(func, [method_name])
 
@@ -233,7 +233,7 @@ class TestOverrideCall(unittest.TestCase):
 
     def test_base_class_report(self):
         method_name = 'tests.unit.stub_sut.BaseClass.report'
-        func = TestOverride().test_base_class_report
+        func = TOverride().test_base_class_report
 
         result = monitor_func(func, [method_name])
 
@@ -245,7 +245,7 @@ class TestOverrideCall(unittest.TestCase):
 
     def test_override_show(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestOverride().test_override_show
+        func = TOverride().test_override_show
 
         result = monitor_func(func, [method_name])
 
@@ -261,7 +261,7 @@ class TestOverrideCall(unittest.TestCase):
 
     def test_override_main(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestOverride().test_override_main
+        func = TOverride().test_override_main
 
         result = monitor_func(func, [method_name])
 
@@ -277,7 +277,7 @@ class TestOverrideCall(unittest.TestCase):
 
     def test_override_main_and_report(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestOverride().test_override_main_and_report
+        func = TOverride().test_override_main_and_report
 
         result = monitor_func(func, [method_name])
 

@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestSimpleCall, TestComplexCall
+from tests.unit.stub_test import TSimpleCall, TComplexCall
 from spotflow.api import monitor_func
 
 
@@ -7,7 +7,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_simple_if_true(self):
         method_name = 'tests.unit.stub_sut.SimpleCall.simple_if'
-        func = TestSimpleCall().test_simple_if_true
+        func = TSimpleCall().test_simple_if_true
 
         result = monitor_func(func, [method_name])
 
@@ -16,7 +16,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_simple_if_false(self):
         method_name = 'tests.unit.stub_sut.SimpleCall.simple_if'
-        func = TestSimpleCall().test_simple_if_false
+        func = TSimpleCall().test_simple_if_false
 
         result = monitor_func(func, [method_name])
 
@@ -25,7 +25,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_simple_if_else_true_and_false(self):
         method_name = 'tests.unit.stub_sut.SimpleCall.simple_if_else'
-        func = TestSimpleCall().test_simple_if_else_true_and_false
+        func = TSimpleCall().test_simple_if_else_true_and_false
 
         result = monitor_func(func, [method_name])
 
@@ -35,7 +35,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_simple_if_else_true(self):
         method_name = 'tests.unit.stub_sut.SimpleCall.simple_if_else'
-        func = TestSimpleCall().test_simple_if_else_true
+        func = TSimpleCall().test_simple_if_else_true
 
         result = monitor_func(func, [method_name])
 
@@ -44,7 +44,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_simple_if_else_false(self):
         method_name = 'tests.unit.stub_sut.SimpleCall.simple_if_else'
-        func = TestSimpleCall().test_simple_if_else_false
+        func = TSimpleCall().test_simple_if_else_false
 
         result = monitor_func(func, [method_name])
 
@@ -53,7 +53,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_TestSimpleCall(self):
         method_name = 'tests.unit.stub_sut.SimpleCall.simple_if_else'
-        func = TestSimpleCall().test_simple_if_else_true_and_false
+        func = TSimpleCall().test_simple_if_else_true_and_false
 
         result = monitor_func(func, [method_name])
 
@@ -63,7 +63,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_loop(self):
         method_name = 'tests.unit.stub_sut.SimpleCall.loop'
-        func = TestSimpleCall().test_loop
+        func = TSimpleCall().test_loop
 
         result = monitor_func(func, [method_name])
 
@@ -73,7 +73,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_try_success(self):
         method_name = 'tests.unit.stub_sut.SimpleCall.try_success'
-        func = TestSimpleCall().test_try_success
+        func = TSimpleCall().test_try_success
 
         result = monitor_func(func, [method_name])
 
@@ -82,7 +82,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_try_fail(self):
         method_name = 'tests.unit.stub_sut.SimpleCall.try_fail'
-        func = TestSimpleCall().test_try_fail
+        func = TSimpleCall().test_try_fail
 
         result = monitor_func(func, [method_name])
 
@@ -91,7 +91,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_single_call_to_sut_bom_dia(self):
         method_name = 'tests.unit.stub_sut.ComplexCall.hello'
-        func = TestComplexCall().test_single_call_to_sut_bom_dia
+        func = TComplexCall().test_single_call_to_sut_bom_dia
 
         result = monitor_func(func, [method_name])
 
@@ -100,7 +100,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_single_call_to_sut_boa_tarde(self):
         method_name = 'tests.unit.stub_sut.ComplexCall.hello'
-        func = TestComplexCall().test_single_call_to_sut_boa_tarde
+        func = TComplexCall().test_single_call_to_sut_boa_tarde
 
         result = monitor_func(func, [method_name])
 
@@ -109,7 +109,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_single_call_to_sut_boa_noite(self):
         method_name = 'tests.unit.stub_sut.ComplexCall.hello'
-        func = TestComplexCall().test_single_call_to_sut_boa_noite
+        func = TComplexCall().test_single_call_to_sut_boa_noite
 
         result = monitor_func(func, [method_name])
 
@@ -118,7 +118,7 @@ class TestCallForFunctions(unittest.TestCase):
 
     def test_multiple_call_to_sut(self):
         method_name = 'tests.unit.stub_sut.ComplexCall.hello'
-        func = TestComplexCall().test_multiple_call_to_sut
+        func = TComplexCall().test_multiple_call_to_sut
 
         result = monitor_func(func, [method_name])
 
@@ -133,14 +133,14 @@ class TestCallForContainers(unittest.TestCase):
 
     def test_TestSimpleCall(self):
         method_name = 'tests.unit.stub_sut.SimpleCall'
-        func = TestSimpleCall().run_all
+        func = TSimpleCall().run_all
 
         result = monitor_func(func, [method_name])
 
         self.assertEqual(len(result), 5)
 
         method_name = 'tests.unit.stub_sut'
-        func = TestSimpleCall().run_all
+        func = TSimpleCall().run_all
 
         result = monitor_func(func, [method_name])
 
@@ -148,14 +148,14 @@ class TestCallForContainers(unittest.TestCase):
 
     def test_TestComplexCall(self):
         method_name = 'tests.unit.stub_sut.ComplexCall'
-        func = TestComplexCall().run_all
+        func = TComplexCall().run_all
 
         result = monitor_func(func, [method_name])
 
         self.assertEqual(len(result), 5)
 
         method_name = 'tests.unit.stub_sut'
-        func = TestComplexCall().run_all
+        func = TComplexCall().run_all
 
         result = monitor_func(func, [method_name])
 
@@ -163,7 +163,7 @@ class TestCallForContainers(unittest.TestCase):
 
     def test_sut_call_sut(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestComplexCall().test_sut_call_sut
+        func = TComplexCall().test_sut_call_sut
 
         result = monitor_func(func, [method_name])
 

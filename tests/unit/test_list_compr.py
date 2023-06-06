@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestComprehension
+from tests.unit.stub_test import TComprehension
 from spotflow.api import monitor_func
 
 
@@ -7,7 +7,7 @@ class TestComprehensionCall(unittest.TestCase):
 
     def test_listcomp_1(self):
         method_name = 'tests.unit.stub_sut.Comprehension.listcomp_1'
-        func = TestComprehension().test_listcomp_1
+        func = TComprehension().test_listcomp_1
 
         result = monitor_func(func, [method_name])
 
@@ -19,7 +19,7 @@ class TestComprehensionCall(unittest.TestCase):
 
     def test_listcomp_2(self):
         method_name = 'tests.unit.stub_sut.Comprehension.listcomp_2'
-        func = TestComprehension().test_listcomp_2
+        func = TComprehension().test_listcomp_2
 
         result = monitor_func(func, [method_name])
 
@@ -31,7 +31,7 @@ class TestComprehensionCall(unittest.TestCase):
 
     def test_setcomp_1(self):
         method_name = 'tests.unit.stub_sut.Comprehension.setcomp_1'
-        func = TestComprehension().test_setcomp_1
+        func = TComprehension().test_setcomp_1
 
         result = monitor_func(func, [method_name])
 
@@ -43,7 +43,7 @@ class TestComprehensionCall(unittest.TestCase):
 
     def test_setcomp_2(self):
         method_name = 'tests.unit.stub_sut.Comprehension.setcomp_2'
-        func = TestComprehension().test_setcomp_2
+        func = TComprehension().test_setcomp_2
 
         result = monitor_func(func, [method_name])
 
@@ -55,7 +55,7 @@ class TestComprehensionCall(unittest.TestCase):
 
     def test_dictcomp(self):
         method_name = 'tests.unit.stub_sut.Comprehension.dictcomp'
-        func = TestComprehension().test_dictcomp
+        func = TComprehension().test_dictcomp
 
         result = monitor_func(func, [method_name])
 

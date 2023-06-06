@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestClassWithExternalDependency
+from tests.unit.stub_test import TClassWithExternalDependency
 from spotflow.api import monitor_func
 from sys import platform
 
@@ -7,7 +7,7 @@ from sys import platform
 class TestFilter(unittest.TestCase):
 
     def test_no_filter(self):
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func)
         methods = result.all_methods()
@@ -18,7 +18,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_by_method(self):
         method_name = 'tests.unit.stub_sut'
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, target_methods=[method_name])
         methods = result.all_methods()
@@ -42,7 +42,7 @@ class TestFilter(unittest.TestCase):
     def test_filter_by_multiple_methods(self):
         method_name1 = 'tests.unit.stub_sut'
         method_name2 = 'inspect'
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, target_methods=[method_name1, method_name2])
         methods = result.all_methods()
@@ -69,7 +69,7 @@ class TestFilter(unittest.TestCase):
     def test_filter_by_file(self):
 
         file_name = 'stub_sut'
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, target_files=[file_name])
         methods = result.all_methods()
@@ -103,7 +103,7 @@ class TestFilter(unittest.TestCase):
     @unittest.skipIf(platform == "win32", "different values on windows")
     def test_filter_by_file_genericpath(self):
         file_name = 'genericpath.py'
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, target_files=[file_name])
         methods = result.all_methods()
@@ -121,7 +121,7 @@ class TestFilter(unittest.TestCase):
         if platform == "win32":
             file_name = 'ntpath.py'
 
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, target_files=[file_name])
         methods = result.all_methods()
@@ -131,7 +131,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_by_file_inspect(self):
         file_name = 'inspect.py'
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, target_files=[file_name])
         methods = result.all_methods()
@@ -145,7 +145,7 @@ class TestFilter(unittest.TestCase):
     def test_filter_by_multiple_files(self):
         file_name1 = 'genericpath'
         file_name2 = 'inspect'
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, target_files=[file_name1, file_name2])
         methods = result.all_methods()
@@ -158,7 +158,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_by_ignore_file_genericpath(self):
         ignore_file_name = 'genericpath.py'
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, ignore_files=[ignore_file_name])
         methods = result.all_methods()
@@ -174,7 +174,7 @@ class TestFilter(unittest.TestCase):
         if platform == "win32":
             ignore_file_name = 'ntpath.py'
 
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, ignore_files=[ignore_file_name])
         methods = result.all_methods()
@@ -184,7 +184,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_by_ignore_file_inspect(self):
         ignore_file_name = 'inspect.py'
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, ignore_files=[ignore_file_name])
         methods = result.all_methods()
@@ -194,7 +194,7 @@ class TestFilter(unittest.TestCase):
 
     def test_filter_by_ignore_file_stub_sut(self):
         ignore_file_name = 'stub_sut'
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, ignore_files=[ignore_file_name])
         methods = result.all_methods()
@@ -205,7 +205,7 @@ class TestFilter(unittest.TestCase):
     def test_filter_by_ignore_multiple_files(self):
         ignore_file_name1 = 'posixpath.py'
         ignore_file_name2 = 'stub_sut'
-        func = TestClassWithExternalDependency().test_call_external_dependencies
+        func = TClassWithExternalDependency().test_call_external_dependencies
 
         result = monitor_func(func, ignore_files=[ignore_file_name1, ignore_file_name2])
         methods = result.all_methods()

@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TestGenerator, TestGeneratorExpression
+from tests.unit.stub_test import TGenerator, TGeneratorExpression
 from spotflow.api import monitor_func
 
 
@@ -7,7 +7,7 @@ class TestGeneratorCall(unittest.TestCase):
 
     def test_no_generator(self):
         method_name = 'tests.unit.stub_sut.Generators.no_generator'
-        func = TestGenerator().test_no_generator
+        func = TGenerator().test_no_generator
 
         result = monitor_func(func, [method_name])
 
@@ -16,7 +16,7 @@ class TestGeneratorCall(unittest.TestCase):
     def test_call_generator_1(self):
         method_name1 = 'tests.unit.stub_sut.Generators.call_generator_1'
         method_name2 = 'tests.unit.stub_sut.Generators.has_generator_1'
-        func = TestGenerator().test_call_generator_1
+        func = TGenerator().test_call_generator_1
 
         result = monitor_func(func, [method_name1, method_name2])
 
@@ -37,7 +37,7 @@ class TestGeneratorCall(unittest.TestCase):
     def test_call_generator_2(self):
         method_name1 = 'tests.unit.stub_sut.Generators.call_generator_2'
         method_name2 = 'tests.unit.stub_sut.Generators.has_generator_2'
-        func = TestGenerator().test_call_generator_2
+        func = TGenerator().test_call_generator_2
 
         result = monitor_func(func, [method_name1, method_name2])
 
@@ -59,7 +59,7 @@ class TestGeneratorCall(unittest.TestCase):
     def test_call_generator_3(self):
         method_name1 = 'tests.unit.stub_sut.Generators.call_generator_3'
         method_name2 = 'tests.unit.stub_sut.Generators.has_generator_3'
-        func = TestGenerator().test_call_generator_3
+        func = TGenerator().test_call_generator_3
 
         result = monitor_func(func, [method_name1, method_name2])
 
@@ -77,7 +77,7 @@ class TestGeneratorCall(unittest.TestCase):
     def test_call_generator_4(self):
         method_name1 = 'tests.unit.stub_sut.Generators.call_generator_4'
         method_name2 = 'tests.unit.stub_sut.Generators.has_generator_4'
-        func = TestGenerator().test_call_generator_4
+        func = TGenerator().test_call_generator_4
 
         result = monitor_func(func, [method_name1, method_name2])
 
@@ -98,7 +98,7 @@ class TestGeneratorCall(unittest.TestCase):
 
     def test_has_generator_1(self):
         method_name = 'tests.unit.stub_sut.Generators.has_generator_1'
-        func = TestGenerator().test_has_generator_1
+        func = TGenerator().test_has_generator_1
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 1)
@@ -109,7 +109,7 @@ class TestGeneratorCall(unittest.TestCase):
 
     def test_has_generator_2(self):
         method_name = 'tests.unit.stub_sut.Generators.has_generator_2'
-        func = TestGenerator().test_has_generator_2
+        func = TGenerator().test_has_generator_2
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 1)
@@ -120,7 +120,7 @@ class TestGeneratorCall(unittest.TestCase):
 
     def test_has_generator_3(self):
         method_name = 'tests.unit.stub_sut.Generators.has_generator_3'
-        func = TestGenerator().test_has_generator_3
+        func = TGenerator().test_has_generator_3
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 1)
@@ -131,7 +131,7 @@ class TestGeneratorCall(unittest.TestCase):
 
     def test_has_generator_4(self):
         method_name = 'tests.unit.stub_sut.Generators.has_generator_4'
-        func = TestGenerator().test_has_generator_4
+        func = TGenerator().test_has_generator_4
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 1)
@@ -142,7 +142,7 @@ class TestGeneratorCall(unittest.TestCase):
 
     def test_generators_all(self):
         method_name = 'tests.unit.stub_sut.Generators'
-        func = TestGenerator().run_all
+        func = TGenerator().run_all
 
         result = monitor_func(func, [method_name])
         self.assertEqual(len(result), 9)
@@ -152,7 +152,7 @@ class TestGeneratorExpressionCall(unittest.TestCase):
 
     def test_generator_expression_1(self):
         method_name = 'tests.unit.stub_sut.GeneratorExpression.generator_expression_1'
-        func = TestGeneratorExpression().test_generator_expression_1
+        func = TGeneratorExpression().test_generator_expression_1
 
         result = monitor_func(func, [method_name])
 
@@ -163,7 +163,7 @@ class TestGeneratorExpressionCall(unittest.TestCase):
 
     def test_generator_expression_2(self):
         method_name = 'tests.unit.stub_sut.GeneratorExpression.generator_expression_2'
-        func = TestGeneratorExpression().test_generator_expression_2
+        func = TGeneratorExpression().test_generator_expression_2
 
         result = monitor_func(func, [method_name])
 
