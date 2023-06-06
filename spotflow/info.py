@@ -1,6 +1,6 @@
 from spotflow.utils import (
     line_intersection,
-    get_html_lines,
+    # get_html_lines,
     find_executable_linenos,
     get_metadata,
     escape,
@@ -72,16 +72,16 @@ class MethodInfo:
             self.code_lines = self.code.splitlines()
         return self.code_lines
 
-    def get_html_lines(self):
-        if not self.html_lines:
-            self.html_lines = get_html_lines(self.code)
-        return self.html_lines
+    # def get_html_lines(self):
+    #     if not self.html_lines:
+    #         self.html_lines = get_html_lines(self.code)
+    #     return self.html_lines
 
     def get_code_line_at_lineno(self, n):
         return self.get_code_lines()[n - 1]
 
-    def get_html_line_at_lineno(self, n):
-        return self.get_html_lines()[n - 1]
+    # def get_html_line_at_lineno(self, n):
+    #     return self.get_html_lines()[n - 1]
 
     def full_name_escaped(self):
         return escape(self.full_name)

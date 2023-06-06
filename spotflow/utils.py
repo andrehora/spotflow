@@ -6,9 +6,9 @@ import trace
 import types
 import csv
 from collections import Counter
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import get_formatter_by_name
+# from pygments import highlight
+# from pygments.lexers import get_lexer_by_name
+# from pygments.formatters import get_formatter_by_name
 
 
 def find_python_files(dir="."):
@@ -234,26 +234,26 @@ def is_safe_map(obj):
     return False
 
 
-def get_html_lines(code):
-    html = html_for_code(code)
-    lines = []
-    for line in html.splitlines():
-        line = line.replace('<div class="highlight"><pre><span></span>', "")
-        line = line.replace("</pre></div>", "")
-        lines.append(line)
-    return lines
+# def get_html_lines(code):
+#     html = html_for_code(code)
+#     lines = []
+#     for line in html.splitlines():
+#         line = line.replace('<div class="highlight"><pre><span></span>', "")
+#         line = line.replace("</pre></div>", "")
+#         lines.append(line)
+#     return lines
 
 
-def html_for_code(code):
-    lexer = get_lexer_by_name("python", stripall=True)
-    formatter = get_formatter_by_name("html", style="friendly")
-    return highlight(code, lexer, formatter)
+# def html_for_code(code):
+#     lexer = get_lexer_by_name("python", stripall=True)
+#     formatter = get_formatter_by_name("html", style="friendly")
+#     return highlight(code, lexer, formatter)
 
 
-def write_html(filename, content):
-    html = re.sub(r"(\A\s+)|(\s+$)", "", content, flags=re.MULTILINE) + "\n"
-    with open(filename, "wb") as fout:
-        fout.write(html.encode("ascii", "xmlcharrefreplace"))
+# def write_html(filename, content):
+#     html = re.sub(r"(\A\s+)|(\s+$)", "", content, flags=re.MULTILINE) + "\n"
+#     with open(filename, "wb") as fout:
+#         fout.write(html.encode("ascii", "xmlcharrefreplace"))
 
 
 def write_csv(filename, content):
