@@ -86,7 +86,6 @@ class CallContainer:
             for call_name in call.call_stack:
                 if ".test_" in call_name:
                     tests.add(call_name)
-                    break
         return tests
 
     def all_distinct_run_lines(self):

@@ -194,7 +194,7 @@ class SpotFlowCommandLine:
         spec = importlib.util.spec_from_file_location(".", pyscript)
         pyscript_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(pyscript_module)
-        pyscript_module.spotflow_post(result, *self.script_args)
+        pyscript_module.spotflow_after(result, *self.script_args)
 
 
 def main():

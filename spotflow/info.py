@@ -1,10 +1,8 @@
 from spotflow.utils import (
     line_intersection,
-    # get_html_lines,
     find_executable_linenos,
     get_metadata,
-    escape,
-    ratio,
+    escape
 )
 from collections import Counter
 
@@ -35,7 +33,7 @@ class MethodInfo:
         self.info = None
 
         self.code_lines = None
-        self.html_lines = None
+        self.html_lines = None # need to be set manually
 
         # Updated in collector
         self.return_lines = set()
@@ -72,16 +70,12 @@ class MethodInfo:
             self.code_lines = self.code.splitlines()
         return self.code_lines
 
-    # def get_html_lines(self):
-    #     if not self.html_lines:
-    #         self.html_lines = get_html_lines(self.code)
-    #     return self.html_lines
-
     def get_code_line_at_lineno(self, n):
         return self.get_code_lines()[n - 1]
 
-    # def get_html_line_at_lineno(self, n):
-    #     return self.get_html_lines()[n - 1]
+    def get_html_line_at_lineno(self, n):
+        # need to be set manually
+        return self.html_lines[n - 1]
 
     def full_name_escaped(self):
         return escape(self.full_name)
@@ -111,7 +105,6 @@ class MethodInfo:
     def _update_call_info(self, monitored_method):
         self.run_lines_count = len(monitored_method.distinct_run_lines())
         self.executable_lines_count = len(self.executable_lines()) - 1
-        self.coverage_ratio = ratio(self.run_lines_count, self.executable_lines_count)
 
         self.total_calls = len(monitored_method.calls)
         self.total_tests = len(monitored_method.tests())
