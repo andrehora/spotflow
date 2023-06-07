@@ -2,8 +2,10 @@ from spotflow.utils import (
     line_intersection,
     find_executable_linenos,
     get_metadata,
-    escape
+    escape,
+    ratio
 )
+from spotflow.model import CallContainer
 from collections import Counter
 
 executable_lines_for_file = {}
@@ -287,6 +289,30 @@ class RunStatus:
     NOT_RUN = 0
     RUN = 1
     NOT_EXEC = 2
+
+
+class MethodPath(CallContainer):
+
+    def __init__(self, pos, distinct_run_lines, calls, monitored_method):
+        super().__init__(calls)
+        self.pos = pos
+        self.distinct_run_lines = distinct_run_lines
+        self.monitored_method = monitored_method
+        self.path_info = PathInfo(self.monitored_method, self.calls[0])
+
+        self.call_count = len(self.calls)
+
+        total_calls = len(self.monitored_method.calls)
+        self.call_ratio = ratio(self.call_count, total_calls)
+
+        run_lines_count = len(self.distinct_run_lines)
+        executable_lines_count = self.monitored_method.info.executable_lines_count
+        self.run_lines_ratio = ratio(run_lines_count, executable_lines_count)
+
+        self.arg_values = Analysis(self).most_common_args_pretty()
+        self.return_values = Analysis(self).most_common_return_values_pretty()
+        self.yield_values = Analysis(self).most_common_yield_values_pretty()
+        self.exception_values = Analysis(self).most_common_exception_values_pretty()
 
 
 class Analysis:
