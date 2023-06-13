@@ -301,9 +301,8 @@ class MethodPath(CallContainer):
         self.path_info = PathInfo(self.monitored_method, self.calls[0])
 
         self.call_count = len(self.calls)
-
-        total_calls = len(self.monitored_method.calls)
-        self.call_ratio = ratio(self.call_count, total_calls)
+        self.total_calls = len(self.monitored_method.calls)
+        self.call_ratio = round(self.call_count / self.total_calls, 3)
 
         run_lines_count = len(self.distinct_run_lines)
         executable_lines_count = self.monitored_method.info.executable_lines_count

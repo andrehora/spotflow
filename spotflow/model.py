@@ -180,6 +180,18 @@ class MethodCall:
         self.monitored_method = monitored_method
         self.run_lines = []
 
+    def is_called_by_test(self):
+        for t in self.call_stack:
+            if 'test_' in t:
+                return True
+        return False
+    
+    def test_name(self):
+        for t in self.call_stack:
+            if 'test_' in t:
+                return t
+        return None
+
     def is_directly_called_from_test(self):
         if len(self.call_stack) <= 1:
             return False
