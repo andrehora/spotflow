@@ -181,16 +181,24 @@ class MethodCall:
         self.run_lines = []
 
     def is_called_by_test(self):
-        for t in self.call_stack:
-            if 'test_' in t:
-                return True
-        return False
+        return self._find_test_name_in_stack()[0]
+    
+    def test_fullname(self):
+        return self._find_test_name_in_stack()[1]
     
     def test_name(self):
-        for t in self.call_stack:
-            if 'test_' in t:
-                return t
-        return None
+        return self._find_test_name_in_stack()[2]
+    
+    def _find_test_name_in_stack(self):
+        for full_name in self.call_stack:
+            if '.' in full_name:
+                last_name = full_name.split('.')[-1]
+                if 'test_' in last_name:
+                    return True, full_name, last_name
+            else: 
+                if 'test_' in full_name:
+                    return True, full_name, full_name
+        return False, '', ''
 
     def is_directly_called_from_test(self):
         if len(self.call_stack) <= 1:
