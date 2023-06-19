@@ -308,15 +308,16 @@ class MethodPath(CallContainer):
         executable_lines_count = self.monitored_method.info.executable_lines_count
         self.run_lines_ratio = ratio(run_lines_count, executable_lines_count)
 
-        self.arg_values = Analysis(self).most_common_args_pretty()
-        self.return_values = Analysis(self).most_common_return_values_pretty()
-        self.yield_values = Analysis(self).most_common_yield_values_pretty()
-        self.exception_values = Analysis(self).most_common_exception_values_pretty()
+        self.arg_values = Analysis(self, 10).most_common_args_pretty()
+        self.return_values = Analysis(self, 10).most_common_return_values_pretty()
+        self.yield_values = Analysis(self, 10).most_common_yield_values_pretty()
+        self.exception_values = Analysis(self, 10).most_common_exception_values_pretty()
 
 
 class Analysis:
-    def __init__(self, call_container):
+    def __init__(self, call_container, n=None):
         self.call_container = call_container
+        self.n = n
 
     def number_of_calls(self):
         return len(self.call_container.calls)
@@ -358,9 +359,9 @@ class Analysis:
     def most_common_exception_values_pretty(self):
         return self.pretty_return_values(self.most_common_exception_values())
 
-    def most_common(self, elements, n=10):
+    def most_common(self, elements):
         try:
-            return Counter(elements).most_common(n)
+            return Counter(elements).most_common(self.n)
         except TypeError:
             return []
 
