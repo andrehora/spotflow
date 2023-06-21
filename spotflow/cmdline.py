@@ -23,6 +23,10 @@ def parse_args(args=None):
     )
 
     parser.add_argument(
+        "-html", "--html", action="store_true", help="HTML report."
+    )
+
+    parser.add_argument(
         "-s",
         "--script",
         type=str,
@@ -97,6 +101,7 @@ class SpotFlowCommandLine:
         self.objects = parsed_args.objects
         self.calls = parsed_args.calls
         self.pprint = parsed_args.pprint
+        self.html = parsed_args.html
 
         self.script = parsed_args.script
         self.script_args = parsed_args.script_argument
@@ -157,13 +162,7 @@ class SpotFlowCommandLine:
             exception_states = state.getboolean("exception_states")
             var_states = state.getboolean("var_states")
 
-            states = (
-                arg_states,
-                return_states,
-                yield_states,
-                exception_states,
-                var_states,
-            )
+            states = (arg_states, return_states, yield_states, exception_states, var_states)
 
             return states
 
@@ -182,6 +181,9 @@ class SpotFlowCommandLine:
 
         if self.pprint:
             result.show_pprint()
+
+        if self.html:
+            pass
 
     def run_script(self, result):
         pyscript = self.script

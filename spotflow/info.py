@@ -162,10 +162,7 @@ class PathInfo:
     def create_lines(self):
         lineno = 0
 
-        for lineno_entity in range(
-            self.monitored_method.info.start_line,
-            self.monitored_method.info.end_line + 1,
-        ):
+        for lineno_entity in range(self.monitored_method.info.start_line, self.monitored_method.info.end_line + 1):
             lineno += 1
 
             line_status = self.get_line_status(lineno_entity)

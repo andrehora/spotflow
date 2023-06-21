@@ -35,8 +35,7 @@ class MonitoredProgram:
             print(f"{count}, {method.full_name}, {len(method.calls)}")
 
     def show_pprint(self):
-        from spotflow.pprint import pprint_report
-
+        from spotflow.report import pprint_report
         try:
             pprint_report(self)
             return True

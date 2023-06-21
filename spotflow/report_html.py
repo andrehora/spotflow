@@ -84,10 +84,6 @@ class HTMLIndexReport:
         self.source_tmpl = Templite(index_html_source)
 
     def report(self):
-
-        html = self.source_tmpl.render({
-            'monitored_program': self.monitored_program
-        })
-
+        html = self.source_tmpl.render({'monitored_program': self.monitored_program})
         index_file = os.path.join(self.report_dir, INDEX_FILE)
         write_html(index_file, html)
