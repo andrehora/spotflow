@@ -6,22 +6,14 @@ from spotflow.utils import (
     ratio
 )
 from spotflow.model import CallContainer
+from spotflow.report_html import get_html_lines
 from collections import Counter
 
 executable_lines_for_file = {}
 
 
 class MethodInfo:
-    def __init__(
-        self,
-        module_name,
-        class_name,
-        name,
-        full_name,
-        filename,
-        is_generator_func=False,
-        code="",
-    ):
+    def __init__(self, module_name, class_name, name, full_name, filename, is_generator_func=False, code=""):
         self.module_name = module_name
         self.class_name = class_name
         self.name = name
@@ -35,7 +27,7 @@ class MethodInfo:
         self.info = None
 
         self.code_lines = None
-        self.html_lines = None # need to be set manually
+        self.html_lines = None
 
         # Updated in collector
         self.return_lines = set()
@@ -71,13 +63,17 @@ class MethodInfo:
         if not self.code_lines:
             self.code_lines = self.code.splitlines()
         return self.code_lines
+    
+    def get_html_lines(self):
+        if not self.html_lines:
+            self.html_lines = get_html_lines(self.code)
+        return self.html_lines
 
     def get_code_line_at_lineno(self, n):
         return self.get_code_lines()[n - 1]
 
     def get_html_line_at_lineno(self, n):
-        # need to be set manually
-        return self.html_lines[n - 1]
+        return self.get_html_lines()[n - 1]
 
     def full_name_escaped(self):
         return escape(self.full_name)
@@ -174,14 +170,7 @@ class PathInfo:
 
             line_status = self.get_line_status(lineno_entity)
             line_type, line_state = self.get_line_state(lineno_entity)
-            line_info = LineInfo(
-                lineno,
-                lineno_entity,
-                line_status,
-                line_type,
-                line_state,
-                self.monitored_method.info,
-            )
+            line_info = LineInfo(lineno, lineno_entity, line_status, line_type, line_state, self.monitored_method.info)
 
             self.lines.append(line_info)
             self.update_run_status(line_info)
