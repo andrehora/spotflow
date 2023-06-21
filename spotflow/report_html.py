@@ -59,9 +59,7 @@ class HTMLCodeReport:
         self.source_tmpl = Templite(pyfile_html_source)
 
     def report(self):
-
         html = self.source_tmpl.render({'monitored_method': self.monitored_method})
-
         pyfile = os.path.join(self.report_dir, self.monitored_method.info.full_name + '.html')
         write_html(pyfile, html)
 

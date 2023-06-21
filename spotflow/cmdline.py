@@ -1,6 +1,7 @@
 import argparse
 import configparser
 import importlib.util
+from spotflow.report import html_report
 from spotflow.api import SpotFlow
 from coverage.cmdline import PyRunner
 
@@ -183,7 +184,7 @@ class SpotFlowCommandLine:
             result.show_pprint()
 
         if self.html:
-            pass
+            html_report(result)
 
     def run_script(self, result):
         pyscript = self.script

@@ -11,20 +11,20 @@ def pprint_report(monitored_program):
             PrettyPrintReport(monitored_method, path_info).report()
 
 
-def html_report(monitored_program, report_dir):
+def html_report(monitored_program, report_dir=None):
     
     from spotflow.report_html import HTMLCodeReport, HTMLIndexReport
 
     print(f'Report size: {len(monitored_program)}')
     count = 0
     for monitored_method in monitored_program:
-        HTMLCodeReport(monitored_method, report_dir).report()
         count += 1
         print(f'{count}. {monitored_method.info.full_name}')
+        HTMLCodeReport(monitored_method, report_dir).report()
     HTMLIndexReport(monitored_program, report_dir).report()
 
 
-def csv_report(monitored_program, report_dir):
+def csv_report(monitored_program, report_dir=None):
     
     from spotflow.report_csv import CSVCodeReport, CSVIndexReport
 

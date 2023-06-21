@@ -44,7 +44,6 @@ class MonitoredProgram:
 
     def _update_info(self):
         for method in self.monitored_methods.values():
-            # method._compute_flows()
             method._update_call_info()
 
     def __getitem__(self, key):
@@ -178,6 +177,11 @@ class MethodCall:
         self.call_stack = call_stack
         self.monitored_method = monitored_method
         self.run_lines = []
+
+
+    def path_info(self):
+        from spotflow.info import PathInfo
+        return PathInfo(self.monitored_method, self)
 
     def is_called_by_test(self):
         return self._find_test_name_in_stack()[0]
