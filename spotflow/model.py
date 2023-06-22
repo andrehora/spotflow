@@ -25,9 +25,7 @@ class MonitoredProgram:
                 call.show_summary()
 
     def show_calls(self):
-        sorted_methods = sorted(
-            self.all_methods(), key=lambda mth: len(mth.calls), reverse=True
-        )
+        sorted_methods = sorted(self.all_methods(), key=lambda mth: len(mth.calls), reverse=True)
         print("rank, method_name, number_of_calls")
         count = 0
         for method in sorted_methods:
