@@ -177,7 +177,6 @@ class MethodCall:
         self.monitored_method = monitored_method
         self.run_lines = []
 
-
     def path_info(self):
         from spotflow.info import PathInfo
         return PathInfo(self.monitored_method, self)
@@ -202,7 +201,7 @@ class MethodCall:
                     return True, full_name, full_name
         return False, '', ''
 
-    def is_directly_called_from_test(self):
+    def is_directly_called_by_test(self):
         if len(self.call_stack) <= 1:
             return False
         caller = self.call_stack[-2]
@@ -297,16 +296,12 @@ class CallState:
 
         if argvalues.varargs:
             obj = argvalues.locals[argvalues.varargs]
-            arg_state = ArgState(
-                argvalues.varargs, obj_value(obj), obj_type(obj), lineno
-            )
+            arg_state = ArgState(argvalues.varargs, obj_value(obj), obj_type(obj), lineno)
             self.arg_states.append(arg_state)
 
         if argvalues.keywords:
             obj = argvalues.locals[argvalues.keywords]
-            arg_state = ArgState(
-                argvalues.keywords, obj_value(obj), obj_type(obj), lineno
-            )
+            arg_state = ArgState(argvalues.keywords, obj_value(obj), obj_type(obj), lineno)
             self.arg_states.append(arg_state)
 
     def _save_var_states(self, argvalues, lineno, inline):
@@ -314,9 +309,7 @@ class CallState:
             obj = argvalues.locals[arg]
             value = obj_value(obj)
             type = obj_type(obj)
-            self._save_var_state(
-                name=arg, value=value, type=type, lineno=lineno, inline=inline
-            )
+            self._save_var_state(name=arg, value=value, type=type, lineno=lineno, inline=inline)
 
     def _save_var_state(self, name, value, type, lineno, inline):
         self.var_states[name] = self.var_states.get(name, VarStateHistory(name, []))
