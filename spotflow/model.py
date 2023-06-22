@@ -127,9 +127,6 @@ class CallContainer:
                 values.append(value)
         return values
 
-    def _add_call(self, call):
-        self.calls.append(call)
-
 
 class MonitoredMethod(CallContainer):
 
@@ -147,7 +144,13 @@ class MonitoredMethod(CallContainer):
     def show_summary(self):
         print("MonitoredMethod")
         print("- name: " + self.name)
-        print("- calls: " + str(len(self.calls)))
+        print("- calls: " + str(len(self.calls)))\
+        
+    def add_call(self, call_state, call_stack, call_id):
+        call = MethodCall(call_state, call_stack, self)
+        self.calls.append(call)
+        self.calls_by_id[call_id] = call
+        return call
 
     def _get_first_run_line(self):
         return self.calls[0].run_lines[0]
@@ -158,12 +161,6 @@ class MonitoredMethod(CallContainer):
 
     def _get_call_from_id(self, call_id):
         return self.calls_by_id.get(call_id, None)
-
-    def _add_call(self, call_state, call_stack, call_id):
-        call = MethodCall(call_state, call_stack, self)
-        super()._add_call(call)
-        self.calls_by_id[call_id] = call
-        return call
 
     def _update_call_info(self):
         self.info._update_call_info(self)
@@ -446,7 +443,7 @@ class YieldState(State):
 
 
 class ExceptionState(State):
-    
+
     def __init__(self, value, type, lineno=0):
         super().__init__(value, type, lineno)
 

@@ -251,7 +251,7 @@ class Collector:
 
                 frame_id = get_frame_id(frame)
                 monitored_method = self.monitored_program[current_method_name]
-                monitored_method._add_call(call_state, callers, frame_id)
+                monitored_method.add_call(call_state, callers, frame_id)
 
             # Event is line, return, exception or call for re-entering generators
             else:
@@ -348,7 +348,7 @@ class Collector:
         return self.frame_cache[key]
 
     def ensure_target_method(self, frame, current_entity_name, target_method):
-        
+
         # Handle special cases in which 'method' is already a method or function object
         if is_method_or_func(target_method):
             if current_entity_name in self.target_methods_cache:
