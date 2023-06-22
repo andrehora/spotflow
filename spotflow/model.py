@@ -2,6 +2,7 @@ from spotflow.utils import obj_value, obj_type
 
 
 class MonitoredProgram:
+
     def __init__(self):
         self.monitored_methods = {}
 
@@ -64,6 +65,7 @@ class MonitoredProgram:
 
 
 class CallContainer:
+
     def __init__(self, calls):
         self.calls = calls
 
@@ -130,6 +132,7 @@ class CallContainer:
 
 
 class MonitoredMethod(CallContainer):
+
     def __init__(self, method_info):
         super().__init__(calls=[])
         self.info = method_info
@@ -170,6 +173,7 @@ class MonitoredMethod(CallContainer):
 
 
 class MethodCall:
+
     def __init__(self, call_state, call_stack, monitored_method):
         self.call_state = call_state
         self.call_stack = call_stack
@@ -228,6 +232,7 @@ class MethodCall:
 
 
 class CallState:
+
     def __init__(self):
         self.var_states = {}
         self.arg_states = []
@@ -331,6 +336,7 @@ class CallState:
 
 
 class VarStateHistory:
+
     def __init__(self, name, states):
         self.name = name
         self.states = states
@@ -382,6 +388,7 @@ class VarStateHistory:
 
 
 class State:
+
     def __init__(self, value, type, lineno):
         self.value = value
         self.type = type
@@ -392,6 +399,7 @@ class State:
 
 
 class VarState(State):
+
     def __init__(self, name, value, type, lineno, inline, value_has_changed=False):
         super().__init__(value, type, lineno)
         self.name = name
@@ -403,6 +411,7 @@ class VarState(State):
 
 
 class ArgState(State):
+
     def __init__(self, name, value, type, lineno):
         super().__init__(value, type, lineno)
         self.name = name
@@ -413,6 +422,7 @@ class ArgState(State):
 
 
 class ReturnState(State):
+
     def __init__(self, value, type, lineno=0):
         super().__init__(value, type, lineno)
 
@@ -424,6 +434,7 @@ class ReturnState(State):
 
 
 class YieldState(State):
+
     def __init__(self, value, type, lineno=0):
         super().__init__(value, type, lineno)
 
@@ -435,6 +446,7 @@ class YieldState(State):
 
 
 class ExceptionState(State):
+    
     def __init__(self, value, type, lineno=0):
         super().__init__(value, type, lineno)
 
