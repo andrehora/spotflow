@@ -194,10 +194,10 @@ class MethodCall:
         for full_name in self.call_stack:
             if '.' in full_name:
                 last_name = full_name.split('.')[-1]
-                if 'test_' in last_name:
+                if last_name.startswith('test_'):
                     return True, full_name, last_name
             else: 
-                if 'test_' in full_name:
+                if full_name.startswith('test_'):
                     return True, full_name, full_name
         return False, '', ''
 

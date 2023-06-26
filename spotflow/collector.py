@@ -375,9 +375,9 @@ class Collector:
 
     def find_call_stack(self, frame):
         call_stack = [frame.f_code.co_name]
-        while "test_" not in frame.f_code.co_name:
-            if not frame.f_back:
-                break
+        while frame.f_back:
+            # if not frame.f_back:
+                # break
             frame = frame.f_back
             full_name = self.get_full_entity_name(frame)
             if full_name:
