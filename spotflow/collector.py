@@ -1,11 +1,5 @@
 import inspect
-from spotflow.utils import (
-    obj_value,
-    obj_type,
-    find_full_name,
-    is_method_or_func,
-    get_module_names,
-)
+from spotflow.utils import obj_value, obj_type, find_full_name, is_method_or_func, get_module_names
 from spotflow.model import CallState, MonitoredMethod, MonitoredProgram
 from spotflow.info import MethodInfo
 from spotflow.tracer import PyTracer
@@ -27,12 +21,7 @@ def get_frame_id(frame):
 
 
 def is_comprehension(frame):
-    return frame.f_code.co_name in [
-        "<listcomp>",
-        "<setcomp>",
-        "<dictcomp>",
-        "<genexpr>",
-    ]
+    return frame.f_code.co_name in ["<listcomp>", "<setcomp>", "<dictcomp>", "<genexpr>"]
 
 
 def method_has_super_call(frame):
@@ -126,7 +115,7 @@ def find_local_func(entity_name, local_elements):
 
 
 def get_method_object(frame):
-    
+
     try:
 
         method_name = frame.f_code.co_name
@@ -172,6 +161,7 @@ def get_method_object(frame):
 
 
 class Collector:
+
     def __init__(self):
         self.monitored_program = MonitoredProgram()
         # full method name
@@ -206,7 +196,6 @@ class Collector:
         if self.method_names and not self.method_names2:
             self.module_names = get_module_names(self.method_names)
 
-    # Starts monitoring
     def monitor_event(self, frame, event, arg):
         if not self.is_valid_frame(frame):
             return
@@ -230,16 +219,6 @@ class Collector:
     def monitor_method(self, frame, event, arg, current_method_name, target_method=None):
 
         method_info = self.ensure_target_method(frame, current_method_name, target_method)
-
-        # if current_method_name == 'calendar.Calendar.__init__':
-        #     print('=' * 50)
-        #     print(current_method_name)
-        #     frame_id = get_frame_id(frame)
-        #     print(frame_id)
-        #     print(event)
-        #     print(frame)
-        #     print(getattr(frame, "f_lasti", -1))
-        #     print(is_comprehension(frame))
 
         if method_info and current_method_name == method_info.full_name:
             update_method_info(method_info, frame, event)
@@ -376,10 +355,10 @@ class Collector:
         if current_entity_name in self.target_methods_cache:
             return self.target_methods_cache[current_entity_name]
 
-        func_or_method = self.ensure_method(frame)
-        if not func_or_method:
+        method_obj = self.ensure_method(frame)
+        if not method_obj:
             return None
-        entity = MethodInfo.build(func_or_method)
+        entity = MethodInfo.build(method_obj)
         if not entity:
             return None
 
@@ -389,8 +368,6 @@ class Collector:
     def find_call_stack(self, frame):
         call_stack = [frame.f_code.co_name]
         while frame.f_back:
-            # if not frame.f_back:
-                # break
             frame = frame.f_back
             full_name = self.get_full_method_name(frame)
             if full_name:
