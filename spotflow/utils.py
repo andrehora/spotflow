@@ -91,27 +91,9 @@ def get_metadata(func_or_method):
     if inspect.isgeneratorfunction(func_or_method):
         is_generator_func = True
 
-    (
-        module_name,
-        name,
-        filename,
-        start_line,
-        end_line,
-        full_name,
-        code,
-    ) = function_metadata(func)
+    module_name, name, filename, start_line, end_line, full_name, code = function_metadata(func)
 
-    return (
-        module_name,
-        class_name,
-        name,
-        filename,
-        start_line,
-        end_line,
-        full_name,
-        is_generator_func,
-        code,
-    )
+    return module_name, class_name, name, filename, start_line, end_line, full_name, is_generator_func, code
 
 
 def function_metadata(func):
@@ -129,6 +111,7 @@ def function_metadata(func):
 
 
 def find_full_name(func_or_method):
+    
     try:
         module = func_or_method.__module__
         qualname = func_or_method.__qualname__

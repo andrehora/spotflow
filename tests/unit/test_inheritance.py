@@ -205,6 +205,7 @@ class TestMoreSuperCall(unittest.TestCase):
         self.assertEqual(calls[0].run_lines, [510, 511])
 
 
+
 class TestOverrideCall(unittest.TestCase):
 
     def test_base_class_main(self):
@@ -294,6 +295,34 @@ class TestOverrideCall(unittest.TestCase):
         calls = result['tests.unit.stub_sut.BaseClass.show'].calls
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0].run_lines, [475])
+
+
+
+class TestSuperWithDependency(unittest.TestCase):
+
+    def test_super(self):
+        method_name = 'tests.unit.stub_sut'
+        func = TMoreSuper().test_super_with_dependency
+
+        result = monitor_func(func, [method_name])
+
+        self.assertEqual(len(result), 4)
+
+        calls = result['tests.unit.stub_sut.ClassSuper.__init__'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [663])
+
+        calls = result['tests.unit.stub_sut.ClassSuperWithDependency.__init__'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [669, 670, 671])
+
+        calls = result['tests.unit.stub_sut.Dependency.foo'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [677])
+
+        calls = result['tests.unit.stub_sut.Dependency.bar'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [680])
 
 
 if __name__ == '__main__':

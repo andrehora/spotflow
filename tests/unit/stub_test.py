@@ -429,6 +429,9 @@ class TMoreSuper:
     def test_super_3(self):
         ClassSuper3()
 
+    def test_super_with_dependency(self):
+        ClassSuperWithDependency()
+
 
 class TFuncRunner:
 

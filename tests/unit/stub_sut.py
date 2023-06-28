@@ -655,3 +655,26 @@ class ClassWithExternalDependency:
     def inspect_ismethod(self):
         import inspect
         return inspect.ismethod(None)
+
+
+class ClassSuper:
+
+    def __init__(self):
+        self.a = 1
+
+
+class ClassSuperWithDependency(ClassSuper):
+
+    def __init__(self):
+        Dependency().foo()
+        super().__init__()
+        Dependency().bar()
+
+
+class Dependency:
+
+    def foo(self):
+        x = 1
+
+    def bar(self):
+        y = 1

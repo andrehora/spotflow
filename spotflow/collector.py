@@ -125,42 +125,45 @@ def find_local_func(entity_name, local_elements):
     return None
 
 
-def get_func_or_method(frame):
+def get_method_object(frame):
+    
     try:
-        entity_name = frame.f_code.co_name
+
+        method_name = frame.f_code.co_name
 
         # Method
         if "self" in frame.f_locals:
-            # In methods with super, use the free variable, __class__, not self
-            if method_has_super_call(frame):
-                obj_class = frame.f_locals["__class__"]
-            # In methods without super but that was called by super (ie, the back frame has super),
-            # get the next mro class to discover the actual class
-            elif method_has_super_call(frame.f_back):
-                f_back = frame.f_back
-                obj_class = get_next_mro_class(f_back.f_locals["__class__"])
+
             # The most common case: simply get self class
-            else:
-                obj_class = frame.f_locals["self"].__class__
-            method = inspect.getattr_static(obj_class, entity_name, None)
+            obj_class = frame.f_locals["self"].__class__
+
+            # In methods without super but that was called by super (ie, the back frame has super),
+            # get the next mro class to discover the actual class. Make sure it is part of the hierarchy
+            if method_has_super_call(frame.f_back):
+                f_back = frame.f_back
+                back_class = f_back.f_locals["__class__"]
+                if back_class in obj_class.__mro__:
+                    obj_class = get_next_mro_class(back_class)
+            
+            method = inspect.getattr_static(obj_class, method_name, None)
             return method
 
         if "cls" in frame.f_locals:
             obj_class = frame.f_locals["cls"]
-            method = inspect.getattr_static(obj_class, entity_name, None)
+            method = inspect.getattr_static(obj_class, method_name, None)
             return method
 
         # Function
-        if entity_name in frame.f_globals:
-            func = frame.f_globals[entity_name]
+        if method_name in frame.f_globals:
+            func = frame.f_globals[method_name]
             return func
 
         # Local function
-        local_func = find_local_func(entity_name, frame.f_back.f_locals)
+        local_func = find_local_func(method_name, frame.f_back.f_locals)
         if local_func:
             return local_func
 
-        local_func = find_local_func(entity_name, frame.f_locals)
+        local_func = find_local_func(method_name, frame.f_locals)
         if local_func:
             return local_func
 
@@ -208,7 +211,7 @@ class Collector:
         if not self.is_valid_frame(frame):
             return
 
-        current_method_name = self.get_full_entity_name(frame)
+        current_method_name = self.get_full_method_name(frame)
 
         if current_method_name:
 
@@ -227,6 +230,16 @@ class Collector:
     def monitor_method(self, frame, event, arg, current_method_name, target_method=None):
 
         method_info = self.ensure_target_method(frame, current_method_name, target_method)
+
+        # if current_method_name == 'calendar.Calendar.__init__':
+        #     print('=' * 50)
+        #     print(current_method_name)
+        #     frame_id = get_frame_id(frame)
+        #     print(frame_id)
+        #     print(event)
+        #     print(frame)
+        #     print(getattr(frame, "f_lasti", -1))
+        #     print(is_comprehension(frame))
 
         if method_info and current_method_name == method_info.full_name:
             update_method_info(method_info, frame, event)
@@ -321,15 +334,15 @@ class Collector:
 
         return True
 
-    def get_full_entity_name(self, frame):
-        func_or_method = self.ensure_func_or_method(frame)
+    def get_full_method_name(self, frame):
+        func_or_method = self.ensure_method(frame)
 
         if func_or_method:
             return find_full_name(func_or_method)
 
         return None
 
-    def ensure_func_or_method(self, frame):
+    def ensure_method(self, frame):
         filename = frame.f_code.co_filename
         lineno = frame.f_lineno
         entity_name = frame.f_code.co_name
@@ -340,7 +353,7 @@ class Collector:
         if key in self.frame_cache:
             return self.frame_cache[key]
 
-        func_or_method = get_func_or_method(frame)
+        func_or_method = get_method_object(frame)
         if (not func_or_method or inspect.isbuiltin(func_or_method) or not is_method_or_func(func_or_method)):
             return None
 
@@ -363,7 +376,7 @@ class Collector:
         if current_entity_name in self.target_methods_cache:
             return self.target_methods_cache[current_entity_name]
 
-        func_or_method = self.ensure_func_or_method(frame)
+        func_or_method = self.ensure_method(frame)
         if not func_or_method:
             return None
         entity = MethodInfo.build(func_or_method)
@@ -379,7 +392,7 @@ class Collector:
             # if not frame.f_back:
                 # break
             frame = frame.f_back
-            full_name = self.get_full_entity_name(frame)
+            full_name = self.get_full_method_name(frame)
             if full_name:
                 call_stack.append(full_name)
             else:
