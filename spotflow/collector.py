@@ -5,6 +5,16 @@ from spotflow.info import MethodInfo
 from spotflow.tracer import PyTracer
 
 
+def get_line_key(frame):
+    filename = frame.f_code.co_filename
+    lineno = frame.f_lineno
+    entity_name = frame.f_code.co_name
+    if is_comprehension(frame):
+        entity_name = frame.f_back.f_code.co_name
+    key = filename, lineno, entity_name
+    return key
+
+
 def get_next_mro_class(current_class):
     mro_classes = current_class.__mro__
     current_class_index = mro_classes.index(current_class)
@@ -279,6 +289,7 @@ class Collector:
                 self.last_frame_lineno[current_method_name] = lineno
 
     def is_valid_frame(self, frame):
+        
         current_filename = frame.f_code.co_filename
 
         if current_filename.startswith("<") or frame.f_code.co_name == "<module>":
@@ -314,29 +325,25 @@ class Collector:
         return True
 
     def get_full_method_name(self, frame):
-        func_or_method = self.ensure_method(frame)
 
-        if func_or_method:
-            return find_full_name(func_or_method)
+        method_obj = self.ensure_method(frame)
+        if method_obj:
+            return find_full_name(method_obj)
 
         return None
 
     def ensure_method(self, frame):
-        filename = frame.f_code.co_filename
-        lineno = frame.f_lineno
-        entity_name = frame.f_code.co_name
-        if is_comprehension(frame):
-            entity_name = frame.f_back.f_code.co_name
-        key = filename, lineno, entity_name
+
+        key = get_line_key(frame)
 
         if key in self.frame_cache:
             return self.frame_cache[key]
 
-        func_or_method = get_method_object(frame)
-        if (not func_or_method or inspect.isbuiltin(func_or_method) or not is_method_or_func(func_or_method)):
+        method_obj = get_method_object(frame)
+        if (not method_obj or inspect.isbuiltin(method_obj) or not is_method_or_func(method_obj)):
             return None
 
-        self.frame_cache[key] = func_or_method
+        self.frame_cache[key] = method_obj
         return self.frame_cache[key]
 
     def ensure_target_method(self, frame, current_entity_name, target_method):
