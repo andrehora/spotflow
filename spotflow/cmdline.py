@@ -47,7 +47,7 @@ def parse_args(args=None):
 
     parser.add_argument(
         "-t",
-        "--target-method",
+        "--target-method-full-name",
         type=str,
         action="append",
         help="Target method full name (in the format module.Class.method) or prefix. "
@@ -57,7 +57,7 @@ def parse_args(args=None):
 
     parser.add_argument(
         "-tt",
-        "--target-method-name",
+        "--target-method-short-name",
         type=str,
         action="append",
         help="Target method name. "
@@ -107,8 +107,8 @@ class SpotFlowCommandLine:
         self.script = parsed_args.script
         self.script_args = parsed_args.script_argument
 
-        self.target_methods = parsed_args.target_method
-        self.target_method_names = parsed_args.target_method_name
+        self.target_method_full_names = parsed_args.target_method_full_name
+        self.target_method_short_names = parsed_args.target_method_short_name
 
         self.target_files = parsed_args.target_file
         self.ignore_files = parsed_args.ignore_file
@@ -125,8 +125,8 @@ class SpotFlowCommandLine:
 
     def py_run(self):
         flow = SpotFlow()
-        flow.target_methods(self.target_methods)
-        flow.target_method_names(self.target_method_names)
+        flow.target_method_full_names(self.target_method_full_names)
+        flow.target_method_short_names(self.target_method_short_names)
         flow.target_files(self.target_files)
         flow.ignore_files(self.ignore_files)
         states = self.parse_config()

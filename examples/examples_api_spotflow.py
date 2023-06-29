@@ -16,7 +16,7 @@ def inputs_count():
 
 
 flow = SpotFlow()
-flow.target_methods([count_uppercase_words])
+flow.target_method_full_names([count_uppercase_words])
 
 flow.start()
 

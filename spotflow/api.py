@@ -6,11 +6,11 @@ class SpotFlow:
     def __init__(self):
         self.collector = Collector()
 
-    def target_methods(self, method_names):
-        self.collector.method_full_names = method_names
+    def target_method_full_names(self, method_names):
+        self.collector.target_method_full_names = method_names
 
-    def target_method_names(self, method_names):
-        self.collector.method_short_names = method_names
+    def target_method_short_names(self, method_names):
+        self.collector.target_method_short_names = method_names
 
     def target_files(self, file_names):
         self.collector.file_names = file_names
@@ -44,7 +44,7 @@ class SpotFlow:
 
 def pprint(func, target_methods):
     flow = SpotFlow()
-    flow.target_methods(target_methods)
+    flow.target_method_full_names(target_methods)
 
     flow.start()
     func()
@@ -65,7 +65,7 @@ def monitor_func(
     var_states=True,
 ):
     flow = SpotFlow()
-    flow.target_methods(target_methods)
+    flow.target_method_full_names(target_methods)
     flow.target_files(target_files)
     flow.ignore_files(ignore_files)
     flow.collect_states(

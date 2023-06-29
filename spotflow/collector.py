@@ -190,8 +190,8 @@ class Collector:
 
     def __init__(self):
         self.monitored_program = MonitoredProgram()
-        self.method_full_names = None
-        self.method_short_names = None
+        self.target_method_full_names = None
+        self.target_method_short_names = None
         self.file_names = None
         self.ignore_files = None
         self.module_names = None
@@ -217,8 +217,8 @@ class Collector:
         self.monitored_program._update_info()
 
     def init_target(self):
-        if self.method_full_names and not self.method_short_names:
-            self.module_names = get_module_names(self.method_full_names)
+        if self.target_method_full_names and not self.target_method_short_names:
+            self.module_names = get_module_names(self.target_method_full_names)
 
     def monitor_event(self, frame, event, arg):
 
@@ -233,16 +233,16 @@ class Collector:
             print(current_method_name, frame.f_code.co_name)
             return
 
-        if self.method_short_names:
+        if self.target_method_short_names:
             self.monitor_method(frame, event, arg, current_method_name)
             return
 
-        if self.method_full_names:
-            for target_method in self.method_full_names:
-                self.monitor_method(frame, event, arg, current_method_name, target_method)
+        if self.target_method_full_names:
+            for target_method_full_name in self.target_method_full_names:
+                self.monitor_method(frame, event, arg, current_method_name, target_method_full_name)
             return
         
-        if self.method_full_names is None and self.method_short_names is None:
+        if self.target_method_full_names is None and self.target_method_short_names is None:
             self.monitor_method(frame, event, arg, current_method_name)
 
     def monitor_method(self, frame, event, arg, current_method_name, target_method=None):
@@ -314,8 +314,8 @@ class Collector:
         if current_filename.startswith("<") or frame.f_code.co_name == "<module>":
             return False
 
-        if self.method_short_names:
-            for method_name in self.method_short_names:
+        if self.target_method_short_names:
+            for method_name in self.target_method_short_names:
                 if method_name == frame.f_code.co_name:
                     return True
             return False
