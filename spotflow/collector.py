@@ -231,7 +231,6 @@ class Collector:
             return
 
         if not is_valid_method_name(frame, current_method_name):
-            print(current_method_name, frame.f_code.co_name)
             return
 
         if self.target_method_short_names:
