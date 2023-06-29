@@ -179,7 +179,7 @@ class MethodCall:
 
     def path_info(self):
         from spotflow.info import PathInfo
-        return PathInfo(self.monitored_method, self)
+        return PathInfo(self)
 
     def is_called_by_test(self):
         return self._find_test_name_in_stack()[0]

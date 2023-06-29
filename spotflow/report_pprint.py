@@ -1,5 +1,3 @@
-from spotflow.info import PathInfo
-
 class PrettyPrintReport:
     def __init__(self, monitored_method, path_info):
         self.monitored_method = monitored_method

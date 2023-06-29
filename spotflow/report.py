@@ -1,13 +1,11 @@
-from spotflow.info import PathInfo
-
-
 def pprint_report(monitored_program):
     
+    from spotflow.info import PathInfo
     from spotflow.report_pprint import PrettyPrintReport
 
     for monitored_method in monitored_program:
         for call in monitored_method.calls:
-            path_info = PathInfo(monitored_method, call)
+            path_info = PathInfo(call)
             PrettyPrintReport(monitored_method, path_info).report()
 
 

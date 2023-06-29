@@ -146,9 +146,9 @@ class MethodInfo:
 
 
 class PathInfo:
-    def __init__(self, monitored_method, call):
-        self.monitored_method = monitored_method
+    def __init__(self, call):
         self.call = call
+        self.monitored_method = self.call.monitored_method
         self.distinct_run_lines = self.call.distinct_run_lines()
 
         self.lines = []
@@ -284,15 +284,15 @@ class MethodPath(CallContainer):
         self.pos = pos
         self.distinct_run_lines = distinct_run_lines
         self.monitored_method = monitored_method
-        self.path_info = PathInfo(self.monitored_method, self.calls[0])
+        self.path_info = PathInfo(self.calls[0])
 
         self.call_count = len(self.calls)
         self.total_calls = len(self.monitored_method.calls)
         self.call_ratio = round(self.call_count / self.total_calls, 3)
 
-        run_lines_count = len(self.distinct_run_lines)
-        executable_lines_count = self.monitored_method.info.executable_lines_count
-        self.run_lines_ratio = ratio(run_lines_count, executable_lines_count)
+        # run_lines_count = len(self.distinct_run_lines)
+        # executable_lines_count = self.monitored_method.info.executable_lines_count
+        # self.run_lines_ratio = ratio(run_lines_count, executable_lines_count)
 
         self.arg_values = Analysis(self, 10).most_common_args_pretty()
         self.return_values = Analysis(self, 10).most_common_return_values_pretty()
