@@ -1,11 +1,12 @@
 name: install-dev
 
-on:
-  workflow_run:
-    workflows: ["tests"]
-    branches: [main]
-    types: 
-      - completed
+on: [workflow_dispatch]
+# on:
+#   workflow_run:
+#     workflows: ["tests"]
+#     branches: [main]
+#     types: 
+#       - completed
 
 jobs:
 
