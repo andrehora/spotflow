@@ -6,31 +6,34 @@ from spotflow.tracer import PyTracer
 
 
 def get_line_key(frame):
+
     filename = frame.f_code.co_filename
     lineno = frame.f_lineno
     entity_name = frame.f_code.co_name
-    if is_comprehension(frame):
+    if is_compr_or_genexpr(frame):
         entity_name = frame.f_back.f_code.co_name
     key = filename, lineno, entity_name
     return key
 
 
 def get_next_mro_class(current_class):
+
     mro_classes = current_class.__mro__
     current_class_index = mro_classes.index(current_class)
     return mro_classes[current_class_index + 1]
 
 
 def get_frame_id(frame):
+
     # If we are dealing with comprehensions and generator expressions
     # then we should get the enclosing frame id, not the current one.
     # This is done to avoid novel flows being created to listcomp and genexpr...
-    if is_comprehension(frame):
+    if is_compr_or_genexpr(frame):
         return id(frame.f_back)
     return id(frame)
 
 
-def is_comprehension(frame):
+def is_compr_or_genexpr(frame):
     return frame.f_code.co_name in ["<listcomp>", "<setcomp>", "<dictcomp>", "<genexpr>"]
 
 
@@ -51,6 +54,7 @@ def line_has_control_flow(frame):
 
 
 def line_has_keyword(frame, keyword):
+
     traceback = inspect.getframeinfo(frame)
     if traceback.code_context and len(traceback.code_context) >= 1:
         code_line = traceback.code_context[0].strip()
@@ -59,6 +63,7 @@ def line_has_keyword(frame, keyword):
 
 
 def line_has_keywords(frame, keywords):
+
     traceback = inspect.getframeinfo(frame)
     if traceback.code_context and len(traceback.code_context) >= 1:
         code_line = traceback.code_context[0].strip()
@@ -69,8 +74,8 @@ def line_has_keywords(frame, keywords):
 
 
 def update_method_info(method_info, frame, event):
-    lineno = frame.f_lineno
 
+    lineno = frame.f_lineno
     if lineno in method_info.other_lines or lineno in method_info.control_flow_lines:
         return
 
@@ -100,20 +105,21 @@ def update_method_info(method_info, frame, event):
 
 
 def find_local_func(entity_name, local_elements):
-    # 1st: check the back locals
+
+    # 1st: check the locals
     if entity_name in local_elements:
         func = local_elements[entity_name]
         if inspect.isfunction(func) and entity_name == func.__name__:
             if "<locals>" in func.__qualname__:
                 return func
 
-    # 2nd: check the back local values
+    # 2nd: check the local values
     for func in local_elements.values():
         if inspect.isfunction(func) and entity_name == func.__name__:
             if "<locals>" in func.__qualname__:
                 return func
 
-    # 3rd: check the back self, if any
+    # 3rd: check the self, if any
     if "self" in local_elements:
         obj = local_elements["self"]
         obj_funcs = dict(inspect.getmembers(obj, predicate=inspect.isfunction))
@@ -127,7 +133,6 @@ def find_local_func(entity_name, local_elements):
 def get_method_object(frame):
 
     try:
-
         method_name = frame.f_code.co_name
 
         # Method
@@ -145,6 +150,7 @@ def get_method_object(frame):
                     obj_class = get_next_mro_class(back_class)
             
             method = inspect.getattr_static(obj_class, method_name, None)
+
             return method
 
         if "cls" in frame.f_locals:
@@ -170,14 +176,22 @@ def get_method_object(frame):
         return None
 
 
+def is_valid_method_name(frame, current_method_name):
+        
+    if is_compr_or_genexpr(frame):
+        return True
+
+    method_name_from_frame = frame.f_code.co_name
+    method_name_from_current = current_method_name.split('.')[-1]
+    return method_name_from_frame == method_name_from_current
+
+
 class Collector:
 
     def __init__(self):
         self.monitored_program = MonitoredProgram()
-        # full method name
-        self.method_names = None
-        # short method name
-        self.method_names2 = None
+        self.method_full_names = None
+        self.method_short_names = None
         self.file_names = None
         self.ignore_files = None
         self.module_names = None
@@ -203,28 +217,33 @@ class Collector:
         self.monitored_program._update_info()
 
     def init_target(self):
-        if self.method_names and not self.method_names2:
-            self.module_names = get_module_names(self.method_names)
+        if self.method_full_names and not self.method_short_names:
+            self.module_names = get_module_names(self.method_full_names)
 
     def monitor_event(self, frame, event, arg):
+
         if not self.is_valid_frame(frame):
             return
 
-        current_method_name = self.get_full_method_name(frame)
+        current_method_name = self.get_method_full_name(frame)
+        if not current_method_name:
+            return
 
-        if current_method_name:
+        if not is_valid_method_name(frame, current_method_name):
+            print(current_method_name, frame.f_code.co_name)
+            return
 
-            if self.method_names2:
-                self.monitor_method(frame, event, arg, current_method_name)
-                return
+        if self.method_short_names:
+            self.monitor_method(frame, event, arg, current_method_name)
+            return
 
-            if self.method_names:
-                for target_method in self.method_names:
-                    self.monitor_method(frame, event, arg, current_method_name, target_method)
-                return
-            
-            if self.method_names is None and self.method_names2 is None:
-                self.monitor_method(frame, event, arg, current_method_name)
+        if self.method_full_names:
+            for target_method in self.method_full_names:
+                self.monitor_method(frame, event, arg, current_method_name, target_method)
+            return
+        
+        if self.method_full_names is None and self.method_short_names is None:
+            self.monitor_method(frame, event, arg, current_method_name)
 
     def monitor_method(self, frame, event, arg, current_method_name, target_method=None):
 
@@ -241,7 +260,7 @@ class Collector:
             # function calls and re-entering generators.  The f_lasti field is
             # -1 for calls, and a real offset for generators.  Use < 0 as the
             # line number for calls, and the real line number for generators.
-            if (event == "call" and getattr(frame, "f_lasti", -1) < 0 and not is_comprehension(frame)):
+            if (event == "call" and getattr(frame, "f_lasti", -1) < 0 and not is_compr_or_genexpr(frame)):
                 if current_method_name not in self.monitored_program:
                     self.monitored_program[current_method_name] = MonitoredMethod(method_info)
 
@@ -289,14 +308,14 @@ class Collector:
                 self.last_frame_lineno[current_method_name] = lineno
 
     def is_valid_frame(self, frame):
-        
+
         current_filename = frame.f_code.co_filename
 
         if current_filename.startswith("<") or frame.f_code.co_name == "<module>":
             return False
 
-        if self.method_names2:
-            for method_name in self.method_names2:
+        if self.method_short_names:
+            for method_name in self.method_short_names:
                 if method_name == frame.f_code.co_name:
                     return True
             return False
@@ -324,7 +343,7 @@ class Collector:
 
         return True
 
-    def get_full_method_name(self, frame):
+    def get_method_full_name(self, frame):
 
         method_obj = self.ensure_method(frame)
         if method_obj:
@@ -373,10 +392,11 @@ class Collector:
         return entity
 
     def find_call_stack(self, frame):
+
         call_stack = [frame.f_code.co_name]
         while frame.f_back:
             frame = frame.f_back
-            full_name = self.get_full_method_name(frame)
+            full_name = self.get_method_full_name(frame)
             if full_name:
                 call_stack.append(full_name)
             else:
