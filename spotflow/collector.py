@@ -1,5 +1,5 @@
 import inspect
-from spotflow.utils import obj_value, obj_type, find_full_name, is_method_or_func, get_module_names
+from spotflow.utils import obj_value, obj_type, get_full_name, is_method_or_func, get_module_names
 from spotflow.model import CallState, MonitoredMethod, MonitoredProgram
 from spotflow.info import MethodInfo
 from spotflow.tracer import PyTracer
@@ -189,6 +189,7 @@ def is_valid_method_name(frame, current_method_name):
 class Collector:
 
     def __init__(self):
+
         self.monitored_program = MonitoredProgram()
         self.target_method_full_names = None
         self.target_method_short_names = None
@@ -247,9 +248,12 @@ class Collector:
 
     def monitor_method(self, frame, event, arg, current_method_name, target_method=None):
 
-        method_info = self.ensure_target_method(frame, current_method_name, target_method)
+        method_info = self.ensure_target_method_info(frame, current_method_name, target_method)
 
-        if method_info and current_method_name == method_info.full_name:
+        if not method_info:
+            return
+
+        if current_method_name == method_info.full_name:
             update_method_info(method_info, frame, event)
 
             if current_method_name not in self.last_frame_lineno:
@@ -279,31 +283,34 @@ class Collector:
                 lineno = frame.f_lineno
                 if current_method_name in self.monitored_program:
                     monitored_method = self.monitored_program[current_method_name]
-                    if monitored_method.calls:
-                        frame_id = get_frame_id(frame)
-                        method_call = monitored_method._get_call_from_id(frame_id)
-                        if method_call:
-                            current_call_state = method_call.call_state
-                            if event == "line":
-                                method_call._add_run_line(lineno)
-                                monitored_method._add_run_line(lineno)
 
-                            elif event == "return":
-                                if self.collect_return_states and line_has_return(frame):
-                                    current_call_state._save_return_state(obj_value(arg), obj_type(arg), lineno)
-                                elif self.collect_yield_states and line_has_yield(frame):
-                                    current_call_state._save_yield_state(obj_value(arg), obj_type(arg), lineno)
+                    if not monitored_method.calls:
+                        return
 
-                            elif event == "exception":
-                                if self.collect_exception_states:
-                                    exception_name = arg[0].__name__
-                                    exception_type = obj_type(arg[0])
-                                    current_call_state._save_exception_state(exception_name, exception_type, lineno)
+                    frame_id = get_frame_id(frame)
+                    method_call = monitored_method._get_call_from_id(frame_id)
+                    if method_call:
+                        current_call_state = method_call.call_state
+                        if event == "line":
+                            method_call._add_run_line(lineno)
+                            monitored_method._add_run_line(lineno)
 
-                            if self.collect_var_states and current_call_state:
-                                argvalues = inspect.getargvalues(frame)
-                                inline = self.last_frame_lineno[current_method_name]
-                                current_call_state._save_var_states(argvalues, lineno, inline)
+                        elif event == "return":
+                            if self.collect_return_states and line_has_return(frame):
+                                current_call_state._save_return_state(obj_value(arg), obj_type(arg), lineno)
+                            elif self.collect_yield_states and line_has_yield(frame):
+                                current_call_state._save_yield_state(obj_value(arg), obj_type(arg), lineno)
+
+                        elif event == "exception":
+                            if self.collect_exception_states:
+                                exception_name = arg[0].__name__
+                                exception_type = obj_type(arg[0])
+                                current_call_state._save_exception_state(exception_name, exception_type, lineno)
+
+                        if self.collect_var_states and current_call_state:
+                            argvalues = inspect.getargvalues(frame)
+                            inline = self.last_frame_lineno[current_method_name]
+                            current_call_state._save_var_states(argvalues, lineno, inline)
 
                 self.last_frame_lineno[current_method_name] = lineno
 
@@ -345,13 +352,13 @@ class Collector:
 
     def get_method_full_name(self, frame):
 
-        method_obj = self.ensure_method(frame)
+        method_obj = self.ensure_method_obj(frame)
         if method_obj:
-            return find_full_name(method_obj)
+            return get_full_name(method_obj)
 
         return None
 
-    def ensure_method(self, frame):
+    def ensure_method_obj(self, frame):
 
         key = get_line_key(frame)
 
@@ -365,31 +372,32 @@ class Collector:
         self.frame_cache[key] = method_obj
         return self.frame_cache[key]
 
-    def ensure_target_method(self, frame, current_entity_name, target_method):
+    def ensure_target_method_info(self, frame, current_entity_name, target_method):
 
-        # Handle special cases in which 'method' is already a method or function object
+        # Handle the special case in which 'target_method' is a method/function object
         if is_method_or_func(target_method):
             if current_entity_name in self.target_methods_cache:
                 return self.target_methods_cache[current_entity_name]
-            entity = MethodInfo.build(target_method)
-            self.target_methods_cache[current_entity_name] = entity
-            return entity
+            method_info = MethodInfo.build(target_method)
+            self.target_methods_cache[current_entity_name] = method_info
+            return method_info
 
+        # Handle the other cases...
         if target_method and not current_entity_name.startswith(target_method):
             return None
 
         if current_entity_name in self.target_methods_cache:
             return self.target_methods_cache[current_entity_name]
 
-        method_obj = self.ensure_method(frame)
+        method_obj = self.ensure_method_obj(frame)
         if not method_obj:
             return None
-        entity = MethodInfo.build(method_obj)
-        if not entity:
+        method_info = MethodInfo.build(method_obj)
+        if not method_info:
             return None
 
-        self.target_methods_cache[current_entity_name] = entity
-        return entity
+        self.target_methods_cache[current_entity_name] = method_info
+        return method_info
 
     def find_call_stack(self, frame):
 
