@@ -141,7 +141,7 @@ def get_method_object(frame):
             # The most common case: simply get self class
             obj_class = frame.f_locals["self"].__class__
 
-            # In methods without super but that was called by super (ie, the back frame has super),
+            # In methods without that was called by super (ie, the back frame has super),
             # get the next mro class to discover the actual class. Make sure it is part of the hierarchy
             if method_has_super_call(frame.f_back):
                 f_back = frame.f_back
