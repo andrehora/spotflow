@@ -5,6 +5,7 @@ class MonitoredProgram:
 
     def __init__(self):
         self.monitored_methods = {}
+        self.tests = {}
 
     def all_methods(self):
         return list(self.monitored_methods.values())

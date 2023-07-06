@@ -1,12 +1,6 @@
-from spotflow.utils import (
-    line_intersection,
-    find_executable_linenos,
-    get_metadata,
-    escape,
-    ratio
-)
+from spotflow.utils import line_intersection, find_executable_linenos, get_metadata, escape
 from spotflow.model import CallContainer
-from spotflow.report_html import get_html_lines
+from spotflow.utils_html import get_html_lines, code_as_html
 from collections import Counter
 
 executable_lines_for_file = {}
@@ -58,6 +52,9 @@ class MethodInfo:
         exec_lines = self._ensure_executable_lines_for_file()
         my_lines = range(self.start_line, self.end_line + 1)
         return line_intersection(exec_lines, my_lines)
+    
+    def code_as_html(self):
+        return code_as_html(self.code)
 
     def get_code_lines(self):
         if not self.code_lines:

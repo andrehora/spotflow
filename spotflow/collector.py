@@ -232,6 +232,12 @@ class Collector:
 
         if not is_valid_method_name(frame, current_method_name):
             return
+        
+        if '.test_' in current_method_name:
+            if current_method_name not in self.monitored_program.tests:
+                test_info = self.ensure_method_info(frame, current_method_name, None)
+                self.monitored_program.tests[current_method_name] = test_info
+            return
 
         if self.target_method_short_names:
             self.monitor_method(frame, event, arg, current_method_name)
@@ -247,7 +253,7 @@ class Collector:
 
     def monitor_method(self, frame, event, arg, current_method_name, target_method=None):
 
-        method_info = self.ensure_target_method_info(frame, current_method_name, target_method)
+        method_info = self.ensure_method_info(frame, current_method_name, target_method)
 
         if not method_info:
             return
@@ -320,13 +326,17 @@ class Collector:
     def is_valid_frame(self, frame):
 
         current_filename = frame.f_code.co_filename
+        current_method_name = frame.f_code.co_name
 
-        if current_filename.startswith("<") or frame.f_code.co_name == "<module>":
+        if current_filename.startswith("<") or current_method_name == "<module>":
             return False
+        
+        if '.test_' in current_method_name:
+            return True
 
         if self.target_method_short_names:
-            for method_name in self.target_method_short_names:
-                if method_name == frame.f_code.co_name:
+            for target_method_name in self.target_method_short_names:
+                if target_method_name == current_method_name:
                     return True
             return False
 
@@ -375,7 +385,7 @@ class Collector:
         self.frame_cache[key] = method_obj
         return self.frame_cache[key]
 
-    def ensure_target_method_info(self, frame, current_entity_name, target_method):
+    def ensure_method_info(self, frame, current_entity_name, target_method):
 
         # Handle the special case in which 'target_method' is already method/function object
         if is_method_or_func(target_method):
