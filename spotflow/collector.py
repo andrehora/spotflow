@@ -29,7 +29,10 @@ def get_frame_id(frame):
     # then we should get the enclosing frame id, not the current one.
     # This is done to avoid novel flows being created to listcomp and genexpr...
     if is_compr_or_genexpr(frame):
-        return id(frame.f_back)
+        return get_frame_id(frame.f_back)
+    return frame_id(frame)
+
+def frame_id(frame):
     return id(frame)
 
 
@@ -237,7 +240,7 @@ class Collector:
             if current_method_name not in self.monitored_program.tests:
                 test_info = self.ensure_method_info(frame, current_method_name, None)
                 self.monitored_program.tests[current_method_name] = test_info
-            return
+            # return
 
         if self.target_method_short_names:
             self.monitor_method(frame, event, arg, current_method_name)
@@ -260,6 +263,9 @@ class Collector:
 
         if current_method_name != method_info.full_name:
             return
+        
+        # if 'TestSubClassingCase.setUp' in current_method_name:
+        #     print(current_method_name, frame)
 
         update_method_info(method_info, frame, event)
 
@@ -272,6 +278,7 @@ class Collector:
         # -1 for calls, and a real offset for generators.  Use < 0 as the
         # line number for calls, and the real line number for generators.
         if (event == "call" and getattr(frame, "f_lasti", -1) < 0 and not is_compr_or_genexpr(frame)):
+
             if current_method_name not in self.monitored_program:
                 self.monitored_program[current_method_name] = MonitoredMethod(method_info)
 
@@ -287,6 +294,7 @@ class Collector:
 
         # Event is line, return, exception or call for re-entering generators
         else:
+
             lineno = frame.f_lineno
             if current_method_name in self.monitored_program:
 

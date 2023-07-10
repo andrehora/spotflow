@@ -19,6 +19,10 @@ class TestRecursiveCalls(unittest.TestCase):
         self.assertEqual(calls[1].run_lines, [582, 584])
         self.assertEqual(calls[2].run_lines, [582, 583])
 
+        self.assertEqual(calls[0].call_state.return_state.value, '3')
+        self.assertEqual(calls[1].call_state.return_state.value, '2')
+        self.assertEqual(calls[2].call_state.return_state.value, '1')
+
     def test_fib_recursive(self):
         method_name = 'tests.unit.stub_sut.Recursion.fib_recursive'
         func = TRecursion().test_fib_recursive_3

@@ -1,4 +1,4 @@
-from spotflow.utils import obj_value, obj_type
+from spotflow.utils import obj_value, obj_type, escape
 
 
 class MonitoredProgram:
@@ -150,6 +150,10 @@ class MonitoredMethod(CallContainer):
     def add_call(self, call_state, call_stack, call_id):
         call = MethodCall(call_state, call_stack, self)
         self.calls.append(call)
+        # print(self.calls_by_id)
+        # print(self.calls)
+        # if call_id in self.calls_by_id:
+        #     print(call_id)
         self.calls_by_id[call_id] = call
         return call
 
@@ -384,6 +388,9 @@ class State:
         self.value = value
         self.type = type
         self.lineno = lineno
+
+    def value_escaped(self):
+        return escape(self.value)
 
     def is_primitive(self):
         return self.type in ["int", "float", "complex", "str", "bool", "NoneType"]

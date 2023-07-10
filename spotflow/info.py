@@ -1,6 +1,6 @@
 from spotflow.utils import line_intersection, find_executable_linenos, get_metadata, escape
-from spotflow.model import CallContainer
 from spotflow.utils_html import get_html_lines, code_as_html
+from spotflow.model import CallContainer
 from collections import Counter
 
 executable_lines_for_file = {}

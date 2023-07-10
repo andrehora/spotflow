@@ -580,8 +580,8 @@ class Recursion:
 
     def basic_recursion(self, n):
         if n == 1:
-            return
-        self.basic_recursion(n-1)
+            return 1
+        return self.basic_recursion(n-1) + 1
 
     def run_basic_recursion(self):
         self.basic_recursion(3)
