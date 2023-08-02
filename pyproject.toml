@@ -15,7 +15,8 @@ keywords = ["dynamic-analysis", "testing"]
 requires-python = ">=3.7"
 dependencies = [
   'coverage == 6.5.0',
-  'pytest'
+  'pytest',
+  'pygments'
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
