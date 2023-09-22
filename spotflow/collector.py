@@ -1,5 +1,5 @@
 import inspect
-from spotflow.utils import obj_value, obj_type, get_full_name, is_method_or_func, get_module_names
+from spotflow.utils import obj_value, obj_type, get_full_name, is_method_or_func, get_module_names, find_start_end_lines
 from spotflow.model import CallState, MonitoredMethod, MonitoredProgram
 from spotflow.info import MethodInfo
 from spotflow.tracer import PyTracer
@@ -14,13 +14,6 @@ def get_line_key(frame):
         entity_name = frame.f_back.f_code.co_name
     key = filename, lineno, entity_name
     return key
-
-
-def get_next_mro_class(current_class):
-
-    mro_classes = current_class.__mro__
-    current_class_index = mro_classes.index(current_class)
-    return mro_classes[current_class_index + 1]
 
 
 def get_frame_id(frame):
@@ -40,8 +33,29 @@ def is_compr_or_genexpr(frame):
     return frame.f_code.co_name in ["<listcomp>", "<setcomp>", "<dictcomp>", "<genexpr>"]
 
 
-def method_has_super_call(frame):
-    return "__class__" in frame.f_locals and "super" in frame.f_code.co_names
+def get_next_mro_class(current_class):
+    mro_classes = current_class.__mro__
+    current_class_index = mro_classes.index(current_class)
+    return mro_classes[current_class_index + 1]
+
+
+def has_superclass(current_class):
+    # Why 3? At least: current_class, superclass, and object
+    return len(current_class.__mro__) >= 3
+
+
+def resolve_method_for_frame(current_class, frame):
+    
+    current_method_name = frame.f_code.co_name
+    lineno = frame.f_lineno
+    method = inspect.getattr_static(current_class, current_method_name, None)
+    start_line, end_line = find_start_end_lines(method)
+    # Check if it getting the correct method
+    if lineno in range(start_line, end_line+1):
+        return method
+    # If not, try the next super class
+    next_class = get_next_mro_class(current_class)
+    return resolve_method_for_frame(next_class, frame)
 
 
 def line_has_return(frame):
@@ -144,18 +158,12 @@ def get_method_object(frame):
             # The most common case: simply get self class
             obj_class = frame.f_locals["self"].__class__
 
-            # In methods without that was called by super (ie, the back frame has super),
-            # get the next mro class to discover the actual class. Make sure it is part of the hierarchy
-            if method_has_super_call(frame.f_back):
-                f_back = frame.f_back
-                back_class = f_back.f_locals["__class__"]
-                if back_class in obj_class.__mro__:
-                    obj_class = get_next_mro_class(back_class)
-            
             method = inspect.getattr_static(obj_class, method_name, None)
+            if has_superclass(obj_class):
+                method = resolve_method_for_frame(obj_class, frame)
 
             return method
-
+        
         if "cls" in frame.f_locals:
             obj_class = frame.f_locals["cls"]
             method = inspect.getattr_static(obj_class, method_name, None)
@@ -240,7 +248,6 @@ class Collector:
             if current_method_name not in self.monitored_program.tests:
                 test_info = self.ensure_method_info(frame, current_method_name, None)
                 self.monitored_program.tests[current_method_name] = test_info
-            # return
 
         if self.target_method_short_names:
             self.monitor_method(frame, event, arg, current_method_name)

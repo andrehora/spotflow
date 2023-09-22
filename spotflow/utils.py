@@ -79,6 +79,14 @@ def get_class_name(obj):
     return getattr_static(obj, "__class__", "__name__")
 
 
+def find_start_end_lines(func):
+    func_code = func.__code__
+    code = inspect.getsource(func)
+    start_line = func_code.co_firstlineno
+    end_line = get_end_line(start_line, code)
+    return start_line, end_line
+
+
 def get_metadata(func_or_method):
     func = func_or_method
     class_name = None

@@ -678,3 +678,35 @@ class Dependency:
 
     def bar(self):
         y = 1
+
+
+class ClassSuperOldStyle1:
+
+    def __init__(self):
+        self.foobar()
+        self.a = 1
+        self.b = 2
+
+    def foobar(self):
+        self.a = 3
+        self.b = 4
+
+
+class ClassSuperOldStyle2(ClassSuperOldStyle1):
+
+    def __init__(self):
+        ClassSuperOldStyle1.__init__(self)
+
+
+class ClassSuperOldStyle3(ClassSuperOldStyle2):
+
+    def foobar(self):
+        ClassSuperOldStyle2.foobar(self)
+
+
+class ClassSuperWithDependencyOldStyle(ClassSuper):
+
+    def __init__(self):
+        Dependency().foo()
+        ClassSuper.__init__(self)
+        Dependency().bar()

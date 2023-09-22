@@ -1,5 +1,5 @@
 import unittest
-from tests.unit.stub_test import TSuper, TMoreSuper, TOverride
+from tests.unit.stub_test import TSuper, TMoreSuper, TOverride, TSuperOldStyle
 from spotflow.api import monitor_func
 
 
@@ -205,6 +205,68 @@ class TestMoreSuperCall(unittest.TestCase):
         self.assertEqual(calls[0].run_lines, [510, 511])
 
 
+class TestSuperOldStyle(unittest.TestCase):
+
+    def test_super_1(self):
+        method_name = 'tests.unit.stub_sut'
+        func = TSuperOldStyle().test_super_1
+
+        result = monitor_func(func, [method_name])
+
+        self.assertEqual(len(result), 2)
+
+        calls = result['tests.unit.stub_sut.ClassSuperOldStyle1.__init__'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [686, 687, 688])
+
+        calls = result['tests.unit.stub_sut.ClassSuperOldStyle1.foobar'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [691, 692])
+
+    def test_super_2(self):
+        method_name = 'tests.unit.stub_sut'
+        func = TSuperOldStyle().test_super_2
+
+        result = monitor_func(func, [method_name])
+
+        self.assertEqual(len(result), 3)
+
+        calls = result['tests.unit.stub_sut.ClassSuperOldStyle2.__init__'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [698])
+
+        calls = result['tests.unit.stub_sut.ClassSuperOldStyle1.__init__'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [686, 687, 688])
+
+        calls = result['tests.unit.stub_sut.ClassSuperOldStyle1.foobar'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [691, 692])
+
+    def test_super_3(self):
+        method_name = 'tests.unit.stub_sut'
+        func = TSuperOldStyle().test_super_3
+
+        result = monitor_func(func, [method_name])
+
+        self.assertEqual(len(result), 4)
+
+        calls = result['tests.unit.stub_sut.ClassSuperOldStyle2.__init__'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [698])
+
+        calls = result['tests.unit.stub_sut.ClassSuperOldStyle1.__init__'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [686, 687, 688])
+
+        calls = result['tests.unit.stub_sut.ClassSuperOldStyle3.foobar'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [704])
+
+        calls = result['tests.unit.stub_sut.ClassSuperOldStyle1.foobar'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [691, 692])
+
 
 class TestOverrideCall(unittest.TestCase):
 
@@ -315,6 +377,33 @@ class TestSuperWithDependency(unittest.TestCase):
         calls = result['tests.unit.stub_sut.ClassSuperWithDependency.__init__'].calls
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0].run_lines, [669, 670, 671])
+
+        calls = result['tests.unit.stub_sut.Dependency.foo'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [677])
+
+        calls = result['tests.unit.stub_sut.Dependency.bar'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [680])
+
+
+class TestSuperOldStyleWithDependency(unittest.TestCase):
+
+    def test_super(self):
+        method_name = 'tests.unit.stub_sut'
+        func = TSuperOldStyle().test_super_with_dependency
+
+        result = monitor_func(func, [method_name])
+
+        self.assertEqual(len(result), 4)
+
+        calls = result['tests.unit.stub_sut.ClassSuper.__init__'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [663])
+
+        calls = result['tests.unit.stub_sut.ClassSuperWithDependencyOldStyle.__init__'].calls
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0].run_lines, [710, 711, 712])
 
         calls = result['tests.unit.stub_sut.Dependency.foo'].calls
         self.assertEqual(len(calls), 1)

@@ -433,6 +433,21 @@ class TMoreSuper:
         ClassSuperWithDependency()
 
 
+class TSuperOldStyle:
+
+    def test_super_1(self):
+        ClassSuperOldStyle1()
+
+    def test_super_2(self):
+        ClassSuperOldStyle2()
+
+    def test_super_3(self):
+        ClassSuperOldStyle3()
+
+    def test_super_with_dependency(self):
+        ClassSuperWithDependencyOldStyle()
+
+
 class TFuncRunner:
 
     def test_run_decorator_once(self):
