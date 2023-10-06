@@ -1,6 +1,6 @@
 import os
-import re
 from spotflow.libs.templite import Templite
+from spotflow.utils_html import write_html
 from spotflow.utils import full_filename, full_dir, ensure_dir, copy_files, read_file
 
 

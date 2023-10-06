@@ -32,9 +32,9 @@ def parse_args(args=None):
         "--script",
         type=str,
         nargs="?",
-        const="spotflow_script.py",
+        const="spotflow_after.py",
         help="Python script to be run after monitoring the program."
-        'Default is "spotflow_script.py".',
+        'Default is "spotflow_after.py".',
     )
 
     parser.add_argument(

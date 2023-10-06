@@ -1,5 +1,4 @@
 import os
-import re
 import inspect
 import shutil
 import trace
