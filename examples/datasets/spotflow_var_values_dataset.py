@@ -1,7 +1,9 @@
+import json
 import importlib
 from spotflow.utils import write_csv
 from collections import Counter
 from spotflow.api import monitor_unittest_module
+
 
 def spotflow_after(monitored_program, *args):
 
@@ -9,14 +11,21 @@ def spotflow_after(monitored_program, *args):
     compute_var_states(monitored_program)
 
 
+def write_json(data):
+    with open('var_values_dataset.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=3)
+
+
 def run_and_export_data():
 
-    target_libs = ['gzip', 'calendar', 'email', 'ftplib', 'collections', 'os', 'tarfile', 'pathlib', 'logging', 'smtplib'
-                   'csv', 'argparse', 'configparse', 'json', 'ast']
+    target_libs = ['gzip', 'calendar', 'locale', 'json', 'ast', 
+                   'csv', 'ftplib', 'collections', 'os', 'tarfile', 
+                   'pathlib', 'smtplib', 'argparse', 'configparser', 'email']
     
-    target_libs = ['gzip', 'calendar', 'csv', 'ast', 'os', 'json']
     
-    target_libs = ['gzip', 'calendar']
+    # target_libs = ['gzip', 'calendar', 'csv', 'ast', 'os', 'json']
+    # target_libs = ['gzip', 'calendar']
+    # target_libs = ['calendar']
 
     result = {}
     for target_lib in target_libs:
@@ -26,11 +35,15 @@ def run_and_export_data():
         compute_argument_states(monitored_program, result)
         compute_var_states(monitored_program, result)
 
+    values_count = 0
     for var_name in result:
-        result[var_name] = Counter(result[var_name]).most_common(5)
+        result[var_name] = Counter(result[var_name]).most_common()
+        values_count += len(result[var_name])
         print(var_name, result[var_name])
     
     print(len(result))
+    print(values_count)
+    write_json(result)
 
 
 def compute_argument_states(monitored_program, result):
