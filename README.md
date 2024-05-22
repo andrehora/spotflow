@@ -3,7 +3,7 @@
 # SpotFlow
 
 SpotFlow is a tool to ease the runtime analysis of Python programs.
-With SpotFlow, you can easily extract information about executed methods, run lines, argument values, return values, variable states, and thrown exceptions.
+With SpotFlow, you can extract information about executed methods, run lines, argument values, return values, variable states, and thrown exceptions.
 
 ## Install
 
@@ -129,7 +129,7 @@ $ python -m spotflow -t calendar unittest test.test_calendar
 ## Usage
 
 SpotFlow can be run from the command-line.
-We can use SpotFlow to collect data from the execution of any Python program.
+We can use SpotFlow to collect data from the execution of Python programs.
 For example, to run `my_program.py`, we could originally use the following command-line:
 
 ```
