@@ -129,10 +129,7 @@ $ python -m spotflow -t calendar unittest test.test_calendar
 
 ## Usage
 
-SpotFlow can be run from the command-line or programmatically via API.
-
-### Command-line
-
+SpotFlow can be run from the command-line.
 We can use SpotFlow to collect data from the execution of any Python program.
 For example, to run `my_program.py`, we could originally use the following command-line:
 
@@ -166,40 +163,11 @@ $ python -m unittest testX
 $ python -m spotflow -t <target> unittest testX
 ```
 
-### API
-
-The other way to run SpotFlow is via its API.
-For example, consider a function called `my_program()`.
-It can be run and monitored with SpotFlow with the following code:
-
-```python
-flow = SpotFlow()
-flow.target_methods(target)
-
-flow.start()
-
-# code to be run and monitored
-my_program()
-
-flow.stop()
-
-# the result is a MonitoredProgram object
-monitored_program = flow.result()
-```
-
-Class `SpotFlow` represents the programmatic access to SpotFlow.
-In method `target_methods()`, we can pass the target entities to be monitored, which can be the full name of the target method or a prefix to monitor multiple methods, like in the command-line.
-Method `start()` starts the monitoring.
-The monitoring only occurs in code called after `start()`.
-After calling `start()`, we must also call `stop()` to stop the monitoring.
-Lastly, method `result()` provides a `MonitoredProgram` object.
-
 ## Monitored entities
 
 - `MonitoredProgram`: This class is a repository of monitored methods, which can be used to access all collected data.
 
 - `MonitoredMethod`: It represents a monitored method (or function). It has method calls and contains static information about the method/function, like name, full name, class name (for methods), file name, LOC, source code, etc.
-
 
 - `MethodCall`: This class represents a method call that happens at runtime. It includes data about the caller, call stack, and executed lines. A method call also has a call state, which records information like variable and argument states.
 
