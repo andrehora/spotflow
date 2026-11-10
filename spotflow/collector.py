@@ -1,4 +1,5 @@
 import dis
+import functools
 import inspect
 from spotflow.utils import obj_value, obj_type, get_full_name, is_method_or_func, get_module_names, find_start_end_lines, get_code_filename
 from spotflow.model import CallState, MonitoredMethod, MonitoredProgram
@@ -168,10 +169,52 @@ def find_local_func(entity_name, local_elements):
     return None
 
 
+def function_with_code(member, code):
+
+    # The function that runs the code, from a class member: the function itself
+    # or the one wrapped by a classmethod, staticmethod, property (getter,
+    # setter or deleter) or cached_property.
+    if isinstance(member, (classmethod, staticmethod)):
+        candidates = [member.__func__]
+    elif isinstance(member, property):
+        candidates = [member.fget, member.fset, member.fdel]
+    elif isinstance(member, functools.cached_property):
+        candidates = [member.func]
+    else:
+        candidates = [member]
+    for func in candidates:
+        if inspect.isfunction(func) and func.__code__ is code:
+            return func
+    return None
+
+
+def find_func_by_qualname(frame):
+
+    # Follow the qualified name of the code from the module globals, e.g.,
+    # "Class.method". This finds the functions that cannot be found from the
+    # frame locals: static methods (no self or cls), class methods and
+    # properties (not functions in the class). Static lookup: must not run
+    # descriptors of the monitored program.
+    code = frame.f_code
+    names = code.co_qualname.split(".")
+    if "<locals>" in names:
+        return None
+    member = frame.f_globals.get(names[0])
+    for name in names[1:]:
+        if member is None:
+            return None
+        member = inspect.getattr_static(member, name, None)
+    return function_with_code(member, code)
+
+
 def get_method_object(frame):
 
     try:
         method_name = frame.f_code.co_name
+
+        func = find_func_by_qualname(frame)
+        if func:
+            return func
 
         # Method
         if "self" in frame.f_locals:

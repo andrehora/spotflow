@@ -747,3 +747,56 @@ def has_local_static_method_and_func_attr():
             return self.local_static(1) + self.local_callback(2)
 
     return LocalClass4().run()
+
+
+import functools
+
+
+class HasDescriptors:
+
+    def __init__(self):
+        self._value = 1
+
+    @classmethod
+    def class_method(cls, x):
+        return x + 1
+
+    @staticmethod
+    def static_method(x):
+        return x + 2
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        self._value = new_value
+
+    @functools.cached_property
+    def cached_value(self):
+        return self._value + 10
+
+
+class SubHasDescriptors(HasDescriptors):
+    pass
+
+
+def call_descriptors():
+    obj = HasDescriptors()
+    HasDescriptors.class_method(1)
+    obj.class_method(2)
+    HasDescriptors.static_method(1)
+    obj.static_method(2)
+    obj.value = 5
+    obj.value
+    obj.cached_value
+
+
+def call_inherited_descriptors():
+    obj = SubHasDescriptors()
+    SubHasDescriptors.class_method(1)
+    SubHasDescriptors.static_method(1)
+    obj.value = 5
+    obj.value
+    obj.cached_value
