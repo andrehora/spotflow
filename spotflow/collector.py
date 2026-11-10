@@ -451,6 +451,10 @@ class Collector:
 
         # Handle the special case in which 'target_method' is already method/function object
         if is_method_or_func(target_method):
+            # Each target only matches its own frames. Otherwise, with several
+            # targets, the info of one would be cached under the name of another.
+            if get_full_name(target_method) != current_entity_name:
+                return None
             if current_entity_name in self.target_methods_cache:
                 return self.target_methods_cache[current_entity_name]
             method_info = MethodInfo.build(target_method)

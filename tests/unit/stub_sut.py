@@ -800,3 +800,24 @@ def call_inherited_descriptors():
     obj.value = 5
     obj.value
     obj.cached_value
+
+
+def target_one(x):
+    return x + 1
+
+
+def target_two(x):
+    return x + 2
+
+
+class HasTargets:
+
+    def target_method(self, x):
+        return x + 3
+
+
+def call_targets():
+    target_one(1)
+    target_two(1)
+    target_two(2)
+    HasTargets().target_method(1)
