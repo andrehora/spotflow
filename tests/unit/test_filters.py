@@ -1,4 +1,5 @@
 import unittest
+from tests.unit.stub_test import TSimpleCall
 from tests.unit.stub_test import TClassWithExternalDependency
 from spotflow.api import monitor_func
 from sys import platform
@@ -214,6 +215,25 @@ class TestFilter(unittest.TestCase):
         for method in methods:
             self.assertNotIn(ignore_file_name1, method.info.full_name)
             self.assertNotIn(ignore_file_name2, method.info.full_name)
+
+    def test_filter_by_file_of_caller(self):
+        # With a target file, a method of another file is monitored in the
+        # calls from the target file, and not in the others
+        simple_call = TSimpleCall()
+
+        def func():
+            simple_call.test_simple_if_true()
+            simple_call.bs.simple_if(True)
+            simple_call.test_simple_if_true()
+            simple_call.bs.simple_if(True)
+
+        result = monitor_func(func, target_files=['stub_test.py'])
+
+        calls = result['tests.unit.stub_sut.SimpleCall.simple_if'].calls
+        self.assertEqual(len(calls), 2)
+        for call in calls:
+            self.assertEqual(call.call_stack[-2], 'tests.unit.stub_test.TSimpleCall.test_simple_if_true')
+            self.assertGreater(len(call.run_lines), 0)
 
 
 if __name__ == '__main__':

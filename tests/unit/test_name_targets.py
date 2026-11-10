@@ -73,6 +73,38 @@ class TestNameTargets(unittest.TestCase):
         self.assertEqual(call.call_state.return_state, '1')
         self.assertEqual(list(result[f'{self.base}.prefix'].run_lines.values()), [1])
 
+    def test_no_targets_monitors_all_methods(self):
+        calls = self.calls_per_method(None)
+        self.assertEqual(calls['prefix'], 1)
+        self.assertEqual(calls['Prefix.run'], 1)
+
+    def test_empty_targets_monitors_nothing(self):
+        calls = self.calls_per_method([])
+        self.assertEqual(calls, {})
+
+    def test_method_is_monitored_in_all_its_calls(self):
+        def func():
+            for _ in range(3):
+                stub_sut.call_prefixes()
+
+        calls = self.calls_per_method([f'{self.base}.prefix', f'{self.base}.Prefix'], func)
+        self.assertEqual(calls, {'prefix': 3, 'Prefix.run': 3})
+
+    def test_targets_can_change_between_runs(self):
+        from spotflow.api import SpotFlow
+        flow = SpotFlow()
+        flow.target_method_full_names([f'{self.base}.prefix'])
+        flow.start()
+        stub_sut.call_prefixes()
+        flow.stop()
+        flow.target_method_full_names([f'{self.base}.prefix_longer'])
+        flow.start()
+        stub_sut.call_prefixes()
+        flow.stop()
+
+        calls = {method.name: len(method.calls) for method in flow.result()}
+        self.assertEqual(calls, {'prefix': 1, 'prefix_longer': 1})
+
 
 if __name__ == '__main__':
     unittest.main()

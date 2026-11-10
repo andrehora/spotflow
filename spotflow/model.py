@@ -247,10 +247,7 @@ class CallState:
         return self.return_state and self.return_state.type == t
 
     def get_yield_states(self):
-        if len(self.yield_states) <= 1:
-            return self.yield_states
-        # Remove the last element. This one is saved as an implicit return
-        return self.yield_states[:-1]
+        return self.yield_states
 
     def show_summary(self):
         if self.has_argument():

@@ -23,8 +23,11 @@ _MAX_WRAPPED = 10
 _MAX_PYTEST_DEPTH = 10
 
 # Code objects of the pytest test functions seen so far, so that only their
-# frames look up the pytest item that runs them
-_pytest_test_codes = set()
+# frames look up the pytest item that runs them: id(code) -> code. The key is
+# not the code, since the hash of a code is computed from its contents each
+# time, and this is checked in every frame. The code is kept in the value so
+# that it stays alive, and its id is not reused by another code.
+_pytest_test_codes = {}
 
 
 def find_test(frame):
@@ -91,11 +94,12 @@ def find_pytest_test(frame):
     item = get_pytest_item(frame)
     if item is not None:
         # Seen before the test function is called: remember its code objects
-        _pytest_test_codes.update(get_test_codes(item.obj))
+        for test_code in get_test_codes(item.obj):
+            _pytest_test_codes[id(test_code)] = test_code
         return None
 
     code = frame.f_code
-    if code not in _pytest_test_codes:
+    if id(code) not in _pytest_test_codes:
         return None
     outer = frame.f_back
     for _ in range(_MAX_PYTEST_DEPTH):

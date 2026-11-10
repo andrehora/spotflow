@@ -8,7 +8,9 @@ With SpotFlow, you can extract information about executed methods, run lines, ar
 ## Install
 
 ```
-pip install spotflow
+git clone https://github.com/andrehora/spotflow.git
+cd spotflow
+pip install -e .
 ```
 
 ## Quick examples

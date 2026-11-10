@@ -848,3 +848,186 @@ def call_prefixes():
     prefix_longer(1)
     Prefix().run()
     PrefixLonger().run()
+
+
+import asyncio
+import contextlib
+
+
+class ExitKinds:
+
+    def return_raises(self, x):
+        return int(x)
+
+    def name_starts_with_return(self):
+        returned = 5
+        returned += 1
+
+    def name_starts_with_yield(self):
+        yielded = 5
+        yielded += 1
+
+    def inline_return(self, a):
+        if a: return 1
+        return 2
+
+    def inline_return_or_implicit(self, a):
+        if a: return 1
+
+    def inline_def(self): return 7
+
+    def return_in_with(self):
+        with contextlib.nullcontext():
+            return 5
+
+    def return_in_finally(self):
+        try:
+            return 6
+        finally:
+            x = 1
+
+    def multi_line_return(self, a):
+        return dict(
+            a=a,
+        )
+
+    def return_none_in_expression(self, a):
+        return a if a else None
+
+    def call_lambdas(self):
+        value = lambda: 3
+        none = lambda: None
+        return value(), none()
+
+    def assigned_yield(self):
+        x = yield 1
+        y = yield 2
+
+    def yield_in_expression(self):
+        x = [(yield 1)]
+
+    def inline_yield(self, a):
+        if a: yield 1
+
+    def yield_then_return(self):
+        yield 1
+        return 9
+
+    def yield_then_statement(self):
+        yield 1
+        x = 2
+
+    def yield_from(self):
+        yield from [1, 2]
+        x = yield from self.yield_then_return()
+
+    def closed(self):
+        yield 1
+        yield 2
+
+    def thrown(self):
+        yield 1
+        yield 2
+
+    def yield_then_raise(self):
+        yield 1
+        raise KeyError('k')
+
+    async def coroutine_inner(self):
+        await asyncio.sleep(0)
+        return 4
+
+    async def coroutine(self):
+        value = await self.coroutine_inner()
+        return value
+
+    async def async_generator(self):
+        yield 1
+        await asyncio.sleep(0)
+        yield 2
+
+    async def use_async_generator(self):
+        return [value async for value in self.async_generator()]
+
+    def genexpr_in_return(self, items):
+        return ' '.join(str(item) for item in items)
+
+    def genexpr_in_assign(self, items):
+        total = sum(item for item in items)
+        return total
+
+    def genexpr_in_yield(self, items):
+        yield sum(item for item in items)
+
+    def run_closed(self):
+        gen = self.closed()
+        next(gen)
+        gen.close()
+
+    def run_thrown(self):
+        gen = self.thrown()
+        next(gen)
+        try:
+            gen.throw(ValueError('v'))
+        except ValueError:
+            pass
+
+
+class ControlFlow:
+
+    def names_start_with_keywords(self):
+        formatted = 1
+        iffy = 2
+        while_loop = 3
+        elif_count = 4
+        return formatted + iffy + while_loop + elif_count
+
+    def statements(self, a):
+        if a == 1:
+            a += 1
+        elif a == 2:
+            a += 2
+        else:
+            a += 3
+        while a < 10:
+            a += 5
+        for i in range(2):
+            a += i
+        return a
+
+    def inline_if(self, a):
+        if a: a += 1
+        return a
+
+    def multi_line_if(self, a, b):
+        if (a and
+                b):
+            a += 1
+        return a
+
+    def expressions(self, a):
+        x = 1 if a else 2
+        y = [i for i in range(2) if i]
+        z = a and x
+        return x, y, z
+
+    def nested(self, items):
+        for item in items:
+            if item:
+                while item:
+                    item -= 1
+        return items
+
+    async def async_for(self, values):
+        async for value in values:
+            pass
+
+    def not_run(self, a):
+        if a:
+            for i in range(2):
+                pass
+        return a
+
+
+async def async_values():
+    yield 1

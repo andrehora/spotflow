@@ -1,22 +1,15 @@
+import ast
 import dis
 import functools
 import inspect
+import itertools
+import linecache
+import sys
 from spotflow.utils import obj_value, obj_type, get_full_name, is_method_or_func, get_module_names, find_start_end_lines, get_code_filename
 from spotflow.model import CallState, MonitoredMethod, MonitoredProgram
 from spotflow.info import MethodInfo
 from spotflow.finder import find_test, find_test_id
 from spotflow.tracer import PyTracer
-
-
-def get_line_key(frame):
-
-    filename = frame.f_code.co_filename
-    lineno = frame.f_lineno
-    entity_name = frame.f_code.co_name
-    if is_compr_or_genexpr(frame):
-        entity_name = frame.f_back.f_code.co_name
-    key = filename, lineno, entity_name
-    return key
 
 
 def get_frame_id(frame):
@@ -75,63 +68,171 @@ def resolve_method_for_frame(current_class, frame):
     return resolve_method_for_frame(next_class, frame)
 
 
-def line_has_return(frame):
-    return line_has_keyword(frame, "return")
+_RETURN_VALUE = dis.opmap["RETURN_VALUE"]
+_YIELD_VALUE = dis.opmap["YIELD_VALUE"]
+_CO_AWAITS = inspect.CO_COROUTINE | inspect.CO_ASYNC_GENERATOR
+
+RETURN = "return"
+YIELD = "yield"
+_RETURN_NOT_NONE = "return, if the value is not None"
+
+# What a frame does at an instruction: (id(code), offset) -> (code, kind).
+# The kind is RETURN, YIELD, _RETURN_NOT_NONE or None. The key has the id of
+# the code, since the hash of a code is slow (see Collector.frame_cache).
+_exit_kinds = {}
+
+# filename -> SourceInfo
+_source_infos = {}
 
 
-def line_has_yield(frame):
-    return line_has_keyword(frame, "yield")
+def get_exit_kind(frame, arg):
+    # What a "return" event is: a return (RETURN), a yield (YIELD) or neither
+    # (None). The event also happens when a coroutine is suspended in an await,
+    # when an exception leaves the frame and, without a return statement, at
+    # the end of the function. This is found from the instruction the frame is
+    # at, and not from the text of the line: a line can start with "return" and
+    # raise an exception, and a return or yield can be anywhere in a line.
+    #
+    # The events of a generator expression are monitored as events of the
+    # method it is in (see get_frame_id). The values it yields are not yielded
+    # or returned by the method.
+    if is_compr_or_genexpr(frame):
+        return None
+
+    code = frame.f_code
+    key = id(code), frame.f_lasti
+    cached = _exit_kinds.get(key)
+    if cached is None:
+        cached = _exit_kinds[key] = code, find_exit_kind(frame)
+    kind = cached[1]
+    if kind == _RETURN_NOT_NONE:
+        return RETURN if arg is not None else None
+    return kind
+
+
+def find_exit_kind(frame):
+
+    code = frame.f_code
+    lasti = frame.f_lasti
+    opcode = code.co_code[lasti]
+
+    if opcode == _YIELD_VALUE:
+        # The oparg is 1 in a yield from or await, and 0 in a yield. Coroutines
+        # and async generators have no yield from: it is an await.
+        if code.co_code[lasti + 1] and code.co_flags & _CO_AWAITS:
+            return None
+        return YIELD
+
+    if opcode != _RETURN_VALUE:
+        # An exception is leaving the frame
+        return None
+
+    # The end of a function without a return statement also returns (None).
+    # A lambda has no return statement: its body is what it returns.
+    if code.co_name == "<lambda>" or is_in_return_statement(frame):
+        return RETURN
+
+    # The instruction may still be of a return statement, when it runs after
+    # the code that leaves a with or try block. It is, if it returns a value.
+    return _RETURN_NOT_NONE
+
+
+def is_in_return_statement(frame):
+
+    code = frame.f_code
+    position = next(itertools.islice(code.co_positions(), frame.f_lasti // 2, None), None)
+    if position is None or None in position:
+        return False
+    lineno, end_lineno, col_offset, end_col_offset = position
+    start = lineno, col_offset
+    end = end_lineno, end_col_offset
+    for return_start, return_end in get_return_statements(frame):
+        if return_start <= start and end <= return_end:
+            return True
+    return False
+
+
+def get_return_statements(frame):
+    return get_source_info(frame).return_statements
 
 
 def line_has_control_flow(frame):
-    return line_has_keywords(frame, ["if", "elif", "while", "for"])
+    return frame.f_lineno in get_source_info(frame).control_flow_lines
 
 
-def line_has_keyword(frame, keyword):
+class SourceInfo:
+    """What the collector needs from the source code of a file, found once from its AST."""
 
-    traceback = inspect.getframeinfo(frame)
-    if traceback.code_context and len(traceback.code_context) >= 1:
-        code_line = traceback.code_context[0].strip()
-        return code_line.startswith(keyword)
-    return False
+    def __init__(self, source):
+
+        # Positions of the return statements: [(start, end)]
+        self.return_statements = []
+
+        # Lines of the headers of the if, elif, while and for statements. The
+        # header is the condition of an if or while, and the iterable of a for.
+        # The text of a line is not enough to find them: the line
+        # "formatted = 1" starts with "for".
+        self.control_flow_lines = set()
+
+        try:
+            tree = ast.parse(source)
+        except (SyntaxError, ValueError):
+            return
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Return):
+                start = node.lineno, node.col_offset
+                end = node.end_lineno, node.end_col_offset
+                self.return_statements.append((start, end))
+            elif isinstance(node, (ast.If, ast.While)):
+                self.control_flow_lines.update(range(node.lineno, node.test.end_lineno + 1))
+            elif isinstance(node, (ast.For, ast.AsyncFor)):
+                self.control_flow_lines.update(range(node.lineno, node.iter.end_lineno + 1))
 
 
-def line_has_keywords(frame, keywords):
+def get_source_info(frame):
 
-    traceback = inspect.getframeinfo(frame)
-    if traceback.code_context and len(traceback.code_context) >= 1:
-        code_line = traceback.code_context[0].strip()
-        for keyword in keywords:
-            if code_line.startswith(keyword):
-                return True
-    return False
+    filename = get_code_filename(frame.f_code, frame.f_globals)
+    if filename not in _source_infos:
+        source = "".join(linecache.getlines(filename, frame.f_globals))
+        _source_infos[filename] = SourceInfo(source)
+    return _source_infos[filename]
 
 
-def update_method_info(method_info, frame, event):
+# Names of the arguments of a code: id(code) -> (code, inspect.Arguments)
+_code_args = {}
 
+
+def get_arg_values(frame):
+    # As inspect.getargvalues, but the names of the arguments are found once
+    # for each code, and not in every call
+    code = frame.f_code
+    cached = _code_args.get(id(code))
+    if cached is None:
+        cached = _code_args[id(code)] = code, inspect.getargs(code)
+    args, varargs, varkw = cached[1]
+    return inspect.ArgInfo(args, varargs, varkw, frame.f_locals)
+
+
+def update_method_info(method_info, frame, event, arg):
+
+    # A line can be of several kinds: the line of a return statement is first
+    # seen in a "line" event, and it can also raise an exception.
     lineno = frame.f_lineno
-    if lineno in method_info.other_lines or lineno in method_info.control_flow_lines:
-        return
-
-    if lineno in method_info.return_lines or lineno in method_info.yield_lines:
-        return
-
-    if lineno in method_info.exception_lines:
-        return
-
-    if event == "call":
-        return
 
     if event == "line":
+        if lineno in method_info.other_lines or lineno in method_info.control_flow_lines:
+            return
         if line_has_control_flow(frame):
             method_info.control_flow_lines.add(lineno)
         else:
             method_info.other_lines.add(lineno)
 
     elif event == "return":
-        if line_has_return(frame):
+        exit_kind = get_exit_kind(frame, arg)
+        if exit_kind == RETURN:
             method_info.return_lines.add(lineno)
-        elif line_has_yield(frame):
+        elif exit_kind == YIELD:
             method_info.yield_lines.add(lineno)
 
     elif event == "exception":
@@ -251,6 +352,21 @@ def get_method_object(frame):
         return None
 
 
+def is_never_method(code):
+
+    # Module code is never found by get_method_object: nothing is named
+    # "<module>". This is known from the code, with no need to look for it
+    # every time it is in a call stack.
+    #
+    # The other frames that are not found are looked for again each time,
+    # since the result depends on more than their code:
+    # - lambdas and local functions are found from the locals of the caller,
+    #   so one can be found when called from one place and not from another;
+    # - generator expressions are found from the method they are in (see
+    #   Collector.find_enclosing_method_obj), after it is found.
+    return code.co_name == "<module>"
+
+
 def is_valid_method_name(frame, current_method_name):
         
     if is_compr_or_genexpr(frame):
@@ -272,6 +388,12 @@ def target_matches(target, method_full_name):
     return method_full_name == target or method_full_name.startswith(target + ".")
 
 
+# Whether the frames of a code can be monitored (see Collector.get_code_validity)
+VALID = "valid"
+INVALID = "invalid"
+VALID_BY_CALLER = "valid by caller"
+
+
 class Collector:
 
     def __init__(self):
@@ -290,12 +412,27 @@ class Collector:
 
         self.target_methods_cache = {}
         self.matched_targets = {}
+        # id(code) -> (code, method or function, its full name). The key is not the code:
+        # the hash of a code is computed from its contents each time, which
+        # is slow in every event. The code is kept in the value so that it
+        # stays alive, and its id is not reused by another code.
         self.frame_cache = {}
+
+        # Codes of the frames that were found to be tests: id(code) -> code
+        self.test_codes = {}
+
+        # Codes that are monitored (see monitor_event):
+        # id(code) -> (code, method full name, method info, depends on caller)
+        self.monitored_codes = {}
+
+        # Codes that are never monitored: id(code) -> code
+        self.ignored_codes = {}
 
         self.py_tracer = PyTracer(self)
 
     def start(self):
         self.init_target()
+        self.init_test_codes()
         self.py_tracer.start_tracer()
 
     def stop(self):
@@ -303,38 +440,101 @@ class Collector:
         self.monitored_program._update_info()
 
     def init_target(self):
+        # The targets and files may have changed since the last start
+        self.monitored_codes = {}
+        self.ignored_codes = {}
+        self.matched_targets = {}
         if self.target_method_full_names and not self.target_method_short_names:
             self.module_names = get_module_names(self.target_method_full_names)
 
+    def init_test_codes(self):
+
+        # The tests that are already running have no "call" event to be found
+        # from. The frames are checked from the outermost one, as in the order
+        # of their calls: pytest is seen before the test it is running.
+        frames = []
+        frame = sys._getframe()
+        while frame is not None:
+            frames.append(frame)
+            frame = frame.f_back
+        for frame in reversed(frames):
+            if find_test(frame) is not None:
+                self.test_codes[id(frame.f_code)] = frame.f_code
+
     def monitor_event(self, frame, event, arg):
+
+        # Returns whether the frame is of a monitored method. If it is not, in
+        # a "call" event, the tracer does not trace the other events of the frame.
 
         # Tests are found in any frame, since test code is usually not a target
         if event == "call":
             self.record_test(frame)
 
-        if not self.is_valid_frame(frame):
-            return
+        # This runs in every event. Whether a code is monitored is found once
+        # (see monitor_new_code): after that, it takes one lookup.
+        code_id = id(frame.f_code)
+        monitored = self.monitored_codes.get(code_id)
+        if monitored is not None:
+            _, current_method_name, method_info, depends_on_caller = monitored
+            if depends_on_caller and not self.is_valid_caller(frame):
+                return False
+            self.monitor_method_event(method_info, frame, event, arg, current_method_name)
+            return True
+
+        if code_id in self.ignored_codes:
+            return False
+
+        return self.monitor_new_code(frame, event, arg)
+
+    def monitor_new_code(self, frame, event, arg):
+
+        # Finds whether the frame is of a monitored method and, if so, monitors
+        # the event. The answer is kept when it is the same for all the frames
+        # of the code. It is not when:
+        # - the method is not found: it may be found in another frame (see
+        #   is_never_method);
+        # - the frame is of a generator expression: its method is the one of
+        #   the frame that runs it;
+        # - the frame is only valid because of its caller (see is_valid_caller).
+        code = frame.f_code
+        same_for_code = not is_compr_or_genexpr(frame)
+
+        validity = self.get_code_validity(frame)
+        if validity == INVALID:
+            self.ignored_codes[id(code)] = code
+            return False
+        depends_on_caller = validity == VALID_BY_CALLER
+        if depends_on_caller and not self.is_valid_caller(frame):
+            return False
 
         current_method_name = self.get_method_full_name(frame)
         if not current_method_name:
-            return
+            return False
 
-        if not is_valid_method_name(frame, current_method_name):
-            return
-        
-        if self.target_method_short_names:
-            self.monitor_method(frame, event, arg, current_method_name)
-            return
+        target_method = None
+        is_target = is_valid_method_name(frame, current_method_name)
+        if is_target and not self.target_method_short_names:
+            if self.target_method_full_names:
+                # An event is monitored once, even when several targets match it
+                target_method = self.find_target(current_method_name)
+                is_target = target_method is not None
+            else:
+                # Without targets, all the methods are monitored
+                is_target = self.target_method_full_names is None and self.target_method_short_names is None
+        if not is_target:
+            if same_for_code:
+                self.ignored_codes[id(code)] = code
+            return False
 
-        if self.target_method_full_names:
-            # An event is monitored once, even when several targets match it
-            target_method = self.find_target(current_method_name)
-            if target_method is not None:
-                self.monitor_method(frame, event, arg, current_method_name, target_method)
-            return
-        
-        if self.target_method_full_names is None and self.target_method_short_names is None:
-            self.monitor_method(frame, event, arg, current_method_name)
+        method_info = self.ensure_method_info(frame, current_method_name, target_method)
+        if not method_info or current_method_name != method_info.full_name:
+            return False
+
+        if same_for_code:
+            self.monitored_codes[id(code)] = code, current_method_name, method_info, depends_on_caller
+
+        self.monitor_method_event(method_info, frame, event, arg, current_method_name)
+        return True
 
     def find_target(self, current_method_name):
 
@@ -348,36 +548,26 @@ class Collector:
             self.matched_targets[current_method_name] = target_method
         return self.matched_targets[current_method_name]
 
-    def monitor_method(self, frame, event, arg, current_method_name, target_method=None):
+    def monitor_method_event(self, method_info, frame, event, arg, current_method_name):
 
-        method_info = self.ensure_method_info(frame, current_method_name, target_method)
-
-        if not method_info:
-            return
-
-        if current_method_name != method_info.full_name:
-            return
-        
-        # if 'TestSubClassingCase.setUp' in current_method_name:
-        #     print(current_method_name, frame)
-
-        update_method_info(method_info, frame, event)
+        update_method_info(method_info, frame, event, arg)
 
         # The call event is really a "start frame" event, and happens for
         # function calls and re-entering generators (see is_frame_start).
         if (event == "call" and is_frame_start(frame) and not is_compr_or_genexpr(frame)):
 
-            if current_method_name not in self.monitored_program:
-                self.monitored_program[current_method_name] = MonitoredMethod(method_info)
+            monitored_methods = self.monitored_program.monitored_methods
+            monitored_method = monitored_methods.get(current_method_name)
+            if monitored_method is None:
+                monitored_method = monitored_methods[current_method_name] = MonitoredMethod(method_info)
 
             call_state = CallState()
             callers = self.find_call_stack(frame)
 
             if self.collect_arg_states:
-                call_state._save_arg_states(inspect.getargvalues(frame), frame.f_lineno)
+                call_state._save_arg_states(get_arg_values(frame), frame.f_lineno)
 
             frame_id = get_frame_id(frame)
-            monitored_method = self.monitored_program[current_method_name]
             tests = self.monitored_program.tests
             call_tests = tuple(name for name in callers[:-1] if name in tests)
             monitored_method.add_call(call_state, callers, frame_id, call_tests)
@@ -386,9 +576,9 @@ class Collector:
         else:
 
             lineno = frame.f_lineno
-            if current_method_name in self.monitored_program:
+            monitored_method = self.monitored_program.monitored_methods.get(current_method_name)
+            if monitored_method is not None:
 
-                monitored_method = self.monitored_program[current_method_name]
                 if not monitored_method.calls:
                     return
 
@@ -403,10 +593,13 @@ class Collector:
                     monitored_method._add_run_line(lineno)
 
                 elif event == "return":
-                    if self.collect_return_states and line_has_return(frame):
-                        current_call_state._save_return_state(obj_value(arg), obj_type(arg), lineno)
-                    elif self.collect_yield_states and line_has_yield(frame):
-                        current_call_state._save_yield_state(obj_value(arg), obj_type(arg), lineno)
+                    exit_kind = get_exit_kind(frame, arg)
+                    if exit_kind == RETURN:
+                        if self.collect_return_states:
+                            current_call_state._save_return_state(obj_value(arg), obj_type(arg), lineno)
+                    elif exit_kind == YIELD:
+                        if self.collect_yield_states:
+                            current_call_state._save_yield_state(obj_value(arg), obj_type(arg), lineno)
 
                 elif event == "exception":
                     if self.collect_exception_states:
@@ -416,42 +609,66 @@ class Collector:
 
     def is_valid_frame(self, frame):
 
+        validity = self.get_code_validity(frame)
+        if validity == VALID_BY_CALLER:
+            return self.is_valid_caller(frame)
+        return validity == VALID
+
+    def get_code_validity(self, frame):
+
+        # Whether the frames of a code can be monitored, from the files and
+        # the short names of the targets: VALID, INVALID or VALID_BY_CALLER
+        # (not by itself, but each frame is valid if its caller is in a
+        # target file).
         current_filename = get_code_filename(frame.f_code, frame.f_globals)
         current_method_name = frame.f_code.co_name
 
         if current_filename.startswith("<") or current_method_name == "<module>":
-            return False
-        
+            return INVALID
+
         if self.target_method_short_names:
             for target_method_name in self.target_method_short_names:
                 if target_method_name == current_method_name:
-                    return True
-            return False
+                    return VALID
+            return INVALID
 
         if self.ignore_files:
             for ignore in self.ignore_files:
                 if ignore in current_filename:
-                    return False
+                    return INVALID
 
         if self.file_names:
             for filename in self.file_names:
                 if filename in current_filename:
-                    return True
-                if frame.f_back:
-                    back_filename = get_code_filename(frame.f_back.f_code, frame.f_back.f_globals)
-                    if filename in back_filename:
-                        return True
-            return False
+                    return VALID
+            return VALID_BY_CALLER
 
         if self.module_names:
             for module_name in self.module_names:
                 if module_name in current_filename:
-                    return True
-            return False
+                    return VALID
+            return INVALID
 
-        return True
+        return VALID
+
+    def is_valid_caller(self, frame):
+
+        # With target files, the methods of other files are also monitored
+        # when they are called from a target file
+        back = frame.f_back
+        if back is None:
+            return False
+        back_filename = get_code_filename(back.f_code, back.f_globals)
+        for filename in self.file_names:
+            if filename in back_filename:
+                return True
+        return False
 
     def get_method_full_name(self, frame):
+
+        cached = self.frame_cache.get(id(frame.f_code))
+        if cached is not None:
+            return cached[2]
 
         method_obj = self.ensure_method_obj(frame)
         if method_obj:
@@ -461,17 +678,37 @@ class Collector:
 
     def ensure_method_obj(self, frame):
 
-        key = get_line_key(frame)
+        if is_never_method(frame.f_code):
+            return None
 
-        if key in self.frame_cache:
-            return self.frame_cache[key]
+        if is_compr_or_genexpr(frame):
+            return self.find_enclosing_method_obj(frame)
+
+        # The method is the same for all the frames and lines of a code
+        code = frame.f_code
+        cached = self.frame_cache.get(id(code))
+        if cached is not None:
+            return cached[1]
 
         method_obj = get_method_object(frame)
         if (not method_obj or inspect.isbuiltin(method_obj) or not is_method_or_func(method_obj)):
             return None
 
-        self.frame_cache[key] = method_obj
-        return self.frame_cache[key]
+        self.frame_cache[id(code)] = code, method_obj, get_full_name(method_obj)
+        return method_obj
+
+    def find_enclosing_method_obj(self, frame):
+
+        # The events of a generator expression are monitored as events of the
+        # method it is in. This is the method of the frame that is running the
+        # generator expression, if it is also the one that has its code (a
+        # generator expression can be run by other functions, e.g., when it is
+        # returned).
+        back = frame.f_back
+        if back is None or frame.f_code not in back.f_code.co_consts:
+            return None
+        cached = self.frame_cache.get(id(back.f_code))
+        return cached[1] if cached is not None else None
 
     def ensure_method_info(self, frame, current_entity_name, target_method):
 
@@ -509,6 +746,7 @@ class Collector:
         found = find_test(frame)
         if found is None:
             return
+        self.test_codes[id(frame.f_code)] = frame.f_code
         test_id, func = found
         if test_id in self.monitored_program.tests:
             return
@@ -521,11 +759,29 @@ class Collector:
         # Test frames are named by their test id. Frames that cannot be named
         # (lambdas, comprehensions, module code) are skipped instead of ending
         # the stack, so that the test is still found above them.
+        #
+        # This runs for each monitored call and each frame above it, so it does
+        # as little as possible per frame. Only the frames of a code that was
+        # found to be a test are checked again, to get their test id: all the
+        # frames had a "call" event, in which the tests are found (see
+        # record_test), or were running at the start (see init_test_codes).
+        frame_cache = self.frame_cache
+        test_codes = self.test_codes
         call_stack = [frame.f_code.co_name]
-        while frame.f_back:
-            frame = frame.f_back
-            name = find_test_id(frame) or self.get_method_full_name(frame)
+        frame = frame.f_back
+        while frame is not None:
+            code_id = id(frame.f_code)
+            name = None
+            if code_id in test_codes:
+                name = find_test_id(frame)
+            if not name:
+                cached = frame_cache.get(code_id)
+                if cached is not None:
+                    name = cached[2]
+                else:
+                    name = self.get_method_full_name(frame)
             if name:
                 call_stack.append(name)
+            frame = frame.f_back
         call_stack.reverse()
         return tuple(call_stack)

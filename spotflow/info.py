@@ -191,7 +191,9 @@ class PathInfo:
         if self.monitored_method.info.start_line == lineno:
             return self.line_arg_state()
 
-        if lineno in self.monitored_method.info.return_lines:
+        # The line in which this call returns. Other calls can return in other lines.
+        return_state = self.call.call_state.return_state
+        if return_state is not None and return_state.lineno == lineno:
             return self.line_return_state()
 
         return "", ""
