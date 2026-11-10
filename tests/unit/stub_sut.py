@@ -710,3 +710,40 @@ class ClassSuperWithDependencyOldStyle(ClassSuper):
         Dependency().foo()
         ClassSuper.__init__(self)
         Dependency().bar()
+
+
+class HasSideEffectProperty:
+
+    reads = 0
+
+    def __init__(self, items):
+        self.items = self.to_list(items)
+
+    @staticmethod
+    def to_list(items):
+        return list(items)
+
+    @property
+    def length(self):
+        HasSideEffectProperty.reads += 1
+        return len(self.items)
+
+
+def has_local_static_method_and_func_attr():
+
+    def local_callback(x):
+        return x
+
+    class LocalClass4:
+
+        def __init__(self):
+            self.local_callback = local_callback
+
+        @staticmethod
+        def local_static(x):
+            return x
+
+        def run(self):
+            return self.local_static(1) + self.local_callback(2)
+
+    return LocalClass4().run()

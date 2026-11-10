@@ -153,12 +153,17 @@ def find_local_func(entity_name, local_elements):
 
     # 3rd: check the self, if any
     if "self" in local_elements:
+        # Static lookup: must not run properties or other descriptors
+        # of the monitored program
         obj = local_elements["self"]
-        obj_funcs = dict(inspect.getmembers(obj, predicate=inspect.isfunction))
-        if entity_name in obj_funcs:
-            func = obj_funcs[entity_name]
-            if "<locals>" in func.__qualname__:
-                return func
+        member = inspect.getattr_static(obj, entity_name, None)
+        func = None
+        if isinstance(member, staticmethod):
+            func = member.__func__
+        elif entity_name in getattr(obj, "__dict__", {}):
+            func = member
+        if inspect.isfunction(func) and "<locals>" in func.__qualname__:
+            return func
     return None
 
 
