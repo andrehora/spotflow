@@ -127,22 +127,14 @@ class TestState(unittest.TestCase):
 
         call_state = result[method_name].calls[0].call_state
         a = call_state.var_states['a'].states
-        self.assertEqual(len(a), 10)
+        # A state is saved only when the value changes
+        self.assertEqual(len(a), 5)
 
         self.assertEqual(a[0].value, '0')
-        self.assertEqual(a[1].value, '0')
-
-        self.assertEqual(a[2].value, '1')
-        self.assertEqual(a[3].value, '1')
-
-        self.assertEqual(a[4].value, '2')
-        self.assertEqual(a[5].value, '2')
-
-        self.assertEqual(a[6].value, '3')
-        self.assertEqual(a[7].value, '3')
-
-        self.assertEqual(a[8].value, '4')
-        self.assertEqual(a[9].value, '4')
+        self.assertEqual(a[1].value, '1')
+        self.assertEqual(a[2].value, '2')
+        self.assertEqual(a[3].value, '3')
+        self.assertEqual(a[4].value, '4')
 
     def test_change_instance_var(self):
         method_name = 'tests.unit.stub_sut.ChangeState.change_instance_var'
@@ -155,13 +147,10 @@ class TestState(unittest.TestCase):
 
         call_state = result[method_name].calls[0].call_state
         obj = call_state.var_states['self'].states
-        self.assertEqual(len(obj), 3)
+        # The value of self (its class name) does not change
+        self.assertEqual(len(obj), 1)
 
         self.assertEqual(obj[0].lineno, 100)
-
-        self.assertEqual(obj[1].lineno, 101)
-
-        self.assertEqual(obj[2].lineno, 101)
 
     def test_init_with_instance_var(self):
         method_name = 'tests.unit.stub_sut.ChangeState.__init__'
@@ -174,13 +163,11 @@ class TestState(unittest.TestCase):
 
         call_state = result[method_name].calls[0].call_state
         obj = call_state.var_states['self'].states
-        self.assertEqual(len(obj), 2)
+        # The value of self (its class name) does not change
+        self.assertEqual(len(obj), 1)
 
         self.assertEqual(obj[0].lineno, 97)
         self.assertNotIn('inst_var', dir(obj[0].value))
-
-        self.assertEqual(obj[1].lineno, 97)
-        # self.assertEqual(obj[1].value.inst_var, 'default')
 
     def test_keep_var_state(self):
         method_name = 'tests.unit.stub_sut.ChangeState.keep_var_state'
@@ -193,13 +180,10 @@ class TestState(unittest.TestCase):
 
         call_state = result[method_name].calls[0].call_state
         a = call_state.var_states['a'].states
+        # The value never changes, so only the first state is saved
+        self.assertEqual(len(a), 1)
         self.assertEqual(a[0].value, '1')
-        self.assertEqual(a[1].value, '1')
-        self.assertEqual(a[2].value, '1')
-
         self.assertTrue(a[0].value_has_changed)
-        self.assertFalse(a[1].value_has_changed)
-        self.assertFalse(a[2].value_has_changed)
 
 
 if __name__ == '__main__':

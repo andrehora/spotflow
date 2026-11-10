@@ -12,18 +12,16 @@ authors = [
 license = "MIT"
 readme = "README.md"
 keywords = ["dynamic-analysis", "testing"]
-requires-python = ">=3.7"
+requires-python = ">=3.15"
 dependencies = [
-  'coverage == 6.5.0',
+  'coverage >= 7.17, < 8',
   'pytest',
   'pygments'
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.15",
     "License :: OSI Approved :: MIT License",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",

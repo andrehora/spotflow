@@ -29,13 +29,13 @@ absolute(-10) # 10
 
 To run and monitor function `absolute` in `sample.py`:
 ```
-$ python -m spotflow -t absolute sample
+$ python -m spotflow -o -tt absolute sample
 ```
 
 The result:
 ```
 Running and monitoring: sample
-====================== Result ======================
+============= Result =============
 MonitoredProgram
 - methods: 1
 - calls: 1
@@ -70,13 +70,13 @@ sum([1, 2, 3], 1) # 7
 
 To run and monitor function `sum` in `sample.py`:
 ```
-$ python -m spotflow -t sum sample
+$ python -m spotflow -o -tt sum sample
 ```
 
 The result:
 ```
 Running and monitoring: sample
-====================== Result ======================
+============= Result =============
 MonitoredProgram
 - methods: 1
 - calls: 2
@@ -112,18 +112,28 @@ ReturnState: 7
 ### Monitoring a test suite
 
 You can also monitor tests.
-For example, to monitor the test suite [`test_gzip`](https://github.com/python/cpython/blob/main/Lib/test/test_gzip.py) of the Python Standard Library:
+For example, to monitor the test suite [`test_gzip`](https://github.com/python/cpython/blob/main/Lib/test/test_gzip.py) of the Python Standard Library and print the most called methods of module `gzip`:
 
 ```
-$ python -m spotflow -t gzip unittest test.test_gzip
+$ python -m spotflow -c -t gzip unittest test.test_gzip
+```
+
+The result (first lines):
+```
+Running and monitoring: unittest test.test_gzip
+rank, method_name, number_of_calls
+1, gzip._PaddedFile.read, 5781
+2, gzip.GzipFile.readline, 1183
+3, gzip.GzipFile.seek, 1108
+...
 ```
 
 Monitoring other tests of the Python Standard Library:
 ```
-$ python -m spotflow -t ast unittest test.test_ast
-$ python -m spotflow -t urllib unittest test.test_urlparse
-$ python -m spotflow -t json unittest test.test_json
-$ python -m spotflow -t calendar unittest test.test_calendar
+$ python -m spotflow -c -t ast unittest test.test_ast
+$ python -m spotflow -c -t urllib unittest test.test_urlparse
+$ python -m spotflow -c -t json unittest test.test_json
+$ python -m spotflow -c -t calendar unittest test.test_calendar
 ```
 
 ## Usage
@@ -140,7 +150,7 @@ $ python -m my_program
 The same program can be run (and monitored) under SpotFlow with following command-line:
 ```
 # Running a Python program + SpotFlow
-$ python -m spotflow -t <target> my_program
+$ python -m spotflow -o -t <target> my_program
 ```
 
 The argument `-t` represents the target entity to be monitored.
@@ -149,7 +159,15 @@ For example, we can pass the prefix
 `parser` (to monitor all methods of a specific module), 
 `parser.StringParser` (to monitor all methods of a specific class),
 or the full method name (to monitor a single method).
+The argument `-tt` represents the short name of the target method (e.g., `count`).
+Use `-tt` to monitor functions defined in the program being run (like `sample.py` in the examples above), since their module is `__main__`.
 The final mandatory argument is the original command-line, which is in this case `my_program`.
+
+SpotFlow only prints results when an output option is passed:
+`-o` (summary of the monitored objects),
+`-c` (summary of the calls),
+`-p` (pretty print the code), or
+`-html` (HTML report).
 
 In a similar way, we can use SpotFlow to monitor the execution of test suites.
 For example, to run a test `testX.py` under SpotFlow, the following change would be needed with the unittest framework:
@@ -159,7 +177,7 @@ For example, to run a test `testX.py` under SpotFlow, the following change would
 $ python -m unittest testX
 
 # Running unittest + SpotFlow
-$ python -m spotflow -t <target> unittest testX
+$ python -m spotflow -o -t <target> unittest testX
 ```
 
 ## Monitored entities
@@ -176,4 +194,4 @@ $ python -m spotflow -t <target> unittest testX
 All states have information about its runtime value, runtime type, and line number in code.
 In addition, `VarState` and `ArgState` have information about its name.
 
-- `VarStateHistory`: This class holds all the states of a local variable in a method call. Notice that it is composed of variable states, representing the fact that a variable may change its value and therefore can have multiple states over time.
+- `VarStateHistory`: This class holds all the states of a local variable in a method call. Notice that it is composed of variable states, representing the fact that a variable may change its value and therefore can have multiple states over time. A new state is saved only when the value of the variable changes.

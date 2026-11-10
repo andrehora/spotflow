@@ -13,8 +13,8 @@ class TestFilter(unittest.TestCase):
         methods = result.all_methods()
 
         # This may vary according to the Python version
-        self.assertGreaterEqual(len(methods), 14)
-        self.assertGreaterEqual(len(result.all_calls()), 14)
+        self.assertGreaterEqual(len(methods), 13)
+        self.assertGreaterEqual(len(result.all_calls()), 13)
 
     def test_filter_by_method(self):
         method_name = 'tests.unit.stub_sut'
@@ -127,7 +127,8 @@ class TestFilter(unittest.TestCase):
         methods = result.all_methods()
 
         # This may vary according to the Python version
-        self.assertGreaterEqual(len(methods), 3)
+        self.assertGreaterEqual(len(methods), 1)
+        self.assertEqual(methods[0].info.full_name, f"{file_name.split('.')[0]}.realpath")
 
     def test_filter_by_file_inspect(self):
         file_name = 'inspect.py'

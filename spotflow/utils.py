@@ -103,12 +103,22 @@ def get_metadata(func_or_method):
     return module_name, class_name, name, filename, start_line, end_line, full_name, is_generator_func, code
 
 
+def get_code_filename(code, module_globals=None):
+    # Since Python 3.11, some stdlib modules (e.g., os, posixpath, genericpath)
+    # are frozen: their code objects have filenames like "<frozen posixpath>".
+    # In that case, use the real file of the module, if available.
+    filename = code.co_filename
+    if filename.startswith("<frozen ") and module_globals:
+        return module_globals.get("__file__") or filename
+    return filename
+
+
 def function_metadata(func):
     func_code = func.__code__
 
-    module_name = find_module_name(func_code.co_filename)
+    filename = get_code_filename(func_code, getattr(func, "__globals__", None))
+    module_name = find_module_name(filename)
     name = func.__name__
-    filename = func_code.co_filename
     full_name = get_full_name(func)
 
     code = inspect.getsource(func)
@@ -139,10 +149,19 @@ def check_is_generator_function(func_or_method):
     return func_or_method
 
 
+# Values are serialized at every traced line, so large objects make tracing
+# quadratic. Long strings are truncated and large containers are represented
+# by their type name (as done for non-basic objects).
+MAX_STR_LEN = 1000
+MAX_CONTAINER_LEN = 100
+
+
 def obj_value(obj):
     try:
         if is_definition(obj):
             return f"{obj.__qualname__} def"
+        elif obj.__class__.__name__ == "str" and len(obj) > MAX_STR_LEN:
+            return repr(obj[:MAX_STR_LEN]) + "..."
         elif (
             is_basic(obj)
             or is_safe_iterator(obj)
@@ -175,6 +194,8 @@ def is_definition(obj):
 
 
 def is_basic(obj):
+    if obj.__class__.__name__ == "str" and len(obj) > MAX_STR_LEN:
+        return False
     return obj.__class__.__name__ in [
         "NoneType",
         "bool",
@@ -190,6 +211,8 @@ def is_safe_iterator(obj):
     if obj.__class__.__name__ in ["list", "tuple"]:
         if not obj:
             return True
+        if len(obj) > MAX_CONTAINER_LEN:
+            return False
         for each in obj:
             if not is_basic(each):
                 return False
@@ -201,6 +224,8 @@ def is_safe_set(obj):
     if obj.__class__.__name__ in ["set", "frozenset"]:
         if not obj:
             return True
+        if len(obj) > MAX_CONTAINER_LEN:
+            return False
         for each in obj:
             if not is_basic(each):
                 return False
@@ -212,6 +237,8 @@ def is_safe_map(obj):
     if obj.__class__.__name__ == "dict":
         if not obj:
             return True
+        if len(obj) > MAX_CONTAINER_LEN:
+            return False
         for key in obj:
             if not is_basic(obj[key]):
                 return False

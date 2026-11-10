@@ -101,44 +101,32 @@ class TestGeneratorCall(unittest.TestCase):
         func = TGenerator().test_has_generator_1
 
         result = monitor_func(func, [method_name])
-        self.assertEqual(len(result), 1)
-
-        calls = result[method_name].calls
-        self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0].run_lines, [])
+        # The generator is created but never started, so its code never runs
+        self.assertEqual(len(result), 0)
 
     def test_has_generator_2(self):
         method_name = 'tests.unit.stub_sut.Generators.has_generator_2'
         func = TGenerator().test_has_generator_2
 
         result = monitor_func(func, [method_name])
-        self.assertEqual(len(result), 1)
-
-        calls = result[method_name].calls
-        self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0].run_lines, [])
+        # The generator is created but never started, so its code never runs
+        self.assertEqual(len(result), 0)
 
     def test_has_generator_3(self):
         method_name = 'tests.unit.stub_sut.Generators.has_generator_3'
         func = TGenerator().test_has_generator_3
 
         result = monitor_func(func, [method_name])
-        self.assertEqual(len(result), 1)
-
-        calls = result[method_name].calls
-        self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0].run_lines, [])
+        # The generator is created but never started, so its code never runs
+        self.assertEqual(len(result), 0)
 
     def test_has_generator_4(self):
         method_name = 'tests.unit.stub_sut.Generators.has_generator_4'
         func = TGenerator().test_has_generator_4
 
         result = monitor_func(func, [method_name])
-        self.assertEqual(len(result), 1)
-
-        calls = result[method_name].calls
-        self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0].run_lines, [])
+        # The generator is created but never started, so its code never runs
+        self.assertEqual(len(result), 0)
 
     def test_generators_all(self):
         method_name = 'tests.unit.stub_sut.Generators'

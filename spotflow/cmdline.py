@@ -3,7 +3,7 @@ import configparser
 import importlib.util
 from spotflow.report import html_report
 from spotflow.api import SpotFlow
-from coverage.cmdline import PyRunner
+from coverage.execfile import PyRunner
 
 OK, ERR = 0, 1
 
@@ -137,17 +137,21 @@ class SpotFlowCommandLine:
         py_runner.prepare()
 
         flow.start()
-        code_ran = True
         try:
             py_runner.run()
-        except Exception as e:
+            code_ran = True
+        except SystemExit:
+            # The program called sys.exit() (e.g., unittest does it at the end)
+            code_ran = True
+        except Exception:
             code_ran = False
         finally:
             flow.stop()
-            if code_ran:
-                self.run_action_or_script(flow)
-                return OK
-            return ERR
+
+        if code_ran:
+            self.run_action_or_script(flow)
+            return OK
+        return ERR
 
     def parse_config(self):
         config = configparser.ConfigParser()

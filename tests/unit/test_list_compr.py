@@ -3,6 +3,8 @@ from tests.unit.stub_test import TComprehension
 from spotflow.api import monitor_func
 
 
+# Comprehensions are inlined in the enclosing function (PEP 709), so the
+# comprehension line runs once per item plus once for the statement itself.
 class TestComprehensionCall(unittest.TestCase):
 
     def test_listcomp_1(self):
@@ -14,7 +16,7 @@ class TestComprehensionCall(unittest.TestCase):
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0].run_lines, [315, 315, 315, 315, 315, 315, 315, 315, 315, 315, 315])
+        self.assertEqual(calls[0].run_lines, [315, 315, 315, 315, 315, 315, 315, 315, 315, 315])
         self.assertEqual(calls[0].distinct_run_lines(), [315])
 
     def test_listcomp_2(self):
@@ -26,7 +28,7 @@ class TestComprehensionCall(unittest.TestCase):
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0].run_lines, [318, 318, 318, 318, 318, 318, 318, 318, 318, 318, 318])
+        self.assertEqual(calls[0].run_lines, [318, 318, 318, 318, 318, 318, 318, 318, 318, 318])
         self.assertEqual(calls[0].distinct_run_lines(), [318])
 
     def test_setcomp_1(self):
@@ -38,7 +40,7 @@ class TestComprehensionCall(unittest.TestCase):
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0].run_lines, [321, 321, 321, 321, 321, 321, 321, 321, 321, 321, 321])
+        self.assertEqual(calls[0].run_lines, [321, 321, 321, 321, 321, 321, 321, 321, 321, 321])
         self.assertEqual(calls[0].distinct_run_lines(), [321])
 
     def test_setcomp_2(self):
@@ -50,7 +52,7 @@ class TestComprehensionCall(unittest.TestCase):
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0].run_lines, [324, 324, 324, 324, 324, 324, 324, 324, 324, 324, 324])
+        self.assertEqual(calls[0].run_lines, [324, 324, 324, 324, 324, 324, 324, 324, 324, 324])
         self.assertEqual(calls[0].distinct_run_lines(), [324])
 
     def test_dictcomp(self):
@@ -62,7 +64,7 @@ class TestComprehensionCall(unittest.TestCase):
         self.assertEqual(len(result), 1)
         calls = result[method_name].calls
         self.assertEqual(len(calls), 1)
-        self.assertEqual(calls[0].run_lines, [327, 327, 327, 327, 327, 327, 327, 327, 327, 327, 327])
+        self.assertEqual(calls[0].run_lines, [327, 327, 327, 327, 327, 327, 327, 327, 327, 327])
         self.assertEqual(calls[0].distinct_run_lines(), [327])
 
 

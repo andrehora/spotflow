@@ -1,5 +1,6 @@
+import dis
 import inspect
-from spotflow.utils import obj_value, obj_type, get_full_name, is_method_or_func, get_module_names, find_start_end_lines
+from spotflow.utils import obj_value, obj_type, get_full_name, is_method_or_func, get_module_names, find_start_end_lines, get_code_filename
 from spotflow.model import CallState, MonitoredMethod, MonitoredProgram
 from spotflow.info import MethodInfo
 from spotflow.tracer import PyTracer
@@ -31,6 +32,20 @@ def frame_id(frame):
 
 def is_compr_or_genexpr(frame):
     return frame.f_code.co_name in ["<listcomp>", "<setcomp>", "<dictcomp>", "<genexpr>"]
+
+
+_RESUME = dis.opmap["RESUME"]
+
+
+def is_frame_start(frame):
+    # Whether a "call" event is the start of a function call (True) or a
+    # generator/coroutine being re-entered (False). On a "call" event, the
+    # frame is at a RESUME instruction: the low two bits of its oparg are 0
+    # at the start of the function, and 1, 2 or 3 after a yield, yield from
+    # or await. Higher bits are flags.
+    code = frame.f_code.co_code
+    lasti = frame.f_lasti
+    return code[lasti] == _RESUME and code[lasti + 1] & 3 == 0
 
 
 def get_next_mro_class(current_class):
@@ -279,12 +294,9 @@ class Collector:
         if current_method_name not in self.last_frame_lineno:
             self.last_frame_lineno[current_method_name] = -1
 
-        # Tip from Coverage.py
         # The call event is really a "start frame" event, and happens for
-        # function calls and re-entering generators.  The f_lasti field is
-        # -1 for calls, and a real offset for generators.  Use < 0 as the
-        # line number for calls, and the real line number for generators.
-        if (event == "call" and getattr(frame, "f_lasti", -1) < 0 and not is_compr_or_genexpr(frame)):
+        # function calls and re-entering generators (see is_frame_start).
+        if (event == "call" and is_frame_start(frame) and not is_compr_or_genexpr(frame)):
 
             if current_method_name not in self.monitored_program:
                 self.monitored_program[current_method_name] = MonitoredMethod(method_info)
@@ -340,7 +352,7 @@ class Collector:
 
     def is_valid_frame(self, frame):
 
-        current_filename = frame.f_code.co_filename
+        current_filename = get_code_filename(frame.f_code, frame.f_globals)
         current_method_name = frame.f_code.co_name
 
         if current_filename.startswith("<") or current_method_name == "<module>":
@@ -365,7 +377,7 @@ class Collector:
                 if filename in current_filename:
                     return True
                 if frame.f_back:
-                    back_filename = frame.f_back.f_code.co_filename
+                    back_filename = get_code_filename(frame.f_back.f_code, frame.f_back.f_globals)
                     if filename in back_filename:
                         return True
             return False

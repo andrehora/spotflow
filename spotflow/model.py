@@ -310,15 +310,12 @@ class CallState:
             self.arg_states.append(arg_state)
 
     def _save_var_states(self, argvalues, lineno, inline):
-        for arg in argvalues.locals:
-            obj = argvalues.locals[arg]
-            value = obj_value(obj)
-            type = obj_type(obj)
-            self._save_var_state(name=arg, value=value, type=type, lineno=lineno, inline=inline)
-
-    def _save_var_state(self, name, value, type, lineno, inline):
-        self.var_states[name] = self.var_states.get(name, VarStateHistory(name, []))
-        self.var_states[name]._add_var_state(name, value, type, lineno, inline)
+        for name, obj in argvalues.locals.items():
+            history = self.var_states.get(name)
+            if history is None:
+                history = VarStateHistory(name, [])
+                self.var_states[name] = history
+            history._update(obj, lineno, inline)
 
     def _save_yield_state(self, value, type, lineno):
         self.yield_states.append(YieldState(value, type, lineno))
@@ -330,11 +327,19 @@ class CallState:
         self.exception_state = ExceptionState(value, type, lineno)
 
 
+# Immutable types whose value is costly to serialize (e.g., long strings).
+# When a variable still refers to the same object of one of these types, its
+# value has not changed. Only these objects are referenced by the history:
+# keeping other objects (e.g., generators) alive would change program behavior.
+IMMUTABLE_TYPES = (str, int, float, complex, bool, type(None), range, bytes)
+
+
 class VarStateHistory:
 
     def __init__(self, name, states):
         self.name = name
         self.states = states
+        self._last_obj = None
 
     def get_last_state(self):
         return self.states[-1]
@@ -360,21 +365,16 @@ class VarStateHistory:
             b = state.value
         return values
 
-    def _add_var_state(self, name, value, type, lineno, inline):
-        value_has_changed = self._detect_value_has_changed(value)
-        new_state = VarState(name, value, type, lineno, inline, value_has_changed)
-        self.states.append(new_state)
-
-    def _detect_value_has_changed(self, new_value):
-        if not self.states:
-            return True
-        last_state = self.get_last_state()
-        try:
-            if last_state.value != new_value:
-                return True
-            return False
-        except Exception as e:
-            return False
+    def _update(self, obj, lineno, inline):
+        # Save a new state only when the value of the variable changes.
+        immutable = type(obj) in IMMUTABLE_TYPES
+        if immutable and self.states and obj is self._last_obj:
+            return
+        self._last_obj = obj if immutable else None
+        value = obj_value(obj)
+        if self.states and self.states[-1].value == value:
+            return
+        self.states.append(VarState(self.name, value, obj_type(obj), lineno, inline, True))
 
     def __str__(self):
         values = self.distinct_sequential_values()
