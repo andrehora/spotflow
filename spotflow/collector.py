@@ -233,9 +233,7 @@ class Collector:
         self.collect_return_states = True
         self.collect_yield_states = True
         self.collect_exception_states = True
-        self.collect_var_states = True
 
-        self.last_frame_lineno = {}
         self.target_methods_cache = {}
         self.frame_cache = {}
 
@@ -296,9 +294,6 @@ class Collector:
 
         update_method_info(method_info, frame, event)
 
-        if current_method_name not in self.last_frame_lineno:
-            self.last_frame_lineno[current_method_name] = -1
-
         # The call event is really a "start frame" event, and happens for
         # function calls and re-entering generators (see is_frame_start).
         if (event == "call" and is_frame_start(frame) and not is_compr_or_genexpr(frame)):
@@ -349,13 +344,6 @@ class Collector:
                         exception_name = arg[0].__name__
                         exception_type = obj_type(arg[0])
                         current_call_state._save_exception_state(exception_name, exception_type, lineno)
-
-                if self.collect_var_states and current_call_state:
-                    argvalues = inspect.getargvalues(frame)
-                    inline = self.last_frame_lineno[current_method_name]
-                    current_call_state._save_var_states(argvalues, lineno, inline)
-
-            self.last_frame_lineno[current_method_name] = lineno
 
     def is_valid_frame(self, frame):
 

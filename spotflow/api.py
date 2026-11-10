@@ -24,13 +24,11 @@ class SpotFlow:
         return_states=True,
         yield_states=True,
         exception_states=True,
-        var_states=True,
     ):
         self.collector.collect_arg_states = arg_states
         self.collector.collect_return_states = return_states
         self.collector.collect_yield_states = yield_states
         self.collector.collect_exception_states = exception_states
-        self.collector.collect_var_states = var_states
 
     def start(self):
         self.collector.start()
@@ -62,14 +60,13 @@ def monitor_func(
     return_states=True,
     yield_states=True,
     exception_states=True,
-    var_states=True,
 ):
     flow = SpotFlow()
     flow.target_method_full_names(target_methods)
     flow.target_files(target_files)
     flow.ignore_files(ignore_files)
     flow.collect_states(
-        arg_states, return_states, yield_states, exception_states, var_states
+        arg_states, return_states, yield_states, exception_states
     )
 
     flow.start()
@@ -88,7 +85,6 @@ def monitor_unittest_module(
     return_states=True,
     yield_states=True,
     exception_states=True,
-    var_states=True,
 ):
     suite = loadTestsFromModule(module)
     suite = suite_runner(suite)
@@ -102,7 +98,6 @@ def monitor_unittest_module(
         return_states,
         yield_states,
         exception_states,
-        var_states,
     )
 
 
@@ -115,7 +110,6 @@ def monitor_unittest_testcase(
     return_states=True,
     yield_states=True,
     exception_states=True,
-    var_states=True,
 ):
     suite = loadTestsFromTestCase(test_case)
     suite = suite_runner(suite)
@@ -129,5 +123,4 @@ def monitor_unittest_testcase(
         return_states,
         yield_states,
         exception_states,
-        var_states,
     )

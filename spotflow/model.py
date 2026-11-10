@@ -226,7 +226,6 @@ class MethodCall:
 class CallState:
 
     def __init__(self):
-        self.var_states = {}
         self.arg_states = []
         self.yield_states = []
         self.return_state = None
@@ -234,9 +233,6 @@ class CallState:
 
     def has_argument(self):
         return len(self.arg_states) > 0 and self.arg_states[0].name != "self"
-
-    def has_var(self):
-        return len(self.var_states) > 0
 
     def has_return(self):
         return self.return_state is not None
@@ -261,28 +257,10 @@ class CallState:
             print("ArgState")
             for arg in self.arg_states:
                 print("- " + str(arg))
-        if self.has_var():
-            print("VarStateHistory")
-            for var in self.var_states:
-                print("- " + str(self.var_states[var]))
         if self.has_return():
             print("ReturnState: " + str(self.return_state))
         if self.has_exception():
             print("ExceptionState: " + str(self.exception_state))
-
-    def _states_for_line(self, lineno):
-        states = []
-        for var in self.var_states:
-            var_states = ""
-            if var != "self":
-                call_state = self.var_states[var]
-                for state in call_state.states:
-                    if state.inline == lineno:
-                        if str(state) not in var_states and state.value_has_changed:
-                            var_states += str(state) + " "
-            if var_states:
-                states.append(var_states.strip())
-        return states
 
     def _save_arg_states(self, argvalues, lineno):
         for arg in argvalues.args:
@@ -300,14 +278,6 @@ class CallState:
             arg_state = ArgState(argvalues.keywords, obj_value(obj), obj_type(obj), lineno)
             self.arg_states.append(arg_state)
 
-    def _save_var_states(self, argvalues, lineno, inline):
-        for name, obj in argvalues.locals.items():
-            history = self.var_states.get(name)
-            if history is None:
-                history = VarStateHistory(name, [])
-                self.var_states[name] = history
-            history._update(obj, lineno, inline)
-
     def _save_yield_state(self, value, type, lineno):
         self.yield_states.append(YieldState(value, type, lineno))
 
@@ -316,61 +286,6 @@ class CallState:
 
     def _save_exception_state(self, value, type, lineno):
         self.exception_state = ExceptionState(value, type, lineno)
-
-
-# Immutable types whose value is costly to serialize (e.g., long strings).
-# When a variable still refers to the same object of one of these types, its
-# value has not changed. Only these objects are referenced by the history:
-# keeping other objects (e.g., generators) alive would change program behavior.
-IMMUTABLE_TYPES = (str, int, float, complex, bool, type(None), range, bytes)
-
-
-class VarStateHistory:
-
-    def __init__(self, name, states):
-        self.name = name
-        self.states = states
-        self._last_obj = None
-
-    def get_last_state(self):
-        return self.states[-1]
-
-    def first_last_state(self):
-        if len(self.states) == 1:
-            return self.states[0], self.states[0]
-        return self.states[0], self.states[-1]
-
-    def distinct_values(self):
-        values = {}
-        for state in self.states:
-            if state.value not in values:
-                values[state.value] = None
-        return values.keys()
-
-    def distinct_sequential_values(self):
-        values = []
-        b = None
-        for state in self.states:
-            if state.value != b:
-                values.append(state.value)
-            b = state.value
-        return values
-
-    def _update(self, obj, lineno, inline):
-        # Save a new state only when the value of the variable changes.
-        immutable = type(obj) in IMMUTABLE_TYPES
-        if immutable and self.states and obj is self._last_obj:
-            return
-        self._last_obj = obj if immutable else None
-        value = obj_value(obj)
-        if self.states and self.states[-1].value == value:
-            return
-        self.states.append(VarState(self.name, value, obj_type(obj), lineno, inline, True))
-
-    def __str__(self):
-        values = self.distinct_sequential_values()
-        values_str = ", ".join(map(str, values))
-        return f"{self.name}: {values_str}"
 
 
 class State:
@@ -385,18 +300,6 @@ class State:
 
     def is_primitive(self):
         return self.type in ["int", "float", "complex", "str", "bool", "NoneType"]
-
-
-class VarState(State):
-
-    def __init__(self, name, value, type, lineno, inline, value_has_changed=False):
-        super().__init__(value, type, lineno)
-        self.name = name
-        self.inline = inline
-        self.value_has_changed = value_has_changed
-
-    def __str__(self):
-        return f"{self.name}: {self.value}"
 
 
 class ArgState(State):

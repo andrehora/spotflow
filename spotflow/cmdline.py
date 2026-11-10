@@ -165,9 +165,8 @@ class SpotFlowCommandLine:
             return_states = state.getboolean("return_state")
             yield_states = state.getboolean("yield_states")
             exception_states = state.getboolean("exception_states")
-            var_states = state.getboolean("var_states")
 
-            states = (arg_states, return_states, yield_states, exception_states, var_states)
+            states = (arg_states, return_states, yield_states, exception_states)
 
             return states
 

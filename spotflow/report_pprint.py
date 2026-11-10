@@ -33,10 +33,6 @@ class PrettyPrintReport:
                 separator = "🔴 "
                 return_str = f"{separator}{line.state}"
                 print(code_str, return_str)
-            elif line.is_var():
-                separator = "🟡 "
-                states_str = f"{separator}{separator.join(line.state)}"
-                print(code_str, states_str)
             else:
                 print(code_str)
         print()
@@ -51,11 +47,3 @@ class PrettyPrintReport:
         if state_result.has_return():
             return_summary = f"🔴 OUT {state_result.return_state}"
             print(return_summary)
-
-        for var in state_result.var_states:
-            if var != "self":
-                state_history = state_result.var_states[var]
-                values = state_history.distinct_sequential_values()
-                values_str = " -> ".join(map(str, values))
-                var_summary = f"🟡 {var}: {values_str}"
-                print(var_summary)

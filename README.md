@@ -47,8 +47,6 @@ MethodCall
 - run_lines: [2, 3, 4]
 ArgState
 - x: -10
-VarStateHistory
-- x: -10, 10
 ReturnState: 10
 ```
 
@@ -89,11 +87,6 @@ MethodCall
 ArgState
 - iter: [1, 2]
 - start: 0
-VarStateHistory
-- iter: [1, 2]
-- start: 0
-- count: 0, 1, 3
-- i: 1, 2
 ReturnState: 3
 MethodCall
 - distinct_run_lines: [2, 3, 4, 5]
@@ -101,11 +94,6 @@ MethodCall
 ArgState
 - iter: [1, 2, 3]
 - start: 1
-VarStateHistory
-- iter: [1, 2, 3]
-- start: 1
-- count: 1, 2, 4, 7
-- i: 1, 2, 3
 ReturnState: 7
 ```
 
@@ -186,12 +174,10 @@ $ python -m spotflow -o -t <target> unittest testX
 
 - `MonitoredMethod`: It represents a monitored method (or function). It has method calls and contains static information about the method/function, like name, full name, class name (for methods), file name, LOC, source code, etc.
 
-- `MethodCall`: This class represents a method call that happens at runtime. It includes data about the caller, call stack, and executed lines. A method call also has a call state, which records information like variable and argument states.
+- `MethodCall`: This class represents a method call that happens at runtime. It includes data about the caller, call stack, and executed lines. A method call also has a call state, which records information like argument and return states.
 
-- `CallState`: This class holds the state of a method call, with information about argument states (`ArgState`), return states (`ReturnState`), thrown exceptions (`ExceptionState`), and local variable states (`VarStateHistory`).
+- `CallState`: This class holds the state of a method call, with information about argument states (`ArgState`), return states (`ReturnState`), thrown exceptions (`ExceptionState`), and yielded values (`YieldState`).
 
-- `State`: It represents a state at runtime, such as a variable, argument, return, or exception state.
+- `State`: It represents a state at runtime, such as an argument, return, yield, or exception state.
 All states have information about its runtime value, runtime type, and line number in code.
-In addition, `VarState` and `ArgState` have information about its name.
-
-- `VarStateHistory`: This class holds all the states of a local variable in a method call. Notice that it is composed of variable states, representing the fact that a variable may change its value and therefore can have multiple states over time. A new state is saved only when the value of the variable changes.
+In addition, `ArgState` has information about its name.

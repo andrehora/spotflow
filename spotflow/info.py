@@ -194,9 +194,6 @@ class PathInfo:
         if lineno in self.monitored_method.info.return_lines:
             return self.line_return_state()
 
-        states = self.call.call_state._states_for_line(lineno)
-        if states:
-            return self.line_var_states(states)
         return "", ""
 
     def line_arg_state(self):
@@ -209,9 +206,6 @@ class PathInfo:
     def line_return_state(self):
         return_state = self.call.call_state.return_state
         return LineType.RETURN, str(return_state)
-
-    def line_var_states(self, states):
-        return LineType.VAR, states
 
     def update_run_status(self, line_info):
         if line_info.is_run():
@@ -258,14 +252,11 @@ class LineInfo:
     def is_return(self):
         return self.type == LineType.RETURN
 
-    def is_var(self):
-        return self.type == LineType.VAR
 
 
 class LineType:
     ARG = "arg"
     RETURN = "return"
-    VAR = "var"
 
 
 class RunStatus:
