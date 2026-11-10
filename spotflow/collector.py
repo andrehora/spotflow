@@ -261,6 +261,17 @@ def is_valid_method_name(frame, current_method_name):
     return method_name_from_frame == method_name_from_current
 
 
+def target_matches(target, method_full_name):
+
+    # A target is a function or method, which matches its own full name, or a
+    # name: of a method (module.Class.method), or of a class, module or package,
+    # to match all the methods in it. A name only matches whole names: the
+    # target "module.parse" does not match "module.parse_all".
+    if is_method_or_func(target):
+        return get_full_name(target) == method_full_name
+    return method_full_name == target or method_full_name.startswith(target + ".")
+
+
 class Collector:
 
     def __init__(self):
@@ -278,6 +289,7 @@ class Collector:
         self.collect_exception_states = True
 
         self.target_methods_cache = {}
+        self.matched_targets = {}
         self.frame_cache = {}
 
         self.py_tracer = PyTracer(self)
@@ -315,12 +327,26 @@ class Collector:
             return
 
         if self.target_method_full_names:
-            for target_method_full_name in self.target_method_full_names:
-                self.monitor_method(frame, event, arg, current_method_name, target_method_full_name)
+            # An event is monitored once, even when several targets match it
+            target_method = self.find_target(current_method_name)
+            if target_method is not None:
+                self.monitor_method(frame, event, arg, current_method_name, target_method)
             return
         
         if self.target_method_full_names is None and self.target_method_short_names is None:
             self.monitor_method(frame, event, arg, current_method_name)
+
+    def find_target(self, current_method_name):
+
+        # The first target that matches the method, or None
+        if current_method_name not in self.matched_targets:
+            target_method = None
+            for target in self.target_method_full_names:
+                if target_matches(target, current_method_name):
+                    target_method = target
+                    break
+            self.matched_targets[current_method_name] = target_method
+        return self.matched_targets[current_method_name]
 
     def monitor_method(self, frame, event, arg, current_method_name, target_method=None):
 
@@ -453,7 +479,7 @@ class Collector:
         if is_method_or_func(target_method):
             # Each target only matches its own frames. Otherwise, with several
             # targets, the info of one would be cached under the name of another.
-            if get_full_name(target_method) != current_entity_name:
+            if not target_matches(target_method, current_entity_name):
                 return None
             if current_entity_name in self.target_methods_cache:
                 return self.target_methods_cache[current_entity_name]
@@ -462,7 +488,7 @@ class Collector:
             return method_info
 
         # Handle the other cases...
-        if target_method and not current_entity_name.startswith(target_method):
+        if target_method and not target_matches(target_method, current_entity_name):
             return None
 
         if current_entity_name in self.target_methods_cache:

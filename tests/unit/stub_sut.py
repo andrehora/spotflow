@@ -821,3 +821,30 @@ def call_targets():
     target_two(1)
     target_two(2)
     HasTargets().target_method(1)
+
+
+def prefix(x):
+    return x
+
+
+def prefix_longer(x):
+    return x
+
+
+class Prefix:
+
+    def run(self):
+        return 1
+
+
+class PrefixLonger:
+
+    def run(self):
+        return 2
+
+
+def call_prefixes():
+    prefix(1)
+    prefix_longer(1)
+    Prefix().run()
+    PrefixLonger().run()
