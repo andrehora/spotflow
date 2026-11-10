@@ -82,9 +82,7 @@ class CallContainer:
     def tests(self):
         tests = set()
         for call in self.calls:
-            for call_name in call.call_stack:
-                if ".test_" in call_name:
-                    tests.add(call_name)
+            tests.update(call.tests)
         return tests
 
     def all_distinct_run_lines(self):
@@ -147,8 +145,8 @@ class MonitoredMethod(CallContainer):
         print("- name: " + self.name)
         print("- calls: " + str(len(self.calls)))\
         
-    def add_call(self, call_state, call_stack, call_id):
-        call = MethodCall(call_state, call_stack, self)
+    def add_call(self, call_state, call_stack, call_id, tests=()):
+        call = MethodCall(call_state, call_stack, self, tests)
         self.calls.append(call)
         # print(self.calls_by_id)
         # print(self.calls)
@@ -176,9 +174,11 @@ class MonitoredMethod(CallContainer):
 
 class MethodCall:
 
-    def __init__(self, call_state, call_stack, monitored_method):
+    def __init__(self, call_state, call_stack, monitored_method, tests=()):
         self.call_state = call_state
         self.call_stack = call_stack
+        # Ids of the tests in the call stack, outermost first (see spotflow.finder)
+        self.tests = tuple(tests)
         self.monitored_method = monitored_method
         self.run_lines = []
 
@@ -187,34 +187,25 @@ class MethodCall:
         return PathInfo(self)
 
     def is_called_by_test(self):
-        return self._find_test_name_in_stack()[0]
-    
+        return bool(self.tests)
+
     def test_fullname(self):
-        return self._find_test_name_in_stack()[1]
-    
+        # The outermost test in the call stack
+        return self.tests[0] if self.tests else ''
+
     def test_name(self):
-        return self._find_test_name_in_stack()[2]
-    
-    def _find_test_name_in_stack(self):
-        for full_name in self.call_stack:
-            if '.' in full_name:
-                last_name = full_name.split('.')[-1]
-                if last_name.startswith('test_'):
-                    return True, full_name, last_name
-            else: 
-                if full_name.startswith('test_'):
-                    return True, full_name, full_name
-        return False, '', ''
+        # The test id without module and class. Parameters of a pytest
+        # test ("[a.b]") can have dots, so they are split apart first.
+        full_name, bracket, params = self.test_fullname().partition('[')
+        return full_name.split('.')[-1] + bracket + params
 
     def is_directly_called_by_test(self):
         if len(self.call_stack) <= 1:
             return False
-        caller = self.call_stack[-2]
-        return ".test_" in caller
+        return self.call_stack[-2] in self.tests
 
     def is_started_in_test(self):
-        test_name = self.call_stack[0]
-        return ".test_" in test_name
+        return self.call_stack[0] in self.tests
 
     def distinct_run_lines(self):
         return sorted(list(set(self.run_lines)))

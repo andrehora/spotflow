@@ -3,6 +3,7 @@ import inspect
 from spotflow.utils import obj_value, obj_type, get_full_name, is_method_or_func, get_module_names, find_start_end_lines, get_code_filename
 from spotflow.model import CallState, MonitoredMethod, MonitoredProgram
 from spotflow.info import MethodInfo
+from spotflow.finder import find_test, find_test_id
 from spotflow.tracer import PyTracer
 
 
@@ -254,6 +255,10 @@ class Collector:
 
     def monitor_event(self, frame, event, arg):
 
+        # Tests are found in any frame, since test code is usually not a target
+        if event == "call":
+            self.record_test(frame)
+
         if not self.is_valid_frame(frame):
             return
 
@@ -264,11 +269,6 @@ class Collector:
         if not is_valid_method_name(frame, current_method_name):
             return
         
-        if '.test_' in current_method_name:
-            if current_method_name not in self.monitored_program.tests:
-                test_info = self.ensure_method_info(frame, current_method_name, None)
-                self.monitored_program.tests[current_method_name] = test_info
-
         if self.target_method_short_names:
             self.monitor_method(frame, event, arg, current_method_name)
             return
@@ -314,7 +314,9 @@ class Collector:
 
             frame_id = get_frame_id(frame)
             monitored_method = self.monitored_program[current_method_name]
-            monitored_method.add_call(call_state, callers, frame_id)
+            tests = self.monitored_program.tests
+            call_tests = tuple(name for name in callers[:-1] if name in tests)
+            monitored_method.add_call(call_state, callers, frame_id, call_tests)
 
         # Event is line, return, exception or call for re-entering generators
         else:
@@ -363,9 +365,6 @@ class Collector:
         if current_filename.startswith("<") or current_method_name == "<module>":
             return False
         
-        if '.test_' in current_method_name:
-            return True
-
         if self.target_method_short_names:
             for target_method_name in self.target_method_short_names:
                 if target_method_name == current_method_name:
@@ -444,15 +443,28 @@ class Collector:
         self.target_methods_cache[current_entity_name] = method_info
         return method_info
 
+    def record_test(self, frame):
+
+        found = find_test(frame)
+        if found is None:
+            return
+        test_id, func = found
+        if test_id in self.monitored_program.tests:
+            return
+        test_info = MethodInfo.build(func)
+        if test_info:
+            self.monitored_program.tests[test_id] = test_info
+
     def find_call_stack(self, frame):
 
+        # Test frames are named by their test id. Frames that cannot be named
+        # (lambdas, comprehensions, module code) are skipped instead of ending
+        # the stack, so that the test is still found above them.
         call_stack = [frame.f_code.co_name]
         while frame.f_back:
             frame = frame.f_back
-            full_name = self.get_method_full_name(frame)
-            if full_name:
-                call_stack.append(full_name)
-            else:
-                break
+            name = find_test_id(frame) or self.get_method_full_name(frame)
+            if name:
+                call_stack.append(name)
         call_stack.reverse()
         return tuple(call_stack)
